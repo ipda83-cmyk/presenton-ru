@@ -6,7 +6,10 @@
     "en": "English"
   },
   "common": {
-    "remove": "Убрать"
+    "remove": "Убрать",
+    "back": "Назад",
+    "continue": "Продолжить",
+    "loading": "Загрузка..."
   },
   "upload": {
     "prompt": {
@@ -96,5 +99,61 @@
       "includeToc": "Добавить оглавление",
       "titleSlide": "Титульный слайд"
     }
+  },
+  "outline": {
+    "goToDashboard": "Перейти в кабинет",
+    "selectTemplate": "Выберите шаблон",
+    "empty": {
+      "title": "Презентация не найдена",
+      "body": "Похоже, нужная презентация не найдена. Давайте создадим новую!",
+      "cta": "Создать новую презентацию"
+    },
+    "promptLabel": "Промпт",
+    "promptPlaceholder": "Опишите презентацию, которую хотите сгенерировать",
+    "regenerate": "Пересоздать план",
+    "selectTemplateCard": "Выбрать шаблон {name}",
+    "addSlide": "+ Добавить слайд",
+    "addFirstSlide": "+ Добавить первый слайд",
+    "noOutlines": "Плана пока нет",
+    "maxSlides": "Максимум {max} слайдов",
+    "maxSlidesReached": "Достигнут максимум — {max} слайдов",
+    "templatesLoadError": "Не удалось загрузить шаблоны: {error}",
+    "suggestedSelected": "Выбран рекомендованный шаблон.",
+    "suggestedHint": "Нажмите на подсвеченный шаблон, чтобы продолжить.",
+    "sectionTemplates": "Шаблоны",
+    "sectionCustom": "Мои",
+    "sectionBuiltIn": "Встроенные",
+    "noBuiltIn": "Встроенных шаблонов нет.",
+    "moveSlide": "Переместить слайд {index}",
+    "editSlide": "Редактировать разметку слайда {index}",
+    "slideLabel": "Слайд: {index}",
+    "markdownPlaceholder": "Введите markdown-содержимое...",
+    "titleOutline": "Генерация плана",
+    "titleSelectTemplate": "Выбор шаблона",
+    "tools": "Инструменты плана",
+    "errSelectTemplate": "Сначала выберите шаблон",
+    "errSelectLanguage": "Пожалуйста, выберите язык",
+    "errLanguageForDocs": "Пожалуйста, выберите язык перед пересозданием из документов",
+    "errNoInput": "Не указан промпт или документ",
+    "errOutlineTitle": "Ошибка плана",
+    "errRegenerate": "Не удалось пересоздать план.",
+    "warnOutlinesNotReadyTitle": "Планы ещё не готовы",
+    "warnOutlinesNotReadyBody": "Дождитесь завершения генерации плана, прежде чем продолжить.",
+    "warnTemplateTitle": "Шаблон не выбран",
+    "warnTemplateBody": "Выберите шаблон, прежде чем генерировать презентацию.",
+    "warnSlideLimitTitle": "Достигнут лимит слайдов",
+    "warnSlideLimitGenerate": "Используйте не более {max} слайдов плана перед генерацией.",
+    "warnSlideLimitAdd": "В плане может быть не более {max} слайдов.",
+    "genDataLoading": "Генерируем данные презентации...",
+    "genErrorTitle": "Ошибка генерации",
+    "genErrorBody": "Ошибка при генерации презентации.",
+    "streamParseTitle": "Ошибка разбора потока",
+    "streamParseBody": "Не удалось разобрать ответ потока плана.",
+    "parseFailTitle": "Ошибка разбора",
+    "parseFailBody": "Не удалось разобрать данные презентации.",
+    "streamFailTitle": "Ошибка стриминга плана",
+    "connFailTitle": "Ошибка подключения",
+    "connBody": "Не удалось подключиться к серверу. Попробуйте ещё раз.",
+    "newSlideTitle": "Заголовок слайда"
   }
 }

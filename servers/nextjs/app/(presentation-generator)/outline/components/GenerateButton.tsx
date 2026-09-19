@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 import { LoadingState } from "../types/index";
 import { ChevronRight } from "lucide-react";
 
@@ -16,6 +19,7 @@ const GenerateButton: React.FC<GenerateButtonProps> = ({
   selectedTemplateId,
   onSubmit,
 }) => {
+  const t = useTranslations();
   const isDisabled =
     loadingState.isLoading ||
     streamState.isLoading ||
@@ -24,9 +28,9 @@ const GenerateButton: React.FC<GenerateButtonProps> = ({
 
   const getButtonText = () => {
     if (loadingState.isLoading) return loadingState.message;
-    if (streamState.isLoading || streamState.isStreaming) return "Loading...";
-    if (!selectedTemplateId) return "Select a Template";
-    return "Continue";
+    if (streamState.isLoading || streamState.isStreaming) return t("common.loading");
+    if (!selectedTemplateId) return t("outline.selectTemplate");
+    return t("common.continue");
   };
 
   return (

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { notify } from "@/components/ui/sonner";
+import { useTranslations } from "next-intl";
 import { setOutlines } from "@/store/slices/presentationGeneration";
 import { jsonrepair } from "jsonrepair";
 import { RootState } from "@/store/store";
@@ -20,6 +21,7 @@ export const useOutlineStreaming = (
   enabled = true
 ) => {
   const dispatch = useDispatch();
+  const t = useTranslations("outline");
   const { outlines } = useSelector(
     (state: RootState) => state.presentationGeneration
   );
@@ -116,8 +118,8 @@ export const useOutlineStreaming = (
           if (!scheduleRetry("invalid SSE payload")) {
             resetStreamingState();
             notify.error(
-              "Stream parse failed",
-              "Failed to parse outline stream response."
+              t("streamParseTitle"),
+              t("streamParseBody")
             );
           }
           return;
@@ -193,7 +195,7 @@ export const useOutlineStreaming = (
             } catch {
               if (!scheduleRetry("failed to parse complete payload")) {
                 resetStreamingState();
-                notify.error("Parse failed", "Failed to parse presentation data.");
+                notify.error(t("parseFailTitle"), t("parseFailBody"));
               }
             }
             accumulatedChunks = "";
@@ -221,9 +223,8 @@ export const useOutlineStreaming = (
               resetStreamingState();
               closeEventSource();
               notify.error(
-                "Outline streaming failed",
-                data.detail ||
-                  "Failed to connect to the server. Please try again."
+                t("streamFailTitle"),
+                data.detail || t("connBody")
               );
             }
             break;
@@ -235,8 +236,8 @@ export const useOutlineStreaming = (
           resetStreamingState();
           closeEventSource();
           notify.error(
-            "Connection failed",
-            "Failed to connect to the server. Please try again."
+            t("connFailTitle"),
+            t("connBody")
           );
         }
       };

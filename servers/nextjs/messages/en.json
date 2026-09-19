@@ -6,7 +6,10 @@
     "en": "English"
   },
   "common": {
-    "remove": "Remove"
+    "remove": "Remove",
+    "back": "Back",
+    "continue": "Continue",
+    "loading": "Loading..."
   },
   "upload": {
     "prompt": {
@@ -96,5 +99,61 @@
       "includeToc": "Include Table of Content",
       "titleSlide": "Title Slide"
     }
+  },
+  "outline": {
+    "goToDashboard": "Go to dashboard",
+    "selectTemplate": "Select a Template",
+    "empty": {
+      "title": "No Presentation Found",
+      "body": "It looks like the presentation you are looking for is not found. Let's create a brand new presentation!",
+      "cta": "Create New Presentation"
+    },
+    "promptLabel": "Prompt",
+    "promptPlaceholder": "Describe the presentation you want to generate",
+    "regenerate": "Regenerate outline",
+    "selectTemplateCard": "Select {name} template",
+    "addSlide": "+ Add New Slide",
+    "addFirstSlide": "+ Add First Slide",
+    "noOutlines": "No outlines available",
+    "maxSlides": "Maximum {max} slides",
+    "maxSlidesReached": "Maximum {max} slides reached",
+    "templatesLoadError": "Templates could not be loaded: {error}",
+    "suggestedSelected": "Suggested template selected.",
+    "suggestedHint": "Click the highlighted template to continue.",
+    "sectionTemplates": "Templates",
+    "sectionCustom": "Custom",
+    "sectionBuiltIn": "Built-In",
+    "noBuiltIn": "No built-in templates available.",
+    "moveSlide": "Move slide {index}",
+    "editSlide": "Edit slide {index} markdown",
+    "slideLabel": "Slide: {index}",
+    "markdownPlaceholder": "Enter markdown content here...",
+    "titleOutline": "Outline Generation",
+    "titleSelectTemplate": "Select Template",
+    "tools": "Outline tools",
+    "errSelectTemplate": "Please select a template first",
+    "errSelectLanguage": "Please select language",
+    "errLanguageForDocs": "Please choose a language before regenerating from documents",
+    "errNoInput": "No Prompt or Document Provided",
+    "errOutlineTitle": "Outline Error",
+    "errRegenerate": "Failed to regenerate outline.",
+    "warnOutlinesNotReadyTitle": "Outlines not ready",
+    "warnOutlinesNotReadyBody": "Please wait for your outlines to finish generating before continuing.",
+    "warnTemplateTitle": "Template not selected",
+    "warnTemplateBody": "Choose a template before generating your presentation.",
+    "warnSlideLimitTitle": "Slide limit reached",
+    "warnSlideLimitGenerate": "Use {max} or fewer outline slides before generating.",
+    "warnSlideLimitAdd": "You can have up to {max} outline slides.",
+    "genDataLoading": "Generating presentation data...",
+    "genErrorTitle": "Generation error",
+    "genErrorBody": "Error in presentation generation.",
+    "streamParseTitle": "Stream parse failed",
+    "streamParseBody": "Failed to parse outline stream response.",
+    "parseFailTitle": "Parse failed",
+    "parseFailBody": "Failed to parse presentation data.",
+    "streamFailTitle": "Outline streaming failed",
+    "connFailTitle": "Connection failed",
+    "connBody": "Failed to connect to the server. Please try again.",
+    "newSlideTitle": "Outline title"
   }
 }

@@ -4,9 +4,11 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { setOutlines } from "@/store/slices/presentationGeneration";
 import { notify } from "@/components/ui/sonner";
 import { MAX_NUMBER_OF_SLIDES } from "@/utils/presentationLimits";
+import { useTranslations } from "next-intl";
 
 export const useOutlineManagement = (outlines: { content: string }[] | null) => {
   const dispatch = useDispatch();
+  const t = useTranslations("outline");
 
   const handleDragEnd = useCallback(
     (oldIndex: number, newIndex: number) => {
@@ -31,13 +33,13 @@ export const useOutlineManagement = (outlines: { content: string }[] | null) => 
     if (!outlines) return;
     if (outlines.length >= MAX_NUMBER_OF_SLIDES) {
       notify.warning(
-        "Slide limit reached",
-        `You can have up to ${MAX_NUMBER_OF_SLIDES} outline slides.`
+        t("warnSlideLimitTitle"),
+        t("warnSlideLimitAdd", { max: MAX_NUMBER_OF_SLIDES })
       );
       return;
     }
 
-    const updatedOutlines = [...outlines, { content: "Outline title" }];
+    const updatedOutlines = [...outlines, { content: t("newSlideTitle") }];
     dispatch(setOutlines(updatedOutlines));
   }, [outlines, dispatch]);
 

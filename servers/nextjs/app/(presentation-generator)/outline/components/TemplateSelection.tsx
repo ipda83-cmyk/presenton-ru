@@ -12,6 +12,7 @@ import {
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
+import { useTranslations } from "next-intl";
 
 interface TemplateSelectionProps {
   presentationId: string | null;
@@ -44,6 +45,7 @@ const TemplateSelection: React.FC<TemplateSelectionProps> = memo(
     onSelectTemplate,
     onCreateTemplate,
   }) {
+    const t = useTranslations("outline");
     const presentonCloudOnly = useSelector(
       (state: RootState) => state.userConfig.llm_config.LLM === "presenton"
     );
@@ -96,7 +98,7 @@ const TemplateSelection: React.FC<TemplateSelectionProps> = memo(
     if (error) {
       return (
         <TemplateListEmptyState
-          message={`Templates could not be loaded: ${error}`}
+          message={t("templatesLoadError", { error })}
         />
       );
     }
@@ -140,8 +142,8 @@ const TemplateSelection: React.FC<TemplateSelectionProps> = memo(
 
     const suggestionNotice = suggestedTemplate && selectedTemplateId && (
       <div className="mb-5 rounded-xl border border-[#E4E0FF] bg-[#F7F5FF] px-4 py-3 font-syne text-xs font-medium text-[#5141E5]">
-        <strong className="font-semibold">Suggested template selected.</strong>{" "}
-        Click the highlighted template to continue.
+        <strong className="font-semibold">{t("suggestedSelected")}</strong>{" "}
+        {t("suggestedHint")}
       </div>
     );
 
@@ -149,7 +151,7 @@ const TemplateSelection: React.FC<TemplateSelectionProps> = memo(
       return (
         <div className="mb-8">
           {suggestionNotice}
-          <TemplateListSection label="Templates" selectionPage>
+          <TemplateListSection label={t("sectionTemplates")} selectionPage>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {!presentonCloudOnly && (
                 <CreateCustomTemplate
@@ -169,7 +171,7 @@ const TemplateSelection: React.FC<TemplateSelectionProps> = memo(
     return (
       <div className="mb-8 space-y-[30px]">
         {suggestionNotice}
-        <TemplateListSection label="Custom" selectionPage>
+        <TemplateListSection label={t("sectionCustom")} selectionPage>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {!presentonCloudOnly && (
               <CreateCustomTemplate
@@ -183,9 +185,9 @@ const TemplateSelection: React.FC<TemplateSelectionProps> = memo(
           </div>
         </TemplateListSection>
 
-        <TemplateListSection label="Built-In" selectionPage>
+        <TemplateListSection label={t("sectionBuiltIn")} selectionPage>
           {defaultTemplates.length === 0 ? (
-            <TemplateListEmptyState message="No built-in templates available." />
+            <TemplateListEmptyState message={t("noBuiltIn")} />
           ) : (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {defaultTemplates.map((template, index) =>

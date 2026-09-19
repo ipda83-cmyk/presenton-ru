@@ -5,6 +5,7 @@ import { notify } from "@/components/ui/sonner";
 import { clearPresentationData } from "@/store/slices/presentationGeneration";
 import { PresentationGenerationApi } from "../../services/api/presentation-generation";
 import { LoadingState } from "../types/index";
+import { useTranslations } from "next-intl";
 
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
 import { sanitizeAnalyticsError } from "@/utils/analytics";
@@ -28,6 +29,7 @@ export const usePresentationGeneration = (
   const dispatch = useDispatch();
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations("outline");
   const [loadingState, setLoadingState] = useState<LoadingState>(
     DEFAULT_LOADING_STATE
   );
@@ -36,24 +38,24 @@ export const usePresentationGeneration = (
     (currentOutlines: { content: string }[] | null) => {
       if (!currentOutlines || currentOutlines.length === 0) {
         notify.warning(
-          "Outlines not ready",
-          "Please wait for your outlines to finish generating before continuing."
+          t("warnOutlinesNotReadyTitle"),
+          t("warnOutlinesNotReadyBody")
         );
         return false;
       }
 
       if (!selectedTemplateId) {
         notify.warning(
-          "Template not selected",
-          "Choose a template before generating your presentation."
+          t("warnTemplateTitle"),
+          t("warnTemplateBody")
         );
         return false;
       }
 
       if (currentOutlines.length > MAX_NUMBER_OF_SLIDES) {
         notify.warning(
-          "Slide limit reached",
-          `Use ${MAX_NUMBER_OF_SLIDES} or fewer outline slides before generating.`
+          t("warnSlideLimitTitle"),
+          t("warnSlideLimitGenerate", { max: MAX_NUMBER_OF_SLIDES })
         );
         return false;
       }
@@ -97,7 +99,7 @@ export const usePresentationGeneration = (
     });
 
     setLoadingState({
-      message: "Generating presentation data...",
+      message: t("genDataLoading"),
       isLoading: true,
       showProgress: true,
       duration: 30,
@@ -134,8 +136,8 @@ export const usePresentationGeneration = (
         ),
       });
       notify.error(
-        "Generation error",
-        error.message || "Error in presentation generation."
+        t("genErrorTitle"),
+        error.message || t("genErrorBody")
       );
     } finally {
       setLoadingState(DEFAULT_LOADING_STATE);
