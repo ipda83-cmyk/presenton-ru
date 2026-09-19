@@ -1,0 +1,8 @@
+{
+  "language": {
+    "label": "Interface language",
+    "switchTo": "Switch to {lang}",
+    "ru": "Русский",
+    "en": "English"
+  }
+}

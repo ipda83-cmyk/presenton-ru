@@ -5,6 +5,8 @@ import { Providers } from "./providers";
 import MixpanelInitializer from "./MixpanelInitializer";
 import { Toaster } from "@/components/ui/sonner";
 import TailwindBrowserRuntime from "@/components/runtime/TailwindBrowserRuntime";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 export const metadata: Metadata = {
   metadataBase: new URL("https://presenton.ai"),
   title: "Presenton - Open Source AI presentation generator",
@@ -49,22 +51,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
 
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body className="antialiased">
-        <Providers>
-          <MixpanelInitializer>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Providers>
+            <MixpanelInitializer>
 
-            {children}
+              {children}
 
-          </MixpanelInitializer>
-        </Providers>
+            </MixpanelInitializer>
+          </Providers>
+        </NextIntlClientProvider>
         <TailwindBrowserRuntime />
         <Toaster position="top-center" />
       </body>
