@@ -4,5 +4,97 @@
     "switchTo": "Switch to {lang}",
     "ru": "Русский",
     "en": "English"
+  },
+  "common": {
+    "remove": "Remove"
+  },
+  "upload": {
+    "prompt": {
+      "label": "Write prompt",
+      "labelCommunity": "Create from community",
+      "placeholder": "Start with your idea... we'll handle the slides",
+      "placeholderCommunity": "Choose a design, then tell AI how to turn it into your deck.",
+      "removeReference": "Remove {label}"
+    },
+    "slides": {
+      "placeholder": "Select Slides",
+      "unit": "slides",
+      "count": "{count, plural, one {# slide} other {# slides}}",
+      "autoLabel": "Auto slides",
+      "compact": "Slides {count}"
+    },
+    "config": {
+      "imageDisabled": "Image generation disabled",
+      "noImageProvider": "No image provider",
+      "web": "Web: {provider} ({state})",
+      "on": "On",
+      "off": "Off"
+    },
+    "attach": {
+      "unsupportedTitle": "Some files are not supported",
+      "unsupportedBody": "Supported: Word, PowerPoint, spreadsheets, PDF/TXT, and image files.",
+      "limitTitle": "Maximum file limit reached",
+      "limitBody": "You can upload up to {max} documents only.",
+      "addedTitle": "Files selected",
+      "addedBody": "{count, plural, one {# file has been added} other {# files have been added}}",
+      "listLabel": "Attached files",
+      "remove": "Remove {name}",
+      "attachMore": "Attach more ({count})",
+      "attachFiles": "Attach files",
+      "generate": "Generate presentation"
+    },
+    "mode": {
+      "a11yDescription": "Choose Standard mode for fixed layouts or Smart mode for adaptive layouts.",
+      "title": "Select Mode",
+      "standard": "Standard",
+      "standardTag": "Fixed layout",
+      "standardDesc": "A rigid, predefined layout with fixed structure, ensuring consistency, clarity, and predictable results.",
+      "selectStandard": "Select Standard",
+      "smart": "Smart",
+      "smartTag": "Flexible layout",
+      "smartDesc": "A smart adaptive layout with flexible structure, balancing consistency and content.",
+      "selectSmart": "Select Smart"
+    },
+    "languagePicker": {
+      "placeholder": "Select language",
+      "search": "Search language...",
+      "empty": "No language found."
+    },
+    "loading": {
+      "processingDocs": "Processing documents...",
+      "processingDocsInfo": "It might take a few minutes for large documents.",
+      "startingSmart": "Starting Smart presentation...",
+      "generatingOutline": "Generating presentation outline...",
+      "preparingOutline": "Preparing outline generation..."
+    },
+    "errors": {
+      "communitySelectTitle": "Could not select the community design",
+      "imageProviderTitle": "Image provider unavailable",
+      "imageProviderBody": "Unable to reach {provider} right now. Please check your API key/settings and try again.",
+      "languageRequiredTitle": "Language required",
+      "languageRequiredBody": "Please select a language.",
+      "languageForDocsBody": "Please choose a language before processing uploaded documents.",
+      "inputRequiredTitle": "Input required",
+      "inputRequiredBodyCommunity": "Provide a prompt, upload a document, or select a community reference.",
+      "inputRequiredBody": "Provide a prompt or upload a document.",
+      "generationFailedTitle": "Generation failed",
+      "generationFailedBody": "Something went wrong while starting your presentation."
+    },
+    "communityDesignFallback": "Community design",
+    "advanced": {
+      "button": "Advanced settings",
+      "close": "Close advanced settings",
+      "title": "Advanced Settings",
+      "subtitle": "Adjust Presentation Behavior",
+      "save": "Save",
+      "instructionsLabel": "Write instructions",
+      "instructionsPlaceholder": "Guide the AI: define audience, tone, key points, or constraints.",
+      "tone": "Tone",
+      "tonePlaceholder": "Select tone",
+      "verbosity": "Verbosity",
+      "verbosityPlaceholder": "Select verbosity",
+      "includeToc": "Include Table of Content",
+      "titleSlide": "Title Slide"
+    }
   }
 }

@@ -4,5 +4,97 @@
     "switchTo": "Переключить на {lang}",
     "ru": "Русский",
     "en": "English"
+  },
+  "common": {
+    "remove": "Убрать"
+  },
+  "upload": {
+    "prompt": {
+      "label": "Опишите презентацию",
+      "labelCommunity": "Создать из сообщества",
+      "placeholder": "Начните с идеи — а слайды мы сделаем сами",
+      "placeholderCommunity": "Выберите дизайн и опишите ИИ, как превратить его в вашу презентацию.",
+      "removeReference": "Убрать {label}"
+    },
+    "slides": {
+      "placeholder": "Число слайдов",
+      "unit": "слайдов",
+      "count": "{count, plural, one {# слайд} few {# слайда} many {# слайдов} other {# слайда}}",
+      "autoLabel": "Авто",
+      "compact": "Слайды: {count}"
+    },
+    "config": {
+      "imageDisabled": "Генерация изображений отключена",
+      "noImageProvider": "Провайдер изображений не выбран",
+      "web": "Веб: {provider} ({state})",
+      "on": "вкл",
+      "off": "выкл"
+    },
+    "attach": {
+      "unsupportedTitle": "Некоторые файлы не поддерживаются",
+      "unsupportedBody": "Поддерживаются: Word, PowerPoint, таблицы, PDF/TXT и изображения.",
+      "limitTitle": "Достигнут лимит файлов",
+      "limitBody": "Можно загрузить не более {max} документов.",
+      "addedTitle": "Файлы выбраны",
+      "addedBody": "{count, plural, one {Добавлен # файл} few {Добавлено # файла} many {Добавлено # файлов} other {Добавлено # файла}}",
+      "listLabel": "Прикреплённые файлы",
+      "remove": "Убрать {name}",
+      "attachMore": "Прикрепить ещё ({count})",
+      "attachFiles": "Прикрепить файлы",
+      "generate": "Сгенерировать презентацию"
+    },
+    "mode": {
+      "a11yDescription": "Выберите «Стандартный» для фиксированных макетов или «Умный» для адаптивных.",
+      "title": "Выбор режима",
+      "standard": "Стандартный",
+      "standardTag": "Фиксированный макет",
+      "standardDesc": "Жёсткий, заранее заданный макет с фиксированной структурой — обеспечивает единообразие, ясность и предсказуемый результат.",
+      "selectStandard": "Выбрать «Стандартный»",
+      "smart": "Умный",
+      "smartTag": "Гибкий макет",
+      "smartDesc": "Умный адаптивный макет с гибкой структурой — баланс между единообразием и содержанием.",
+      "selectSmart": "Выбрать «Умный»"
+    },
+    "languagePicker": {
+      "placeholder": "Выберите язык",
+      "search": "Поиск языка...",
+      "empty": "Язык не найден."
+    },
+    "loading": {
+      "processingDocs": "Обрабатываем документы...",
+      "processingDocsInfo": "Для больших документов это может занять несколько минут.",
+      "startingSmart": "Запускаем умную презентацию...",
+      "generatingOutline": "Генерируем план презентации...",
+      "preparingOutline": "Готовим генерацию плана..."
+    },
+    "errors": {
+      "communitySelectTitle": "Не удалось выбрать дизайн из сообщества",
+      "imageProviderTitle": "Провайдер изображений недоступен",
+      "imageProviderBody": "Сейчас не удаётся связаться с {provider}. Проверьте API-ключ и настройки и попробуйте снова.",
+      "languageRequiredTitle": "Нужно выбрать язык",
+      "languageRequiredBody": "Пожалуйста, выберите язык.",
+      "languageForDocsBody": "Пожалуйста, выберите язык перед обработкой загруженных документов.",
+      "inputRequiredTitle": "Нужны данные",
+      "inputRequiredBodyCommunity": "Укажите промпт, загрузите документ или выберите образец из сообщества.",
+      "inputRequiredBody": "Укажите промпт или загрузите документ.",
+      "generationFailedTitle": "Не удалось сгенерировать",
+      "generationFailedBody": "Что-то пошло не так при запуске презентации."
+    },
+    "communityDesignFallback": "Дизайн из сообщества",
+    "advanced": {
+      "button": "Расширенные настройки",
+      "close": "Закрыть расширенные настройки",
+      "title": "Расширенные настройки",
+      "subtitle": "Настройте поведение презентации",
+      "save": "Сохранить",
+      "instructionsLabel": "Введите инструкции",
+      "instructionsPlaceholder": "Подскажите ИИ: аудитория, тон, ключевые тезисы или ограничения.",
+      "tone": "Тон",
+      "tonePlaceholder": "Выберите тон",
+      "verbosity": "Детализация",
+      "verbosityPlaceholder": "Выберите детализацию",
+      "includeToc": "Добавить оглавление",
+      "titleSlide": "Титульный слайд"
+    }
   }
 }

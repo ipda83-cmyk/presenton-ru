@@ -1,11 +1,13 @@
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { clampSlideCountValue, MAX_NUMBER_OF_SLIDES } from '@/utils/presentationLimits';
+import { useTranslations } from 'next-intl';
 import React, { useState } from 'react'
 
 const SLIDE_OPTIONS: string[] = ["5", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"];
 
 const NumberOfSlide = ({ value, onValueChange }: { value: string, onValueChange: (value: string) => void }) => {
+    const t = useTranslations("upload.slides");
     const [customInput, setCustomInput] = useState(
         value && !SLIDE_OPTIONS.includes(value) ? value : ""
     );
@@ -26,7 +28,7 @@ const NumberOfSlide = ({ value, onValueChange }: { value: string, onValueChange:
                 className="w-[180px] font-manrope font-medium bg-blue-100 border-blue-200 focus-visible:ring-blue-300"
                 data-testid="slides-select"
             >
-                <SelectValue placeholder="Select Slides" />
+                <SelectValue placeholder={t("placeholder")} />
             </SelectTrigger>
             <SelectContent className="font-manrope">
                 {/* Sticky custom input at the top */}
@@ -59,14 +61,14 @@ const NumberOfSlide = ({ value, onValueChange }: { value: string, onValueChange:
                             placeholder="--"
                             className="h-8 w-16 px-2 text-sm"
                         />
-                        <span className="text-sm font-medium">slides</span>
+                        <span className="text-sm font-medium">{t("unit")}</span>
                     </div>
                 </div>
 
                 {/* Hidden item to allow SelectValue to render custom selection */}
                 {value && !SLIDE_OPTIONS.includes(value) && (
                     <SelectItem value={value} className="hidden">
-                        {value} slides
+                        {t("count", { count: Number(value) })}
                     </SelectItem>
                 )}
 
@@ -77,7 +79,7 @@ const NumberOfSlide = ({ value, onValueChange }: { value: string, onValueChange:
                         className="font-manrope text-sm font-medium"
                         role="option"
                     >
-                        {option} slides
+                        {t("count", { count: Number(option) })}
                     </SelectItem>
                 ))}
             </SelectContent>

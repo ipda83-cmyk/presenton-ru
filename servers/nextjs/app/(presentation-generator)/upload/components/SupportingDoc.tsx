@@ -4,6 +4,7 @@ import type { ChangeEvent, DragEvent } from "react";
 import { ArrowUp, File, Paperclip, X } from "lucide-react";
 
 import { notify } from "@/components/ui/sonner";
+import { useTranslations } from "next-intl";
 
 interface SupportingDocProps {
   files: File[];
@@ -29,13 +30,14 @@ export default function SupportingDoc({
   disabled = false,
   multiple = true,
 }: SupportingDocProps) {
+  const t = useTranslations("upload.attach");
   const addFiles = (candidates: File[]) => {
     const allowed = candidates.filter(isAllowedFile);
     const rejected = candidates.length - allowed.length;
     if (rejected > 0) {
       notify.error(
-        "Some files are not supported",
-        "Supported: Word, PowerPoint, spreadsheets, PDF/TXT, and image files.",
+        t("unsupportedTitle"),
+        t("unsupportedBody"),
       );
     }
 
@@ -43,14 +45,14 @@ export default function SupportingDoc({
     const limited = next.slice(0, MAX_SUPPORTED_FILES);
     if (next.length > MAX_SUPPORTED_FILES) {
       notify.warning(
-        "Maximum file limit reached",
-        `You can upload up to ${MAX_SUPPORTED_FILES} documents only.`,
+        t("limitTitle"),
+        t("limitBody", { max: MAX_SUPPORTED_FILES }),
       );
     }
     if (limited.length > files.length) {
       notify.success(
-        "Files selected",
-        `${limited.length - files.length} file(s) have been added.`,
+        t("addedTitle"),
+        t("addedBody", { count: limited.length - files.length }),
       );
     }
     onFilesChange(limited);
@@ -77,7 +79,7 @@ export default function SupportingDoc({
         <ul
           className="flex flex-wrap items-center gap-2"
           data-testid="file-list"
-          aria-label="Attached files"
+          aria-label={t("listLabel")}
         >
           {files.map((file, index) => (
             <li
@@ -94,7 +96,7 @@ export default function SupportingDoc({
                 onClick={() =>
                   onFilesChange(files.filter((_, fileIndex) => fileIndex !== index))
                 }
-                aria-label={`Remove ${file.name}`}
+                aria-label={t("remove", { name: file.name })}
                 data-testid="remove-file-button"
                 className="rounded-full text-[#777777] hover:bg-[#E6E6E9] hover:text-[#191919]"
               >
@@ -108,7 +110,7 @@ export default function SupportingDoc({
       <div className="flex items-center justify-between gap-3">
         <label className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-full px-2.5 font-manrope text-xs font-medium text-[#4C4C4C] transition hover:bg-[#F6F6F9]">
           <Paperclip className="h-3.5 w-3.5" />
-          <span>{files.length ? `Attach more (${files.length})` : "Attach files"}</span>
+          <span>{files.length ? t("attachMore", { count: files.length }) : t("attachFiles")}</span>
           <input
             type="file"
             className="hidden"
@@ -124,7 +126,7 @@ export default function SupportingDoc({
           type="button"
           onClick={onSubmit}
           disabled={disabled}
-          aria-label="Generate presentation"
+          aria-label={t("generate")}
           className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7A5AF8] text-white shadow-sm transition hover:bg-[#6938EF] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ArrowUp className="h-4 w-4" strokeWidth={2} />

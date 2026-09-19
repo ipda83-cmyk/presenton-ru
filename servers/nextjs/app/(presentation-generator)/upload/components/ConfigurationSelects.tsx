@@ -22,6 +22,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import AdvanceSettings from "./AdvanceSettings";
 import {
@@ -85,6 +86,7 @@ const SlideCountSelect: React.FC<{
   onOpenChange: (open: boolean) => void;
   compact?: boolean;
 }> = ({ value, onValueChange, open, onOpenChange, compact = false }) => {
+  const t = useTranslations("upload.slides");
   const [customInput, setCustomInput] = useState(
     value && !SLIDE_OPTIONS.includes(value as SlideOption) ? value : "",
   );
@@ -116,7 +118,7 @@ const SlideCountSelect: React.FC<{
     }
   };
 
-  const displayLabel = value ? `${value} slides` : "Auto slides";
+  const displayLabel = value ? t("count", { count: Number(value) }) : t("autoLabel");
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
@@ -176,7 +178,7 @@ const SlideCountSelect: React.FC<{
                   : "text-xs font-medium min-[1800px]:text-sm min-[2200px]:text-base",
               )}
             >
-              {compact && value ? `Slides ${value}` : displayLabel}
+              {compact && value ? t("compact", { count: Number(value) }) : displayLabel}
             </span>
             {compact && (
               <ChevronUp
@@ -230,7 +232,7 @@ const SlideCountSelect: React.FC<{
               className="h-8 w-16 px-2 text-sm min-[1800px]:h-9 min-[1800px]:w-20 min-[1800px]:text-base"
             />
             <span className="text-sm font-medium min-[1800px]:text-base">
-              slides
+              {t("unit")}
             </span>
           </div>
         </div>
@@ -262,7 +264,7 @@ const SlideCountSelect: React.FC<{
                       value === option ? "opacity-100" : "opacity-0",
                     )}
                   />
-                  {option} slides
+                  {t("count", { count: Number(option) })}
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -282,7 +284,9 @@ const LanguageSelect: React.FC<{
   open: boolean;
   onOpenChange: (open: boolean) => void;
   compact?: boolean;
-}> = ({ value, onValueChange, open, onOpenChange, compact = false }) => (
+}> = ({ value, onValueChange, open, onOpenChange, compact = false }) => {
+  const t = useTranslations("upload.languagePicker");
+  return (
   <Popover open={open} onOpenChange={onOpenChange}>
     <PopoverTrigger asChild>
       <button
@@ -322,7 +326,7 @@ const LanguageSelect: React.FC<{
                 : "text-xs font-medium min-[1800px]:text-sm min-[2200px]:text-base",
             )}
           >
-            {value || "Select language"}
+            {value || t("placeholder")}
           </span>
           {compact && (
             <ChevronUp
@@ -344,11 +348,11 @@ const LanguageSelect: React.FC<{
     >
       <Command>
         <CommandInput
-          placeholder="Search language..."
+          placeholder={t("search")}
           className="font-manrope"
         />
         <CommandList>
-          <CommandEmpty>No language found.</CommandEmpty>
+          <CommandEmpty>{t("empty")}</CommandEmpty>
           <CommandGroup>
             {Object.values(LanguageType).map((language) => (
               <CommandItem
@@ -375,7 +379,8 @@ const LanguageSelect: React.FC<{
       </Command>
     </PopoverContent>
   </Popover>
-);
+  );
+};
 
 export function ConfigurationSelects({
   config,
@@ -388,6 +393,7 @@ export function ConfigurationSelects({
   const [openLanguage, setOpenLanguage] = useState(false);
   const [modeDialogOpen, setModeDialogOpen] = useState(false);
   const showMode = Boolean(mode && onModeChange);
+  const t = useTranslations("upload.mode");
 
   return (
     <div
@@ -405,7 +411,7 @@ export function ConfigurationSelects({
             compact ? "h-[34px] shadow-none" : "h-[38px] shadow-sm",
           )}
         >
-          {mode === "standard" ? "Standard" : "Smart"}
+          {mode === "standard" ? t("standard") : t("smart")}
           <ChevronUp className="h-4 w-4" />
         </Button>
       ) : null}

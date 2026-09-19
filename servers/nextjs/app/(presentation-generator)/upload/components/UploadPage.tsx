@@ -18,6 +18,7 @@ import { PromptInput } from "./PromptInput";
 import { LanguageType, PresentationConfig, ToneType, VerbosityType } from "../type";
 import SupportingDoc from "./SupportingDoc";
 import { notify } from "@/components/ui/sonner";
+import { useTranslations } from "next-intl";
 import { PresentationGenerationApi } from "../../services/api/presentation-generation";
 import { OverlayLoader } from "@/components/ui/overlay-loader";
 import Wrapper from "@/components/Wrapper";
@@ -154,6 +155,7 @@ const UploadPage = ({
   const pathname = usePathname();
   const dispatch = useDispatch();
   const llmConfig = useSelector((state: RootState) => state.userConfig.llm_config);
+  const t = useTranslations("upload");
 
   const [files, setFiles] = useState<File[]>([]);
   const [communityReference, setCommunityReference] =
@@ -210,7 +212,7 @@ const UploadPage = ({
         .catch((loadError) => {
           if (!active) return;
           notify.error(
-            "Could not select the community design",
+            t("errors.communitySelectTitle"),
             loadError instanceof Error ? loadError.message : undefined
           );
         });
@@ -359,9 +361,9 @@ const UploadPage = ({
       return true;
     } catch (error: any) {
       notify.error(
-        "Image provider unavailable",
+        t("errors.imageProviderTitle"),
         error?.message ||
-        `Unable to reach ${selectedProvider} right now. Please check your API key/settings and try again.`
+        t("errors.imageProviderBody", { provider: selectedProvider })
       );
       return false;
     }
@@ -374,13 +376,13 @@ const UploadPage = ({
   const validateConfiguration = (): boolean => {
     if (!config.language) {
       trackUploadValidationFailure("language_missing");
-      notify.warning("Language required", "Please select a language.");
+      notify.warning(t("errors.languageRequiredTitle"), t("errors.languageRequiredBody"));
       return false;
     }
 
     if (files.length > 0 && config.language === LanguageType.Auto) {
       trackUploadValidationFailure("language_auto_with_documents");
-      notify.warning("Language required", "Please choose a language before processing uploaded documents.");
+      notify.warning(t("errors.languageRequiredTitle"), t("errors.languageForDocsBody"));
       return false;
     }
 
@@ -391,10 +393,10 @@ const UploadPage = ({
     ) {
       trackUploadValidationFailure("prompt_or_document_missing");
       notify.warning(
-        "Input required",
+        t("errors.inputRequiredTitle"),
         communityEnabled
-          ? "Provide a prompt, upload a document, or select a community reference."
-          : "Provide a prompt or upload a document."
+          ? t("errors.inputRequiredBodyCommunity")
+          : t("errors.inputRequiredBody")
       );
       return false;
     }
@@ -441,10 +443,10 @@ const UploadPage = ({
   const handleDocumentProcessing = async () => {
     setLoadingState({
       isLoading: true,
-      message: "Processing documents...",
+      message: t("loading.processingDocs"),
       showProgress: true,
       duration: 90,
-      extra_info: files.length > 0 ? "It might take a few minutes for large documents." : "",
+      extra_info: files.length > 0 ? t("loading.processingDocsInfo") : "",
     });
 
     let documents = [];
@@ -473,8 +475,8 @@ const UploadPage = ({
       isLoading: true,
       message:
         generationMode === "smart"
-          ? "Starting Smart presentation..."
-          : "Generating presentation outline...",
+          ? t("loading.startingSmart")
+          : t("loading.generatingOutline"),
       showProgress: true,
       duration: 40,
       extra_info: "",
@@ -534,8 +536,8 @@ const UploadPage = ({
       isLoading: true,
       message:
         generationMode === "smart"
-          ? "Starting Smart presentation..."
-          : "Preparing outline generation...",
+          ? t("loading.startingSmart")
+          : t("loading.preparingOutline"),
       showProgress: true,
       duration: 30,
     });
@@ -598,8 +600,8 @@ const UploadPage = ({
       showProgress: false,
     });
     notify.error(
-      "Generation failed",
-      error.message || "Something went wrong while starting your presentation."
+      t("errors.generationFailedTitle"),
+      error.message || t("errors.generationFailedBody")
     );
   };
 
@@ -635,7 +637,7 @@ const UploadPage = ({
           variant={generationMode}
           references={
             communityEnabled && generationMode === "smart" && communityReference
-              ? [{ id: String(communityReference.id), label: communityReference.title || "Community design" }]
+              ? [{ id: String(communityReference.id), label: communityReference.title || t("communityDesignFallback") }]
               : []
           }
           onRemoveReference={() =>

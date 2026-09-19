@@ -4,6 +4,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import type { GenerationMode } from "@/utils/presentationGenerationMode";
+import { useTranslations } from "next-intl";
 
 type GenerationModeDialogProps = {
   open: boolean;
@@ -16,6 +17,7 @@ export default function GenerationModeDialog({
   onOpenChange,
   onSelect,
 }: GenerationModeDialogProps) {
+  const t = useTranslations("upload.mode");
   const selectMode = (mode: GenerationMode) => {
     onSelect(mode);
     onOpenChange(false);
@@ -47,12 +49,11 @@ export default function GenerationModeDialog({
             }}
           >
             <DialogPrimitive.Description className="sr-only">
-              Choose Standard mode for fixed layouts or Smart mode for adaptive
-              layouts.
+              {t("a11yDescription")}
             </DialogPrimitive.Description>
             <div className="sticky top-0 z-10 border-b border-[#EDEEEF] bg-[#F9FAFB] px-4 py-4 sm:px-8">
               <DialogPrimitive.Title className="text-xl font-medium tracking-[-0.2px] text-[#808080]">
-                Select Mode
+                {t("title")}
               </DialogPrimitive.Title>
               <DialogPrimitive.Close className="absolute right-4 top-5 sm:right-8">
                 <X className="h-5 w-5 text-[#808080]" />
@@ -76,21 +77,20 @@ export default function GenerationModeDialog({
               </div>
               <div className="rounded-[20px] border border-[#EBE9FE] bg-[#F4F3FF] px-3.5 pb-5 pt-3.5">
                 <div className="flex items-center justify-between border-b border-[#EBE9FE] pb-3.5">
-                  <p className="text-xl font-medium text-[#333333]">Standard</p>
+                  <p className="text-xl font-medium text-[#333333]">{t("standard")}</p>
                   <p className="text-[10px] font-medium text-[#6938EF]">
-                    Fixed layout
+                    {t("standardTag")}
                   </p>
                 </div>
                 <p className="mb-2 py-1.5 text-base font-medium text-[#666666]">
-                  A rigid, predefined layout with fixed structure, ensuring
-                  consistency, clarity, and predictable results.
+                  {t("standardDesc")}
                 </p>
                 <Button
                   type="button"
                   className="rounded-[80px] bg-[#7A5AF8] px-5 text-base font-medium text-white shadow-none hover:bg-[#6938EF]/90"
                   onClick={() => selectMode("standard")}
                 >
-                  Select Standard
+                  {t("selectStandard")}
                 </Button>
               </div>
             </div>
@@ -110,14 +110,13 @@ export default function GenerationModeDialog({
               </div>
               <div className="rounded-[20px] border border-[#EBE9FE] bg-[#F4F3FF] px-3.5 pb-5 pt-3.5">
                 <div className="flex items-center justify-between border-b border-[#EBE9FE] pb-3.5">
-                  <p className="text-xl font-medium text-[#333333]">Smart</p>
+                  <p className="text-xl font-medium text-[#333333]">{t("smart")}</p>
                   <p className="text-[10px] font-medium text-[#6938EF]">
-                    Flexible layout
+                    {t("smartTag")}
                   </p>
                 </div>
                 <p className="mb-2 py-1.5 text-base font-medium text-[#666666]">
-                  A smart adaptive layout with flexible structure, balancing
-                  consistency and content.
+                  {t("smartDesc")}
                 </p>
                 <Button
                   type="button"
@@ -128,7 +127,7 @@ export default function GenerationModeDialog({
                   }}
                   onClick={() => selectMode("smart")}
                 >
-                  Select Smart
+                  {t("selectSmart")}
                 </Button>
               </div>
             </div>
