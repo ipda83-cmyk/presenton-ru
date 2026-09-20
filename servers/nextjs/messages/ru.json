@@ -242,6 +242,20 @@
     "exitPresentation": "Выйти из показа",
     "hide": "Скрыть",
     "addNotesInEditor": "Добавьте заметки в редакторе",
-    "back": "Назад"
+    "back": "Назад",
+    "loadingPresentation": "Загрузка презентации",
+    "creatingPresentation": "Создаём вашу презентацию",
+    "creatingPresentationInfo": "Это может занять несколько минут в зависимости от числа слайдов.",
+    "errorTitle": "Что-то пошло не так",
+    "errorBody": "Не удалось загрузить презентацию. Попробуйте ещё раз.",
+    "refreshPage": "Обновить страницу",
+    "goToUpload": "Перейти к созданию",
+    "navigateWith": "Навигация:",
+    "arrowKeys": "клавиши-стрелки",
+    "orLeftThumbnails": "или миниатюры слева",
+    "dismissHint": "Скрыть подсказку",
+    "aiAssistant": "ИИ-ассистент",
+    "closeAiAssistant": "Закрыть ИИ-ассистента",
+    "closeToolsPanel": "Закрыть панель инструментов"
   }
 }

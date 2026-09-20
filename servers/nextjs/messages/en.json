@@ -242,6 +242,20 @@
     "exitPresentation": "Exit presentation",
     "hide": "Hide",
     "addNotesInEditor": "Add notes in the editor",
-    "back": "Back"
+    "back": "Back",
+    "loadingPresentation": "Loading presentation",
+    "creatingPresentation": "Creating your presentation",
+    "creatingPresentationInfo": "This can take a few minutes depending on slide count.",
+    "errorTitle": "Something went wrong",
+    "errorBody": "We couldn't load your presentation. Please try again.",
+    "refreshPage": "Refresh Page",
+    "goToUpload": "Go to Upload",
+    "navigateWith": "Navigate with",
+    "arrowKeys": "arrow keys",
+    "orLeftThumbnails": "or the left thumbnails",
+    "dismissHint": "Dismiss navigation hint",
+    "aiAssistant": "AI Assistant",
+    "closeAiAssistant": "Close AI Assistant",
+    "closeToolsPanel": "Close tools panel"
   }
 }
