@@ -30,6 +30,7 @@ import {
   CHATGPT_AUTH_REQUIRED_EVENT,
   requestChatGptReauth,
 } from "@/utils/chatgptAuth";
+import { useTranslations } from "next-intl";
 
 const STOCK_IMAGE_PROVIDERS = new Set(["pexels", "pixabay"]);
 
@@ -46,6 +47,7 @@ interface ButtonState {
 const SettingsPage = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations("settings");
   const [selectedProvider, setSelectedProvider] = useState<SettingsSection>("text-provider");
   const userConfigState = useSelector((state: RootState) => state.userConfig);
   const [llmConfig, setLlmConfig] = useState<LLMConfig>(
@@ -55,7 +57,7 @@ const SettingsPage = () => {
   const [buttonState, setButtonState] = useState<ButtonState>({
     isLoading: false,
     isDisabled: false,
-    text: "Save Configuration",
+    text: t("saveConfig"),
     showProgress: false,
   });
 
@@ -122,9 +124,9 @@ const SettingsPage = () => {
       return true;
     } catch (error: any) {
       notify.error(
-        "Cannot save settings",
+        t("cannotSaveTitle"),
         error?.message ||
-        `Unable to reach ${provider} with the provided API key. Please verify your settings and try again.`
+        t("stockUnreachable", { provider })
       );
       return false;
     }
@@ -169,7 +171,7 @@ const SettingsPage = () => {
       const isAuthenticated = await checkCurrentAuthStatus();
       if (!isAuthenticated) {
         requestChatGptReauth({
-          message: "Please sign in to ChatGPT again from Settings.",
+          message: t("reauthChatgpt"),
           source: "settings-save",
         });
         return;
@@ -179,8 +181,8 @@ const SettingsPage = () => {
       const isConnected = await checkPresentonAuthStatus();
       if (!isConnected) {
         notify.warning(
-          "Connect Presenton first",
-          "Sign in to Presenton Cloud before selecting it as the text provider."
+          t("connectPresentonTitle"),
+          t("connectPresentonBody")
         );
         setSelectedProvider("text-provider");
         return;
@@ -191,7 +193,7 @@ const SettingsPage = () => {
     });
     const validationError = getLLMConfigValidationError(llmConfig);
     if (validationError) {
-      notify.warning("Cannot save settings", validationError);
+      notify.warning(t("cannotSaveTitle"), validationError);
       if (
         selectedProvider === "image-provider" &&
         ((llmConfig.LLM === "openai" && !String(llmConfig.OPENAI_MODEL || "").trim()) ||
@@ -212,7 +214,7 @@ const SettingsPage = () => {
         ...prev,
         isLoading: true,
         isDisabled: true,
-        text: "Saving Configuration...",
+        text: t("savingConfig"),
       }));
       trackEvent(MixpanelEvent.Settings_SaveConfiguration_API_Call);
       if (
@@ -224,31 +226,34 @@ const SettingsPage = () => {
         ))
       ) {
         throw new Error(
-          `The selected model "${llmConfig.OLLAMA_MODEL}" is not available at ${llmConfig.OLLAMA_URL}. Check models and select an available model.`
+          t("ollamaUnavailable", {
+            model: llmConfig.OLLAMA_MODEL ?? "",
+            url: llmConfig.OLLAMA_URL ?? "",
+          })
         );
       }
       await handleSaveLLMConfig(llmConfig);
       notify.success(
-        "Settings saved",
-        "Your configuration was saved successfully."
+        t("savedTitle"),
+        t("savedBody")
       );
       setButtonState((prev) => ({
         ...prev,
         isLoading: false,
         isDisabled: false,
-        text: "Save Configuration",
+        text: t("saveConfig"),
       }));
     } catch (error) {
       const message =
         error instanceof Error
           ? error.message
-          : "Something went wrong while saving.";
-      notify.error("Could not save settings", message);
+          : t("saveGenericError");
+      notify.error(t("couldNotSaveTitle"), message);
       setButtonState((prev) => ({
         ...prev,
         isLoading: false,
         isDisabled: false,
-        text: "Save Configuration",
+        text: t("saveConfig"),
       }));
     }
   };
@@ -265,7 +270,7 @@ const SettingsPage = () => {
 
   const textProviderKey = llmConfig.LLM || "";
   const textProviderLabel =
-    LLM_PROVIDERS[textProviderKey]?.label || textProviderKey || "No text provider";
+    LLM_PROVIDERS[textProviderKey]?.label || textProviderKey || t("noTextProvider");
   const selectedTextModel =
     textProviderKey === "presenton"
       ? ""
@@ -307,19 +312,19 @@ const SettingsPage = () => {
     : textProviderLabel;
 
   const imageSummary = textProviderKey === "presenton"
-    ? "Cloud images"
+    ? t("cloudImages")
     : llmConfig.DISABLE_IMAGE_GENERATION
-      ? "Image generation disabled"
+      ? t("imageGenDisabled")
       : llmConfig.IMAGE_PROVIDER
         ? IMAGE_PROVIDERS[llmConfig.IMAGE_PROVIDER]?.label ||
         llmConfig.IMAGE_PROVIDER
-        : "No image provider";
+        : t("noImageProvider");
   const webSearchProviderKey = (llmConfig.WEB_SEARCH_PROVIDER || "").toLowerCase();
   const webSearchSummary = textProviderKey === "presenton"
-    ? "Cloud web search"
+    ? t("cloudWebSearch")
     : llmConfig.WEB_GROUNDING
-      ? `Web: ${WEB_SEARCH_PROVIDERS[webSearchProviderKey]?.label || "No provider"}`
-      : "Web search disabled";
+      ? t("webSummary", { provider: WEB_SEARCH_PROVIDERS[webSearchProviderKey]?.label || t("noProvider") })
+      : t("webSearchDisabled");
 
   useEffect(() => {
     if (
@@ -380,10 +385,10 @@ const SettingsPage = () => {
         ) {
 
           notify.warning(
-            "Provider setup required",
+            t("providerSetupTitle"),
             !llmConfig.LLM
-              ? "Choose and configure a text provider before opening other pages."
-              : "Complete the selected text provider configuration and save it before leaving Settings.",
+              ? t("providerSetupNoLlm")
+              : t("providerSetupIncomplete"),
             { id: "provider-setup-required" }
           );
           e.preventDefault();
@@ -426,7 +431,7 @@ const SettingsPage = () => {
           <div className="sticky right-0 top-0 z-40 mb-4 bg-white/90 py-[28px] backdrop-blur">
             <div className="flex  gap-3 items-center ">
               <h3 className=" text-[28px] tracking-[-0.84px] font-syne font-normal text-black flex items-center gap-2">
-                Settings
+                {t("title")}
               </h3>
               <p className="text-[10px] px-2.5 py-0.5 rounded-[50px] text-[#7A5AF8] border border-[#EDEEEF]  font-medium ">
                 {textSummary} · {imageSummary} · {webSearchSummary}
@@ -439,9 +444,9 @@ const SettingsPage = () => {
               role="alert"
               className="mb-5 mr-7 rounded-[12px] border border-amber-200 bg-amber-50 px-5 py-4 text-[#713F12]"
             >
-              <p className="text-sm font-semibold">Choose a text provider to continue</p>
+              <p className="text-sm font-semibold">{t("chooseProviderTitle")}</p>
               <p className="mt-1 text-xs leading-5">
-                Presenton Cloud is disconnected. Select any text provider below and save the configuration before opening another page.
+                {t("chooseProviderBody")}
               </p>
             </div>
           )}
@@ -457,13 +462,13 @@ const SettingsPage = () => {
           {selectedProvider === "session" && (
             <div className="w-full max-w-lg space-y-5 rounded-[20px] border border-[#EDEEEF] bg-white p-7">
               <div>
-                <h4 className="font-syne text-lg font-normal text-black">Sign out</h4>
+                <h4 className="font-syne text-lg font-normal text-black">{t("signOut")}</h4>
                 <p className="mt-2 font-syne text-sm leading-relaxed text-[#494A4D]">
-                  End your session on this deployment. You will need to sign in again to use the app and access the API.
+                  {t("sessionBody")}
                 </p>
               </div>
               <LogoutButton
-                label="Sign out"
+                label={t("signOut")}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-[58px] border border-[#EDEEEF] bg-[#7C51F8] px-5 py-3 font-syne text-xs font-semibold text-white transition hover:bg-[#6d46e6] disabled:cursor-not-allowed disabled:opacity-60"
               />
             </div>
