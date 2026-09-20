@@ -63,6 +63,7 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { notify } from "@/components/ui/sonner";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
+import { useTranslations } from "next-intl";
 import type { SlideElement } from "@/components/slide-editor/types";
 
 import {
@@ -376,6 +377,7 @@ const NavButton = ({
   active: boolean;
   onClick: () => void;
 }) => {
+  const t = useTranslations("insert");
   return (
     <button
       type="button"
@@ -403,7 +405,7 @@ const NavButton = ({
           src={actionIconSrc[item.id]}
         />
       </span>
-      <span>{item.label}</span>
+      <span>{t(`section.${item.id}`)}</span>
     </button>
   );
 };
@@ -426,7 +428,11 @@ const PaletteCard = ({
   onClick?: () => void;
   previewKind: InsertPalettePreviewKind;
   theme: TemplateTheme;
-}) => (
+}) => {
+  const t = useTranslations("insert");
+  const displayLabel =
+    item.id && t.has(`item.${item.id}`) ? t(`item.${item.id}`) : item.label;
+  return (
   <button
     type="button"
     disabled={disabled}
@@ -436,17 +442,18 @@ const PaletteCard = ({
       disabled &&
         "cursor-not-allowed opacity-50 hover:translate-y-0 hover:border-[#EDEEF0] hover:shadow-sm",
     )}
-    aria-label={`Add ${item.label}`}
-    title={item.label}
+    aria-label={t("addItem", { label: displayLabel })}
+    title={displayLabel}
   >
     <div className="aspect-video w-full overflow-hidden bg-white">
       <InsertPalettePreview itemId={item.id} kind={previewKind} theme={theme} />
     </div>
     <span className="block truncate border-t border-[#F0F1F3] px-2.5 py-2 text-[11px] font-medium leading-4 text-[#344054]">
-      {item.label}
+      {displayLabel}
     </span>
   </button>
-);
+  );
+};
 
 const PaletteGrid = ({
   disabled = false,
@@ -891,6 +898,7 @@ function BlockVariantButton({
   disabled?: boolean;
   onInsertBlock: (block: TemplateBlock) => void;
 }) {
+  const t = useTranslations("insert");
   return (
     <button
       type="button"
@@ -903,7 +911,7 @@ function BlockVariantButton({
       onClick={() => {
         if (!disabled) onInsertBlock(block);
       }}
-      aria-label={`Insert ${block.title}`}
+      aria-label={t("insertBlock", { title: block.title })}
     >
       <div className="relative">
         <BlockThumbnail block={block} />
@@ -924,6 +932,7 @@ function BlockGroupCard({
   group: TemplateBlockGroup;
   onInsertBlock: (block: TemplateBlock) => void;
 }) {
+  const t = useTranslations("insert");
   const [expanded, setExpanded] = useState(false);
   const [hasExpanded, setHasExpanded] = useState(false);
   const firstVariant = group.variants[0];
@@ -981,7 +990,7 @@ function BlockGroupCard({
           onClick={toggleExpanded}
         >
           <span className="shrink-0 rounded-full border border-[#D6BBFB] bg-[#FAF8FF] px-3 py-1.5 text-[11px] font-medium leading-4 text-[#7F00FF]">
-            {variantCount} Layouts
+            {t("layoutsCount", { count: variantCount })}
           </span>
           <ChevronDown
             className={cn(
@@ -1008,6 +1017,7 @@ export const BlocksPanel = ({
   presentationData?: unknown;
   onInsertBlock: (block: TemplateBlock) => void;
 }) => {
+  const t = useTranslations("insert");
   const [blockPrompt, setBlockPrompt] = useState("");
   const [{ blocks, error, loading }, dispatchBlockState] = useReducer(
     blocksPanelReducer,
@@ -1063,7 +1073,7 @@ export const BlocksPanel = ({
         if (cancelled) return;
         dispatchBlockState({
           type: "failed",
-          message: "Could not load template components.",
+          message: t("loadFailed"),
         });
         trackEvent(MixpanelEvent.Editor_Template_Blocks_Load_Failed, {
           presentation_id: presentationId,
@@ -1096,14 +1106,14 @@ export const BlocksPanel = ({
         }
       `}</style>
       <h3 className="mb-3 text-[clamp(13px,0.95vw,15px)] font-semibold leading-5 text-[#101323]">
-        Blocks
+        {t("blocksTitle")}
       </h3>
 
       <div className="mb-7 flex h-[clamp(46px,3.6vw,52px)] items-center rounded-[10px] border border-[#EDEEF0] bg-white pl-[clamp(10px,0.9vw,12px)] pr-[clamp(6px,0.6vw,8px)] shadow-[0_10px_26px_rgba(17,24,39,0.08)]">
         <input
           value={blockPrompt}
           onChange={(event) => setBlockPrompt(event.target.value)}
-          placeholder="Search blocks"
+          placeholder={t("searchBlocks")}
           className="min-w-0 flex-1 bg-transparent text-[clamp(10px,0.75vw,12px)] text-[#101323] outline-none placeholder:text-[#9CA3AF]"
         />
         <button
@@ -1114,7 +1124,7 @@ export const BlocksPanel = ({
             background:
               "linear-gradient(270deg, #D5CAFC 2.4%, #E3D2EB 35%, #FDE4C2 100%)",
           }}
-          aria-label="Create block"
+          aria-label={t("createBlock")}
         >
           <Search
             className="h-[clamp(12px,0.9vw,14px)] w-[clamp(12px,0.9vw,14px)] text-[#101323]"
@@ -1123,12 +1133,12 @@ export const BlocksPanel = ({
         </button>
       </div>
 
-      <SectionLabel>Content</SectionLabel>
+      <SectionLabel>{t("content")}</SectionLabel>
 
       <div className="space-y-3">
         {loading && (
           <p className="rounded-[8px] border border-[#E5E7EB] bg-[#F9FAFB] p-4 text-[11px] leading-4 text-[#667085]">
-            Loading template components...
+            {t("loadingComponents")}
           </p>
         )}
         {!loading && error && (
@@ -1138,7 +1148,7 @@ export const BlocksPanel = ({
         )}
         {!loading && !error && visibleBlocks.length === 0 && (
           <p className="rounded-[8px] border border-dashed border-[#D0D5DD] bg-[#F9FAFB] p-4 text-[11px] leading-4 text-[#667085]">
-            No template components found.
+            {t("noComponents")}
           </p>
         )}
         {!loading &&
@@ -1216,9 +1226,10 @@ function ActionsSidebar({
   blocksUnavailable?: boolean;
   onActionSelect: (action: ActionId) => void;
 }) {
+  const t = useTranslations("insert");
   return (
     <aside
-      aria-label="Editor tools"
+      aria-label={t("editorTools")}
       className="ml-auto flex h-full w-[90px] font-syne shrink-0 flex-col items-center gap-5 bg-white px-[10px] py-2"
     >
       <div
@@ -1239,9 +1250,9 @@ function ActionsSidebar({
             <PrimaryActionButton
               active={activeAction === "blocks"}
               disabled={blocksUnavailable}
-              disabledReason="Blocks require a presentation template"
+              disabledReason={t("blocksDisabled")}
               iconSrc={actionIconSrc.blocks}
-              label="Blocks"
+              label={t("blocks")}
               onClick={() => onActionSelect("blocks")}
             />
           </>
@@ -1308,6 +1319,7 @@ function ActionsPanel({
   presentationId: string;
   templateTheme: TemplateTheme;
 }) {
+  const t = useTranslations("insert");
   return (
     <div className="min-w-0 flex-1 bg-white">
       <div className={cn("h-full", activeAction === "ai" ? "block" : "hidden")}>
@@ -1329,8 +1341,8 @@ function ActionsPanel({
       {!aiOnly && activeAction === "texts" && (
         <InsertPanel
           disabled={editingDisabled}
-          title="Texts"
-          groups={[{ label: "Add", items: textItems }]}
+          title={t("section.texts")}
+          groups={[{ label: t("group.add"), items: textItems }]}
           onItemSelect={onTextItemSelect}
           previewKind="text"
           theme={templateTheme}
@@ -1339,8 +1351,8 @@ function ActionsPanel({
       {!aiOnly && activeAction === "charts" && (
         <InsertPanel
           disabled={editingDisabled}
-          title="Charts"
-          groups={[{ label: "Chart Type", items: chartTypeItems }]}
+          title={t("section.charts")}
+          groups={[{ label: t("group.chartType"), items: chartTypeItems }]}
           onItemSelect={onChartItemSelect}
           previewKind="chart"
           theme={templateTheme}
@@ -1349,8 +1361,8 @@ function ActionsPanel({
       {!aiOnly && activeAction === "infographics" && (
         <InsertPanel
           disabled={editingDisabled}
-          title="Infographics"
-          groups={[{ label: "Choose a layout", items: infographicItems }]}
+          title={t("section.infographics")}
+          groups={[{ label: t("group.chooseLayout"), items: infographicItems }]}
           onItemSelect={onInfographicItemSelect}
           previewKind="infographic"
           theme={templateTheme}
@@ -1359,8 +1371,8 @@ function ActionsPanel({
       {!aiOnly && activeAction === "tables" && (
         <InsertPanel
           disabled={editingDisabled}
-          title="Tables"
-          groups={[{ label: "Table Type", items: tableTypeItems }]}
+          title={t("section.tables")}
+          groups={[{ label: t("group.tableType"), items: tableTypeItems }]}
           onItemSelect={onTableItemSelect}
           previewKind="table"
           theme={templateTheme}
@@ -1369,8 +1381,8 @@ function ActionsPanel({
       {!aiOnly && activeAction === "images" && (
         <InsertPanel
           disabled={editingDisabled}
-          title="Images"
-          groups={[{ label: "Add", items: imageItems }]}
+          title={t("section.images")}
+          groups={[{ label: t("group.add"), items: imageItems }]}
           onItemSelect={onImageItemSelect}
           previewKind="image"
           theme={templateTheme}
@@ -1379,7 +1391,7 @@ function ActionsPanel({
       {!aiOnly && activeAction === "elements" && (
         <InsertPanel
           disabled={editingDisabled}
-          title="Elements"
+          title={t("section.elements")}
           groups={elementItemGroups}
           onItemSelect={onElementItemSelect}
           previewKind="element"
@@ -1413,6 +1425,7 @@ function templateV2TargetKey(
 }
 
 const PresentationActions = (props: PresentationActionsProps) => {
+  const t = useTranslations("insert");
   const {
     editingDisabled = false,
     presentationData,
@@ -1507,7 +1520,7 @@ const PresentationActions = (props: PresentationActionsProps) => {
     if (editingDisabled) return false;
     if (typeof window === "undefined") return false;
     if (typeof props.currentSlide !== "number") {
-      notify.warning("Select a slide", "Choose a slide before adding content.");
+      notify.warning(t("selectSlideTitle"), t("selectSlideBody"));
       return false;
     }
     if (
@@ -1529,8 +1542,8 @@ const PresentationActions = (props: PresentationActionsProps) => {
 
     if (!detail.handled) {
       notify.warning(
-        "Insert unavailable",
-        "Content can be added only to slides imported through the slide editor.",
+        t("insertUnavailableTitle"),
+        t("insertUnavailableBody"),
       );
       return false;
     }

@@ -3,8 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { Layout, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const Header: React.FC = () => {
+  const t = useTranslations("common");
   return (
     <header className="w-full border-b bg-white/60 backdrop-blur supports-[backdrop-filter]:bg-white/60 sticky top-0 z-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -16,11 +18,11 @@ const Header: React.FC = () => {
           <nav className="flex items-center gap-4">
             <Link href="/custom-layout" className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900">
               <Plus className="w-5 h-5" />
-              <span className="text-sm font-medium font-manrope">Create Template</span>
+              <span className="text-sm font-medium font-manrope">{t("createTemplate")}</span>
             </Link>
             <Link href="/template-preview" className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900">
               <Layout className="w-5 h-5" />
-              <span className="text-sm font-medium font-manrope">Templates</span>
+              <span className="text-sm font-medium font-manrope">{t("templates")}</span>
             </Link>
           </nav>
         </div>
