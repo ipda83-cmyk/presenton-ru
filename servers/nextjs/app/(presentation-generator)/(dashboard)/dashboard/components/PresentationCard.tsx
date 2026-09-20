@@ -27,6 +27,7 @@ import {
 } from "@/app/(presentation-generator)/components/TemplateV2HtmlSlidePreview";
 import MarkdownRenderer from "@/components/MarkDownRender";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
+import { useTranslations } from "next-intl";
 
 export const PresentationCard = ({
   id,
@@ -45,6 +46,7 @@ export const PresentationCard = ({
 }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations("dash");
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showActions, setShowActions] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
@@ -59,8 +61,8 @@ export const PresentationCard = ({
     e.preventDefault();
     if (isUnsupported) {
       notify.warning(
-        "Unsupported presentation",
-        "This deck was created in an older Presenton version. Downgrade to a compatible version to open it."
+        t("unsupportedTitle"),
+        t("unsupportedBody")
       );
       return;
     }
@@ -86,13 +88,13 @@ export const PresentationCard = ({
         presentation_id: id,
         slide_count: presentation?.slides?.length || 0,
       });
-      notify.success("Presentation deleted", "The presentation was removed from your dashboard.");
+      notify.success(t("deletedTitle"), t("deletedBody"));
       setShowDeleteDialog(false);
       if (onDeleted) {
         onDeleted(id);
       }
     } else {
-      notify.error("Could not delete presentation", response?.message || "Something went wrong while deleting the presentation.");
+      notify.error(t("deleteErrorTitle"), response?.message || t("deleteErrorBody"));
     }
     setIsDeleting(false);
   };
@@ -108,12 +110,12 @@ export const PresentationCard = ({
         duplicate_presentation_id: duplicated?.id,
         slide_count: presentation?.slides?.length || 0,
       });
-      notify.success("Presentation duplicated", "A copy was added to your dashboard.");
+      notify.success(t("duplicatedTitle"), t("duplicatedBody"));
       onDuplicated?.(duplicated);
     } catch (error) {
       notify.error(
-        "Could not duplicate presentation",
-        error instanceof Error ? error.message : "Something went wrong while duplicating the presentation."
+        t("duplicateErrorTitle"),
+        error instanceof Error ? error.message : t("duplicateErrorBody")
       );
     } finally {
       setIsDuplicating(false);
@@ -130,7 +132,7 @@ export const PresentationCard = ({
         suppressHydrationWarning={true}
         onClick={handlePreview}
         aria-disabled={isUnsupported}
-        title={isUnsupported ? "Unsupported in this version of Presenton" : undefined}
+        title={isUnsupported ? t("unsupportedInVersion") : undefined}
         className={`bg-[#F8FBFB] font-syne relative shadow-none sm:shadow-none presentation-card rounded-[12px] p-0 group transition-all duration-500 slide-theme overflow-hidden flex flex-col ${
           isUnsupported
             ? "cursor-not-allowed border-[#EDEEEF]"
@@ -159,7 +161,7 @@ export const PresentationCard = ({
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F4F3FF] text-[#7A5AF8]">
                 <Archive className="h-[18px] w-[18px]" aria-hidden="true" />
               </span>
-              <p className="text-xs font-medium">Preview unavailable</p>
+              <p className="text-xs font-medium">{t("previewUnavailable")}</p>
             </div>
           ) : useTemplateV2HtmlPreview ? (
             <TemplateV2HtmlSlidePreview
@@ -182,7 +184,7 @@ export const PresentationCard = ({
               : "bg-white/90 text-[#475467]"
           }`}
         >
-          {presentationType}
+          {t(`type.${presentationType}`)}
         </p>
         <p className="absolute right-2 top-2 z-40 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-[#191919] shadow-sm backdrop-blur-sm">
           {presentation.n_slides ?? presentation?.slides?.length ?? 0}
@@ -214,7 +216,7 @@ export const PresentationCard = ({
                       void handleDuplicate();
                     }}
                   >
-                    <p>{isDuplicating ? "Duplicating..." : "Duplicate"}</p>
+                    <p>{isDuplicating ? t("duplicating") : t("duplicate")}</p>
                     {isDuplicating ? (
                       <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
                     ) : (
@@ -231,7 +233,7 @@ export const PresentationCard = ({
                     setShowDeleteDialog(true);
                   }}
                 >
-                  <p>Delete</p>
+                  <p>{t("delete")}</p>
                   <Trash className="h-4 w-4" />
                 </button>
               </PopoverContent>
@@ -263,21 +265,21 @@ export const PresentationCard = ({
               />
             </div>
             <DialogTitle className="text-[22px] font-semibold leading-7 tracking-[-0.02em] text-[#B42318]">
-              Delete presentation?
+              {t("deleteConfirmTitle")}
             </DialogTitle>
             <DialogDescription asChild>
               <div className="w-full pt-2 text-sm leading-6 text-[#667085]">
-                <p>This will permanently delete the presentation below.</p>
+                <p>{t("deleteConfirmBody")}</p>
                 <div
                   className="mt-4 rounded-[12px] border border-[#FECDCA] bg-[#FFFBFA] px-4 py-3 text-left"
-                  title={title || "Untitled presentation"}
+                  title={title || t("untitled")}
                 >
                   <p className="line-clamp-2 break-words text-sm font-medium leading-5 text-[#7A271A]">
-                    {title || "Untitled presentation"}
+                    {title || t("untitled")}
                   </p>
                 </div>
                 <p className="mt-3 text-[13px] font-medium text-[#D92D20]">
-                  This action cannot be undone.
+                  {t("deleteCannotUndo")}
                 </p>
               </div>
             </DialogDescription>
@@ -290,7 +292,7 @@ export const PresentationCard = ({
               disabled={isDeleting}
               className="h-11 rounded-[10px] border border-[#D0D5DD] bg-white px-4 text-sm font-medium text-[#344054] shadow-sm transition-colors hover:bg-[#F9FAFB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Cancel
+              {t("cancel")}
             </button>
             <button
               type="button"
@@ -301,12 +303,12 @@ export const PresentationCard = ({
               {isDeleting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                  Deleting...
+                  {t("deleting")}
                 </>
               ) : (
                 <>
                   <Trash className="h-4 w-4" aria-hidden="true" />
-                  Delete
+                  {t("delete")}
                 </>
               )}
             </button>

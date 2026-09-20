@@ -25,6 +25,7 @@ import { RootState } from "@/store/store";
 import { notify } from "@/components/ui/sonner";
 import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { IMAGE_PROVIDERS, LLM_PROVIDERS } from "@/utils/providerConstants";
+import { useTranslations } from "next-intl";
 
 const GITHUB_REPOSITORY_URL = "https://github.com/presenton/presenton";
 const DISCORD_INVITE_URL = "https://discord.com/invite/9ZsKKxudNE";
@@ -220,6 +221,7 @@ function formatGitHubStars(stars: number) {
 
 function DashboardHeader() {
   const pathname = usePathname();
+  const t = useTranslations("dash");
   const llmConfig = useSelector(
     (state: RootState) => state.userConfig.llm_config,
   );
@@ -248,7 +250,7 @@ function DashboardHeader() {
     <header className="sticky top-0 z-50 ml-7 mr-[9px] flex h-[105px] items-center justify-between border-b border-[#EDEEEF] bg-white px-1 max-lg:h-auto max-lg:min-h-[105px] max-lg:flex-col max-lg:items-start max-lg:gap-4 max-lg:py-5">
       <div className="flex w-[504.392px] max-w-full shrink-0 items-center gap-3.5 max-xl:w-auto">
         <h1 className="whitespace-nowrap font-syne text-[22px] font-medium leading-normal tracking-[-0.66px] text-[#101323]">
-          Dashboard
+          {t("title")}
         </h1>
       </div>
 
@@ -291,7 +293,7 @@ function DashboardHeader() {
                 ))}
               </span>
               <span className="font-syne text-sm font-medium leading-[17.6px] tracking-[0.56px]">
-                Settings
+                {t("settings")}
               </span>
             </Link>
 
@@ -319,7 +321,7 @@ function DashboardHeader() {
                 className="h-[17.6px] w-[17.6px] shrink-0"
               />
               <span className="font-syne text-sm font-normal leading-normal tracking-[-0.14px] text-[#191919]">
-                Join Discord
+                {t("joinDiscord")}
               </span>
             </Link>
             <DashboardHeaderDivider />
@@ -352,8 +354,8 @@ function DashboardHeader() {
               href={APP_UPDATE_URL}
               target="_blank"
               rel="noreferrer"
-              aria-label="Update Presenton"
-              title="Update Presenton"
+              aria-label={t("updateApp")}
+              title={t("updateApp")}
               className="relative flex h-[42.24px] w-[42.24px] shrink-0 items-center justify-center rounded-full border-[1.32px] border-[#D9D6FE] bg-[#FAFAFF] transition-colors hover:bg-[#F3F0FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] focus-visible:ring-offset-2"
               onClick={() =>
                 trackEvent(MixpanelEvent.Navigation, {
@@ -391,6 +393,7 @@ function DashboardHeader() {
 const DashboardPage: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const t = useTranslations("dash");
   const [presentations, setPresentations] = useState<PresentationResponse[]>(
     [],
   );
@@ -471,12 +474,12 @@ const DashboardPage: React.FC = () => {
       const message =
         creationError instanceof Error
           ? creationError.message
-          : "Something went wrong while creating the presentation.";
+          : t("createGenericError");
       trackEvent(MixpanelEvent.Dashboard_Blank_Presentation_Create_Failed, {
         pathname,
         error_message: sanitizeAnalyticsError(creationError),
       });
-      notify.error("Could not create blank presentation", message);
+      notify.error(t("createBlankErrorTitle"), message);
     } finally {
       blankPresentationRequestInFlight.current = false;
       setIsCreatingBlankPresentation(false);
@@ -502,7 +505,7 @@ const DashboardPage: React.FC = () => {
       <DashboardHeader />
       <section className="relative z-10 overflow-visible pb-0 pl-3 pr-3 pt-[17px] sm:pl-6 sm:pr-[9px]">
         <h2 className="w-full font-syne text-[16px] font-medium leading-[normal] text-[#191919]">
-          Actions
+          {t("actions")}
         </h2>
         <div className="mt-[18px] grid w-full max-w-[625px] grid-cols-1 gap-4 sm:grid-cols-2">
           <DashboardActionCard
@@ -513,8 +516,8 @@ const DashboardPage: React.FC = () => {
                 source: "dashboard_actions_card",
               })
             }
-            title="Create new Presentation"
-            ariaLabel="Create new presentation"
+            title={t("createNewPresentation")}
+            ariaLabel={t("createNewPresentationAria")}
             media={
               <Image
                 src="/create_presentation_bg.png"
@@ -533,12 +536,12 @@ const DashboardPage: React.FC = () => {
             disabled={isCreatingBlankPresentation}
             isLoading={isCreatingBlankPresentation}
             title={
-              isCreatingBlankPresentation ? "Creating..." : "Blank Presentation"
+              isCreatingBlankPresentation ? t("creating") : t("blankPresentation")
             }
             ariaLabel={
               isCreatingBlankPresentation
-                ? "Creating blank presentation"
-                : "Create blank presentation"
+                ? t("creatingBlankAria")
+                : t("createBlankAria")
             }
             mediaClassName="w-[90px]"
             media={
@@ -552,14 +555,14 @@ const DashboardPage: React.FC = () => {
       <section className="relative z-10 mt-[46px] pl-3 pr-3 sm:pl-6 sm:pr-[9px]">
         <div className="mb-[14px] flex items-center justify-between gap-4">
           <h2 className="font-syne text-[16px] font-medium leading-[normal] text-[#191919]">
-            Decks
+            {t("decks")}
           </h2>
           <div className="flex items-center gap-[17px]">
             <div className="flex items-center rounded-[4px] border border-[#EDEEEF] p-1">
               <button
                 type="button"
                 onClick={() => setDeckViewMode("grid")}
-                aria-label="Grid view"
+                aria-label={t("gridView")}
                 aria-pressed={deckViewMode === "grid"}
                 className={`flex items-center rounded px-2 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] ${deckViewMode === "grid" ? "bg-[#F6F6F9]" : "hover:bg-[#FAFAFC]"}`}
               >
@@ -568,7 +571,7 @@ const DashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setDeckViewMode("list")}
-                aria-label="List view"
+                aria-label={t("listView")}
                 aria-pressed={deckViewMode === "list"}
                 className={`flex items-center rounded px-2 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] ${deckViewMode === "list" ? "bg-[#F6F6F9]" : "hover:bg-[#FAFAFC]"}`}
               >
