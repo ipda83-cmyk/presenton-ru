@@ -6,7 +6,6 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import SmartHtmlSlide from "../../../components/SmartHtmlSlide";
 import { TemplateV2HtmlSlidePreview } from "../../../components/TemplateV2HtmlSlidePreview";
-import { quickPromptGroups } from "./chat-prompts";
 import type { AssistantActivity, ChatEditPreview } from "./chat-types";
 
 const AssistantSparkleIcon = ({ size = 14 }: { size?: number }) => (
@@ -66,10 +65,10 @@ export const ActivityStatusIcon = ({
 
 export const QuickPromptsPanel = ({
   onPromptSelect,
-  groups = quickPromptGroups,
+  groups,
 }: {
   onPromptSelect: (prompt: string) => void;
-  groups?: typeof quickPromptGroups;
+  groups: { label: string; prompts: string[] }[];
 }) => (
   <div className="flex flex-col gap-6 font-syne">
     <AssistantSparkleIcon size={24} />

@@ -1,30 +1,33 @@
 import type { ChatStreamTrace } from "../../../services/api/chat";
 import type { AssistantActivity } from "./chat-types";
 
-const TOOL_LABELS: Record<string, string> = {
-  addOutline: "Outline adder",
-  updateOutline: "Outline editor",
-  deleteOutline: "Outline remover",
-  addNewSlide: "Blank slide adder",
-  addNewSlideLayout: "Layout slide adder",
-  getAvailableLayouts: "Layout finder",
-  getTemplateSummary: "Template reader",
-  readSourceDocuments: "Source document reader",
-  searchSlide: "Slide search",
-  getSlideAtIndex: "Slide reader",
-  saveSlide: "Slide saver",
-  updateSlide: "Slide updater",
-  deleteSlide: "Slide remover",
-  addElement: "Element adder",
-  updateElement: "Element updater",
-  deleteElement: "Element remover",
-  addComponent: "Component adder",
-  createComponent: "Component creator",
-  updateComponent: "Component updater",
-  deleteComponent: "Component remover",
-  getPresentationTheme: "Theme reader",
-  setPresentationTheme: "Theme applier",
-  generateAssets: "Asset generator",
+type Translator = (key: string) => string;
+
+// Maps the backend tool id to a translation key under chat.activity.tool.*
+const TOOL_LABEL_KEYS: Record<string, string> = {
+  addOutline: "activity.tool.addOutline",
+  updateOutline: "activity.tool.updateOutline",
+  deleteOutline: "activity.tool.deleteOutline",
+  addNewSlide: "activity.tool.addNewSlide",
+  addNewSlideLayout: "activity.tool.addNewSlideLayout",
+  getAvailableLayouts: "activity.tool.getAvailableLayouts",
+  getTemplateSummary: "activity.tool.getTemplateSummary",
+  readSourceDocuments: "activity.tool.readSourceDocuments",
+  searchSlide: "activity.tool.searchSlide",
+  getSlideAtIndex: "activity.tool.getSlideAtIndex",
+  saveSlide: "activity.tool.saveSlide",
+  updateSlide: "activity.tool.updateSlide",
+  deleteSlide: "activity.tool.deleteSlide",
+  addElement: "activity.tool.addElement",
+  updateElement: "activity.tool.updateElement",
+  deleteElement: "activity.tool.deleteElement",
+  addComponent: "activity.tool.addComponent",
+  createComponent: "activity.tool.createComponent",
+  updateComponent: "activity.tool.updateComponent",
+  deleteComponent: "activity.tool.deleteComponent",
+  getPresentationTheme: "activity.tool.getPresentationTheme",
+  setPresentationTheme: "activity.tool.setPresentationTheme",
+  generateAssets: "activity.tool.generateAssets",
 };
 
 export const MUTATING_TOOLS = new Set([
@@ -65,43 +68,52 @@ export const SLIDE_FOCUS_TOOLS = new Set([
 export const SLIDE_FOCUS_STATUSES = new Set(["start"]);
 export const MIN_SLIDE_FOCUS_DWELL_MS = 700;
 
-const getToolLabel = (tool?: string) => {
+const getToolLabel = (tool: string | undefined, t: Translator) => {
   if (!tool) return "";
-  return TOOL_LABELS[tool] ?? tool;
+  const key = TOOL_LABEL_KEYS[tool];
+  return key ? t(key) : tool;
 };
 
-const humanizeTraceMessage = (message: string, tool?: string) => {
+// Keys are the exact lowercased backend messages (matchers, not translated);
+// values are translation keys under chat.activity.msg.*
+const EXACT_MESSAGE_KEYS: Record<string, string> = {
+  "reading deck context": "activity.msg.reviewContext",
+  "reading the presentation outline": "activity.msg.readOutline",
+  "reading the outline draft": "activity.msg.readOutlineDraft",
+  "adding an outline slide": "activity.msg.addOutlineSlide",
+  "updating the outline slide": "activity.msg.updateOutlineSlide",
+  "deleting the outline slide": "activity.msg.deleteOutlineSlide",
+  "reordering outline slides": "activity.msg.reorderOutline",
+  "searching relevant slides": "activity.msg.searchRelevant",
+  "opening the requested slide": "activity.msg.openSlide",
+  "checking available themes": "activity.msg.checkThemes",
+  "checking available layouts": "activity.msg.checkLayouts",
+  "checking the layout schema": "activity.msg.validateSchema",
+  "generating slide assets": "activity.msg.generateAssets",
+  "saving the slide": "activity.msg.saveSlide",
+  "deleting the slide": "activity.msg.deleteSlide",
+  "applying presentation theme": "activity.msg.applyTheme",
+  "reading template structure": "activity.msg.readTemplate",
+  "reading source documents": "activity.msg.readDocs",
+  "opening the requested template slide": "activity.msg.openTemplateSlide",
+  "searching template content": "activity.msg.searchTemplate",
+  "finding editable elements": "activity.msg.findEditable",
+  "updating template content": "activity.msg.updateTemplate",
+  "deleting the template component": "activity.msg.deleteComponent",
+  "swapping component variant": "activity.msg.swapVariant",
+};
+
+const humanizeTraceMessage = (
+  message: string,
+  tool: string | undefined,
+  t: Translator,
+) => {
   const trimmed = message.trim();
   if (!trimmed) return "";
 
   const lower = trimmed.toLowerCase();
-  const exactMessages: Record<string, string> = {
-    "reading deck context": "Reviewing your presentation context.",
-    "reading the presentation outline": "Reading the presentation outline.",
-    "reading the outline draft": "Reading the outline draft.",
-    "adding an outline slide": "Adding an outline slide.",
-    "updating the outline slide": "Updating the outline slide.",
-    "deleting the outline slide": "Deleting the outline slide.",
-    "reordering outline slides": "Reordering outline slides.",
-    "searching relevant slides": "Searching slides for relevant content.",
-    "opening the requested slide": "Opening the selected slide.",
-    "checking available themes": "Checking available color themes.",
-    "checking available layouts": "Checking available layouts.",
-    "checking the layout schema": "Validating the slide schema.",
-    "generating slide assets": "Generating images and icons.",
-    "saving the slide": "Saving slide updates.",
-    "deleting the slide": "Deleting the slide.",
-    "applying presentation theme": "Applying the selected theme.",
-    "reading template structure": "Reading the template structure.",
-    "reading source documents": "Reading the source documents.",
-    "opening the requested template slide": "Opening the selected template slide.",
-    "searching template content": "Searching template content.",
-    "finding editable elements": "Finding editable elements.",
-    "updating template content": "Updating template content.",
-    "deleting the template component": "Deleting the selected component.",
-    "swapping component variant": "Swapping the component variant.",
-  };
-  if (exactMessages[lower]) return exactMessages[lower];
+  const exactKey = EXACT_MESSAGE_KEYS[lower];
+  if (exactKey) return t(exactKey);
 
   if (lower.startsWith("using tools:")) {
     const toolNames = trimmed
@@ -109,15 +121,15 @@ const humanizeTraceMessage = (message: string, tool?: string) => {
       .split(",")
       .map((entry) => entry.trim())
       .filter(Boolean)
-      .map((entry) => getToolLabel(entry));
+      .map((entry) => getToolLabel(entry, t));
     return toolNames.length === 0
-      ? "Planning the next step."
-      : "Choosing the best way to help.";
+      ? t("activity.planningNext")
+      : t("activity.choosingBest");
   }
   if (lower.includes("found requested data")) {
     return tool === "getSlideAtIndex"
-      ? "Found the requested slide details."
-      : "Found the requested information.";
+      ? t("activity.foundSlideDetails")
+      : t("activity.foundInfo");
   }
   return trimmed;
 };
@@ -163,15 +175,14 @@ export const stripBackendContextFromUserMessage = (rawMessage: string) => {
 const humanActivityForTool = (
   tool: string | undefined,
   state: "start" | "success",
+  t: Translator,
 ) => {
   const isDone = state === "success";
   switch (tool) {
     case "searchSlide":
-      return isDone
-        ? "Found the relevant content."
-        : "Looking through the content.";
+      return isDone ? t("activity.act.searchDone") : t("activity.act.searchStart");
     case "getSlideAtIndex":
-      return isDone ? "Checked the slide." : "Checking the slide.";
+      return isDone ? t("activity.act.readDone") : t("activity.act.readStart");
     case "addNewSlide":
     case "addNewSlideLayout":
     case "updateElement":
@@ -181,30 +192,27 @@ const humanActivityForTool = (
     case "createComponent":
     case "updateSlide":
     case "saveSlide":
-      return isDone ? "Applied the change." : "Applying the change.";
+      return isDone ? t("activity.act.applyDone") : t("activity.act.applyStart");
     case "deleteComponent":
     case "deleteElement":
     case "deleteSlide":
-      return isDone
-        ? "Removed the selected item."
-        : "Removing the selected item.";
+      return isDone ? t("activity.act.removeDone") : t("activity.act.removeStart");
     case "generateAssets":
-      return isDone
-        ? "Prepared the visual assets."
-        : "Preparing visual assets.";
+      return isDone ? t("activity.act.assetsDone") : t("activity.act.assetsStart");
     case "setPresentationTheme":
-      return isDone ? "Updated the theme." : "Updating the theme.";
+      return isDone ? t("activity.act.themeDone") : t("activity.act.themeStart");
     default:
-      return isDone ? "Finished that step." : "Working on it.";
+      return isDone ? t("activity.act.defaultDone") : t("activity.act.defaultStart");
   }
 };
 
 export const formatTraceActivity = (
   trace: ChatStreamTrace,
+  t: Translator,
 ): Omit<AssistantActivity, "id"> | null => {
   if (typeof trace.message === "string" && trace.message.trim().length > 0) {
     return {
-      label: humanizeTraceMessage(trace.message, trace.tool),
+      label: humanizeTraceMessage(trace.message, trace.tool, t),
       kind: trace.kind,
       round: trace.round,
       tool: trace.tool,
@@ -220,7 +228,7 @@ export const formatTraceActivity = (
   }
   if (trace.tool && trace.status === "start") {
     return {
-      label: humanActivityForTool(trace.tool, "start"),
+      label: humanActivityForTool(trace.tool, "start", t),
       kind: trace.kind,
       round: trace.round,
       tool: trace.tool,
@@ -229,7 +237,7 @@ export const formatTraceActivity = (
   }
   if (trace.tool && trace.status === "success") {
     return {
-      label: humanActivityForTool(trace.tool, "success"),
+      label: humanActivityForTool(trace.tool, "success", t),
       kind: trace.kind,
       round: trace.round,
       tool: trace.tool,
@@ -238,7 +246,7 @@ export const formatTraceActivity = (
   }
   if (trace.tool && trace.status === "error") {
     return {
-      label: "I could not finish that step.",
+      label: t("activity.couldNotFinish"),
       kind: trace.kind,
       round: trace.round,
       tool: trace.tool,
@@ -247,7 +255,7 @@ export const formatTraceActivity = (
   }
   if (trace.kind === "tool_plan" && Array.isArray(trace.tools) && trace.tools.length) {
     return {
-      label: "Planning the next step.",
+      label: t("activity.planningNext"),
       kind: trace.kind,
       round: trace.round,
       state: "info",

@@ -73,15 +73,15 @@ import {
 } from "@/store/slices/presentationGeneration";
 
 import {
-  editorQuickPrompts,
+  getEditorQuickPrompts,
   getSelectedTextModel,
-  outlineEditorQuickPrompts,
-  outlineQuickPromptGroups,
-  outlineQuickPrompts,
-  presentationQuickPrompts,
-  quickPromptGroups,
-  suggestions,
-  templateV2QuickPrompts,
+  getOutlineEditorQuickPrompts,
+  getOutlineQuickPromptGroups,
+  getOutlineQuickPrompts,
+  getPresentationQuickPrompts,
+  getQuickPromptGroups,
+  getSuggestions,
+  getTemplateV2QuickPrompts,
 } from "./chat/chat-prompts";
 import { presentationChatAdapter } from "./chat/chat-adapter";
 import type {
@@ -515,6 +515,14 @@ const Chat = ({
     LLM_PROVIDERS[llmConfig.LLM || "openai"]?.label ||
     llmConfig.LLM ||
     t("aiModel");
+  const suggestions = getSuggestions(t);
+  const outlineQuickPrompts = getOutlineQuickPrompts(t);
+  const presentationQuickPrompts = getPresentationQuickPrompts(t);
+  const templateV2QuickPrompts = getTemplateV2QuickPrompts(t);
+  const editorQuickPrompts = getEditorQuickPrompts(t);
+  const outlineEditorQuickPrompts = getOutlineEditorQuickPrompts(t);
+  const quickPromptGroups = getQuickPromptGroups(t);
+  const outlineQuickPromptGroups = getOutlineQuickPromptGroups(t);
   const chatHtmlSelection = useSelector(
     (state: RootState) => state.presentationGeneration.chatHtmlSelection,
   );
@@ -1843,7 +1851,7 @@ const Chat = ({
             if (trace.status === "start") {
               markChatMutationStarted(trace.tool);
             }
-            const traceActivity = formatTraceActivity(trace);
+            const traceActivity = formatTraceActivity(trace, t);
             if (!traceActivity) {
               return;
             }

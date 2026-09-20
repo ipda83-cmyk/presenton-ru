@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 import type { LLMConfig } from "@/types/llm_config";
 
-export const suggestions: {
+export const getSuggestions = (
+  t: (key: string) => string,
+): {
   id: string;
   icon: ReactNode;
   suggestion: string;
-}[] = [
+}[] => [
   {
     id: "generate",
     icon: (
@@ -39,7 +41,7 @@ export const suggestions: {
         </defs>
       </svg>
     ),
-    suggestion: "Generate a full presentation from my topic",
+    suggestion: t("prompts.genFull"),
   },
   {
     id: "improve",
@@ -71,7 +73,7 @@ export const suggestions: {
         </defs>
       </svg>
     ),
-    suggestion: "Improve this slide content",
+    suggestion: t("prompts.improveSlide"),
   },
   {
     id: "rewrite",
@@ -86,7 +88,7 @@ export const suggestions: {
         />
       </svg>
     ),
-    suggestion: "Rewrite this content professionally",
+    suggestion: t("prompts.rewritePro"),
   },
   {
     id: "notes",
@@ -98,98 +100,98 @@ export const suggestions: {
         <path d="M4 8.5V7" stroke="#E17100" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     ),
-    suggestion: "Add speaker notes to this slide",
+    suggestion: t("prompts.addNotesThis"),
   },
 ];
 
-export const outlineQuickPrompts = [
-  "Expand outline",
-  "Shorten outline",
-  "Reorder sections",
-  "Merge similar slides",
-  "Split large sections",
-  "Improve conclusion",
-  "Improve introduction",
+export const getOutlineQuickPrompts = (t: (key: string) => string) => [
+  t("prompts.expandOutline"),
+  t("prompts.shortenOutline"),
+  t("prompts.reorderSections"),
+  t("prompts.mergeSimilar"),
+  t("prompts.splitLarge"),
+  t("prompts.improveConclusion"),
+  t("prompts.improveIntro"),
 ];
 
-export const presentationQuickPrompts = [
-  "Create an executive summary",
-  "Strengthen the story flow",
-  "Add data and citations",
-  "Create speaker notes",
+export const getPresentationQuickPrompts = (t: (key: string) => string) => [
+  t("prompts.execSummary"),
+  t("prompts.strengthenFlow"),
+  t("prompts.addDataCitations"),
+  t("prompts.createNotes"),
 ];
 
-export const templateV2QuickPrompts = [
-  "Improve this slide's layout",
-  "Rewrite this slide for executives",
-  "Add a supporting visual",
-  "Make the deck visually consistent",
-  "Add data and source citations",
-  "Create speaker notes for this slide",
+export const getTemplateV2QuickPrompts = (t: (key: string) => string) => [
+  t("prompts.improveThisLayout"),
+  t("prompts.rewriteExecThis"),
+  t("prompts.addVisual"),
+  t("prompts.makeConsistentVisual"),
+  t("prompts.addDataSourceCitations"),
+  t("prompts.createNotesThis"),
 ];
 
-export const editorQuickPrompts = [
-  "Rewrite for executives",
-  "Improve slide layout",
-  "Add data & citations",
-  "Create speaker notes",
-  "Make the deck consistent",
+export const getEditorQuickPrompts = (t: (key: string) => string) => [
+  t("prompts.rewriteExec"),
+  t("prompts.improveLayout"),
+  t("prompts.addDataCitations"),
+  t("prompts.createNotes"),
+  t("prompts.makeConsistent"),
 ];
 
-export const outlineEditorQuickPrompts = [
-  "Strengthen the story flow",
-  "Make the outline concise",
-  "Reorder the sections",
-  "Merge similar slides",
-  "Improve the conclusion",
+export const getOutlineEditorQuickPrompts = (t: (key: string) => string) => [
+  t("prompts.strengthenFlow"),
+  t("prompts.outlineConcise"),
+  t("prompts.reorderTheSections"),
+  t("prompts.mergeSimilar"),
+  t("prompts.improveTheConclusion"),
 ];
 
-export const quickPromptGroups = [
+export const getQuickPromptGroups = (t: (key: string) => string) => [
   {
-    label: "Popular",
+    label: t("pgroup.popular"),
     prompts: [
-      "Make it shorter",
-      "Make this smaller",
-      "Generate a new image and replace this one",
+      t("prompts.makeShorter"),
+      t("prompts.makeSmaller"),
+      t("prompts.genNewImage"),
     ],
   },
   {
-    label: "Add Data",
-    prompts: ["Add data and citations", "Add a chart", "Add a table"],
+    label: t("pgroup.addData"),
+    prompts: [t("prompts.addDataCitations"), t("prompts.addChart"), t("prompts.addTable")],
   },
   {
-    label: "Add Visuals",
+    label: t("pgroup.addVisuals"),
     prompts: [
-      "Generate a new image and replace this one",
-      "Add a chart",
-      "Add a table",
+      t("prompts.genNewImage"),
+      t("prompts.addChart"),
+      t("prompts.addTable"),
     ],
   },
 ];
 
-export const outlineQuickPromptGroups = [
+export const getOutlineQuickPromptGroups = (t: (key: string) => string) => [
   {
-    label: "Popular",
+    label: t("pgroup.popular"),
     prompts: [
-      "Make the outline shorter",
-      "Expand the outline",
-      "Strengthen the story flow",
+      t("prompts.outlineShorter"),
+      t("prompts.expandTheOutline"),
+      t("prompts.strengthenFlow"),
     ],
   },
   {
-    label: "Structure",
+    label: t("pgroup.structure"),
     prompts: [
-      "Reorder the sections",
-      "Merge similar slides",
-      "Split large sections",
+      t("prompts.reorderTheSections"),
+      t("prompts.mergeSimilar"),
+      t("prompts.splitLarge"),
     ],
   },
   {
-    label: "Refine Content",
+    label: t("pgroup.refine"),
     prompts: [
-      "Rewrite for executives",
-      "Improve the introduction",
-      "Improve the conclusion",
+      t("prompts.rewriteExec"),
+      t("prompts.improveTheIntro"),
+      t("prompts.improveTheConclusion"),
     ],
   },
 ];
