@@ -29,6 +29,7 @@ import React, {
 } from "react";
 import Image from "next/image";
 import { notify } from "@/components/ui/sonner";
+import { useTranslations } from "next-intl";
 import { useDispatch, useSelector } from "react-redux";
 import MarkdownRenderer from "@/components/MarkDownRender";
 import { ImagesApi } from "../../services/api/images";
@@ -206,17 +207,18 @@ const buildMessageContextTags = ({
 
 const ContextTags = ({
   tags,
-  ariaLabel = "Current editor selection",
+  ariaLabel,
 }: {
   tags: DisplayContextTag[];
   ariaLabel?: string;
 }) => {
+  const t = useTranslations("chat");
   if (tags.length === 0) return null;
 
   return (
     <div
       className="mb-2 flex max-w-full items-center gap-1.5 overflow-hidden"
-      aria-label={ariaLabel}
+      aria-label={ariaLabel ?? t("currentSelection")}
     >
       {tags.map((tag) => (
         <span
@@ -236,8 +238,8 @@ const ContextTags = ({
               type="button"
               onClick={tag.onRemove}
               className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[#8069C5] transition-colors hover:bg-[#E4DFFF] hover:text-[#5235A8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]/40"
-              aria-label={`Remove ${tag.label} from context`}
-              title={`Remove ${tag.label} from context`}
+              aria-label={t("removeFromContext", { label: tag.label })}
+              title={t("removeFromContext", { label: tag.label })}
             >
               <X className="h-3 w-3" />
             </button>
@@ -286,14 +288,17 @@ const CONVERSATION_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
   timeZone: "UTC",
 });
 
-const getConversationTitle = (conversation: ChatConversationListItem) => {
+const getConversationTitle = (
+  conversation: ChatConversationListItem,
+  t: (key: string) => string,
+) => {
   if (conversation.title?.trim()) return conversation.title;
   const preview = stripBackendContextFromUserMessage(
     conversation.last_message_preview ?? "",
   )
     .replace(/\s+/g, " ")
     .trim();
-  if (!preview) return "Untitled conversation";
+  if (!preview) return t("untitled");
   return preview.length > 54 ? `${preview.slice(0, 54).trimEnd()}…` : preview;
 };
 
@@ -326,7 +331,9 @@ const ConversationControls = ({
   onSelect: (conversationId: string) => void;
   onDelete: (conversationId: string) => void;
   onNewChat: () => void;
-}) => (
+}) => {
+  const t = useTranslations("chat");
+  return (
   <div className="flex items-center gap-1.5">
     <Popover open={isOpen} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
@@ -334,11 +341,11 @@ const ConversationControls = ({
           type="button"
           disabled={isBusy}
           className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#E5E5E8] bg-white px-2.5 font-manrope text-xs font-medium text-[#55555F] shadow-sm transition-colors hover:border-[#D7D7DC] hover:bg-[#F7F7F8] hover:text-[#252529] disabled:cursor-not-allowed disabled:opacity-50"
-          aria-label="Open saved chats"
-          title="Saved chats"
+          aria-label={t("openSavedChats")}
+          title={t("savedChats")}
         >
           <History className="h-3.5 w-3.5" />
-          Chats
+          {t("chats")}
           <ChevronDown className="h-3 w-3" />
         </button>
       </PopoverTrigger>
@@ -351,10 +358,10 @@ const ConversationControls = ({
         <div className="flex items-center justify-between px-2 pb-2 pt-1">
           <div>
             <p className="font-manrope text-xs font-semibold text-[#252529]">
-              Conversations
+              {t("conversations")}
             </p>
             <p className="mt-0.5 font-manrope text-[10px] text-[#98A2B3]">
-              {conversations.length} saved
+              {t("savedCount", { count: conversations.length })}
             </p>
           </div>
           <button
@@ -364,15 +371,15 @@ const ConversationControls = ({
             className="inline-flex h-7 items-center gap-1 rounded-full bg-[#F4F3FF] px-2.5 font-manrope text-[11px] font-semibold text-[#6941C6] transition-colors hover:bg-[#EBE9FE] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Plus className="h-3 w-3" />
-            New
+            {t("new")}
           </button>
         </div>
         <div className="max-h-[320px] space-y-1 overflow-y-auto overscroll-contain pr-0.5 [scrollbar-color:#D7D9DF_transparent] [scrollbar-width:thin]">
           {conversations.length === 0 ? (
             <div className="rounded-[8px] bg-[#FAFAFA] px-3 py-5 text-center font-manrope text-[11px] leading-4 text-[#98A2B3]">
-              No saved conversations yet.
+              {t("noSavedTitle")}
               <br />
-              Start a new chat to create one.
+              {t("noSavedHint")}
             </div>
           ) : (
             conversations.map((conversation) => {
@@ -405,7 +412,7 @@ const ConversationControls = ({
                         isActive ? "text-[#6941C6]" : "text-[#344054]",
                       )}
                     >
-                      {getConversationTitle(conversation)}
+                      {getConversationTitle(conversation, t)}
                     </span>
                     <span className="mt-0.5 flex items-center gap-1.5 font-mono text-[9px] leading-3 text-[#98A2B3]">
                       <span className="truncate">
@@ -426,8 +433,8 @@ const ConversationControls = ({
                         disabled={isBusy || isDeleting}
                         onClick={(event) => event.stopPropagation()}
                         className="mr-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[#98A2B3] opacity-70 transition-colors hover:bg-white hover:text-[#344054] group-hover:opacity-100 data-[state=open]:bg-white data-[state=open]:opacity-100 disabled:cursor-not-allowed disabled:opacity-40"
-                        aria-label={`Conversation options for ${getConversationTitle(conversation)}`}
-                        title="Conversation options"
+                        aria-label={t("conversationOptions", { title: getConversationTitle(conversation, t) })}
+                        title={t("conversationOptionsShort")}
                       >
                         {isDeleting ? (
                           <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -447,7 +454,7 @@ const ConversationControls = ({
                         className="cursor-pointer rounded-[6px] px-2 py-2 font-manrope text-xs font-medium text-[#D92D20] focus:bg-[#FEF3F2] focus:text-[#B42318]"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                        Delete
+                        {t("delete")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -466,14 +473,15 @@ const ConversationControls = ({
         "inline-flex h-8 items-center justify-center gap-1.5 rounded-full border border-[#E5E5E8] bg-white font-manrope text-xs font-medium text-[#55555F] shadow-sm transition-colors hover:border-[#D7D7DC] hover:bg-[#F7F7F8] hover:text-[#252529] disabled:cursor-not-allowed disabled:opacity-50",
         showNewChatLabel ? "px-3" : "w-8",
       )}
-      aria-label="Start a new chat"
-      title="Start a new chat"
+      aria-label={t("startNewChat")}
+      title={t("startNewChat")}
     >
       <Plus className="h-3.5 w-3.5" />
-      {showNewChatLabel ? "New chat" : null}
+      {showNewChatLabel ? t("newChat") : null}
     </button>
   </div>
-);
+  );
+};
 
 const Chat = ({
   presentationId,
@@ -498,6 +506,7 @@ const Chat = ({
   onFollowModeChange,
 }: ChatProps) => {
   const dispatch = useDispatch<AppDispatch>();
+  const t = useTranslations("chat");
   const llmConfig = useSelector(
     (state: RootState) => state.userConfig.llm_config,
   );
@@ -505,7 +514,7 @@ const Chat = ({
     getSelectedTextModel(llmConfig)?.trim() ||
     LLM_PROVIDERS[llmConfig.LLM || "openai"]?.label ||
     llmConfig.LLM ||
-    "AI model";
+    t("aiModel");
   const chatHtmlSelection = useSelector(
     (state: RootState) => state.presentationGeneration.chatHtmlSelection,
   );
@@ -767,8 +776,8 @@ const Chat = ({
         const detail =
           error instanceof Error
             ? error.message
-            : "Could not load previous chat";
-        notify.error("Could not load chat", detail);
+            : t("couldNotLoadBody");
+        notify.error(t("couldNotLoadTitle"), detail);
       } finally {
         if (!cancelled) {
           setIsHistoryLoading(false);
@@ -1163,10 +1172,10 @@ const Chat = ({
       const rows = Array.isArray(data?.messages) ? data.messages : [];
       if (rows.length > 0 && !historyMatchesVariant(rows, variant)) {
         notify.error(
-          "Could not open chat",
+          t("couldNotOpenTitle"),
           variant === "outline"
-            ? "This conversation belongs to the presentation editor."
-            : "This conversation belongs to the outline editor.",
+            ? t("belongsToPresentation")
+            : t("belongsToOutline"),
         );
         return;
       }
@@ -1196,8 +1205,8 @@ const Chat = ({
       setIsConversationListOpen(false);
     } catch (error) {
       notify.error(
-        "Could not open chat",
-        error instanceof Error ? error.message : "Please try again.",
+        t("couldNotOpenTitle"),
+        error instanceof Error ? error.message : t("tryAgain"),
       );
     } finally {
       setIsHistoryLoading(false);
@@ -1223,11 +1232,11 @@ const Chat = ({
       if (conversationIdToDelete === conversationId) {
         startNewConversation();
       }
-      notify.success("Conversation deleted");
+      notify.success(t("conversationDeleted"));
     } catch (error) {
       notify.error(
-        "Could not delete chat",
-        error instanceof Error ? error.message : "Please try again.",
+        t("couldNotDeleteTitle"),
+        error instanceof Error ? error.message : t("tryAgain"),
       );
     } finally {
       setDeletingConversationId(null);
@@ -1282,13 +1291,13 @@ const Chat = ({
   ) => {
     if (applyingEditPreviewMessageId) return;
     if (!presentationData || typeof presentationData !== "object") {
-      notify.error("Preview unavailable", "The presentation is not ready yet.");
+      notify.error(t("previewUnavailableTitle"), t("presentationNotReady"));
       return;
     }
 
     const currentPresentation = presentationData as Record<string, unknown>;
     if (!Array.isArray(currentPresentation.slides)) {
-      notify.error("Preview unavailable", "No slide data is available.");
+      notify.error(t("previewUnavailableTitle"), t("noSlideData"));
       return;
     }
 
@@ -1330,9 +1339,8 @@ const Chat = ({
       }
       await onPresentationChanged?.();
       notify.success(
-        version === "original" ? "Original restored" : "Changes restored",
-        `${preview.slideIndices.length} ${preview.slideIndices.length === 1 ? "slide" : "slides"
-        } updated.`,
+        version === "original" ? t("originalRestored") : t("changesRestored"),
+        t("slidesUpdated", { count: preview.slideIndices.length }),
       );
     } catch (error) {
       dispatch(setPresentationData(presentationData as PresentationData));
@@ -1341,8 +1349,8 @@ const Chat = ({
         [messageId]: previousVersion,
       }));
       notify.error(
-        "Could not restore slides",
-        error instanceof Error ? error.message : "Please try again.",
+        t("couldNotRestoreTitle"),
+        error instanceof Error ? error.message : t("tryAgain"),
       );
     } finally {
       onChatMutationStateChange?.(false);
@@ -1367,7 +1375,7 @@ const Chat = ({
         "Failed to refresh presentation after tool mutation:",
         error
       );
-      notify.error("Refresh failed", "Changes were saved, but refresh failed.");
+      notify.error(t("refreshFailedTitle"), t("refreshFailedSaved"));
     } finally {
       refreshInFlightRef.current = false;
       if (refreshQueuedRef.current) {
@@ -1387,7 +1395,7 @@ const Chat = ({
       await onPresentationChanged();
     } catch (error) {
       console.error("Failed to refresh presentation after chat update:", error);
-      notify.error("Refresh failed", "Chat completed, but refresh failed.");
+      notify.error(t("refreshFailedTitle"), t("refreshFailedChat"));
     }
   };
 
@@ -1485,7 +1493,7 @@ const Chat = ({
       return;
     }
     if (variant !== "template-v2") {
-      notify.info("Attachments are available in Template V2 chat.");
+      notify.info(t("attachTemplateV2Only"));
       return;
     }
 
@@ -1540,8 +1548,8 @@ const Chat = ({
       }
 
       notify.success(
-        "Attachment ready",
-        `${files.length} file${files.length === 1 ? "" : "s"} attached.`
+        t("attachmentReadyTitle"),
+        t("filesAttached", { count: files.length })
       );
       trackEvent(MixpanelEvent.AI_Assistant_Attachment_Added, {
         ...baseAnalyticsProps(),
@@ -1558,8 +1566,8 @@ const Chat = ({
         error_message: sanitizeAnalyticsError(error, "Attachment upload failed"),
       });
       notify.error(
-        "Could not attach file",
-        error instanceof Error ? error.message : "Upload failed."
+        t("couldNotAttachTitle"),
+        error instanceof Error ? error.message : t("uploadFailed")
       );
     } finally {
       setIsUploadingPastedImage(false);
@@ -1612,10 +1620,10 @@ const Chat = ({
     const outboundMessage =
       trimmedMessage ||
       (attachedDocuments.length > 0
-        ? "Use the attached document."
+        ? t("useAttachedDoc")
         : chatLinks.length > 0
-          ? "Use the provided link."
-          : "Use the pasted image.");
+          ? t("useProvidedLink")
+          : t("usePastedImage"));
 
     if (
       (!trimmedMessage && !hasAttachedContext) ||
@@ -1627,8 +1635,8 @@ const Chat = ({
 
     if (!activeResourceId) {
       notify.error(
-        `${resourceLabel.charAt(0).toUpperCase()}${resourceLabel.slice(1)} not ready`,
-        `The ${resourceLabel} is not ready yet.`
+        t("notReadyTitle"),
+        t("notReadyBody")
       );
       return;
     }
@@ -1650,8 +1658,8 @@ const Chat = ({
           error_message: sanitizeAnalyticsError(error, "Image processing failed"),
         });
         notify.error(
-          "Could not read image",
-          error instanceof Error ? error.message : "Image processing failed."
+          t("couldNotReadImageTitle"),
+          error instanceof Error ? error.message : t("imageProcessingFailed")
         );
         return;
       }
@@ -1931,7 +1939,7 @@ const Chat = ({
       }
 
       const message =
-        error instanceof Error ? error.message : "Failed to send chat message";
+        error instanceof Error ? error.message : t("sendFailed");
       const metrics = promptMetricsRef.current;
       trackEvent(MixpanelEvent.AI_Assistant_Prompt_Failed, {
         ...baseAnalyticsProps(),
@@ -1966,7 +1974,7 @@ const Chat = ({
           content: message,
         },
       ]);
-      notify.error("Chat error", message);
+      notify.error(t("chatErrorTitle"), message);
     } finally {
       setHasChatMutationStarted(false);
       if (abortControllerRef.current === streamAbortController) {
@@ -2133,8 +2141,8 @@ const Chat = ({
         total_count: nextImages.length,
       });
       notify.success(
-        "Image pasted",
-        `${nextImages.length} image${nextImages.length === 1 ? "" : "s"} ready to use.`
+        t("imagePastedTitle"),
+        t("imagesReady", { count: nextImages.length })
       );
     } catch (error) {
       trackEvent(MixpanelEvent.AI_Assistant_Attachment_Failed, {
@@ -2144,8 +2152,8 @@ const Chat = ({
         error_message: sanitizeAnalyticsError(error, "Image upload failed"),
       });
       notify.error(
-        "Could not paste image",
-        error instanceof Error ? error.message : "Image upload failed."
+        t("couldNotPasteImageTitle"),
+        error instanceof Error ? error.message : t("uploadFailed")
       );
     } finally {
       setIsUploadingPastedImage(false);
@@ -2196,7 +2204,7 @@ const Chat = ({
     event.stopPropagation();
     setIsDraggingAttachment(false);
     if (files.length === 0) {
-      notify.warning("Drop unavailable", "Use the attach button for this file.");
+      notify.warning(t("dropUnavailableTitle"), t("dropUnavailableBody"));
       return;
     }
     void processTemplateV2Files(files, "drop");
@@ -2283,7 +2291,7 @@ const Chat = ({
           {isHistoryLoading && messages.length === 0 ? (
             <div className="flex h-full items-center justify-center text-xs text-[#999999]">
               <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-              Loading chat…
+              {t("loadingChat")}
             </div>
           ) : messages.length > 0 ? (
             <div className="flex flex-col gap-0">
@@ -2306,7 +2314,7 @@ const Chat = ({
                         {message.contextTags?.length ? (
                           <ContextTags
                             tags={message.contextTags}
-                            ariaLabel="Context sent with prompt"
+                            ariaLabel={t("contextSent")}
                           />
                         ) : null}
                         <div className="flex min-h-[30px] w-fit max-w-full items-center gap-2.5 rounded-[8px] bg-[#F3F4F7] px-3 py-1.5 font-manrope text-[13px] font-medium leading-[normal] text-[#333333] [overflow-wrap:anywhere] [word-break:break-word]">
@@ -2407,11 +2415,11 @@ const Chat = ({
                               <span className="flex h-[14px] w-[14px] items-start justify-center pt-0.5">
                                 <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[#E6E6E6]" />
                               </span>
-                              <span>Understanding</span>
+                              <span>{t("understanding")}</span>
                               <ActivityStatusIcon
                                 activity={{
                                   id: "fallback",
-                                  label: "Understanding",
+                                  label: t("understanding"),
                                   state: "running",
                                 }}
                               />
@@ -2497,11 +2505,11 @@ const Chat = ({
           ) : (
             <div className="flex h-full items-center justify-center px-6 pb-4">
               <h3 className="-translate-y-2 text-center text-[22px] font-normal leading-[1.12] tracking-[-0.66px] text-[#4A4A4A]">
-                {isOutlineVariant ? "How can I improve" : "What can I do"}
+                {isOutlineVariant ? t("emptyImproveL1") : t("emptyDoL1")}
                 <br />
                 {isOutlineVariant
-                  ? "your outline today?"
-                  : "for your deck today?"}
+                  ? t("emptyImproveL2")
+                  : t("emptyDoL2")}
               </h3>
             </div>
           )}
@@ -2554,7 +2562,7 @@ const Chat = ({
                             previous.filter((item) => item.id !== link.id),
                           )
                         }
-                        aria-label="Remove link"
+                        aria-label={t("removeLink")}
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -2574,7 +2582,7 @@ const Chat = ({
                             previous.filter((item) => item.id !== image.id),
                           )
                         }
-                        aria-label="Remove pasted image"
+                        aria-label={t("removePastedImage")}
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -2594,7 +2602,7 @@ const Chat = ({
                             previous.filter((item) => item.id !== document.id),
                           )
                         }
-                        aria-label="Remove attached document"
+                        aria-label={t("removeAttachedDoc")}
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -2602,7 +2610,7 @@ const Chat = ({
                   ))}
                   {isUploadingPastedImage && (
                     <span className="inline-flex items-center gap-1 text-[10px] text-[#808080]">
-                      <Loader2 className="h-3 w-3 animate-spin" /> Processing
+                      <Loader2 className="h-3 w-3 animate-spin" /> {t("processing")}
                     </span>
                   )}
                 </div>
@@ -2625,8 +2633,8 @@ const Chat = ({
               onKeyDown={handleKeyDown}
               placeholder={
                 isOutlineVariant
-                  ? "Ask about your outline.\nType / to get Quick prompts."
-                  : "Ask anything.\nType / to get Quick prompts."
+                  ? t("phOutline")
+                  : t("phDefault")
               }
               aria-invalid={Boolean(errorMessage)}
             />
@@ -2639,7 +2647,7 @@ const Chat = ({
                     onClick={() => fileInputRef.current?.click()}
                     disabled={!isTemplateV2Variant || chatInputDisabled}
                     className="inline-flex h-[14px] w-[14px] items-center justify-center disabled:cursor-not-allowed disabled:opacity-40"
-                    aria-label="Attach files"
+                    aria-label={t("attachFiles")}
                   >
                     <Plus className="h-[14px] w-[14px] text-black" />
                   </button>
@@ -2647,8 +2655,8 @@ const Chat = ({
                   <ToolTip
                     content={
                       isFollowAgentEnabled
-                        ? "Disable follow AI mode"
-                        : "Enable follow AI mode"
+                        ? t("disableFollow")
+                        : t("enableFollow")
                     }
                   >
                     <button
@@ -2660,8 +2668,8 @@ const Chat = ({
                       className="inline-flex h-[14px] w-[14px] items-center justify-center disabled:cursor-not-allowed disabled:opacity-40"
                       aria-label={
                         isFollowAgentEnabled
-                          ? "Disable follow AI mode"
-                          : "Enable follow AI mode"
+                          ? t("disableFollow")
+                          : t("enableFollow")
                       }
                     >
                       <svg
@@ -2698,7 +2706,7 @@ const Chat = ({
                       type="button"
                       disabled={chatInputDisabled}
                       className="inline-flex h-[28px] items-center gap-1.5 rounded-full border border-[#EDEEEF] bg-white px-[11px] font-syne text-xs font-medium tracking-[0.16px] text-[#191919] transition-colors hover:bg-[#FAFAFF] disabled:cursor-not-allowed disabled:opacity-40"
-                      aria-label="Open quick prompts"
+                      aria-label={t("openQuickPrompts")}
                     >
                       <Image
                         src="/ai-star.svg"
@@ -2707,7 +2715,7 @@ const Chat = ({
                         height={14}
                         className="h-[14px] w-[13px] shrink-0"
                       />
-                      Prompt
+                      {t("promptBtn")}
                     </button>
                   </PopoverTrigger>
                   <PopoverContent
@@ -2733,7 +2741,7 @@ const Chat = ({
                   type="button"
                   onClick={stopStreaming}
                   className="flex h-8 w-10 shrink-0 items-center justify-center rounded-full bg-[#EDEEEF] text-[#191919]"
-                  aria-label="Stop chat response"
+                  aria-label={t("stopResponse")}
                 >
                   <Square className="h-3 w-3 fill-current" />
                 </button>
@@ -2754,7 +2762,7 @@ const Chat = ({
                       ? "linear-gradient(270deg, #D5CAFC 2.4%, #E3D2EB 27.88%, #F4DCD3 69.23%, #FDE4C2 100%)"
                       : "#EDEEEF",
                   }}
-                  aria-label="Send prompt"
+                  aria-label={t("sendPrompt")}
                 >
                   <ArrowUp className="h-4 w-4" />
                 </button>
@@ -2815,12 +2823,12 @@ const Chat = ({
                   fill="#7A5AF8"
                 />
               </svg>
-              AI Assistant
+              {t("aiAssistant")}
             </h4>
             {isSending && (
               <span className="inline-flex items-center gap-1 rounded-full bg-[#F4F3FF] px-2 py-0.5 text-[10px] font-medium text-[#6941C6]">
                 <Loader2 className="h-2.5 w-2.5 animate-spin" />
-                Live
+                {t("live")}
               </span>
             )}
           </div>
@@ -2853,20 +2861,20 @@ const Chat = ({
         {isHistoryLoading && messages.length === 0 ? (
           <div className="flex items-center justify-center py-8 text-sm text-[#99A1AF]">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Loading chat…
+            {t("loadingChat")}
           </div>
         ) : showEditorEmptyState ? (
           <h3 className="-translate-y-7 text-center text-[clamp(20px,1.55vw,24px)] font-normal leading-[1.08] tracking-[-0.72px] text-[#4A4A4A]">
-            What can I do
+            {t("emptyDoL1")}
             <br />
-            for your deck today?
+            {t("emptyDoL2")}
           </h3>
         ) : messages.length === 0 ? (
           <>
             {isOutlineVariant ? (
               <div>
                 <h4 className="mb-2 text-[10px] font-normal leading-[15px] tracking-[0.367px] text-[#99A1AF]">
-                  QUICK PROMPTS
+                  {t("quickPrompts")}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {outlineQuickPrompts.map((prompt) => (
@@ -2886,7 +2894,7 @@ const Chat = ({
             ) : isTemplateV2Variant ? (
               <div>
                 <h4 className="mb-2 text-[10px] font-normal leading-[15px] tracking-[0.367px] text-[#99A1AF]">
-                  QUICK PROMPTS
+                  {t("quickPrompts")}
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {templateV2QuickPrompts.map((prompt) => (
@@ -2907,7 +2915,7 @@ const Chat = ({
               <>
                 <div>
                   <h4 className="mb-2 text-[10px] font-normal leading-[15px] tracking-[0.367px] text-[#99A1AF]">
-                    SUGGESTIONS
+                    {t("suggestionsHeading")}
                   </h4>
                   <div className="flex flex-col gap-1.5">
                     {suggestions.map((suggestion) => (
@@ -2974,14 +2982,14 @@ const Chat = ({
                           className="rounded-[8px]"
                         />
                         <p className="px-1 pb-0.5 pt-1.5 text-[10px] font-medium text-[#667085]">
-                          Selected layout
+                          {t("selectedLayout")}
                         </p>
                       </div>
                     )}
                     {message.contextTags?.length ? (
                       <ContextTags
                         tags={message.contextTags}
-                        ariaLabel="Context sent with prompt"
+                        ariaLabel={t("contextSent")}
                       />
                     ) : null}
                     <div className="w-fit max-w-full rounded-[18px] bg-[#7C3AED] px-4 py-3 text-[13px] font-medium leading-5 text-white shadow-sm [overflow-wrap:anywhere] [word-break:break-word]">
@@ -3024,7 +3032,7 @@ const Chat = ({
                     <div className="text-[13px] font-normal leading-6 text-[#667085]">
                       {isSending && message.role === "assistant"
                         ? message.activity?.[message.activity.length - 1]
-                          ?.label || "Working on it..."
+                          ?.label || t("workingOnIt")
                         : ""}
                     </div>
                   )}
@@ -3040,7 +3048,7 @@ const Chat = ({
                         ) : (
                           <ChevronRight className="h-3 w-3" />
                         )}
-                        <span>Thinking</span>
+                        <span>{t("thinking")}</span>
                         {message.activity.some(
                           (item) => item.state === "running"
                         ) && (
@@ -3122,8 +3130,8 @@ const Chat = ({
                       )
                     }
                     className="rounded-full p-0.5 text-[#2563EB] transition-colors hover:bg-[#DBEAFE]"
-                    aria-label="Remove link"
-                    title="Remove link"
+                    aria-label={t("removeLink")}
+                    title={t("removeLink")}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -3144,8 +3152,8 @@ const Chat = ({
                       )
                     }
                     className="rounded-full p-0.5 text-[#667085] transition-colors hover:bg-[#E4E7EC]"
-                    aria-label="Remove pasted image"
-                    title="Remove pasted image"
+                    aria-label={t("removePastedImage")}
+                    title={t("removePastedImage")}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -3166,8 +3174,8 @@ const Chat = ({
                       )
                     }
                     className="rounded-full p-0.5 text-[#667085] transition-colors hover:bg-[#E4E7EC]"
-                    aria-label="Remove attached document"
-                    title="Remove attached document"
+                    aria-label={t("removeAttachedDoc")}
+                    title={t("removeAttachedDoc")}
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -3176,7 +3184,7 @@ const Chat = ({
               {isUploadingPastedImage && (
                 <span className="inline-flex items-center gap-1.5 rounded-[8px] border border-[#EDEEEF] bg-[#F9FAFB] px-2 py-1 text-xs font-medium text-[#667085]">
                   <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
-                  Processing attachment
+                  {t("processingAttachment")}
                 </span>
               )}
             </div>
@@ -3201,12 +3209,12 @@ const Chat = ({
           onKeyDown={handleKeyDown}
           placeholder={
             isOutlineVariant
-              ? "Regenerate this outline"
+              ? t("phOutlineShort")
               : showEditorEmptyState
-                ? "Ask anything.\nType / to get Quick prompts."
+                ? t("phDefault")
                 : isTemplateV2Variant
-                  ? "Change slide 2 title"
-                  : "Improve slide design"
+                  ? t("phTemplateV2")
+                  : t("phImproveDesign")
           }
           aria-invalid={Boolean(errorMessage)}
         />
@@ -3218,11 +3226,11 @@ const Chat = ({
                 onClick={() => fileInputRef.current?.click()}
                 disabled={!isTemplateV2Variant || chatInputDisabled}
                 className="inline-flex h-[28px] items-center rounded-[64px] disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Attach files"
+                aria-label={t("attachFiles")}
                 title={
                   isTemplateV2Variant
-                    ? "Attach files"
-                    : "Attachments are available in Template V2 chat"
+                    ? t("attachFiles")
+                    : t("attachTemplateV2Title")
                 }
               >
                 <Plus className="h-3 w-3 text-black" />
@@ -3239,8 +3247,8 @@ const Chat = ({
               <ToolTip
                 content={
                   isFollowAgentEnabled
-                    ? "Disable follow AI mode"
-                    : "Enable follow AI mode"
+                    ? t("disableFollow")
+                    : t("enableFollow")
                 }
               >
                 <button
@@ -3252,13 +3260,13 @@ const Chat = ({
                   className="inline-flex h-[28px] items-center gap-1 rounded-[64px] text-[11px] font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label={
                     isFollowAgentEnabled
-                      ? "Disable follow AI mode"
-                      : "Enable follow AI mode"
+                      ? t("disableFollow")
+                      : t("enableFollow")
                   }
                   title={
                     isFollowAgentEnabled
-                      ? "Follow AI is on: auto-jump to active slide"
-                      : "Follow AI is off"
+                      ? t("followOnTip")
+                      : t("followOffTip")
                   }
                 >
                   <svg
