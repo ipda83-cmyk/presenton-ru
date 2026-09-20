@@ -224,6 +224,24 @@
     "regenerateConfirmTitle": "Пересоздать презентацию?",
     "regenerateConfirmBody": "Текущие слайды будут заменены заново сгенерированной версией, а история отмен очищена. Ваши правки могут быть потеряны.",
     "cancel": "Отмена",
-    "regenerate": "Пересоздать"
+    "regenerate": "Пересоздать",
+    "metricEstimatedTitle": "Счётчики токенов оценочные, пока провайдер не сообщит финальный расход.",
+    "metricFinalTitle": "Итоговый расход от {model}",
+    "metricSelectedModel": "выбранной модели",
+    "metricIn": "Вход",
+    "metricOut": "Выход",
+    "metricThink": "Мысли",
+    "metricThinkingPending": "Рассуждения включены; ждём расход thinking-токенов.",
+    "presentation": "Презентация",
+    "slideOfCount": "Слайд {current} из {total}",
+    "of": "из",
+    "prevSlide": "Предыдущий слайд",
+    "nextSlide": "Следующий слайд",
+    "layoutPreview": "Обзор слайдов",
+    "speakerNote": "Заметка докладчика",
+    "exitPresentation": "Выйти из показа",
+    "hide": "Скрыть",
+    "addNotesInEditor": "Добавьте заметки в редакторе",
+    "back": "Назад"
   }
 }

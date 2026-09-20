@@ -1,6 +1,7 @@
 "use client";
 
 import type { GenerationMetrics } from "@/store/slices/presentationGeneration";
+import { useTranslations } from "next-intl";
 
 const integerFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0,
@@ -21,6 +22,7 @@ export default function StreamingGenerationMetrics({
 }: {
   metrics: GenerationMetrics;
 }) {
+  const t = useTranslations("editor");
   const thinkingPending =
     metrics.supports_thinking &&
     metrics.thinking_tokens_estimated &&
@@ -32,8 +34,8 @@ export default function StreamingGenerationMetrics({
       className="hidden h-[38px] shrink-0 items-center rounded-[80px] border border-[#E4E2EB] bg-[#F6F6F9] px-3 font-syne sm:flex"
       title={
         metrics.estimated
-          ? "Live token counts are estimated until the provider reports final usage."
-          : `Final usage from ${metrics.model || "the selected model"}`
+          ? t("metricEstimatedTitle")
+          : t("metricFinalTitle", { model: metrics.model || t("metricSelectedModel") })
       }
     >
       <div className="flex items-center gap-2 text-[11px] font-semibold text-[#555766]">
@@ -44,11 +46,11 @@ export default function StreamingGenerationMetrics({
           }`}
         />
         <span className="whitespace-nowrap">
-          In {formatTokens(metrics.input_tokens, metrics.estimated)}
+          {t("metricIn")} {formatTokens(metrics.input_tokens, metrics.estimated)}
         </span>
         <span className="h-3.5 w-px bg-[#D8D8DF]" aria-hidden="true" />
         <span className="whitespace-nowrap">
-          Out {formatTokens(metrics.output_tokens, metrics.estimated)}
+          {t("metricOut")} {formatTokens(metrics.output_tokens, metrics.estimated)}
         </span>
         {metrics.supports_thinking ? (
           <>
@@ -59,11 +61,11 @@ export default function StreamingGenerationMetrics({
               }`}
               title={
                 thinkingPending
-                  ? "Reasoning is enabled; waiting for thinking-token usage."
+                  ? t("metricThinkingPending")
                   : undefined
               }
             >
-              Think{" "}
+              {t("metricThink")}{" "}
               {formatTokens(
                 metrics.thinking_tokens,
                 metrics.thinking_tokens_estimated

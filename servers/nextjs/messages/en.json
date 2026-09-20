@@ -224,6 +224,24 @@
     "regenerateConfirmTitle": "Regenerate Presentation?",
     "regenerateConfirmBody": "This will replace the current slides with a newly generated version and clear undo history. Your current edits may be lost.",
     "cancel": "Cancel",
-    "regenerate": "Regenerate"
+    "regenerate": "Regenerate",
+    "metricEstimatedTitle": "Live token counts are estimated until the provider reports final usage.",
+    "metricFinalTitle": "Final usage from {model}",
+    "metricSelectedModel": "the selected model",
+    "metricIn": "In",
+    "metricOut": "Out",
+    "metricThink": "Think",
+    "metricThinkingPending": "Reasoning is enabled; waiting for thinking-token usage.",
+    "presentation": "Presentation",
+    "slideOfCount": "Slide {current} of {total}",
+    "of": "of",
+    "prevSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "layoutPreview": "Layout preview",
+    "speakerNote": "Speaker note",
+    "exitPresentation": "Exit presentation",
+    "hide": "Hide",
+    "addNotesInEditor": "Add notes in the editor",
+    "back": "Back"
   }
 }
