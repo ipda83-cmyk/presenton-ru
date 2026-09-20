@@ -257,5 +257,15 @@
     "aiAssistant": "AI Assistant",
     "closeAiAssistant": "Close AI Assistant",
     "closeToolsPanel": "Close tools panel"
+  },
+  "chat": {
+    "assistant": "Assistant",
+    "working": "Working",
+    "selectEdits": "Select edits",
+    "changes": "{count, plural, one {# Change} other {# Changes}}",
+    "original": "Original",
+    "modified": "Modified",
+    "restoreVersion": "Restore {label} slide state",
+    "slidePreview": "{label} slide preview {index}"
   }
 }

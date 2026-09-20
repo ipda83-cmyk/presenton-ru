@@ -257,5 +257,15 @@
     "aiAssistant": "ИИ-ассистент",
     "closeAiAssistant": "Закрыть ИИ-ассистента",
     "closeToolsPanel": "Закрыть панель инструментов"
+  },
+  "chat": {
+    "assistant": "Ассистент",
+    "working": "Работаю",
+    "selectEdits": "Выберите правки",
+    "changes": "{count, plural, one {# изменение} few {# изменения} many {# изменений} other {# изменения}}",
+    "original": "Оригинал",
+    "modified": "Изменённый",
+    "restoreVersion": "Восстановить версию: {label}",
+    "slidePreview": "Превью слайда «{label}» {index}"
   }
 }

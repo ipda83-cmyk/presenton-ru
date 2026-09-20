@@ -1,4 +1,7 @@
+"use client";
+
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import SmartHtmlSlide from "../../../components/SmartHtmlSlide";
@@ -25,23 +28,27 @@ const AssistantSparkleIcon = ({ size = 14 }: { size?: number }) => (
   </svg>
 );
 
-export const AssistantMarker = () => (
-  <div className="mb-2 flex items-center gap-1.5 text-[#8A8F98]">
-    <AssistantSparkleIcon size={14} />
-    <span className="text-[11px] font-medium leading-4">Assistant</span>
-  </div>
-);
+export const AssistantMarker = () => {
+  const t = useTranslations("chat");
+  return (
+    <div className="mb-2 flex items-center gap-1.5 text-[#8A8F98]">
+      <AssistantSparkleIcon size={14} />
+      <span className="text-[11px] font-medium leading-4">{t("assistant")}</span>
+    </div>
+  );
+};
 
 export const ActivityStatusIcon = ({
   activity,
 }: {
   activity: AssistantActivity;
 }) => {
+  const t = useTranslations("chat");
   if (activity.state === "running") {
     return (
       <span
         className="activity-flow-dots relative mt-1 h-[9px] w-[22px] shrink-0"
-        aria-label="Working"
+        aria-label={t("working")}
       >
         <span className="absolute left-0 top-[1.5px] h-[6px] w-[6px] rounded-full bg-[#C3C3CB]" />
         <span className="absolute left-[8px] top-[1.5px] h-[6px] w-[6px] rounded-full bg-[#C3C3CB]" />
@@ -103,16 +110,17 @@ export const EditComparisonPreview = ({
   isApplying: boolean;
   onSelectVersion: (version: "original" | "modified") => void;
 }) => {
+  const t = useTranslations("chat");
   if (!preview.modifiedSlides?.length) return null;
 
   const cards = [
     {
-      label: "Original",
+      label: t("original"),
       slides: preview.originalSlides,
       version: "original" as const,
     },
     {
-      label: "Modified",
+      label: t("modified"),
       slides: preview.modifiedSlides,
       version: "modified" as const,
     },
@@ -132,7 +140,7 @@ export const EditComparisonPreview = ({
           <SmartHtmlSlide
             html={htmlContent}
             fonts={fonts}
-            title={`${label} slide preview ${index + 1}`}
+            title={t("slidePreview", { label, index: index + 1 })}
           />
         </div>
       );
@@ -158,9 +166,9 @@ export const EditComparisonPreview = ({
           height={14}
           className="h-[14px] w-[14px] shrink-0"
         />
-        <span className="font-semibold text-[#191919]">Select edits</span>
+        <span className="font-semibold text-[#191919]">{t("selectEdits")}</span>
         <span className="ml-auto text-[11px] font-medium leading-[normal] text-[#7A5AF8]">
-          {preview.changeCount} {preview.changeCount === 1 ? "Change" : "Changes"}
+          {t("changes", { count: preview.changeCount })}
         </span>
       </div>
       <div className="grid grid-cols-2 gap-[5px]">
@@ -177,7 +185,7 @@ export const EditComparisonPreview = ({
                 : "border-[#EDEEEF]",
             )}
             aria-pressed={selectedVersion === card.version}
-            aria-label={`Restore ${card.label.toLowerCase()} slide state`}
+            aria-label={t("restoreVersion", { label: card.label })}
           >
             <span className="mb-[7px] flex items-center justify-center gap-1 truncate text-center text-[13px] font-medium leading-[normal] text-[#191919]">
               {isApplying && selectedVersion === card.version && (
