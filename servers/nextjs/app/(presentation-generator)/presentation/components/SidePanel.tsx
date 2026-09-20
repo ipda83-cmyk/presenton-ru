@@ -26,6 +26,7 @@ import {
 import { SortableSlide } from "./SortableSlide";
 import { notify } from "@/components/ui/sonner";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import NewSlide from "./NewSlide";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
 import { SlideThumbnailCard } from "./SlideThumbnailCard";
@@ -59,6 +60,7 @@ const SidePanel = ({
   loading,
 }: SidePanelProps) => {
   const pathname = usePathname();
+  const t = useTranslations("editor");
   const [showNewSlideSelection, setShowNewSlideSelection] = useState(false);
   const thumbnailScrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -93,8 +95,8 @@ const SidePanel = ({
 
     if (presentationData.slides.length >= MAX_NUMBER_OF_SLIDES) {
       notify.warning(
-        "Slide limit reached",
-        `You can have up to ${MAX_NUMBER_OF_SLIDES} slides.`
+        t("slideLimitTitle"),
+        t("slideLimitBody", { max: MAX_NUMBER_OF_SLIDES })
       );
       return;
     }
@@ -238,7 +240,7 @@ const SidePanel = ({
   return (
     <aside
       className="relative h-full w-[165px] bg-white px-4 py-5"
-      aria-label="Presentation slides"
+      aria-label={t("slidesAside")}
     >
       <div
         className={`
@@ -314,7 +316,7 @@ const SidePanel = ({
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span className="whitespace-nowrap text-[11px] font-normal leading-normal tracking-[0.11px]">
-                  Add Slides
+                  {t("addSlides")}
                 </span>
               </button>
             </div>

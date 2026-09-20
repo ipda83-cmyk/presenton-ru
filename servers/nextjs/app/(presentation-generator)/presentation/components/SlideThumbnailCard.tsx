@@ -1,5 +1,6 @@
 import React, { forwardRef, memo, useCallback } from "react";
 import type { Slide } from "../../types/slide";
+import { useTranslations } from "next-intl";
 import { useNearViewport } from "@/app/hooks/useNearViewport";
 import { V1ContentRender } from "../../components/V1ContentRender";
 import SmartHtmlSlide from "../../components/SmartHtmlSlide";
@@ -36,6 +37,7 @@ const SlideThumbnailCardComponent = forwardRef<
     },
     ref
   ) => {
+    const t = useTranslations("editor");
     const { isNearViewport, ref: setViewportRoot } =
       useNearViewport<HTMLDivElement>({
         forceActive: selected,
@@ -104,7 +106,7 @@ const SlideThumbnailCardComponent = forwardRef<
                 fixedSize
                 fonts={fonts}
                 html={slide.html_content}
-                title={`Slide ${index + 1} thumbnail`}
+                title={t("slideThumbnail", { index: index + 1 })}
               />
             </div>
           ) : useTemplateV2HtmlPreview ? (

@@ -25,6 +25,7 @@ import {
   ShortcutKeys,
   useAppleShortcutPlatform,
 } from "@/components/slide-editor/shortcuts/ShortcutKeys";
+import { useTranslations } from "next-intl";
 
 const SECTION_ICONS: Record<EditorShortcutSection["id"], LucideIcon> = {
   selection: MousePointer2,
@@ -44,6 +45,7 @@ export function KeyboardShortcutsDialog({
   const detectedApplePlatform = useAppleShortcutPlatform();
   const [platformOverride, setPlatformOverride] = useState<boolean | null>(null);
   const applePlatform = platformOverride ?? detectedApplePlatform;
+  const t = useTranslations("editor");
 
   useEffect(() => {
     const handleShortcutHelp = (event: globalThis.KeyboardEvent) => {
@@ -84,16 +86,15 @@ export function KeyboardShortcutsDialog({
               </span>
               <div>
                 <DialogTitle className="text-[18px] font-semibold leading-6 text-[#101323]">
-                  Keyboard shortcuts
+                  {t("shortcutsTitle")}
                 </DialogTitle>
                 <DialogDescription className="mt-1 text-[13px] leading-5 text-[#667085]">
-                  Work faster while the slide canvas is active. Shortcuts pause
-                  while you are typing in a text field.
+                  {t("shortcutsDesc")}
                 </DialogDescription>
               </div>
             </div>
             <div
-              aria-label="Shortcut platform"
+              aria-label={t("shortcutsPlatform")}
               className="inline-flex w-fit shrink-0 rounded-[9px] border border-[#E1E3E9] bg-[#F6F6F9] p-1"
               role="group"
             >
@@ -163,7 +164,7 @@ export function KeyboardShortcutsDialog({
         </div>
 
         <div className="border-t border-[#EAECF0] bg-[#FCFCFD] px-6 py-3 text-center text-[11px] text-[#7A8295]">
-          Showing shortcuts for {applePlatform ? "macOS" : "Windows and Linux"}.
+          {t("shortcutsFooter", { platform: applePlatform ? "macOS" : t("platformWinLinux") })}
         </div>
       </DialogContent>
     </Dialog>

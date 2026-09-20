@@ -1,4 +1,7 @@
+"use client";
+
 import React, { memo } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import SlideScale from "../../components/PresentationRender";
@@ -49,6 +52,7 @@ const SlideContent = ({
   isStreaming = false,
   fitToContainer = false,
 }: SlideContentProps) => {
+  const t = useTranslations("editor");
   const canEditSlide = !editingDisabled && isStreaming !== true;
 
   const isTemplateV2SlideContent = isTemplateV2Slide(slide);
@@ -99,7 +103,7 @@ const SlideContent = ({
                     aria-hidden="true"
                   />
                   <span className="text-[13px] font-normal leading-[14px] tracking-[0.39px] text-[#666666]">
-                    Updating slides...
+                    {t("updatingSlides")}
                   </span>
                 </span>
               </span>
