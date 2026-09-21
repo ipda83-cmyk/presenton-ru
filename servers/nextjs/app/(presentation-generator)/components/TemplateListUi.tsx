@@ -10,6 +10,7 @@ import {
   Loader2,
   RotateCcw,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { resolveBackendAssetUrl } from "@/utils/api";
 import {
   TemplateCreateTaskResponse,
@@ -30,6 +31,7 @@ export function TemplateThumbnailPreview({
   templateName: string;
   selectionPage?: boolean;
 }) {
+  const t = useTranslations("templates");
   const resolvedThumbnail = thumbnail ? resolveBackendAssetUrl(thumbnail) : "";
 
   if (!resolvedThumbnail) {
@@ -53,7 +55,7 @@ export function TemplateThumbnailPreview({
       )}
     >
       <div
-        aria-label={`${templateName} thumbnail`}
+        aria-label={t("thumbnailAria", { name: templateName })}
         className={cn(
           "h-full w-full rounded-[12px] border border-[#EDEEEF] bg-white bg-contain bg-center bg-no-repeat",
           !selectionPage && "shadow-sm"
@@ -80,6 +82,7 @@ export const TemplateListCard = memo(function TemplateListCard({
   showArrow?: boolean;
   selectionPage?: boolean;
 }) {
+  const t = useTranslations("templates");
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (event.currentTarget.getAttribute("aria-disabled") === "true") {
@@ -113,7 +116,7 @@ export const TemplateListCard = memo(function TemplateListCard({
       role="button"
       tabIndex={0}
       aria-pressed={isSelected}
-      aria-label={`${showArrow ? "Open" : "Select"} ${template.name} template`}
+      aria-label={showArrow ? t("openTemplateAria", { name: template.name }) : t("selectTemplateAria", { name: template.name })}
       className={cn(
         "group relative overflow-hidden border bg-white shadow-none outline-none transition-all duration-200",
         selectionPage ? "rounded-[12px]" : "rounded-[22px]",
@@ -143,7 +146,7 @@ export const TemplateListCard = memo(function TemplateListCard({
       )}
       {isSuggested && (
         <span className="absolute right-3.5 top-[52px] z-50 rounded-full border border-[#DDD7FF] bg-white/95 px-2.5 py-1 font-syne text-[10px] font-semibold text-[#6553E8] shadow-sm backdrop-blur">
-          Suggested
+          {t("suggested")}
         </span>
       )}
       <TemplatePreviewStage selectionPage={selectionPage}>
@@ -227,8 +230,9 @@ export const ProcessingTemplateListCard = memo(
     onRetry?: () => void;
     retrying?: boolean;
   }) {
+    const t = useTranslations("templates");
     const failed = task.status === "error";
-    const templateName = task.data?.name?.trim() || "New template";
+    const templateName = task.data?.name?.trim() || t("newTemplateFallback");
     const createdLayouts = task.data?.created_layouts ?? 0;
     const remainingLayouts = task.data?.remaining_layouts ?? 0;
     const totalLayouts = createdLayouts + remainingLayouts;
@@ -246,15 +250,15 @@ export const ProcessingTemplateListCard = memo(
     );
     const progressLabel =
       failed
-        ? taskErrorDetail(task.error)
+        ? taskErrorDetail(task.error, t("genFailed"))
         : totalLayouts > 0
-        ? `${createdLayouts} of ${totalLayouts} layouts`
-        : "Preparing layouts";
+        ? t("layoutsProgress", { created: createdLayouts, total: totalLayouts })
+        : t("preparingLayouts");
 
     return (
       <Card
         role="group"
-        aria-label={`${templateName} template ${failed ? "generation failed" : "is processing"}`}
+        aria-label={failed ? t("processingAriaFailed", { name: templateName }) : t("processingAriaProcessing", { name: templateName })}
         className={cn(
           "relative overflow-hidden rounded-[22px] border border-[#E8E9EC] bg-white",
           failed ? "shadow-sm" : "cursor-not-allowed opacity-90 shadow-sm"
@@ -287,7 +291,7 @@ export const ProcessingTemplateListCard = memo(
             ) : (
               <span className="h-1.5 w-1.5 rounded-full bg-[#7A5AF8]" />
             )}
-            {failed ? "Failed" : `${progressPercent}%`}
+            {failed ? t("failed") : `${progressPercent}%`}
           </div>
           <div className="absolute inset-x-5 bottom-5 z-30 h-1.5 overflow-hidden rounded-full bg-white/70">
             <div
@@ -322,7 +326,7 @@ export const ProcessingTemplateListCard = memo(
               ) : (
                 <RotateCcw className="h-3.5 w-3.5" />
               )}
-              Retry
+              {t("retry")}
             </button>
           )}
         </div>
@@ -331,12 +335,12 @@ export const ProcessingTemplateListCard = memo(
   }
 );
 
-function taskErrorDetail(error: unknown): string {
+function taskErrorDetail(error: unknown, fallback: string): string {
   if (error && typeof error === "object" && "detail" in error) {
     const detail = (error as { detail?: unknown }).detail;
     if (typeof detail === "string" && detail.trim()) return detail;
   }
-  return "Template generation failed";
+  return fallback;
 }
 
 export function TemplateListSection({
@@ -370,6 +374,7 @@ export function TemplateTabSwitcher({
   tab: TemplateTab;
   onTabChange: (tab: TemplateTab) => void;
 }) {
+  const t = useTranslations("templates");
   return (
     <div className="p-1 rounded-[40px] bg-[#ffffff] w-fit border border-[#EDEEEF] flex items-center justify-center">
       <button
@@ -381,7 +386,7 @@ export function TemplateTabSwitcher({
           color: tab === "custom" ? "#5146E5" : "#3A3A3A",
         }}
       >
-        Custom
+        {t("tabCustom")}
       </button>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -403,25 +408,27 @@ export function TemplateTabSwitcher({
           color: tab === "default" ? "#5146E5" : "#3A3A3A",
         }}
       >
-        Built-in
+        {t("tabBuiltIn")}
       </button>
     </div>
   );
 }
 
-export function TemplateListLoadingState({ message = "Loading templates..." }: { message?: string }) {
+export function TemplateListLoadingState({ message }: { message?: string }) {
+  const t = useTranslations("templates");
   return (
     <div className="flex items-center justify-center py-12 font-syne">
       <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      <span className="ml-3 text-gray-600">{message}</span>
+      <span className="ml-3 text-gray-600">{message ?? t("loading")}</span>
     </div>
   );
 }
 
-export function TemplateListEmptyState({ message = "No templates available." }: { message?: string }) {
+export function TemplateListEmptyState({ message }: { message?: string }) {
+  const t = useTranslations("templates");
   return (
     <div className="flex items-center justify-center py-12 font-syne text-gray-600">
-      {message}
+      {message ?? t("noneAvailable")}
     </div>
   );
 }
