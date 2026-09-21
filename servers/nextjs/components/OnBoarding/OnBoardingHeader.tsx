@@ -1,7 +1,6 @@
 import React from 'react'
 import { MixpanelEvent, trackEvent } from '@/utils/mixpanel'
-
-const STEPS = ["Text Provider", "Image Provider", "Web Search", "Finish Setup"];
+import { useTranslations } from 'next-intl'
 
 const OnBoardingHeader = ({
     currentStep,
@@ -14,6 +13,8 @@ const OnBoardingHeader = ({
     setStep: (step: number) => void,
     setProviderStep: (step: number) => void,
 }) => {
+    const t = useTranslations('onb')
+    const STEPS = [t('stepTextProvider'), t('stepImageProvider'), t('stepWebSearch'), t('stepFinishSetup')];
     const activeStep = currentStep === 3 ? 4 : providerStep;
 
     const goToStep = (target: number) => {
