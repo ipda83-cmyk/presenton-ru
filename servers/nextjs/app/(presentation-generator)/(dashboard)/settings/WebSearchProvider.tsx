@@ -17,6 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { LLMConfig } from "@/types/llm_config";
 import { WEB_SEARCH_PROVIDERS } from "@/utils/providerConstants";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
+import { useTranslations } from "next-intl";
 
 const EXTERNAL_WEB_SEARCH_OPTIONS = [
   "exa",
@@ -37,6 +38,7 @@ const WebSearchProvider = ({
   llmConfig: LLMConfig;
   setLlmConfig: React.Dispatch<React.SetStateAction<LLMConfig>>;
 }) => {
+  const t = useTranslations("settings");
   const [showApiKey, setShowApiKey] = useState(false);
   const [openProviderSelect, setOpenProviderSelect] = useState(false);
   const isWebSearchEnabled = !!llmConfig.WEB_GROUNDING;
@@ -91,7 +93,7 @@ const WebSearchProvider = ({
               });
               setWebSearchEnabled(checked);
             }}
-            aria-label="Enable web search"
+            aria-label={t("enableWebSearch")}
           />
         </div>
         <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:gap-10">
@@ -100,16 +102,16 @@ const WebSearchProvider = ({
               <Search className="h-7 w-7 text-[#5146E5]" />
             </div>
             <h3 className="py-2.5 text-xl font-normal text-[#191919]">
-              Web Search Settings
+              {t("webSettingsTitle")}
             </h3>
             <p className="text-sm text-gray-500">
-              Choose a provider to enable web search, or leave it disabled.
+              {t("webSettingsDesc")}
             </p>
           </div>
           {isWebSearchEnabled && <div className="w-full max-w-[720px] space-y-4">
                 <div className="ml-auto w-[222px]">
                   <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Provider
+                    {t("providerLabel")}
                   </label>
                   <div className="w-full">
                     <Popover open={openProviderSelect} onOpenChange={setOpenProviderSelect}>
@@ -123,16 +125,16 @@ const WebSearchProvider = ({
                           <span className="truncate text-sm font-medium text-gray-900">
                             {selected
                               ? WEB_SEARCH_PROVIDERS[selected]?.label || selected
-                              : "Select web search provider"}
+                              : t("selectWebProviderPlaceholder")}
                           </span>
                           <ChevronUp className="h-4 w-4 text-gray-500" />
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="p-0" align="start" style={{ width: "320px" }}>
                         <Command>
-                          <CommandInput placeholder="Search provider..." />
+                          <CommandInput placeholder={t("searchProviderPh")} />
                           <CommandList>
-                            <CommandEmpty>No provider found.</CommandEmpty>
+                            <CommandEmpty>{t("noProviderFound")}</CommandEmpty>
                             <CommandGroup>
                               {WEB_SEARCH_PROVIDER_OPTIONS.map((option) => (
                                 <CommandItem
@@ -175,8 +177,7 @@ const WebSearchProvider = ({
 
                 {selected === "auto" && (
                   <div className="rounded-lg border border-[#D9D6FE] bg-[#F4F3FF] p-3 text-xs text-[#5146E5]">
-                    Model-native web grounding is preferred when available.
-                    Otherwise, external search fallback is used.
+                    {t("autoNote")}
                   </div>
                 )}
 
@@ -221,7 +222,7 @@ const WebSearchProvider = ({
                         type="button"
                         className="absolute inset-y-0 right-0 flex w-12 items-center justify-center rounded-r-lg text-gray-500 transition-colors hover:text-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500"
                         onClick={() => setShowApiKey((value) => !value)}
-                        aria-label={showApiKey ? "Hide API key" : "Show API key"}
+                        aria-label={showApiKey ? t("hideApiKey") : t("showApiKey")}
                         aria-pressed={showApiKey}
                       >
                         {showApiKey ? (
@@ -237,7 +238,7 @@ const WebSearchProvider = ({
                 {selected && selected !== "auto" && (
                   <div>
                     <label className="mb-2 block text-sm font-medium text-[#4C5554]">
-                      Maximum results
+                      {t("maxResults")}
                     </label>
                     <input
                       type="number"
