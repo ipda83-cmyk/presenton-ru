@@ -2,6 +2,7 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, AlertCircle, FileX } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface LoadingStatesProps {
   type: "loading" | "error" | "empty";
@@ -9,6 +10,7 @@ interface LoadingStatesProps {
 }
 
 const LoadingStates: React.FC<LoadingStatesProps> = ({ type, message }) => {
+  const t = useTranslations("tplPreview");
   if (type === "loading") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
@@ -23,10 +25,10 @@ const LoadingStates: React.FC<LoadingStatesProps> = ({ type, message }) => {
 
             <div className="space-y-2">
               <h3 className="text-xl font-semibold text-gray-900">
-                Loading Layouts
+                {t("loadingLayouts")}
               </h3>
               <p className="text-gray-600">
-                {message || "Discovering and loading layout components..."}
+                {message || t("discoveringLayouts")}
               </p>
             </div>
 
@@ -62,11 +64,10 @@ const LoadingStates: React.FC<LoadingStatesProps> = ({ type, message }) => {
 
             <div className="space-y-2">
               <h3 className="text-xl font-semibold text-gray-900">
-                Something went wrong
+                {t("somethingWrong")}
               </h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                {message ||
-                  "Failed to load layouts. Please check your layout files and try again."}
+                {message || t("failedLoadLayouts")}
               </p>
             </div>
           </CardContent>
@@ -86,16 +87,15 @@ const LoadingStates: React.FC<LoadingStatesProps> = ({ type, message }) => {
 
             <div className="space-y-2">
               <h3 className="text-xl font-semibold text-gray-700">
-                No Layouts Found
+                {t("noLayoutsTitle")}
               </h3>
               <p className="text-gray-500 text-sm leading-relaxed">
-                No valid layout files were discovered. Make sure your layout
-                components export both a default component and a Schema.
+                {t("noLayoutsBody")}
               </p>
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg text-left text-xs text-gray-600">
-              <p className="font-medium mb-2">Expected structure:</p>
+              <p className="font-medium mb-2">{t("expectedStructure")}</p>
               <code className="block">
                 export default MyLayout
                 <br />

@@ -9,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useTranslations } from "next-intl";
 
 type DeleteTemplateDialogProps = {
   isDeleting: boolean;
@@ -25,6 +26,7 @@ export function DeleteTemplateDialog({
   onConfirm,
   onOpenChange,
 }: DeleteTemplateDialogProps) {
+  const t = useTranslations("tplPreview");
   return (
     <Dialog
       open={open}
@@ -44,12 +46,15 @@ export function DeleteTemplateDialog({
 
           <DialogHeader className="space-y-2 text-left">
             <DialogTitle className="text-[18px] font-semibold leading-[26px] tracking-normal text-[#101323]">
-              Delete template?
+              {t("deleteTitle")}
             </DialogTitle>
             <DialogDescription className="text-[14px] leading-[20px] text-[#667085]">
-              This will permanently delete{" "}
-              <span className="font-medium text-[#344054]">{templateName}</span>
-              . This action cannot be undone.
+              {t.rich("deleteBody", {
+                name: templateName,
+                b: (chunks) => (
+                  <span className="font-medium text-[#344054]">{chunks}</span>
+                ),
+              })}
             </DialogDescription>
           </DialogHeader>
         </div>
@@ -61,7 +66,7 @@ export function DeleteTemplateDialog({
             onClick={() => onOpenChange(false)}
             type="button"
           >
-            Cancel
+            {t("cancel")}
           </button>
           <button
             className="inline-flex h-10 items-center justify-center gap-2 rounded-[8px] border border-[#D92D20] bg-[#D92D20] px-4 text-[14px] font-medium text-white shadow-sm transition-colors hover:bg-[#B42318] disabled:pointer-events-none disabled:opacity-70"
@@ -74,7 +79,7 @@ export function DeleteTemplateDialog({
             ) : (
               <Trash2 className="h-4 w-4" />
             )}
-            {isDeleting ? "Deleting" : "Delete Template"}
+            {isDeleting ? t("deleting") : t("deleteTemplate")}
           </button>
         </DialogFooter>
       </DialogContent>

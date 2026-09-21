@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { notify } from "@/components/ui/sonner";
 import type { TemplateV2Layout } from "@/components/slide-editor/importing/template-v2-import";
 import {
@@ -148,6 +149,7 @@ const GroupLayoutPreview = ({
 }: GroupLayoutPreviewProps) => {
   void useKonvaTemplateV2Preview;
 
+  const t = useTranslations("tplPreview");
   const searchParams = useSearchParams();
   const router = useRouter();
   const templateId =
@@ -327,9 +329,9 @@ const GroupLayoutPreview = ({
         template_id: templateId,
         layout_index: layoutIndex,
       });
-      notify.success("Copied", "Template layout ID copied.");
+      notify.success(t("copiedTitle"), t("copiedLayoutId"));
     } catch {
-      notify.error("Copy failed", layoutToken);
+      notify.error(t("copyFailedTitle"), layoutToken);
     }
   }, [editableLayouts, templateId]);
 
@@ -343,10 +345,10 @@ const GroupLayoutPreview = ({
       track(ANALYTICS_EVENTS.TEMPLATE_ID_COPIED, {
         template_id: templateId,
       });
-      notify.success("Copied", "Template ID copied.");
+      notify.success(t("copiedTitle"), t("copiedTemplateId"));
     } catch (copyError) {
       notify.error(
-        "Copy failed",
+        t("copyFailedTitle"),
         copyError instanceof Error ? copyError.message : templateId,
       );
     }
@@ -359,7 +361,7 @@ const GroupLayoutPreview = ({
       return;
     }
 
-    const nextName = templateNameDraft.trim() || "Untitled Template";
+    const nextName = templateNameDraft.trim() || t("untitledPlaceholder");
     if (nextName !== templateNameDraft) {
       setTemplateNameDraft(nextName);
     }
@@ -418,8 +420,8 @@ const GroupLayoutPreview = ({
     if (!nextDensity || !canEditTemplate || !activeLayout) return;
     if (!hasLayoutContentDensityTargets(activeLayout)) {
       notify.warning(
-        "No variable content",
-        "Add editable text or a repeatable schema array before testing content density.",
+        t("noVariableContentTitle"),
+        t("noVariableContentBody"),
       );
       return;
     }
@@ -635,8 +637,8 @@ const GroupLayoutPreview = ({
       );
       if (targetIndex < 0) {
         notify.error(
-          "Slide unavailable",
-          "The blank slide is no longer available. Add a new one and try again.",
+          t("slideUnavailableTitle"),
+          t("slideUnavailableBody"),
         );
         setPromptLayoutId(null);
         return false;
@@ -650,7 +652,7 @@ const GroupLayoutPreview = ({
           prompt,
         });
         if (!isRecord(response.layout)) {
-          throw new Error("No generated layout was returned.");
+          throw new Error(t("noGeneratedLayout"));
         }
         const generatedLayout = normalizeBackendAssetUrls(response.layout);
 
@@ -676,8 +678,8 @@ const GroupLayoutPreview = ({
         setPromptLayoutId(null);
         setHasUnsavedChanges(true);
         notify.success(
-          "Slide created",
-          `Slide ${targetIndex + 1} was generated. Save to keep it.`,
+          t("slideCreatedTitle"),
+          t("slideCreatedBody", { n: targetIndex + 1 }),
         );
         track(ANALYTICS_EVENTS.TEMPLATE_PREVIEW_LAYOUT_RECONSTRUCTED, {
           template_id: templateId,
@@ -688,10 +690,10 @@ const GroupLayoutPreview = ({
         return true;
       } catch (generationError) {
         notify.error(
-          "Failed to create slide",
+          t("createSlideFailedTitle"),
           generationError instanceof Error
             ? generationError.message
-            : "Something went wrong while creating this slide.",
+            : t("createSlideFailedBody"),
         );
         track(ANALYTICS_EVENTS.TEMPLATE_PREVIEW_LAYOUT_RECONSTRUCT_FAILED, {
           template_id: templateId,
@@ -750,8 +752,8 @@ const GroupLayoutPreview = ({
     if (!canEditTemplate) return;
     if (editableLayouts.length <= 1) {
       notify.warning(
-        "Cannot delete slide",
-        "A template needs at least one layout.",
+        t("cannotDeleteSlideTitle"),
+        t("cannotDeleteSlideBody"),
       );
       return;
     }
@@ -801,13 +803,13 @@ const GroupLayoutPreview = ({
         (item) => item.index === activeLayoutIndex,
       );
       if (!createdLayout) {
-        throw new Error("No reconstructed layout was returned.");
+        throw new Error(t("noReconstructedLayout"));
       }
 
       updateActiveLayout(normalizeBackendAssetUrls(createdLayout.layout));
       notify.success(
-        "Slide reconstructed",
-        `Slide ${activeLayoutIndex + 1} was reconstructed. Save to keep it.`,
+        t("slideReconstructedTitle"),
+        t("slideReconstructedBody", { n: activeLayoutIndex + 1 }),
       );
       track(ANALYTICS_EVENTS.TEMPLATE_PREVIEW_LAYOUT_RECONSTRUCTED, {
         template_id: templateId,
@@ -816,10 +818,10 @@ const GroupLayoutPreview = ({
       });
     } catch (reconstructError) {
       notify.error(
-        "Failed to reconstruct slide",
+        t("reconstructFailedTitle"),
         reconstructError instanceof Error
           ? reconstructError.message
-          : "Something went wrong while reconstructing this slide.",
+          : t("reconstructFailedBody"),
       );
       track(ANALYTICS_EVENTS.TEMPLATE_PREVIEW_LAYOUT_RECONSTRUCT_FAILED, {
         template_id: templateId,
@@ -849,8 +851,8 @@ const GroupLayoutPreview = ({
       if (!canEditTemplate || !activeLayout || typeof window === "undefined") {
         if (!activeLayout) {
           notify.warning(
-            "Create a layout first",
-            "Add a blank layout before inserting content.",
+            t("createLayoutFirstTitle"),
+            t("createLayoutFirstBody"),
           );
         }
         return false;
@@ -875,8 +877,8 @@ const GroupLayoutPreview = ({
 
       if (!detail.handled) {
         notify.warning(
-          "Insert unavailable",
-          "Select the active layout and try again.",
+          t("insertUnavailableTitle"),
+          t("insertUnavailableBody"),
         );
         return false;
       }
@@ -1020,8 +1022,8 @@ const GroupLayoutPreview = ({
         recordArray(block.raw, "elements").length === 0
       ) {
         notify.warning(
-          "Component unavailable",
-          "This merged component cannot be inserted yet.",
+          t("componentUnavailableTitle"),
+          t("componentUnavailableBody"),
         );
         return;
       }
@@ -1072,7 +1074,7 @@ const GroupLayoutPreview = ({
         had_unsaved_changes: hasUnsavedChanges,
       });
 
-      const nextTemplateName = templateNameDraft.trim() || "Untitled Template";
+      const nextTemplateName = templateNameDraft.trim() || t("untitledPlaceholder");
       if (nextTemplateName !== templateNameDraft) {
         setTemplateNameDraft(nextTemplateName);
       }
@@ -1089,8 +1091,8 @@ const GroupLayoutPreview = ({
       setHasUnsavedChanges(false);
       setSavedTemplateName(nextTemplateName);
       notify.success(
-        "Changes saved",
-        "Template JSON was updated.",
+        t("changesSavedTitle"),
+        t("changesSavedBody"),
       );
       track(ANALYTICS_EVENTS.TEMPLATE_PREVIEW_TEMPLATE_SAVED, {
         template_id: templateId,
@@ -1099,10 +1101,10 @@ const GroupLayoutPreview = ({
       });
     } catch (saveError) {
       notify.error(
-        "Failed to save template",
+        t("saveFailedTitle"),
         saveError instanceof Error
           ? saveError.message
-          : "Something went wrong while saving the template.",
+          : t("saveFailedBody"),
       );
       track(ANALYTICS_EVENTS.TEMPLATE_PREVIEW_TEMPLATE_SAVE_FAILED, {
         template_id: templateId,
@@ -1140,8 +1142,8 @@ const GroupLayoutPreview = ({
       if (result.success) {
         setIsDeleteDialogOpen(false);
         notify.success(
-          "Template deleted",
-          "The template was deleted successfully.",
+          t("templateDeletedTitle"),
+          t("templateDeletedBody"),
         );
         track(ANALYTICS_EVENTS.TEMPLATE_PREVIEW_TEMPLATE_DELETED, {
           template_id: templateId,
@@ -1152,8 +1154,8 @@ const GroupLayoutPreview = ({
       }
 
       notify.error(
-        "Could not delete template",
-        result.message || "Something went wrong while deleting the template.",
+        t("deleteTemplateFailedTitle"),
+        result.message || t("deleteTemplateFailedBody"),
       );
       track(ANALYTICS_EVENTS.TEMPLATE_PREVIEW_TEMPLATE_DELETE_FAILED, {
         template_id: templateId,
@@ -1162,10 +1164,10 @@ const GroupLayoutPreview = ({
       });
     } catch (deleteError) {
       notify.error(
-        "Could not delete template",
+        t("deleteTemplateFailedTitle"),
         deleteError instanceof Error
           ? deleteError.message
-          : "Something went wrong while deleting the template.",
+          : t("deleteTemplateFailedBody"),
       );
       track(ANALYTICS_EVENTS.TEMPLATE_PREVIEW_TEMPLATE_DELETE_FAILED, {
         template_id: templateId,
@@ -1230,14 +1232,14 @@ const GroupLayoutPreview = ({
             !activeLayout ||
             !activePreviewLayout ? (
             <div className="flex flex-1 flex-col items-center justify-center gap-4 text-sm text-[#696969]">
-              <p>No layouts available for this template.</p>
+              <p>{t("noLayoutsForTemplate")}</p>
               {canEditTemplate ? (
                 <button
                   className="rounded-[8px] border border-[#D9D6FE] bg-white px-4 py-2 text-[13px] font-medium text-[#7A5AF8] transition-colors hover:bg-[#F8F6FF]"
                   onClick={createBlankLayout}
                   type="button"
                 >
-                  Create blank layout
+                  {t("createBlankLayout")}
                 </button>
               ) : null}
             </div>
@@ -1359,7 +1361,7 @@ const GroupLayoutPreview = ({
         isDeleting={isDeletingTemplate}
         open={isDeleteDialogOpen}
         templateName={
-          templateNameDraft.trim() || template?.name || "this template"
+          templateNameDraft.trim() || template?.name || t("deleteFallbackName")
         }
         onConfirm={confirmDeleteTemplate}
         onOpenChange={setIsDeleteDialogOpen}

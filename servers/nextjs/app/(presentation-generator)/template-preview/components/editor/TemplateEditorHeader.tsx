@@ -11,6 +11,7 @@ import {
   Undo2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 const SAVE_BUTTON_GRADIENT =
   "linear-gradient(270deg, rgb(213, 202, 252) 2.4038%, rgb(227, 210, 235) 27.885%, rgb(244, 220, 211) 69.231%, rgb(253, 228, 194) 100%)";
@@ -75,12 +76,13 @@ export function TemplateEditorHeader({
   onSave,
   onUndo,
 }: TemplateEditorHeaderProps) {
+  const t = useTranslations("tplPreview");
   const skipNameCommitRef = useRef(false);
 
   return (
     <header className="flex h-[68px] shrink-0 items-center justify-between border-b border-[#EDEEEF] bg-white">
       <div className="flex h-full min-w-0 flex-1 items-center gap-[12px] px-5 text-left sm:w-[347px] sm:flex-none sm:px-[24px]">
-        <button onClick={onBack} aria-label="Dashboard" type="button">
+        <button onClick={onBack} aria-label={t("dashboardAria")} type="button">
           <img
             src="/logo-with-bg.png"
             alt="Presenton"
@@ -94,10 +96,10 @@ export function TemplateEditorHeader({
               ? "cursor-text hover:border-[#EDEEEF] hover:bg-[#FAFAFB] focus-within:border-[#B99CFF] focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(124,81,248,0.10)]"
               : "cursor-default",
           )}
-          title={canEdit ? "Edit template name" : "Default template"}
+          title={canEdit ? t("editNameTitle") : t("defaultTemplateTitle")}
         >
           <input
-            aria-label="Template name"
+            aria-label={t("templateNameAria")}
             className="h-[24px] min-w-0 flex-1 truncate bg-transparent p-0 text-[16px] font-semibold leading-normal tracking-[0.16px] text-[#101323] outline-none placeholder:text-[#9B9B9B] disabled:opacity-60"
             aria-readonly={!canEdit}
             onBlur={() => {
@@ -124,7 +126,7 @@ export function TemplateEditorHeader({
                 event.currentTarget.blur();
               }
             }}
-            placeholder="Untitled Template"
+            placeholder={t("untitledPlaceholder")}
             readOnly={!canEdit}
             spellCheck={false}
             tabIndex={canEdit ? 0 : -1}
@@ -146,7 +148,7 @@ export function TemplateEditorHeader({
           title={activeLayoutToken}
           type="button"
         >
-          Copy ID
+          {t("copyId")}
           <Copy className="h-4 w-4" />
         </button>
         <div className="hidden h-[16.5px] w-px bg-[#EDEEEF] sm:block" />
@@ -155,7 +157,7 @@ export function TemplateEditorHeader({
             className="flex h-[34px] w-[24px] items-center justify-center rounded-full text-[#101323] transition-colors hover:bg-[#F7F6F9] disabled:text-[#B9B9B9]"
             disabled={!canEdit || !canUndo}
             onClick={onUndo}
-            title="Undo"
+            title={t("undo")}
             type="button"
           >
             <Undo2 className="h-[14px] w-[14px]" />
@@ -164,7 +166,7 @@ export function TemplateEditorHeader({
             className="flex h-[34px] w-[24px] items-center justify-center rounded-full text-[#101323] transition-colors hover:bg-[#F7F6F9] disabled:text-[#B9B9B9]"
             disabled={!canEdit || !canRedo}
             onClick={onRedo}
-            title="Redo"
+            title={t("redo")}
             type="button"
           >
             <Redo2 className="h-[14px] w-[14px]" />
@@ -176,11 +178,11 @@ export function TemplateEditorHeader({
             <button
               className="hidden h-[33px] items-center gap-[6px] rounded-[48px] px-[10px] py-[8px] text-[14px] font-medium text-red-600 transition-colors hover:bg-red-50 md:flex"
               onClick={onDelete}
-              title="Delete template"
+              title={t("deleteTemplateTitle")}
               type="button"
             >
               <Trash2 className="h-4 w-4" />
-              <span className="hidden xl:inline">Delete Template</span>
+              <span className="hidden xl:inline">{t("deleteTemplate")}</span>
             </button>
             <div className="hidden h-[16.5px] w-px bg-[#EDEEEF] md:block" />
           </>
@@ -189,9 +191,9 @@ export function TemplateEditorHeader({
           <GradientActionButton
             onClick={onSave}
             disabled={isSaving}
-            title={hasUnsavedChanges ? "Save changes" : "Save template"}
+            title={hasUnsavedChanges ? t("saveChangesTitle") : t("saveTemplateTitle")}
           >
-            {isSaving ? "Saving" : "Save"}
+            {isSaving ? t("saving") : t("save")}
             {isSaving ? (
               <Loader2 className="h-[15.4px] w-[15.4px] animate-spin" />
             ) : (
