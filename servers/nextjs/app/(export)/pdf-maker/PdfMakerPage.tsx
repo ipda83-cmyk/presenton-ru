@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
 import { AlertCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { setPresentationData } from "@/store/slices/presentationGeneration";
 import { DashboardApi } from "@/app/(presentation-generator)/services/api/dashboard";
 import { ApiResponseHandler } from "@/app/(presentation-generator)/services/api/api-error-handler";
@@ -141,6 +142,7 @@ const SmartHtmlPdfSlide = ({
 };
 
 const PresentationPage = ({ presentation_id, exportCookie }: PresentationPageProps) => {
+  const t = useTranslations("pdf");
   const pathname = usePathname();
   const [contentLoading, setContentLoading] = useState(true);
   const exportCookieFromHash =
@@ -193,7 +195,7 @@ const PresentationPage = ({ presentation_id, exportCookie }: PresentationPagePro
       }
     } catch (error) {
       setError(true);
-      notify.error("Failed to load presentation", "The presentation could not be loaded. Please try again.");
+      notify.error(t("loadFailedTitle"), t("loadFailedBody"));
       console.error("Error fetching user slides:", error);
     } finally {
       setContentLoading(false);
