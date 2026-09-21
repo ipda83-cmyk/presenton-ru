@@ -813,5 +813,18 @@
     "tabBuiltIn": "Built-in",
     "loading": "Loading templates...",
     "noneAvailable": "No templates available."
+  },
+  "docsPreview": {
+    "readErrorTitle": "Could not read document",
+    "readErrorBody": "Failed to read document content.",
+    "generatingOutline": "Generating presentation outline...",
+    "creationFailedTitle": "Creation failed",
+    "creationFailedBody": "Something went wrong while creating the presentation.",
+    "creationError": "Error in radar presentation creation.",
+    "content": "Content:",
+    "documents": "DOCUMENTS",
+    "documentIcon": "Document icon",
+    "openPanel": "Open Panel",
+    "next": "Next"
   }
 }

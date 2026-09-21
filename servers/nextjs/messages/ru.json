@@ -813,5 +813,18 @@
     "tabBuiltIn": "Встроенные",
     "loading": "Загрузка шаблонов...",
     "noneAvailable": "Шаблонов нет."
+  },
+  "docsPreview": {
+    "readErrorTitle": "Не удалось прочитать документ",
+    "readErrorBody": "Не удалось прочитать содержимое документа.",
+    "generatingOutline": "Генерируем план презентации...",
+    "creationFailedTitle": "Не удалось создать",
+    "creationFailedBody": "Что-то пошло не так при создании презентации.",
+    "creationError": "Ошибка при создании презентации.",
+    "content": "Содержимое:",
+    "documents": "ДОКУМЕНТЫ",
+    "documentIcon": "Значок документа",
+    "openPanel": "Открыть панель",
+    "next": "Далее"
   }
 }
