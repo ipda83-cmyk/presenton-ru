@@ -2023,7 +2023,9 @@
       "lineHeight": "Line height",
       "bulletList": "Bullet list",
       "numberedList": "Numbered list",
-      "noList": "No list"
+      "noList": "No list",
+      "horizontalAlignment": "Horizontal alignment",
+      "alignmentUnavailable": "Alignment is unavailable for list text"
     },
     "chart": {
       "colors": "Chart colors",
