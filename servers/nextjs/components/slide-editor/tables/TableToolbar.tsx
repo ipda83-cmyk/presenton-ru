@@ -391,6 +391,7 @@ function TableToolbarMenu({
   onMoveColumnLeft: () => void;
   onMoveColumnRight: () => void;
 }) {
+  const t = useTranslations("slideEditor");
   if (!menuOpen) return null;
 
   return (
@@ -398,38 +399,38 @@ function TableToolbarMenu({
       <MenuItem
         disabled={!canDeleteRow}
         icon={<Rows3 size={20} strokeWidth={2.2} />}
-        label="Delete Row"
+        label={t("table.deleteRow")}
         onClick={onDeleteRow}
       />
       <MenuItem
         disabled={!canDeleteColumn}
         icon={<Columns3 size={20} strokeWidth={2.2} />}
-        label="Delete Column"
+        label={t("table.deleteColumn")}
         onClick={onDeleteColumn}
       />
       <MenuItem
         disabled={!canAddRow}
         icon={<Plus size={20} strokeWidth={2.4} />}
-        label="Add Row"
+        label={t("table.addRow")}
         onClick={onAddRow}
       />
       <MenuItem
         disabled={!canAddColumn}
         icon={<Plus size={20} strokeWidth={2.4} />}
-        label="Add Column"
+        label={t("table.addColumn")}
         onClick={onAddColumn}
       />
       <div style={menuDividerStyle} />
       <MenuItem
         disabled={!canMoveColumnRight}
         icon={<ChevronRight size={20} strokeWidth={2.4} />}
-        label="Move Column Right"
+        label={t("table.moveColumnRight")}
         onClick={onMoveColumnRight}
       />
       <MenuItem
         disabled={!canMoveColumnLeft}
         icon={<ChevronLeft size={20} strokeWidth={2.4} />}
-        label="Move Column Left"
+        label={t("table.moveColumnLeft")}
         onClick={onMoveColumnLeft}
       />
     </FloatingToolbarPanel>

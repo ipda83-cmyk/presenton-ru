@@ -237,12 +237,12 @@ export function TemplateV2ContainerToolbarControls({
         {openPanel === "fill" ? (
           <Panel className="flex w-[250px] flex-col items-start gap-[14px] rounded-[12px] border border-[#E8E9EE] p-3 font-manrope text-[12px] font-medium leading-6 text-[#191919] shadow-[0_8px_24px_rgba(16,24,40,0.12)]">
             <ColorField
-              label="Color"
+              label={t("common.color")}
               color={fillColor}
               onCommit={(color) => onChange({ fill: { ...fill, color } })}
             />
             <NumberField
-              label="Opacity"
+              label={t("container.opacity")}
               value={readNumber(fill.opacity, 1)}
               min={0}
               max={1}
@@ -265,12 +265,12 @@ export function TemplateV2ContainerToolbarControls({
         {openPanel === "stroke" ? (
           <Panel className="flex w-[250px] flex-col items-start gap-[14px] rounded-[12px] border border-[#E8E9EE] p-3 font-manrope text-[12px] font-medium leading-6 text-[#191919] shadow-[0_8px_24px_rgba(16,24,40,0.12)]">
             <ColorField
-              label="Color"
+              label={t("common.color")}
               color={strokeColor}
               onCommit={(color) => onChange({ stroke: { ...stroke, color } })}
             />
             <NumberField
-              label="Width"
+              label={t("container.width")}
               value={readNumber(stroke.width)}
               min={0}
               max={32}
@@ -279,7 +279,7 @@ export function TemplateV2ContainerToolbarControls({
               onCommit={(width) => onChange({ stroke: { ...stroke, width } })}
             />
             <NumberField
-              label="Opacity"
+              label={t("container.opacity")}
               value={readNumber(stroke.opacity, 1)}
               min={0}
               max={1}
@@ -312,7 +312,7 @@ export function TemplateV2ContainerToolbarControls({
               />
             </div>
             <CompactNumberInput
-              label="Radius"
+              label={t("container.radius")}
               marker="R"
               value={radius}
               min={0}
@@ -361,7 +361,7 @@ export function TemplateV2ContainerToolbarControls({
         {openPanel === "shadow" ? (
           <Panel className="flex w-[320px] flex-col items-start gap-[14px] rounded-[12px] border border-[#E8E9EE] p-3 font-manrope text-[12px] font-medium leading-6 text-[#191919] shadow-[0_8px_24px_rgba(16,24,40,0.12)]">
             <CompactNumberInput
-              label="Position"
+              label={t("container.position")}
               marker="X"
               value={readNumber(shadow.offset_x)}
               step={0.5}
@@ -376,7 +376,7 @@ export function TemplateV2ContainerToolbarControls({
               }
             />
             <CompactNumberInput
-              label="Position"
+              label={t("container.position")}
               marker="Y"
               value={readNumber(shadow.offset_y)}
               step={0.5}
@@ -391,7 +391,7 @@ export function TemplateV2ContainerToolbarControls({
               }
             />
             <CompactNumberInput
-              label="Blur"
+              label={t("container.blur")}
               marker="X"
               min={0}
               max={100}
@@ -400,12 +400,12 @@ export function TemplateV2ContainerToolbarControls({
               onCommit={(blur) => onChange({ shadow: { ...shadow, blur } })}
             />
             <ColorField
-              label="Color"
+              label={t("common.color")}
               color={readColor(shadow.color, "#4A6FF3")}
               onCommit={(color) => onChange({ shadow: { ...shadow, color } })}
             />
             <NumberField
-              label="Opacity"
+              label={t("container.opacity")}
               value={clampNumber(readNumber(shadow.opacity, 0.24), 0, 1) * 100}
               min={0}
               max={100}
@@ -475,7 +475,7 @@ export function TemplateV2ContainerToolbarControls({
               </div>
             </div>
             <CompactNumberInput
-              label="Position"
+              label={t("container.position")}
               marker="X"
               min={0}
               value={paddingX}
@@ -483,7 +483,7 @@ export function TemplateV2ContainerToolbarControls({
               onCommit={updatePaddingX}
             />
             <CompactNumberInput
-              label="Position"
+              label={t("container.position")}
               marker="Y"
               min={0}
               value={paddingY}

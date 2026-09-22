@@ -129,11 +129,11 @@ export function KeyboardShortcutsDialog({
                         strokeWidth={1.8}
                       />
                       <h3 className="text-[14px] font-semibold text-[#101323]">
-                        {section.title}
+                        {t(`shortcutSection.${section.id}.title`)}
                       </h3>
                     </div>
                     <p className="mt-1 text-[11px] leading-4 text-[#7A8295]">
-                      {section.description}
+                      {t(`shortcutSection.${section.id}.desc`)}
                     </p>
                   </div>
                   <div className="divide-y divide-[#EAECF0]">
@@ -144,10 +144,10 @@ export function KeyboardShortcutsDialog({
                       >
                         <div className="min-w-0">
                           <p className="text-[13px] font-semibold text-[#344054]">
-                            {shortcut.label}
+                            {t(`shortcutItem.${shortcut.id}.label`)}
                           </p>
                           <p className="mt-0.5 text-[11px] leading-4 text-[#7A8295]">
-                            {shortcut.description}
+                            {t(`shortcutItem.${shortcut.id}.desc`)}
                           </p>
                         </div>
                         <ShortcutKeys

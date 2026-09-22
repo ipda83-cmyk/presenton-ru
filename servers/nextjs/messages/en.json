@@ -258,7 +258,89 @@
     "dismissHint": "Dismiss navigation hint",
     "aiAssistant": "AI Assistant",
     "closeAiAssistant": "Close AI Assistant",
-    "closeToolsPanel": "Close tools panel"
+    "closeToolsPanel": "Close tools panel",
+    "shortcutAria": "{label} shortcut",
+    "shortcutOr": "or",
+    "shortcutSection": {
+      "selection": {
+        "title": "Selection",
+        "desc": "Select and organize objects on the active slide."
+      },
+      "editing": {
+        "title": "Editing",
+        "desc": "Common editing commands for slide objects."
+      },
+      "arrange": {
+        "title": "Arrange",
+        "desc": "Change the selected object’s layer position."
+      },
+      "navigation": {
+        "title": "Slide navigation",
+        "desc": "Move between slides without leaving the canvas."
+      },
+      "help": {
+        "title": "Help",
+        "desc": "Quickly return to this reference."
+      }
+    },
+    "shortcutItem": {
+      "multi-select": {
+        "label": "Add to selection",
+        "desc": "Hold Shift while clicking to add or remove an object."
+      },
+      "group": {
+        "label": "Group objects",
+        "desc": "Combine two or more selected objects into one group."
+      },
+      "delete": {
+        "label": "Delete selection",
+        "desc": "Remove the selected object or objects from the slide."
+      },
+      "undo": {
+        "label": "Undo",
+        "desc": "Undo the last change made on the active slide."
+      },
+      "redo": {
+        "label": "Redo",
+        "desc": "Restore the most recently undone slide change."
+      },
+      "copy": {
+        "label": "Copy selection",
+        "desc": "Copy the selected object or objects."
+      },
+      "paste": {
+        "label": "Paste",
+        "desc": "Paste copied objects with a small position offset."
+      },
+      "bring-forward": {
+        "label": "Bring forward",
+        "desc": "Move the selected object forward by one layer."
+      },
+      "bring-to-front": {
+        "label": "Bring to front",
+        "desc": "Move the selected object above every other object."
+      },
+      "send-backward": {
+        "label": "Send backward",
+        "desc": "Move the selected object backward by one layer."
+      },
+      "send-to-back": {
+        "label": "Send to back",
+        "desc": "Move the selected object behind every other object."
+      },
+      "previous-slide": {
+        "label": "Previous slide",
+        "desc": "Open the slide before the active slide."
+      },
+      "next-slide": {
+        "label": "Next slide",
+        "desc": "Open the slide after the active slide."
+      },
+      "shortcut-help": {
+        "label": "Keyboard shortcuts",
+        "desc": "Open this keyboard-shortcuts guide."
+      }
+    }
   },
   "chat": {
     "assistant": "Assistant",
@@ -1773,7 +1855,12 @@
         "justify": "justify"
       },
       "deleteRow": "Delete row",
-      "cellActions": "Table cell actions"
+      "cellActions": "Table cell actions",
+      "deleteColumn": "Delete Column",
+      "addRow": "Add Row",
+      "addColumn": "Add Column",
+      "moveColumnRight": "Move Column Right",
+      "moveColumnLeft": "Move Column Left"
     },
     "icon": {
       "color": "Icon color",
@@ -1820,7 +1907,12 @@
       "stroke": "Stroke",
       "cornerRadius": "Corner Radius",
       "shadow": "Shadow",
-      "layoutSettings": "Layout Settings"
+      "layoutSettings": "Layout Settings",
+      "opacity": "Opacity",
+      "position": "Position",
+      "width": "Width",
+      "radius": "Radius",
+      "blur": "Blur"
     },
     "image": {
       "invalidFileTitle": "Invalid file",

@@ -84,7 +84,7 @@ export function TemplateV2InfographicToolbarControls({
     <>
       {isMeter ? (
         <InlineNumberInput
-          label="Value"
+          label={t("infographic.value")}
           value={value}
           onCommit={(nextValue) => commitDataChange({ value: nextValue })}
         />

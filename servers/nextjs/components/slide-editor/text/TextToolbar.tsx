@@ -586,8 +586,8 @@ export function TextToolbar({
             <ToolbarButton
               title={
                 disableAlignment
-                  ? "Alignment is unavailable for list text"
-                  : "Horizontal alignment"
+                  ? t("text.alignmentUnavailable")
+                  : t("text.horizontalAlignment")
               }
               controlId="horizontal-alignment"
               disabled={disableAlignment}
