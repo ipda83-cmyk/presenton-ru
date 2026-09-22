@@ -1619,7 +1619,39 @@
       "updatedTitle": "Image updated",
       "updatedBody": "The selected image was replaced.",
       "uploadFailedTitle": "Upload failed",
-      "uploadFailedBody": "Failed to upload image. Please try again."
+      "uploadFailedBody": "Failed to upload image. Please try again.",
+      "fitLabel": "Image type: {fit}",
+      "fit": {
+        "cover": "Fill",
+        "contain": "Contain",
+        "fill": "Stretch"
+      },
+      "upload": "Upload image",
+      "replace": "Replace image",
+      "crop": "Crop image",
+      "flipH": "Flip horizontally",
+      "flipV": "Flip vertically",
+      "borderRadius": "Image border radius",
+      "borderRadiusLabel": "Border radius",
+      "opacity": "Image opacity",
+      "cropZoomAria": "Crop image. Zoom {percent} percent.",
+      "cropHandle": {
+        "nw": "Top left resize handle",
+        "n": "Top resize handle",
+        "ne": "Top right resize handle",
+        "e": "Right resize handle",
+        "se": "Bottom right resize handle",
+        "s": "Bottom resize handle",
+        "sw": "Bottom left resize handle",
+        "w": "Left resize handle"
+      },
+      "resetCrop": "Reset crop",
+      "applyCrop": "Apply crop",
+      "closeCropControls": "Close crop controls",
+      "chooseValidFile": "Please choose a valid image file.",
+      "uploadNoUrl": "Upload did not return an image URL.",
+      "uploadedTitle": "Image uploaded",
+      "couldNotUpload": "Could not upload image."
     },
     "shape": {
       "fillTitle": "Shape fill",
