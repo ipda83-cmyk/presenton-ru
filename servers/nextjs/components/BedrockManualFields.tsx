@@ -9,6 +9,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { useTranslations } from 'next-intl';
 
 export type BedrockManualPatch = Partial<
   Pick<
@@ -39,6 +40,7 @@ export default function BedrockManualFields({
   llmConfig,
   onPatch,
 }: BedrockManualFieldsProps) {
+  const t = useTranslations('fields');
   const [advancedOpen, setAdvancedOpen] = useState(() => hasAdvancedContent(llmConfig));
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function BedrockManualFields({
   return (
     <div className="mt-3 w-full min-w-0 max-w-full space-y-4">
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-gray-700">Model</label>
+        <label className="block text-sm font-medium text-gray-700">{t("model")}</label>
         <input
           type="text"
           value={llmConfig.BEDROCK_MODEL || ''}
@@ -62,7 +64,7 @@ export default function BedrockManualFields({
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-gray-700">Region</label>
+        <label className="block text-sm font-medium text-gray-700">{t("region")}</label>
         <input
           type="text"
           value={llmConfig.BEDROCK_REGION || ''}
@@ -74,43 +76,43 @@ export default function BedrockManualFields({
 
       <div className="space-y-1.5">
         <label className="block text-sm font-medium text-gray-700">
-          Bedrock API key (optional)
+          {t("bedrockApiKeyOptional")}
         </label>
         <input
           type="password"
           value={llmConfig.BEDROCK_API_KEY || ''}
           onChange={(e) => onPatch({ BEDROCK_API_KEY: e.target.value })}
           className={inputClass}
-          placeholder="Use this OR AWS access keys below"
+          placeholder={t("bedrockApiKeyPh")}
         />
       </div>
 
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-gray-700">AWS Access Key ID</label>
+        <label className="block text-sm font-medium text-gray-700">{t("awsAccessKeyId")}</label>
         <input
           type="text"
           value={llmConfig.BEDROCK_AWS_ACCESS_KEY_ID || ''}
           onChange={(e) => onPatch({ BEDROCK_AWS_ACCESS_KEY_ID: e.target.value })}
           className={inputClass}
-          placeholder="Use with AWS Secret Access Key"
+          placeholder={t("awsAccessKeyIdPh")}
         />
       </div>
 
       <div className="space-y-1.5">
         <label className="block text-sm font-medium text-gray-700">
-          AWS Secret Access Key
+          {t("awsSecretAccessKey")}
         </label>
         <input
           type="password"
           value={llmConfig.BEDROCK_AWS_SECRET_ACCESS_KEY || ''}
           onChange={(e) => onPatch({ BEDROCK_AWS_SECRET_ACCESS_KEY: e.target.value })}
           className={inputClass}
-          placeholder="Use with AWS Access Key ID"
+          placeholder={t("awsSecretAccessKeyPh")}
         />
       </div>
 
       <p className="text-xs text-gray-500">
-        Authentication: set either Bedrock API key, or AWS access key ID + secret key.
+        {t("bedrockAuthHint")}
       </p>
 
       <Collapsible open={advancedOpen} onOpenChange={setAdvancedOpen}>
@@ -119,7 +121,7 @@ export default function BedrockManualFields({
             type="button"
             className="flex w-full min-w-0 items-center justify-between gap-2 rounded-lg border border-gray-200 bg-[#F9F9FA] px-3 py-2.5 text-left text-sm font-medium text-gray-800 transition-colors hover:bg-gray-100"
           >
-            <span>Advanced settings</span>
+            <span>{t("advancedSettings")}</span>
             <ChevronDown
               className={cn(
                 'h-4 w-4 shrink-0 text-gray-600 transition-transform duration-200',
@@ -133,26 +135,26 @@ export default function BedrockManualFields({
           <div className="space-y-3 border-t border-gray-100 pt-3">
             <div className="space-y-1.5">
               <label className="block text-sm font-medium text-gray-700">
-                AWS Session Token
+                {t("awsSessionToken")}
               </label>
               <input
                 type="password"
                 value={llmConfig.BEDROCK_AWS_SESSION_TOKEN || ''}
                 onChange={(e) => onPatch({ BEDROCK_AWS_SESSION_TOKEN: e.target.value })}
                 className={inputClass}
-                placeholder="Optional"
+                placeholder={t("optional")}
               />
             </div>
             <div className="space-y-1.5">
               <label className="block text-sm font-medium text-gray-700">
-                AWS Profile Name
+                {t("awsProfileName")}
               </label>
               <input
                 type="text"
                 value={llmConfig.BEDROCK_PROFILE_NAME || ''}
                 onChange={(e) => onPatch({ BEDROCK_PROFILE_NAME: e.target.value })}
                 className={inputClass}
-                placeholder="Optional"
+                placeholder={t("optional")}
               />
             </div>
           </div>

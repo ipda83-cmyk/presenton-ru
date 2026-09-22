@@ -16,6 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface CreatableModelInputProps {
   value: string;
@@ -30,6 +31,7 @@ export default function CreatableModelInput({
   providerLabel,
   onChange,
 }: CreatableModelInputProps) {
+  const t = useTranslations("fields");
   const popoverId = useId();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -62,7 +64,7 @@ export default function CreatableModelInput({
   return (
     <div className="w-full">
       <label className="mb-2 block text-sm font-medium text-gray-700">
-        {providerLabel} model ID
+        {t("modelIdLabel", { provider: providerLabel })}
       </label>
       <Popover
         open={open}
@@ -85,7 +87,7 @@ export default function CreatableModelInput({
                 value ? "font-medium text-gray-900" : "text-gray-400"
               )}
             >
-              {value || "Select a discovered model or enter any model ID"}
+              {value || t("selectOrEnter")}
             </span>
             <ChevronDown
               className={cn(
@@ -110,7 +112,7 @@ export default function CreatableModelInput({
             <CommandInput
               value={query}
               onValueChange={setQuery}
-              placeholder="Search or enter a model ID..."
+              placeholder={t("searchOrEnter")}
             />
             <CommandList id={popoverId} className="max-h-60 hide-scrollbar">
               <CommandGroup>
@@ -123,10 +125,10 @@ export default function CreatableModelInput({
                     <Check className="mr-2 h-4 w-4 opacity-0" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-gray-900">
-                        Use “{customModel}”
+                        {t("useCustom", { model: customModel })}
                       </p>
                       <p className="mt-1 text-xs leading-relaxed text-gray-600">
-                        Save as a custom model ID
+                        {t("saveCustom")}
                       </p>
                     </div>
                   </CommandItem>
@@ -157,7 +159,7 @@ export default function CreatableModelInput({
                   ))}
                 {!customModel && filteredOptions.length === 0 && (
                   <div className="px-3 py-5 text-center text-sm text-gray-500">
-                    No discovered models yet.
+                    {t("noDiscovered")}
                   </div>
                 )}
               </CommandGroup>
@@ -166,8 +168,7 @@ export default function CreatableModelInput({
         </PopoverContent>
       </Popover>
       <p className="mt-1.5 text-xs text-gray-500">
-        Discovered models are suggestions. Custom aliases and provider-specific
-        model IDs are accepted.
+        {t("discoveredHint")}
       </p>
     </div>
   );
