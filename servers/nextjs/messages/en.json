@@ -1524,7 +1524,9 @@
   "slideEditor": {
     "common": {
       "delete": "Delete",
-      "color": "Color"
+      "color": "Color",
+      "on": "On",
+      "off": "Off"
     },
     "sel": {
       "more": "More",
@@ -1564,7 +1566,35 @@
     },
     "icon": {
       "color": "Icon color",
-      "change": "Change icon"
+      "change": "Change icon",
+      "weight": {
+        "thin": "Thin",
+        "light": "Light",
+        "regular": "Regular",
+        "bold": "Bold",
+        "fill": "Fill",
+        "duotone": "Duotone"
+      },
+      "editorDescription": "Find a similar icon and customize its visual weight.",
+      "selectedIcon": "Selected icon",
+      "iconWeight": "Icon weight",
+      "weightInfo": "Choose the visual weight used for icon search and replacement.",
+      "applyToPresentation": "Apply to presentation",
+      "applyToPresentationDesc": "Use this weight for every icon.",
+      "applyWeightAria": "Apply icon weight to entire presentation",
+      "searchPlaceholder": "Search similar icons",
+      "searchAria": "Search icons",
+      "search": "Search",
+      "noIconsFound": "No icons found",
+      "tryDifferent": "Try a different search term.",
+      "applyAllNote": "The selected weight will be applied to every icon.",
+      "replaceOneNote": "Only the selected icon will be replaced.",
+      "replace": "Replace icon",
+      "closeAria": "Close icon editor",
+      "couldNotLoadTitle": "Could not load icons",
+      "couldNotLoadBody": "Failed to fetch icons. Please try again.",
+      "iconRequiredTitle": "Icon required",
+      "iconRequiredBody": "Select an icon before replacing."
     },
     "layout": {
       "gap": "Gap",
@@ -1590,6 +1620,75 @@
       "updatedBody": "The selected image was replaced.",
       "uploadFailedTitle": "Upload failed",
       "uploadFailedBody": "Failed to upload image. Please try again."
+    },
+    "shape": {
+      "fillTitle": "Shape fill",
+      "fill": "Fill",
+      "fillColor": "Fill color",
+      "fillOpacity": "Fill opacity",
+      "borderTitle": "Shape border",
+      "stroke": "Stroke",
+      "borderColor": "Border color",
+      "borderWidth": "Border width",
+      "borderOpacity": "Border opacity",
+      "lineStartEnd": "Line start and end",
+      "markerStart": "Start",
+      "markerEnd": "End",
+      "vectorHint": "Double-click the line to drag its vector endpoints.",
+      "borderRadius": "Border radius",
+      "vectorPath": "Vector path",
+      "vectorShape": {
+        "polygon": "polygon",
+        "ellipse": "ellipse"
+      },
+      "closedPath": "Closed path",
+      "curve": "Curve",
+      "curveMode": {
+        "none": "Straight",
+        "smooth": "Smooth"
+      },
+      "tension": "Tension",
+      "smoothness": "Smoothness",
+      "shadowTitle": "Shape shadow",
+      "opacityTitle": "Shape opacity",
+      "shadow": "Shadow",
+      "shadowPosition": "Position",
+      "shadowBlur": "Blur",
+      "shadowAmount": "Amount",
+      "shadowOpacity": "Opacity",
+      "marker": {
+        "none": "None",
+        "arrow": "Arrow",
+        "stealth": "Stealth arrow",
+        "triangle": "Filled arrow",
+        "circle": "Circle",
+        "square": "Square",
+        "diamond": "Diamond"
+      },
+      "lineMarkerAria": "{label} line marker"
+    },
+    "text": {
+      "fontSize": "Font size",
+      "increaseFontSize": "Increase font size",
+      "decreaseFontSize": "Decrease font size",
+      "textColor": "Text color",
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "listMarker": "List marker",
+      "settings": "Settings",
+      "fontFamily": "Font family",
+      "searchFonts": "Search fonts",
+      "clearFontSearch": "Clear font search",
+      "clear": "Clear",
+      "swapFontSource": "Swap font source",
+      "noFonts": "No fonts",
+      "opacity": "Opacity",
+      "letterSpacing": "Letter spacing",
+      "lineHeight": "Line height",
+      "bulletList": "Bullet list",
+      "numberedList": "Numbered list",
+      "noList": "No list"
     }
   }
 }

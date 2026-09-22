@@ -12,6 +12,7 @@ import { setPresentationData } from "@/store/slices/presentationGeneration";
 import { useDispatch, useSelector } from "react-redux";
 import { PresentationGenerationApi } from "@/app/(presentation-generator)/services/api/presentation-generation";
 import { notify } from "@/components/ui/sonner";
+import { useTranslations } from "next-intl";
 
 const ICON_WEIGHTS = [
   "thin",
@@ -27,15 +28,6 @@ type IconWeight = (typeof ICON_WEIGHTS)[number];
 const DEFAULT_ICON_WEIGHT: IconWeight = "regular";
 const ICON_WEIGHT_PATTERN = ICON_WEIGHTS.join("|");
 const ICON_SEARCH_DEBOUNCE_MS = 500;
-
-const ICON_WEIGHT_LABELS: Record<IconWeight, string> = {
-  thin: "Thin",
-  light: "Light",
-  regular: "Regular",
-  bold: "Bold",
-  fill: "Fill",
-  duotone: "Duotone",
-};
 
 const normalizeIconWeight = (weight?: string | null): IconWeight => {
   const normalized = (weight || "").trim().toLowerCase().replace(/_/g, "-");
@@ -127,6 +119,7 @@ const IconsEditor = ({
   onClose,
   onIconChange,
 }: IconsEditorProps) => {
+  const t = useTranslations("slideEditor");
   const dispatch = useDispatch();
   const presentationData = useSelector(
     (state: RootState) => state.presentationGeneration.presentationData
@@ -191,10 +184,10 @@ const IconsEditor = ({
         if (requestIdRef.current === requestId) {
           console.error("Error fetching icons:", error);
           notify.error(
-            "Could not load icons",
+            t("icon.couldNotLoadTitle"),
             error instanceof Error
               ? error.message
-              : "Failed to fetch icons. Please try again."
+              : t("icon.couldNotLoadBody")
           );
           setIcons([]);
         }
@@ -230,7 +223,7 @@ const IconsEditor = ({
     );
 
     if (!replacementIcon) {
-      notify.warning("Icon required", "Select an icon before replacing.");
+      notify.warning(t("icon.iconRequiredTitle"), t("icon.iconRequiredBody"));
       return;
     }
 
@@ -269,10 +262,10 @@ const IconsEditor = ({
             <header className="flex h-[85px] flex-none items-center border-b border-[#EDEEEF] bg-white px-6 shadow-[0_4px_7px_rgba(0,0,0,0.04)]">
               <div>
                 <DialogPrimitive.Title className="text-[18px] font-normal leading-normal">
-                  Change Icon
+                  {t("icon.change")}
                 </DialogPrimitive.Title>
                 <DialogPrimitive.Description className="mt-0.5 text-[14px] font-normal tracking-[-0.42px] text-[#808080]">
-                  Find a similar icon and customize its visual weight.
+                  {t("icon.editorDescription")}
                 </DialogPrimitive.Description>
               </div>
             </header>
@@ -282,7 +275,7 @@ const IconsEditor = ({
                 <div className="flex items-center gap-4 sm:block">
                   <div>
                     <p className="mb-2 text-[12px] font-medium text-[#666]">
-                      Selected icon
+                      {t("icon.selectedIcon")}
                     </p>
                     <div className="flex size-[78px] items-center justify-center rounded-[14px] border border-[#E1E1E5] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
                       {previewIconSource ? (
@@ -304,12 +297,12 @@ const IconsEditor = ({
                   <div className="min-w-0 flex-1 sm:mt-5">
                     <div className="mb-2.5 flex items-center gap-1.5">
                       <p className="text-[12px] font-medium text-[#666]">
-                        Icon weight
+                        {t("icon.iconWeight")}
                       </p>
                       <span
                         role="img"
-                        aria-label="Choose the visual weight used for icon search and replacement."
-                        title="Choose the visual weight used for icon search and replacement."
+                        aria-label={t("icon.weightInfo")}
+                        title={t("icon.weightInfo")}
                         className="inline-flex size-4 items-center justify-center text-[#A1A1AA]"
                       >
                         <Info className="size-3" />
@@ -354,7 +347,7 @@ const IconsEditor = ({
                                   : "text-[#666]"
                               )}
                             >
-                              {ICON_WEIGHT_LABELS[weight]}
+                              {t(`icon.weight.${weight}`)}
                             </span>
                           </button>
                         );
@@ -366,14 +359,14 @@ const IconsEditor = ({
                 <div className="mt-4 flex items-center justify-between gap-3 border-t border-[#E1E1E5] pt-4">
                   <div>
                     <p className="text-[12px] font-medium text-[#191919]">
-                      Apply to presentation
+                      {t("icon.applyToPresentation")}
                     </p>
                     <p className="mt-0.5 text-[10px] leading-4 text-[#808080]">
-                      Use this weight for every icon.
+                      {t("icon.applyToPresentationDesc")}
                     </p>
                   </div>
                   <Switch
-                    aria-label="Apply icon weight to entire presentation"
+                    aria-label={t("icon.applyWeightAria")}
                     checked={applyStylesToPresentation}
                     onCheckedChange={setApplyStylesToPresentation}
                     className="h-5 w-9 flex-none data-[state=checked]:bg-[#7C3AED] data-[state=unchecked]:bg-[#DDDEE3]"
@@ -400,13 +393,13 @@ const IconsEditor = ({
                         autoFocus
                         value={searchQuery}
                         onChange={(event) => setSearchQuery(event.target.value)}
-                        placeholder="Search similar icons"
+                        placeholder={t("icon.searchPlaceholder")}
                         className="h-full min-w-0 flex-1 bg-transparent text-[14px] font-normal outline-none placeholder:text-[#999]"
                       />
                     </label>
                     <button
                       type="submit"
-                      aria-label="Search icons"
+                      aria-label={t("icon.searchAria")}
                       disabled={!activeQuery || loading}
                       className="flex w-[104px] items-center justify-center gap-1.5 rounded-[38.4px] bg-[#EDEEEF] px-3 text-[12px] text-[#191919] transition hover:bg-[#E1E1E5] disabled:cursor-not-allowed disabled:text-[#999]"
                     >
@@ -415,7 +408,7 @@ const IconsEditor = ({
                       ) : (
                         <Search className="size-3.5" />
                       )}
-                      Search
+                      {t("icon.search")}
                     </button>
                   </form>
                 </div>
@@ -485,10 +478,10 @@ const IconsEditor = ({
                         <div>
                           <Search className="mx-auto mb-3 size-7 text-[#B7B8BE]" />
                           <p className="text-[13px] font-medium text-[#666]">
-                            No icons found
+                            {t("icon.noIconsFound")}
                           </p>
                           <p className="mt-1 text-[12px] text-[#808080]">
-                            Try a different search term.
+                            {t("icon.tryDifferent")}
                           </p>
                         </div>
                       </div>
@@ -499,8 +492,8 @@ const IconsEditor = ({
                 <footer className="mt-3 flex h-[66px] flex-none items-center justify-between gap-3 border-t border-[#EDEEEF] px-4 sm:px-5">
                   <p className="hidden text-[11px] leading-4 text-[#808080] sm:block">
                     {applyStylesToPresentation
-                      ? "The selected weight will be applied to every icon."
-                      : "Only the selected icon will be replaced."}
+                      ? t("icon.applyAllNote")
+                      : t("icon.replaceOneNote")}
                   </p>
                   <button
                     type="button"
@@ -512,7 +505,7 @@ const IconsEditor = ({
                     }}
                     className="ml-auto flex h-10 items-center justify-center gap-1.5 rounded-full px-5 text-[13px] font-semibold text-[#101323] shadow-none transition hover:brightness-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Replace icon
+                    {t("icon.replace")}
                     <ChevronRight className="size-4" aria-hidden="true" />
                   </button>
                 </footer>
@@ -521,7 +514,7 @@ const IconsEditor = ({
           </div>
 
           <DialogPrimitive.Close
-            aria-label="Close icon editor"
+            aria-label={t("icon.closeAria")}
             className="absolute right-3 top-3 flex size-11 items-center justify-center rounded-full bg-white text-[#191919] shadow-sm transition hover:bg-[#F6F6F9] sm:-right-[68px] sm:top-0 sm:size-[52px]"
           >
             <X className="size-5" strokeWidth={1.5} aria-hidden="true" />

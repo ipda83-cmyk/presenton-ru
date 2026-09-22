@@ -1524,7 +1524,9 @@
   "slideEditor": {
     "common": {
       "delete": "Удалить",
-      "color": "Цвет"
+      "color": "Цвет",
+      "on": "Вкл",
+      "off": "Выкл"
     },
     "sel": {
       "more": "Ещё",
@@ -1564,7 +1566,35 @@
     },
     "icon": {
       "color": "Цвет иконки",
-      "change": "Заменить иконку"
+      "change": "Заменить иконку",
+      "weight": {
+        "thin": "Тонкая",
+        "light": "Лёгкая",
+        "regular": "Обычная",
+        "bold": "Жирная",
+        "fill": "Заливка",
+        "duotone": "Двухцветная"
+      },
+      "editorDescription": "Найдите похожую иконку и настройте её толщину.",
+      "selectedIcon": "Выбранная иконка",
+      "iconWeight": "Толщина иконки",
+      "weightInfo": "Выберите визуальную толщину для поиска и замены иконки.",
+      "applyToPresentation": "Применить ко всей презентации",
+      "applyToPresentationDesc": "Использовать эту толщину для каждой иконки.",
+      "applyWeightAria": "Применить толщину иконки ко всей презентации",
+      "searchPlaceholder": "Поиск похожих иконок",
+      "searchAria": "Искать иконки",
+      "search": "Найти",
+      "noIconsFound": "Иконки не найдены",
+      "tryDifferent": "Попробуйте другой запрос.",
+      "applyAllNote": "Выбранная толщина будет применена ко всем иконкам.",
+      "replaceOneNote": "Будет заменена только выбранная иконка.",
+      "replace": "Заменить иконку",
+      "closeAria": "Закрыть редактор иконок",
+      "couldNotLoadTitle": "Не удалось загрузить иконки",
+      "couldNotLoadBody": "Не удалось получить иконки. Попробуйте ещё раз.",
+      "iconRequiredTitle": "Нужна иконка",
+      "iconRequiredBody": "Выберите иконку перед заменой."
     },
     "layout": {
       "gap": "Отступ",
@@ -1590,6 +1620,75 @@
       "updatedBody": "Выбранное изображение заменено.",
       "uploadFailedTitle": "Ошибка загрузки",
       "uploadFailedBody": "Не удалось загрузить изображение. Попробуйте ещё раз."
+    },
+    "shape": {
+      "fillTitle": "Заливка фигуры",
+      "fill": "Заливка",
+      "fillColor": "Цвет заливки",
+      "fillOpacity": "Прозрачность заливки",
+      "borderTitle": "Граница фигуры",
+      "stroke": "Обводка",
+      "borderColor": "Цвет границы",
+      "borderWidth": "Толщина границы",
+      "borderOpacity": "Прозрачность границы",
+      "lineStartEnd": "Начало и конец линии",
+      "markerStart": "Начало",
+      "markerEnd": "Конец",
+      "vectorHint": "Дважды щёлкните по линии, чтобы перетащить концы вектора.",
+      "borderRadius": "Скругление углов",
+      "vectorPath": "Векторный контур",
+      "vectorShape": {
+        "polygon": "многоугольник",
+        "ellipse": "эллипс"
+      },
+      "closedPath": "Замкнутый контур",
+      "curve": "Кривая",
+      "curveMode": {
+        "none": "Прямая",
+        "smooth": "Плавная"
+      },
+      "tension": "Натяжение",
+      "smoothness": "Плавность",
+      "shadowTitle": "Тень фигуры",
+      "opacityTitle": "Прозрачность фигуры",
+      "shadow": "Тень",
+      "shadowPosition": "Смещение",
+      "shadowBlur": "Размытие",
+      "shadowAmount": "Значение",
+      "shadowOpacity": "Прозрачность",
+      "marker": {
+        "none": "Нет",
+        "arrow": "Стрелка",
+        "stealth": "Тонкая стрелка",
+        "triangle": "Закрашенная стрелка",
+        "circle": "Круг",
+        "square": "Квадрат",
+        "diamond": "Ромб"
+      },
+      "lineMarkerAria": "{label} — маркер линии"
+    },
+    "text": {
+      "fontSize": "Размер шрифта",
+      "increaseFontSize": "Увеличить размер шрифта",
+      "decreaseFontSize": "Уменьшить размер шрифта",
+      "textColor": "Цвет текста",
+      "bold": "Полужирный",
+      "italic": "Курсив",
+      "underline": "Подчёркнутый",
+      "listMarker": "Маркер списка",
+      "settings": "Настройки",
+      "fontFamily": "Шрифт",
+      "searchFonts": "Поиск шрифтов",
+      "clearFontSearch": "Очистить поиск шрифтов",
+      "clear": "Очистить",
+      "swapFontSource": "Сменить источник шрифтов",
+      "noFonts": "Шрифтов нет",
+      "opacity": "Прозрачность",
+      "letterSpacing": "Межбуквенный интервал",
+      "lineHeight": "Межстрочный интервал",
+      "bulletList": "Маркированный список",
+      "numberedList": "Нумерованный список",
+      "noList": "Без списка"
     }
   }
 }
