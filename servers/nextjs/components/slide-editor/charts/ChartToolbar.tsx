@@ -15,23 +15,23 @@ import {
   type FloatingToolbarBox,
 } from "@/components/slide-editor/toolbar/FloatingToolbar";
 import { inlineStyles } from "@/components/slide-editor/toolbar/inlineStyles";
+import { useTranslations } from "next-intl";
 
 const DEFAULT_CHART_TOOLBAR_SIZE = { width: 2.5, height: 2.5 };
 const CHART_TYPE_OPTIONS: Array<{
-  label: string;
   value: ChartSlideElement["chart_type"];
 }> = [
-    { value: "bar", label: "Bar Chart" },
-    { value: "horizontal_bar", label: "Horizontal Bar" },
-    { value: "stacked_bar", label: "Stacked Bar" },
-    { value: "horizontal_stacked_bar", label: "Horizontal Stack Bar" },
-    { value: "line", label: "Line Chart" },
-    { value: "area", label: "Area Chart" },
-    { value: "pie", label: "Pie Chart" },
-    { value: "donut", label: "Donut Chart" },
-    { value: "scatter", label: "Scatter Chart" },
-    { value: "radar", label: "Radar Chart" },
-    { value: "polar_area", label: "Polar Area" },
+    { value: "bar" },
+    { value: "horizontal_bar" },
+    { value: "stacked_bar" },
+    { value: "horizontal_stacked_bar" },
+    { value: "line" },
+    { value: "area" },
+    { value: "pie" },
+    { value: "donut" },
+    { value: "scatter" },
+    { value: "radar" },
+    { value: "polar_area" },
   ];
 
 export function ChartToolbarControls({
@@ -47,6 +47,7 @@ export function ChartToolbarControls({
   onEdit?: () => void;
   onPaletteOpenChange?: (open: boolean) => void;
 }) {
+  const t = useTranslations("slideEditor");
   const [uncontrolledPaletteOpen, setUncontrolledPaletteOpen] =
     useState(false);
   const [activeColorIndex, setActiveColorIndex] = useState(0);
@@ -76,8 +77,8 @@ export function ChartToolbarControls({
       >
         <BarChart3 size={16} strokeWidth={2} />
         <select
-          aria-label="Chart type"
-          title="Chart type"
+          aria-label={t("chart.chartType")}
+          title={t("chart.chartType")}
           value={element.chart_type}
           onChange={(event) =>
             onChange({
@@ -95,7 +96,7 @@ export function ChartToolbarControls({
         >
           {CHART_TYPE_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
-              {option.label}
+              {t(`chart.type.${option.value}`)}
             </option>
           ))}
         </select>
@@ -104,8 +105,8 @@ export function ChartToolbarControls({
       {onEdit ? (
         <button
           type="button"
-          aria-label="Edit chart data"
-          title="Edit data"
+          aria-label={t("chart.editDataAria")}
+          title={t("chart.editData")}
           onClick={() => {
             setPaletteOpen(false);
             onEdit();
@@ -120,8 +121,8 @@ export function ChartToolbarControls({
         <button
           type="button"
           aria-expanded={paletteOpen}
-          aria-label="Chart colors"
-          title="Chart colors"
+          aria-label={t("chart.colors")}
+          title={t("chart.colors")}
           onClick={() => setPaletteOpen(!paletteOpen)}
           style={{
             ...inlineStyles.iconButton,
