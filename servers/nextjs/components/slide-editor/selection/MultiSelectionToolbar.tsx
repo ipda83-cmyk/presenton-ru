@@ -7,6 +7,7 @@ import {
   ShortcutKeys,
   useAppleShortcutPlatform,
 } from "@/components/slide-editor/shortcuts/ShortcutKeys";
+import { useTranslations } from "next-intl";
 
 const GROUP_SHORTCUT = editorShortcutById("group");
 
@@ -20,6 +21,7 @@ export function TemplateV2MultiSelectionToolbar({
   position: { left: number; top: number } | null;
 }) {
   const applePlatform = useAppleShortcutPlatform();
+  const t = useTranslations("slideEditor");
   if (!position || !GROUP_SHORTCUT || typeof document === "undefined") {
     return null;
   }
@@ -35,7 +37,7 @@ export function TemplateV2MultiSelectionToolbar({
     >
       <div className="inline-flex h-8 items-center gap-2 px-2">
         <span className="whitespace-nowrap text-[13px] font-semibold text-[#344054]">
-          {count} selected
+          {t("sel.countSelected", { count })}
         </span>
       </div>
       <span aria-hidden="true" className="h-5 w-px bg-[#E7E8EC]" />
@@ -46,7 +48,7 @@ export function TemplateV2MultiSelectionToolbar({
         onClick={onGroup}
       >
         <Group aria-hidden="true" className="size-4" strokeWidth={1.8} />
-        <span>Group</span>
+        <span>{t("sel.group")}</span>
         <ShortcutKeys
           applePlatform={applePlatform}
           compact

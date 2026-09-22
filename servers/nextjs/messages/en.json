@@ -1520,5 +1520,76 @@
     "deletedBody": "The upload was removed from your library.",
     "deleteFailedTitle": "Could not delete image",
     "errDeleteFailed": "Delete failed."
+  },
+  "slideEditor": {
+    "common": {
+      "delete": "Delete",
+      "color": "Color"
+    },
+    "sel": {
+      "more": "More",
+      "duplicate": "Duplicate",
+      "deleteComponent": "Delete Component",
+      "ungroup": "Ungroup",
+      "group": "Group",
+      "countSelected": "{count} selected",
+      "layer": {
+        "bring-to-front": "Bring to Front",
+        "bring-forward": "Bring Forward",
+        "send-backward": "Send Backward",
+        "send-to-back": "Send Back"
+      }
+    },
+    "infographic": {
+      "deleteItem": "Delete infographic item",
+      "editText": "Edit infographic text",
+      "range": "Range",
+      "min": "Min",
+      "max": "Max",
+      "edit": "Edit infographic"
+    },
+    "table": {
+      "cellBackgroundColor": "Cell background color",
+      "cellBackground": "Cell background",
+      "alignment": "Table alignment",
+      "alignTo": "Align {dir}",
+      "align": {
+        "left": "left",
+        "center": "center",
+        "right": "right",
+        "justify": "justify"
+      },
+      "deleteRow": "Delete row",
+      "cellActions": "Table cell actions"
+    },
+    "icon": {
+      "color": "Icon color",
+      "change": "Change icon"
+    },
+    "layout": {
+      "gap": "Gap",
+      "increaseGap": "Increase gap",
+      "decreaseGap": "Decrease gap",
+      "items": "Items",
+      "addItem": "Add Item",
+      "lastItem": "Last Item"
+    },
+    "container": {
+      "fill": "Fill",
+      "stroke": "Stroke",
+      "cornerRadius": "Corner Radius",
+      "shadow": "Shadow",
+      "layoutSettings": "Layout Settings"
+    },
+    "image": {
+      "invalidFileTitle": "Invalid file",
+      "invalidFileBody": "Please upload an image file.",
+      "tooLargeTitle": "File too large",
+      "tooLargeBody": "Image files must be smaller than 5MB.",
+      "updatedTitle": "Image updated",
+      "updatedBody": "The selected image was replaced.",
+      "uploadFailedTitle": "Upload failed",
+      "uploadFailedBody": "Failed to upload image. Please try again."
+    }
   }
 }

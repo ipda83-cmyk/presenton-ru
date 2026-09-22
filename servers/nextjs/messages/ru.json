@@ -1520,5 +1520,76 @@
     "deletedBody": "Загрузка удалена из вашей библиотеки.",
     "deleteFailedTitle": "Не удалось удалить изображение",
     "errDeleteFailed": "Не удалось удалить."
+  },
+  "slideEditor": {
+    "common": {
+      "delete": "Удалить",
+      "color": "Цвет"
+    },
+    "sel": {
+      "more": "Ещё",
+      "duplicate": "Дублировать",
+      "deleteComponent": "Удалить элемент",
+      "ungroup": "Разгруппировать",
+      "group": "Сгруппировать",
+      "countSelected": "Выбрано: {count}",
+      "layer": {
+        "bring-to-front": "На передний план",
+        "bring-forward": "Выше",
+        "send-backward": "Ниже",
+        "send-to-back": "На задний план"
+      }
+    },
+    "infographic": {
+      "deleteItem": "Удалить элемент инфографики",
+      "editText": "Редактировать текст инфографики",
+      "range": "Диапазон",
+      "min": "Мин",
+      "max": "Макс",
+      "edit": "Редактировать инфографику"
+    },
+    "table": {
+      "cellBackgroundColor": "Цвет фона ячейки",
+      "cellBackground": "Фон ячейки",
+      "alignment": "Выравнивание таблицы",
+      "alignTo": "Выровнять: {dir}",
+      "align": {
+        "left": "по левому краю",
+        "center": "по центру",
+        "right": "по правому краю",
+        "justify": "по ширине"
+      },
+      "deleteRow": "Удалить строку",
+      "cellActions": "Действия с ячейкой"
+    },
+    "icon": {
+      "color": "Цвет иконки",
+      "change": "Заменить иконку"
+    },
+    "layout": {
+      "gap": "Отступ",
+      "increaseGap": "Увеличить отступ",
+      "decreaseGap": "Уменьшить отступ",
+      "items": "Элементы",
+      "addItem": "Добавить элемент",
+      "lastItem": "Последний элемент"
+    },
+    "container": {
+      "fill": "Заливка",
+      "stroke": "Обводка",
+      "cornerRadius": "Скругление углов",
+      "shadow": "Тень",
+      "layoutSettings": "Настройки разметки"
+    },
+    "image": {
+      "invalidFileTitle": "Некорректный файл",
+      "invalidFileBody": "Загрузите файл изображения.",
+      "tooLargeTitle": "Файл слишком большой",
+      "tooLargeBody": "Файл изображения должен быть меньше 5 МБ.",
+      "updatedTitle": "Изображение обновлено",
+      "updatedBody": "Выбранное изображение заменено.",
+      "uploadFailedTitle": "Ошибка загрузки",
+      "uploadFailedBody": "Не удалось загрузить изображение. Попробуйте ещё раз."
+    }
   }
 }

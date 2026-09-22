@@ -9,6 +9,7 @@ import {
   FloatingToolbar,
   type FloatingToolbarBox,
 } from "@/components/slide-editor/toolbar/FloatingToolbar";
+import { useTranslations } from "next-intl";
 
 export function InfographicItemToolbar({
   anchorBox,
@@ -23,6 +24,7 @@ export function InfographicItemToolbar({
   onDelete: () => void;
   onUngroup: () => void;
 }) {
+  const t = useTranslations("slideEditor");
   const ungroupActions: ComponentActionsMenuActions = {
     canUngroup,
     componentCount: 1,
@@ -42,13 +44,13 @@ export function InfographicItemToolbar({
     >
       <button
         type="button"
-        title="Delete infographic item"
+        title={t("infographic.deleteItem")}
         disabled={!canDelete}
         onClick={onDelete}
         className="inline-flex h-8 items-center gap-1.5 rounded-[6px] px-2 text-[13px] font-medium hover:bg-[#F6F6F9] disabled:cursor-not-allowed disabled:opacity-40"
       >
         <Trash2 size={15} />
-        <span>Delete</span>
+        <span>{t("common.delete")}</span>
       </button>
       {canUngroup ? (
         <>

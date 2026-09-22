@@ -14,6 +14,7 @@ import {
   type FloatingToolbarBox,
 } from "@/components/slide-editor/toolbar/FloatingToolbar";
 import { withHash } from "@/components/slide-editor/utils/color";
+import { useTranslations } from "next-intl";
 
 export function IconToolbar({
   anchorBox,
@@ -32,6 +33,7 @@ export function IconToolbar({
   onEditIcon: () => void;
   scale: number;
 }) {
+  const t = useTranslations("slideEditor");
   const box = elementBox(element);
   const iconColor = withHash(element.color, "#000000");
   const update = (changes: Partial<ImageSlideElement>) => {
@@ -53,8 +55,8 @@ export function IconToolbar({
       className="inline-flex items-center gap-2 rounded-[6px] bg-white px-[10px] py-[6px] font-syne text-[#191919] shadow-[0_0_4px_rgba(0,0,0,0.15)]"
     >
       <label
-        title="Icon color"
-        aria-label="Icon color"
+        title={t("icon.color")}
+        aria-label={t("icon.color")}
         className="relative flex h-8 cursor-pointer items-center gap-2 rounded-[6px] px-2 text-[13px] font-medium hover:bg-[#F6F6F9]"
       >
         <span
@@ -62,9 +64,9 @@ export function IconToolbar({
           className="size-4 rounded-full border border-black/10"
           style={{ backgroundColor: iconColor }}
         />
-        <span>Color</span>
+        <span>{t("common.color")}</span>
         <DeferredColorInput
-          aria-label="Icon color"
+          aria-label={t("icon.color")}
           value={iconColor}
           onCommit={(color) => update({ color })}
           className="absolute inset-0 size-full cursor-pointer opacity-0"
@@ -75,13 +77,13 @@ export function IconToolbar({
 
       <button
         type="button"
-        title="Change icon"
-        aria-label="Change icon"
+        title={t("icon.change")}
+        aria-label={t("icon.change")}
         onClick={onEditIcon}
         className="flex h-8 items-center gap-2 rounded-[6px] px-2 text-[13px] font-medium hover:bg-[#F6F6F9]"
       >
         <Replace size={16} strokeWidth={1.7} aria-hidden="true" />
-        <span>Change icon</span>
+        <span>{t("icon.change")}</span>
       </button>
 
       {componentActions ? (

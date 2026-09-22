@@ -36,6 +36,7 @@ import {
   FloatingToolbarPanel,
   type FloatingToolbarBox,
 } from "@/components/slide-editor/toolbar/FloatingToolbar";
+import { useTranslations } from "next-intl";
 
 type TableCellAlignment = NonNullable<TableCell["alignment"]>;
 
@@ -57,6 +58,7 @@ export function TableToolbarControls({
   selectedCell: TableCellSelection | null;
   onChange: (index: number, element: TableSlideElement) => void;
 }) {
+  const t = useTranslations("slideEditor");
   const [tableMenuOpen, setTableMenuOpen] = useState(false);
   const colorInputRef = useRef<HTMLInputElement | null>(null);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
@@ -238,8 +240,8 @@ export function TableToolbarControls({
     <div ref={toolbarRef} style={tableControlsStyle}>
       <button
         type="button"
-        aria-label="Cell background color"
-        title="Cell background"
+        aria-label={t("table.cellBackgroundColor")}
+        title={t("table.cellBackground")}
         style={iconButtonStyle}
         onClick={() => colorInputRef.current?.click()}
       >
@@ -263,8 +265,8 @@ export function TableToolbarControls({
       <Divider />
       <button
         type="button"
-        aria-label="Table alignment"
-        title={`Align ${nextAlignmentLabel(activeCellAlignment)}`}
+        aria-label={t("table.alignment")}
+        title={t("table.alignTo", { dir: t(`table.align.${nextAlignmentLabel(activeCellAlignment)}`) })}
         style={iconButtonStyle}
         onClick={cycleActiveCellAlignment}
       >
@@ -273,8 +275,8 @@ export function TableToolbarControls({
       <Divider />
       <button
         type="button"
-        aria-label="Delete row"
-        title="Delete row"
+        aria-label={t("table.deleteRow")}
+        title={t("table.deleteRow")}
         disabled={!canDeleteRow}
         style={{
           ...iconButtonStyle,
@@ -288,9 +290,9 @@ export function TableToolbarControls({
       <Divider />
       <button
         type="button"
-        aria-label="Table cell actions"
+        aria-label={t("table.cellActions")}
         aria-expanded={tableMenuOpen}
-        title="Table cell actions"
+        title={t("table.cellActions")}
         style={{
           ...iconButtonStyle,
           ...(tableMenuOpen ? activeButtonStyle : null),

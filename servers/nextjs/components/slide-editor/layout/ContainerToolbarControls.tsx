@@ -17,6 +17,7 @@ import {
   preventInvalidNumberInput,
   sanitizeNumericInput,
 } from "@/components/slide-editor/toolbar/numericInput";
+import { useTranslations } from "next-intl";
 
 type RawRecord = Record<string, unknown>;
 type ContainerPanelId = "fill" | "stroke" | "radius" | "padding" | "shadow";
@@ -175,6 +176,7 @@ export function TemplateV2ContainerToolbarControls({
   onToggle: (panel: ContainerPanelId) => void;
   openPanel: string | null;
 }) {
+  const t = useTranslations("slideEditor");
   const alignment = asRecord(element.alignment);
   const fill = asRecord(element.fill);
   const stroke = asRecord(element.stroke);
@@ -221,7 +223,7 @@ export function TemplateV2ContainerToolbarControls({
     <>
       <div className="relative">
         <ContainerControlButton
-          title="Fill"
+          title={t("container.fill")}
           open={openPanel === "fill"}
           onClick={() => onToggle("fill")}
           className="w-7 px-0"
@@ -253,7 +255,7 @@ export function TemplateV2ContainerToolbarControls({
 
       <div className="relative">
         <ContainerControlButton
-          title="Stroke"
+          title={t("container.stroke")}
           open={openPanel === "stroke"}
           onClick={() => onToggle("stroke")}
           className="w-7 px-0"
@@ -290,7 +292,7 @@ export function TemplateV2ContainerToolbarControls({
 
       <div className="relative">
         <ContainerControlButton
-          title="Corner Radius"
+          title={t("container.cornerRadius")}
           open={openPanel === "radius"}
           onClick={() => onToggle("radius")}
           className="w-7 px-0"
@@ -349,7 +351,7 @@ export function TemplateV2ContainerToolbarControls({
 
       <div className="relative">
         <ContainerControlButton
-          title="Shadow"
+          title={t("container.shadow")}
           open={openPanel === "shadow"}
           onClick={() => onToggle("shadow")}
           className="px-3"
@@ -424,7 +426,7 @@ export function TemplateV2ContainerToolbarControls({
 
       <div className="relative">
         <ContainerControlButton
-          title="Layout Settings"
+          title={t("container.layoutSettings")}
           open={openPanel === "padding"}
           onClick={() => onToggle("padding")}
           className="w-7 px-0"

@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslations } from "next-intl";
 
 export type ComponentActionsMenuActions = {
   canUngroup: boolean;
@@ -27,29 +28,12 @@ export type ComponentActionsMenuActions = {
 
 const COMPONENT_LAYER_ACTIONS: Array<{
   action: ComponentLayerAction;
-  label: string;
   shortcut: string;
 }> = [
-  {
-    action: "bring-to-front",
-    label: "Bring to Front",
-    shortcut: "Shift+Alt+K",
-  },
-  {
-    action: "bring-forward",
-    label: "Bring Forward",
-    shortcut: "Alt+K",
-  },
-  {
-    action: "send-backward",
-    label: "Send Backward",
-    shortcut: "Alt+J",
-  },
-  {
-    action: "send-to-back",
-    label: "Send Back",
-    shortcut: "Shift+Alt+J",
-  },
+  { action: "bring-to-front", shortcut: "Shift+Alt+K" },
+  { action: "bring-forward", shortcut: "Alt+K" },
+  { action: "send-backward", shortcut: "Alt+J" },
+  { action: "send-to-back", shortcut: "Shift+Alt+J" },
 ];
 
 export function ComponentActionsMenu({
@@ -61,6 +45,7 @@ export function ComponentActionsMenu({
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
+  const t = useTranslations("slideEditor");
   const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
   const menuOpen = open ?? uncontrolledOpen;
   const setMenuOpen = onOpenChange ?? setUncontrolledOpen;
@@ -70,8 +55,8 @@ export function ComponentActionsMenu({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          title="More"
-          aria-label="More"
+          title={t("sel.more")}
+          aria-label={t("sel.more")}
           className={cn(
             "grid h-8 w-8 place-items-center rounded-[4px] border-0 bg-transparent font-manrope text-black hover:bg-[#F6F6F9]",
             menuOpen && "bg-[#F6F6F9]",
@@ -98,10 +83,10 @@ export function ComponentActionsMenu({
         <ComponentActionsMenuItem
           strong
           icon={Copy}
-          label="Duplicate"
+          label={t("sel.duplicate")}
           onClick={actions.onDuplicate}
         />
-        {COMPONENT_LAYER_ACTIONS.map(({ action, label, shortcut }) => {
+        {COMPONENT_LAYER_ACTIONS.map(({ action, shortcut }) => {
           const disabled = !canApplyComponentLayerAction(
             actions.componentIndex,
             actions.componentCount,
@@ -111,7 +96,7 @@ export function ComponentActionsMenu({
             <ComponentActionsMenuItem
               key={action}
               disabled={disabled}
-              label={label}
+              label={t(`sel.layer.${action}`)}
               shortcut={shortcut}
               onClick={() => actions.onLayerAction(action)}
             />
@@ -121,7 +106,7 @@ export function ComponentActionsMenu({
         <ComponentActionsMenuItem
           strong
           icon={Trash2}
-          label="Delete Component"
+          label={t("sel.deleteComponent")}
           onClick={actions.onDelete}
         />
       </DropdownMenuContent>
@@ -134,15 +119,16 @@ export function ComponentUngroupButton({
 }: {
   actions: ComponentActionsMenuActions;
 }) {
+  const t = useTranslations("slideEditor");
   if (!actions.canUngroup) return null;
   return (
     <button
       type="button"
-      title="Ungroup"
+      title={t("sel.ungroup")}
       onClick={actions.onUngroup}
       className="inline-flex h-7 cursor-pointer items-center gap-1 rounded-[6px] px-2 font-manrope text-[14px] font-medium leading-4 text-[#191919] hover:bg-[#F6F6F9]"
     >
-      <span>Ungroup</span>
+      <span>{t("sel.ungroup")}</span>
     </button>
   );
 }

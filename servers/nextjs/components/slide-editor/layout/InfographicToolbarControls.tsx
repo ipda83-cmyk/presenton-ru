@@ -16,6 +16,7 @@ import {
   preventInvalidNumberInput,
   sanitizeNumericInput,
 } from "@/components/slide-editor/toolbar/numericInput";
+import { useTranslations } from "next-intl";
 
 type RawRecord = Record<string, unknown>;
 type InfographicPanelId = "items" | "infographic-range";
@@ -45,6 +46,7 @@ export function TemplateV2InfographicToolbarControls({
   onToggle: (panel: InfographicPanelId) => void;
   openPanel: string | null;
 }) {
+  const t = useTranslations("slideEditor");
   const data = readInfographicData(element);
   const infographicType = data.type;
   const minValue = data.min_value;
@@ -91,24 +93,24 @@ export function TemplateV2InfographicToolbarControls({
       {isMeter ? (
         <div className="relative">
           <ToolbarIconButton
-            title="Range"
+            title={t("infographic.range")}
             open={openPanel === "infographic-range"}
             onClick={() => onToggle("infographic-range")}
           >
             <span className="text-[11px] font-semibold leading-none" aria-hidden>
-              Min
+              {t("infographic.min")}
             </span>
           </ToolbarIconButton>
           {openPanel === "infographic-range" ? (
             <Panel className="w-[230px] space-y-3 p-3">
               <NumberField
-                label="Min"
+                label={t("infographic.min")}
                 value={minValue}
                 step={1}
                 onCommit={(min_value) => commitDataChange({ min_value })}
               />
               <NumberField
-                label="Max"
+                label={t("infographic.max")}
                 value={maxValue}
                 step={1}
                 onCommit={(max_value) => commitDataChange({ max_value })}
@@ -133,7 +135,7 @@ export function TemplateV2InfographicToolbarControls({
       ) : null}
 
       {onEdit ? (
-        <ToolbarIconButton title="Edit infographic" open={false} onClick={onEdit}>
+        <ToolbarIconButton title={t("infographic.edit")} open={false} onClick={onEdit}>
           <Pencil size={15} strokeWidth={1.8} aria-hidden />
         </ToolbarIconButton>
       ) : null}
@@ -158,6 +160,7 @@ function InfographicItemsControl({
   onToggle: () => void;
   open: boolean;
 }) {
+  const t = useTranslations("slideEditor");
   const addItem = () => {
     if (!canAdd) return;
     onAdd();
@@ -171,7 +174,7 @@ function InfographicItemsControl({
 
   return (
     <div className="relative">
-      <ToolbarIconButton title="Items" open={open} onClick={onToggle}>
+      <ToolbarIconButton title={t("layout.items")} open={open} onClick={onToggle}>
         <PlusCircle size={16} strokeWidth={1} aria-hidden />
       </ToolbarIconButton>
       {open ? (
@@ -187,7 +190,7 @@ function InfographicItemsControl({
             )}
           >
             <Plus size={16} strokeWidth={1} aria-hidden />
-            <span>Add Item</span>
+            <span>{t("layout.addItem")}</span>
           </button>
           <div className="my-1 h-px bg-[#E7E8EC]" aria-hidden />
           <button
@@ -201,7 +204,7 @@ function InfographicItemsControl({
             )}
           >
             <Trash2 size={16} strokeWidth={1} aria-hidden />
-            <span>Last Item</span>
+            <span>{t("layout.lastItem")}</span>
             <span className="ml-auto text-[11px] text-[#8A8D96]">{count}</span>
           </button>
         </Panel>

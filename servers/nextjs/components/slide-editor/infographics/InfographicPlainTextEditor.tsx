@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import type { Box } from "@/components/slide-editor/model/model";
 import type { InfographicCanvasTextStyle } from "@/components/slide-editor/infographics/infographic-canvas-target";
 
@@ -22,6 +23,7 @@ export function InfographicPlainTextEditor({
   const cancelledRef = useRef(false);
   const committedRef = useRef(false);
   const draftRef = useRef(value);
+  const t = useTranslations("slideEditor");
 
   const commit = useCallback(() => {
     if (cancelledRef.current || committedRef.current) return;
@@ -91,7 +93,7 @@ export function InfographicPlainTextEditor({
         contentEditable
         suppressContentEditableWarning
         role="textbox"
-        aria-label="Edit infographic text"
+        aria-label={t("infographic.editText")}
         aria-multiline="true"
         data-inline-edit-ignore="true"
         onBlur={commit}

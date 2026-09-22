@@ -37,6 +37,7 @@ import {
   preventInvalidNumberInput,
   sanitizeNumericInput,
 } from "@/components/slide-editor/toolbar/numericInput";
+import { useTranslations } from "next-intl";
 
 type RawRecord = Record<string, unknown>;
 type LayoutElementType =
@@ -149,6 +150,7 @@ function GapControl({
   element: TemplateV2LayoutElement;
   onChange: (changes: RawRecord) => void;
 }) {
+  const t = useTranslations("slideEditor");
   const value = readGapValue(element);
   const numericInputOptions = { allowDecimal: true, min: 0 };
   const commit = (nextValue: number) => {
@@ -158,12 +160,12 @@ function GapControl({
 
   return (
     <label className="flex  items-center gap-2.5 px-1 text-[14px] font-medium font-manrope text-[#191919]">
-      <span>Gap</span>
+      <span>{t("layout.gap")}</span>
       <span className="flex gap-2  items-center rounded-md bg-white">
         <input
           type="text"
           inputMode={numericInputMode(numericInputOptions)}
-          aria-label="Gap"
+          aria-label={t("layout.gap")}
           value={formatGapValue(value)}
           onKeyDown={(event) => {
             if (preventInvalidNumberInput(event, numericInputOptions)) return;
@@ -185,8 +187,8 @@ function GapControl({
         <span className="flex   flex-col items-center justify-center">
           <button
             type="button"
-            title="Increase gap"
-            aria-label="Increase gap"
+            title={t("layout.increaseGap")}
+            aria-label={t("layout.increaseGap")}
             onClick={() => commit(value + 1)}
             className="grid  place-items-center rounded-sm text-[#05070A] hover:bg-[#F8F8FA]"
           >
@@ -194,8 +196,8 @@ function GapControl({
           </button>
           <button
             type="button"
-            title="Decrease gap"
-            aria-label="Decrease gap"
+            title={t("layout.decreaseGap")}
+            aria-label={t("layout.decreaseGap")}
             onClick={() => commit(value - 1)}
             className="grid   place-items-center rounded-sm text-[#05070A] hover:bg-[#F8F8FA]"
           >
@@ -213,6 +215,7 @@ function ItemsControl({
   onToggle,
   openPanel,
 }: LayoutControlsProps) {
+  const t = useTranslations("slideEditor");
   const { canAdd, canRemove, children } = layoutItemStats(element);
   const addItem = () => {
     if (!canAdd) return;
@@ -231,8 +234,8 @@ function ItemsControl({
     <div className="relative">
       <button
         type="button"
-        title="Items"
-        aria-label="Items"
+        title={t("layout.items")}
+        aria-label={t("layout.items")}
         aria-expanded={open}
         onClick={() => onToggle("items")}
         className={cn(
@@ -255,7 +258,7 @@ function ItemsControl({
             )}
           >
             <Plus size={16} strokeWidth={1} aria-hidden />
-            <span>Add Item</span>
+            <span>{t("layout.addItem")}</span>
           </button>
           <div className="h-px my-1 bg-[#E7E8EC]" aria-hidden />
           <button
@@ -269,7 +272,7 @@ function ItemsControl({
             )}
           >
             <Trash2 size={16} strokeWidth={1} aria-hidden />
-            <span>Last Item</span>
+            <span>{t("layout.lastItem")}</span>
             <span className="ml-auto text-[11px] text-[#8A8D96]">
               {children.length}
             </span>
@@ -309,6 +312,7 @@ export function TemplateV2LayoutToolbar({
   componentActions,
   ungroupAction: flowUngroupAction,
 }: TemplateV2LayoutToolbarProps) {
+  const t = useTranslations("slideEditor");
   const [openPanel, setOpenPanel] = useState<PanelId>(null);
   const layoutType = element ? normalizedLayoutType(element) : null;
   const hasFlowControls = Boolean(
@@ -361,10 +365,10 @@ export function TemplateV2LayoutToolbar({
           <>
             <div
               className="inline-flex h-7 items-center gap-1 rounded-[6px] px-2 hover:bg-[#F6F6F9] cursor-pointer text-[14px] font-manrope font-medium leading-4 text-[#191919]"
-              title="Ungroup"
+              title={t("sel.ungroup")}
               onClick={ungroupAction.onUngroup}
             >
-              <span>Ungroup</span>
+              <span>{t("sel.ungroup")}</span>
             </div>
             <ToolbarDivider />
           </>

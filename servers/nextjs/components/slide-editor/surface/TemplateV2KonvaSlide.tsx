@@ -12,6 +12,7 @@ import {
 } from "react";
 import type Konva from "konva";
 import { useDispatch } from "react-redux";
+import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { Layer, Line, Rect, Stage } from "react-konva";
 import { notify } from "@/components/ui/sonner";
@@ -407,6 +408,7 @@ function TemplateV2KonvaSlideComponent({
     ? Math.max(0.1, Math.abs(displayScale))
     : 1;
   const dispatch = useDispatch();
+  const t = useTranslations("slideEditor");
   const surfaceId = useId();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [rootElement, setRootElement] = useState<HTMLDivElement | null>(null);
@@ -2666,7 +2668,7 @@ function TemplateV2KonvaSlideComponent({
             error_message: "Invalid image file type",
           }),
         });
-        notify.warning("Invalid file", "Please upload an image file.");
+        notify.warning(t("image.invalidFileTitle"), t("image.invalidFileBody"));
         return;
       }
       if (file.size > 5 * 1024 * 1024) {
@@ -2676,7 +2678,7 @@ function TemplateV2KonvaSlideComponent({
             error_message: "Image file too large",
           }),
         });
-        notify.warning("File too large", "Image files must be smaller than 5MB.");
+        notify.warning(t("image.tooLargeTitle"), t("image.tooLargeBody"));
         return;
       }
 
@@ -2698,7 +2700,7 @@ function TemplateV2KonvaSlideComponent({
             file_size_bucket: bucketFileSize(file.size),
           }),
         });
-        notify.success("Image updated", "The selected image was replaced.");
+        notify.success(t("image.updatedTitle"), t("image.updatedBody"));
       } catch (error) {
         trackEvent(MixpanelEvent.Editor_Image_Replace_Failed, {
           ...editorAnalyticsProps({
@@ -2709,10 +2711,10 @@ function TemplateV2KonvaSlideComponent({
           }),
         });
         notify.error(
-          "Upload failed",
+          t("image.uploadFailedTitle"),
           error instanceof Error
             ? error.message
-            : "Failed to upload image. Please try again.",
+            : t("image.uploadFailedBody"),
         );
       } finally {
         pendingImageUploadRef.current = null;
