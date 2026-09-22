@@ -6,7 +6,7 @@ import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { LLMConfig } from '@/types/llm_config'
 import OpenAICompatibleImageFields from '@/components/OpenAICompatibleImageFields'
-import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS } from '@/utils/providerConstants'
+import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS, providerKey } from '@/utils/providerConstants'
 import { Check, ChevronUp, Eye, EyeOff } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { MixpanelEvent, trackEvent } from '@/utils/mixpanel'
@@ -14,6 +14,7 @@ import { useTranslations } from 'next-intl'
 
 const ImageProvider = ({ llmConfig, setLlmConfig }: { llmConfig: LLMConfig, setLlmConfig: (config: any) => void }) => {
     const t = useTranslations('settings');
+    const tp = useTranslations('providers');
     const [showApiKey, setShowApiKey] = useState(false);
     const [openImageProviderSelect, setOpenImageProviderSelect] = useState(false);
     const [openaiCompatListMeta, setOpenaiCompatListMeta] = useState<{
@@ -72,7 +73,7 @@ const ImageProvider = ({ llmConfig, setLlmConfig }: { llmConfig: LLMConfig, setL
                             </SelectTrigger>
                             <SelectContent>
                                 {DALLE_3_QUALITY_OPTIONS.map((option) => (
-                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                    <SelectItem key={option.value} value={option.value}>{tp(`quality.${option.value}`)}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -100,7 +101,7 @@ const ImageProvider = ({ llmConfig, setLlmConfig }: { llmConfig: LLMConfig, setL
                             </SelectTrigger>
                             <SelectContent>
                                 {GPT_IMAGE_1_5_QUALITY_OPTIONS.map((option) => (
-                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                    <SelectItem key={option.value} value={option.value}>{tp(`quality.${option.value}`)}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -212,7 +213,7 @@ const ImageProvider = ({ llmConfig, setLlmConfig }: { llmConfig: LLMConfig, setL
                                                                                     </span>
                                                                                 </div>
                                                                                 <span className="text-xs text-gray-600 leading-relaxed">
-                                                                                    {provider.description}
+                                                                                    {tp(`imageDesc.${providerKey(provider.value)}`)}
                                                                                 </span>
                                                                             </div>
                                                                         </div>
@@ -317,12 +318,12 @@ const ImageProvider = ({ llmConfig, setLlmConfig }: { llmConfig: LLMConfig, setL
                                             return (
                                                 <div className=" w-[205px]">
                                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                        {provider.apiKeyFieldLabel}
+                                                        {tp(`imageApiKeyFieldLabel.${providerKey(provider.value)}`)}
                                                     </label>
                                                     <div className="relative">
                                                         <input
                                                             type={showApiKey ? 'text' : 'password'}
-                                                            placeholder={t("enterYour", { label: provider.apiKeyFieldLabel ?? "" })}
+                                                            placeholder={t("enterYour", { label: tp(`imageApiKeyFieldLabel.${providerKey(provider.value)}`) })}
                                                             className="w-full px-4 pr-12 py-2.5 h-12 outline-none border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
                                                             value={getFieldValue(provider.apiKeyField)}
                                                             onChange={(e) =>

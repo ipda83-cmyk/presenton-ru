@@ -15,7 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Switch } from "@/components/ui/switch";
 
 import { LLMConfig } from "@/types/llm_config";
-import { WEB_SEARCH_PROVIDERS } from "@/utils/providerConstants";
+import { WEB_SEARCH_PROVIDERS, providerKey } from "@/utils/providerConstants";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
 import { useTranslations } from "next-intl";
 
@@ -39,6 +39,7 @@ const WebSearchProvider = ({
   setLlmConfig: React.Dispatch<React.SetStateAction<LLMConfig>>;
 }) => {
   const t = useTranslations("settings");
+  const tp = useTranslations("providers");
   const [showApiKey, setShowApiKey] = useState(false);
   const [openProviderSelect, setOpenProviderSelect] = useState(false);
   const isWebSearchEnabled = !!llmConfig.WEB_GROUNDING;
@@ -159,10 +160,10 @@ const WebSearchProvider = ({
                                   />
                                   <div className="flex flex-1 flex-col space-y-1">
                                     <span className="text-sm font-medium text-gray-900">
-                                      {option.label}
+                                      {option.value === "auto" ? tp("webLabelAuto") : option.label}
                                     </span>
                                     <span className="text-xs leading-relaxed text-gray-600">
-                                      {option.description}
+                                      {tp(`webDesc.${providerKey(option.value)}`)}
                                     </span>
                                   </div>
                                 </CommandItem>
@@ -184,7 +185,7 @@ const WebSearchProvider = ({
                 {provider?.urlField && (
                   <div>
                     <label className="mb-2 block text-sm font-medium text-[#4C5554]">
-                      {provider.urlLabel}
+                      {tp("webUrlLabelSearxng")}
                     </label>
                     <input
                       type="url"
@@ -204,7 +205,7 @@ const WebSearchProvider = ({
                 {provider?.apiKeyField && (
                   <div>
                     <label className="mb-2 block text-sm font-medium text-[#4C5554]">
-                      {provider.apiKeyLabel}
+                      {tp(`webApiKeyLabel.${providerKey(provider.value)}`)}
                     </label>
                     <div className="relative">
                       <input

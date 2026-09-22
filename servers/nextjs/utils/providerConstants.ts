@@ -39,6 +39,14 @@ export interface WebSearchProviderOption {
   urlLabel?: string;
 }
 
+/**
+ * Sanitize a provider `value` into a safe i18n key segment.
+ * next-intl treats "." as a nesting separator, so values like
+ * "gpt-image-1.5" or "dall-e-3" must be normalized (→ "gpt_image_1_5").
+ */
+export const providerKey = (value: string): string =>
+  value.replace(/[^a-zA-Z0-9]/g, "_");
+
 export const WEB_SEARCH_PROVIDERS: Record<string, WebSearchProviderOption> = {
   auto: {
     value: "auto",

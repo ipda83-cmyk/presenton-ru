@@ -20,7 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { LLMConfig } from "@/types/llm_config";
 import { getApiErrorMessage, getApiUrl } from "@/utils/api";
-import { LLM_PROVIDERS } from "@/utils/providerConstants";
+import { LLM_PROVIDERS, providerKey } from "@/utils/providerConstants";
 import { getDefaultOllamaUrl } from "@/utils/providerUtils";
 import {
   Check,
@@ -60,6 +60,7 @@ const MANUAL_MODEL_PROVIDERS = new Set(["vertex", "azure", "bedrock"]);
 
 const TextProvider = ({ onInputChange, llmConfig }: OpenAIConfigProps) => {
   const t = useTranslations("settings");
+  const tp = useTranslations("providers");
   const [openProviderSelect, setOpenProviderSelect] = useState(false);
   const [availableModels, setAvailableModels] = useState<ModelOption[]>([]);
   const [modelsLoading, setModelsLoading] = useState(false);
@@ -570,7 +571,7 @@ const TextProvider = ({ onInputChange, llmConfig }: OpenAIConfigProps) => {
                                       </span>
                                     </div>
                                     <span className="text-xs text-gray-600 leading-relaxed">
-                                      {provider.description}
+                                      {tp(`llmDesc.${providerKey(provider.value)}`)}
                                     </span>
                                   </div>
                                 </div>

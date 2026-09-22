@@ -4,7 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/colla
 import { Button } from '../ui/button';
 import { ArrowUpRight, Blocks, Check, ChevronDown, ChevronLeft, ChevronUp, Eye, EyeOff, Info, Laptop, Loader2, Search } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command';
-import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS, LLM_PROVIDERS, WEB_SEARCH_PROVIDERS } from '@/utils/providerConstants';
+import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS, LLM_PROVIDERS, WEB_SEARCH_PROVIDERS, providerKey } from '@/utils/providerConstants';
 import { cn } from '@/lib/utils';
 import { LLMConfig } from '@/types/llm_config';
 import { RootState } from '@/store/store';
@@ -69,6 +69,7 @@ const PresentonMode = ({
     const router = useRouter();
     const t = useTranslations('onb');
     const s = useTranslations('settings');
+    const tp = useTranslations('providers');
     const userConfigState = useSelector((state: RootState) => state.userConfig);
     const [openProviderSelect, setOpenProviderSelect] = useState(false);
     const [textProviderTab, setTextProviderTab] = useState<TextProviderTab>("chatgpt");
@@ -461,7 +462,7 @@ const PresentonMode = ({
             return (
                 <div className="w-full ">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                        DALL·E 3 Image Quality
+                        {tp("imageQualityLabel", { model: "DALL·E 3" })}
                     </label>
                     <div className="">
                         <Select value={llmConfig.DALL_E_3_QUALITY || 'standard'} onValueChange={(value) => {
@@ -479,7 +480,7 @@ const PresentonMode = ({
                             </SelectTrigger>
                             <SelectContent>
                                 {DALLE_3_QUALITY_OPTIONS.map((option) => (
-                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                    <SelectItem key={option.value} value={option.value}>{tp(`quality.${option.value}`)}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -493,7 +494,7 @@ const PresentonMode = ({
             return (
                 <div className="w-full">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                        GPT Image 1.5 Quality
+                        {tp("imageQualityLabel", { model: "GPT Image 1.5" })}
                     </label>
                     <div className="">
                         <Select
@@ -516,7 +517,7 @@ const PresentonMode = ({
                             </SelectTrigger>
                             <SelectContent>
                                 {GPT_IMAGE_1_5_QUALITY_OPTIONS.map((option) => (
-                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                    <SelectItem key={option.value} value={option.value}>{tp(`quality.${option.value}`)}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
@@ -666,12 +667,12 @@ const PresentonMode = ({
                     ) : (
                         <div>
                             <label className="mb-2 block text-sm font-medium text-gray-700">
-                                {provider.apiKeyFieldLabel}
+                                {tp(`imageApiKeyFieldLabel.${providerKey(provider.value)}`)}
                             </label>
                             <div className="relative">
                                 <input
                                     type={showApiKey ? "text" : "password"}
-                                    placeholder={s("enterYour", { label: provider.apiKeyFieldLabel ?? "" })}
+                                    placeholder={s("enterYour", { label: tp(`imageApiKeyFieldLabel.${providerKey(provider.value)}`) })}
                                     className="h-12 w-full rounded-lg border border-gray-300 px-4 py-2.5 pr-12 outline-none transition-colors focus:border-[#7A5AF8] focus:ring-2 focus:ring-[#7A5AF8]/20"
                                     value={getFieldValue(provider.apiKeyField)}
                                     onChange={(e) => {
@@ -941,7 +942,7 @@ const PresentonMode = ({
                 <div className="mb-4">
                     <p className="text-sm font-semibold text-[#191919]">{t("providerSetup", { label: selectedWebProvider.label ?? "" })}</p>
                     <p className="mt-1 text-xs leading-5 text-gray-500">
-                        {selectedWebProvider.description}
+                        {tp(`webDesc.${providerKey(selectedWebProvider.value)}`)}
                     </p>
                 </div>
 
@@ -955,7 +956,7 @@ const PresentonMode = ({
                     {selectedWebProvider.urlField && (
                         <div>
                             <label className="mb-2 block text-sm font-medium text-gray-700">
-                                {selectedWebProvider.urlLabel}
+                                {tp("webUrlLabelSearxng")}
                             </label>
                             <input
                                 type="url"
@@ -970,7 +971,7 @@ const PresentonMode = ({
                     {selectedWebProvider.apiKeyField && (
                         <div>
                             <label className="mb-2 block text-sm font-medium text-gray-700">
-                                {selectedWebProvider.apiKeyLabel}
+                                {tp(`webApiKeyLabel.${providerKey(selectedWebProvider.value)}`)}
                             </label>
                             <div className="relative">
                                 <input
@@ -978,7 +979,7 @@ const PresentonMode = ({
                                     value={getFieldValue(selectedWebProvider.apiKeyField)}
                                     onChange={(event) => setLlmConfig(prev => ({ ...prev, [selectedWebProvider.apiKeyField!]: event.target.value }))}
                                     className="h-12 w-full rounded-lg border border-gray-300 px-4 pr-12 outline-none transition-colors focus:border-[#7A5AF8] focus:ring-2 focus:ring-[#7A5AF8]/20"
-                                    placeholder={s("enterYour", { label: selectedWebProvider.apiKeyLabel ?? "" })}
+                                    placeholder={s("enterYour", { label: tp(`webApiKeyLabel.${providerKey(selectedWebProvider.value)}`) })}
                                 />
                                 <button
                                     type="button"
@@ -1231,7 +1232,7 @@ const PresentonMode = ({
                                         </div>
                                         <div>
                                             <p className="text-sm font-medium text-[#191919]">{provider.label}</p>
-                                            <p className="mt-1 text-xs text-[#777]">{provider.description}</p>
+                                            <p className="mt-1 text-xs text-[#777]">{tp(`llmDesc.${providerKey(provider.value)}`)}</p>
                                         </div>
                                     </button>
                                 );
@@ -1300,7 +1301,7 @@ const PresentonMode = ({
                                                                     </span>
                                                                 </div>
                                                                 <span className="text-xs text-gray-600 leading-relaxed">
-                                                                    {provider.description}
+                                                                    {tp(`llmDesc.${providerKey(provider.value)}`)}
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -1738,7 +1739,7 @@ const PresentonMode = ({
                                                         {provider.icon && <img src={provider.icon} alt="" className="h-7 w-7 object-contain" />}
                                                     </span>
                                                     <span className="text-xs font-semibold text-[#191919]">{provider.label}</span>
-                                                    <span className="line-clamp-2 text-[10px] leading-4 text-gray-500">{provider.description}</span>
+                                                    <span className="line-clamp-2 text-[10px] leading-4 text-gray-500">{tp(`webDesc.${providerKey(provider.value)}`)}</span>
                                                 </button>
                                             ))}
                                             {row.some((provider) => provider.value === selectedWebProvider?.value) && renderSelectedWebSearchProviderConfig()}
