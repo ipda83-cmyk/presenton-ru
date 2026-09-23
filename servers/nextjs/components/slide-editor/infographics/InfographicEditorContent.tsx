@@ -56,6 +56,7 @@ import type { TemplateV2InfographicToolbarElement } from "@/components/slide-edi
 import { defaultInfographicIcon } from "@/components/slide-editor/infographics/infographic-icons";
 import { resizedInfographicFrame } from "@/components/slide-editor/infographics/infographic-sizing";
 import { buildSvgUpdateUrl } from "@/lib/svg-color";
+import { demo } from "@/components/slide-editor/content/demoContent";
 
 type RawRecord = Record<string, unknown>;
 
@@ -559,7 +560,7 @@ function GanttEditor({
     setRows([
       ...data.rows,
       {
-        label: `Row ${data.rows.length + 1}`,
+        label: demo(`Row ${data.rows.length + 1}`),
         items: [defaultGanttItem(data.columns.length)],
       },
     ]);
@@ -620,7 +621,7 @@ function GanttEditor({
                 ...data,
                 columns: [
                   ...data.columns,
-                  { label: `Column ${data.columns.length + 1}` },
+                  { label: demo(`Column ${data.columns.length + 1}`) },
                 ],
               })
             }
@@ -734,7 +735,7 @@ function GanttEditor({
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[12px] font-semibold text-[#191919]">
-                        {row.label || `Row ${rowIndex + 1}`}
+                        {row.label || demo(`Row ${rowIndex + 1}`)}
                       </span>
                       <span className="mt-0.5 block text-[10px] text-[#8B8B94]">
                         {t("infographic.tasksCount", { count: row.items.length })}
@@ -935,8 +936,8 @@ function GanttTaskRangePreview({
   const endUnits = Math.min(count, Math.max(startUnits, ganttPositionToUnits(item.end)));
   const left = (startUnits / count) * 100;
   const width = Math.max(1.5, ((endUnits - startUnits) / count) * 100);
-  const startLabel = columns[item.start.column]?.label || `Column ${item.start.column + 1}`;
-  const endLabel = columns[item.end.column]?.label || `Column ${item.end.column + 1}`;
+  const startLabel = columns[item.start.column]?.label || demo(`Column ${item.start.column + 1}`);
+  const endLabel = columns[item.end.column]?.label || demo(`Column ${item.end.column + 1}`);
 
   return (
     <div className="mt-3 rounded-xl border border-[#E5E6EB] bg-white p-3">
@@ -988,7 +989,7 @@ function GanttPositionEditor({
           >
             {columns.map((column, index) => (
               <option key={`${label}-column-${index}`} value={index}>
-                {column.label || `Column ${index + 1}`}
+                {column.label || demo(`Column ${index + 1}`)}
               </option>
             ))}
           </select>
@@ -1026,7 +1027,7 @@ function TimelineEditor({
         return {
           itemLabel: "stop",
           description: t("infographic.itemsDesc.roadmap"),
-          heading: `Stop ${data.items.length + 1}`,
+          heading: demo(`Stop ${data.items.length + 1}`),
           showIcons: false,
         };
       case "milestone_timeline":
@@ -1035,63 +1036,63 @@ function TimelineEditor({
           description: t("infographic.itemsDesc.milestone_timeline"),
           heading: Number.isFinite(latestMilestone)
             ? String(latestMilestone + 1)
-            : `Milestone ${data.items.length + 1}`,
+            : demo(`Milestone ${data.items.length + 1}`),
           showIcons: false,
         };
       case "staircase":
         return {
           itemLabel: "step",
           description: t("infographic.itemsDesc.staircase"),
-          heading: `Step ${data.items.length + 1}`,
+          heading: demo(`Step ${data.items.length + 1}`),
           showIcons: true,
         };
       case "supply_chain":
         return {
           itemLabel: "stage",
           description: t("infographic.itemsDesc.supply_chain"),
-          heading: `Stage ${data.items.length + 1}`,
+          heading: demo(`Stage ${data.items.length + 1}`),
           showIcons: true,
         };
       case "stair_step_blocks":
         return {
           itemLabel: "step",
           description: t("infographic.itemsDesc.stair_step_blocks"),
-          heading: `Step ${String(data.items.length + 1).padStart(2, "0")}`,
+          heading: demo(`Step ${String(data.items.length + 1).padStart(2, "0")}`),
           showIcons: true,
         };
       case "maturity_model":
         return {
           itemLabel: "level",
           description: t("infographic.itemsDesc.maturity_model"),
-          heading: `Level ${data.items.length + 1}`,
+          heading: demo(`Level ${data.items.length + 1}`),
           showIcons: true,
         };
       case "diagonal_circles":
         return {
           itemLabel: "pillar",
           description: t("infographic.itemsDesc.diagonal_circles"),
-          heading: `Pillar ${data.items.length + 1}`,
+          heading: demo(`Pillar ${data.items.length + 1}`),
           showIcons: true,
         };
       case "chevron_process":
         return {
           itemLabel: "stage",
           description: t("infographic.itemsDesc.chevron_process"),
-          heading: `Stage ${data.items.length + 1}`,
+          heading: demo(`Stage ${data.items.length + 1}`),
           showIcons: false,
         };
       case "pyramid":
         return {
           itemLabel: "level",
           description: t("infographic.itemsDesc.pyramid"),
-          heading: `Level ${data.items.length + 1}`,
+          heading: demo(`Level ${data.items.length + 1}`),
           showIcons: true,
         };
       case "segmented_wheel":
         return {
           itemLabel: "segment",
           description: t("infographic.itemsDesc.segmented_wheel"),
-          heading: `Segment ${data.items.length + 1}`,
+          heading: demo(`Segment ${data.items.length + 1}`),
           showIcons: true,
         };
       case "customer_journey":
@@ -1105,7 +1106,7 @@ function TimelineEditor({
         return {
           itemLabel: "step",
           description: t("infographic.itemsDesc.default"),
-          heading: `Step ${data.items.length + 1}`,
+          heading: demo(`Step ${data.items.length + 1}`),
           showIcons: true,
         };
     }
@@ -1154,7 +1155,7 @@ function TimelineEditor({
           ? defaultInfographicIcon(data.items.length)
           : null,
         heading: config.heading,
-        description: "Add a description.",
+        description: demo("Add a description."),
       })}
     />
   );
@@ -1209,8 +1210,8 @@ function RadialCycleEditor({
         maxItems={8}
         onChange={(items) => onChange({ ...data, items })}
         onCreate={() => ({
-          heading: `Stage ${data.items.length + 1}`,
-          description: "Add a description.",
+          heading: demo(`Stage ${data.items.length + 1}`),
+          description: demo("Add a description."),
         })}
         showIcons={false}
       />
@@ -1247,8 +1248,8 @@ function FunnelEditor({
       onChange={(items) => onChange({ ...data, items })}
       onCreate={() => ({
         value: Math.max(0, (data.items.at(-1)?.value ?? 60) - 10),
-        heading: `Stage ${data.items.length + 1}`,
-        description: "Add a description.",
+        heading: demo(`Stage ${data.items.length + 1}`),
+        description: demo("Add a description."),
       })}
       showIcons={false}
       showValue
@@ -1313,13 +1314,13 @@ function BeforeAfterEditor({
         ...data.items,
         {
           icon: defaultInfographicIcon(data.items.length),
-          heading: `Before ${nextRow + 1}`,
-          description: "Add a description.",
+          heading: demo(`Before ${nextRow + 1}`),
+          description: demo("Add a description."),
         },
         {
           icon: defaultInfographicIcon(data.items.length + 1),
-          heading: `After ${nextRow + 1}`,
-          description: "Add a description.",
+          heading: demo(`After ${nextRow + 1}`),
+          description: demo("Add a description."),
         },
       ],
     });
@@ -1535,8 +1536,8 @@ function MindMapEditor({
       }
       onCreate={() => ({
         icon: defaultInfographicIcon(items.length),
-        heading: `Node ${items.length + 1}`,
-        description: "Add a description.",
+        heading: demo(`Node ${items.length + 1}`),
+        description: demo("Add a description."),
         items: [],
       })}
     />
@@ -1561,7 +1562,7 @@ function PillarFrameworkEditor({ data, onChange }: {
         maxItems={7}
         showFocus
         onChange={(items) => onChange({ ...data, items })}
-        onCreate={() => ({ icon: defaultInfographicIcon(data.items.length), heading: `Pillar ${data.items.length + 1}`, description: "Add a description.", focus: "Focus area" })}
+        onCreate={() => ({ icon: defaultInfographicIcon(data.items.length), heading: demo(`Pillar ${data.items.length + 1}`), description: demo("Add a description."), focus: demo("Focus area") })}
       />
     </div>
   );
@@ -1586,7 +1587,7 @@ function TransformationHubEditor({ data, onChange }: {
         showIcons={false}
         showDescription={false}
         onChange={(items) => onChange({ ...data, items })}
-        onCreate={() => ({ heading: `Capability ${data.items.length + 1}` })}
+        onCreate={() => ({ heading: demo(`Capability ${data.items.length + 1}`) })}
       />
     </div>
   );
@@ -1609,7 +1610,7 @@ function RiskMatrixEditor({ data, onChange }: {
         minItems={4}
         maxItems={4}
         onChange={(items) => onChange({ ...data, items })}
-        onCreate={() => ({ icon: defaultInfographicIcon(data.items.length), heading: "Activity", description: "Add a description." })}
+        onCreate={() => ({ icon: defaultInfographicIcon(data.items.length), heading: demo("Activity"), description: demo("Add a description.") })}
       />
     </div>
   );
@@ -1654,7 +1655,7 @@ function ImpactEffortEditor({
         maxItems={4}
         showIcons={false}
         onChange={(items) => onChange({ ...data, items })}
-        onCreate={() => ({ heading: "Quadrant", description: "Add a description." })}
+        onCreate={() => ({ heading: demo("Quadrant"), description: demo("Add a description.") })}
       />
     </div>
   );
@@ -2361,7 +2362,7 @@ function MoveButtons({
 function defaultGanttItem(columnCount: number): GanttInfographicItem {
   return normalizeGanttItem(
     {
-      name: "New task",
+      name: demo("New task"),
       start: { column: 0, offset: 0 },
       end: { column: 0, offset: 1 },
     },
@@ -2385,18 +2386,18 @@ function readMeterData(
 function readGanttData(value: unknown): GanttInfographicData {
   const data = readRecord(value);
   const columns = readArray(data.columns).map((column, index) => ({
-    label: readString(readRecord(column).label, `Column ${index + 1}`),
+    label: readString(readRecord(column).label, demo(`Column ${index + 1}`)),
   }));
-  const safeColumns = columns.length > 0 ? columns : [{ label: "Column 1" }];
+  const safeColumns = columns.length > 0 ? columns : [{ label: demo("Column 1") }];
   const rows = readArray(data.rows).map((row, rowIndex) => {
     const record = readRecord(row);
     return {
-      label: readString(record.label, `Row ${rowIndex + 1}`),
+      label: readString(record.label, demo(`Row ${rowIndex + 1}`)),
       items: readArray(record.items).map((item) => {
         const task = readRecord(item);
         return normalizeGanttItem(
           {
-            name: readString(task.name, "Task"),
+            name: readString(task.name, demo("Task")),
             start: readGanttPosition(task.start),
             end: readGanttPosition(task.end, { column: 0, offset: 1 }),
           },
@@ -2411,7 +2412,7 @@ function readGanttData(value: unknown): GanttInfographicData {
     rows:
       rows.length > 0
         ? rows
-        : [{ label: "Row 1", items: [defaultGanttItem(safeColumns.length)] }],
+        : [{ label: demo("Row 1"), items: [defaultGanttItem(safeColumns.length)] }],
   };
 }
 
@@ -2428,11 +2429,11 @@ function readItemCollectionData(
         ? items
         : type === "pyramid"
           ? [
-              { icon: defaultInfographicIcon(0), heading: "Foundation", description: "" },
-              { icon: defaultInfographicIcon(1), heading: "Efficiency", description: "" },
-              { icon: defaultInfographicIcon(2), heading: "Innovation", description: "" },
+              { icon: defaultInfographicIcon(0), heading: demo("Foundation"), description: "" },
+              { icon: defaultInfographicIcon(1), heading: demo("Efficiency"), description: "" },
+              { icon: defaultInfographicIcon(2), heading: demo("Innovation"), description: "" },
             ]
-          : [{ icon: defaultInfographicIcon(), heading: "Step 1", description: "" }],
+          : [{ icon: defaultInfographicIcon(), heading: demo("Step 1"), description: "" }],
   };
 }
 
@@ -2445,7 +2446,7 @@ function readRadialCycleData(value: unknown): RadialCycleInfographicData {
     items:
       items.length > 0
         ? items
-        : [{ heading: "Stage 1", description: "" }],
+        : [{ heading: demo("Stage 1"), description: "" }],
   };
 }
 
@@ -2455,13 +2456,13 @@ function readBeforeAfterData(value: unknown): BeforeAfterInfographicData {
   const safeItems = items.length >= 2
     ? items.slice(0, items.length - (items.length % 2))
     : [
-        { icon: defaultInfographicIcon(0), heading: "Before", description: "" },
-        { icon: defaultInfographicIcon(1), heading: "After", description: "" },
+        { icon: defaultInfographicIcon(0), heading: demo("Before"), description: "" },
+        { icon: defaultInfographicIcon(1), heading: demo("After"), description: "" },
       ];
   return {
     type: "before_after",
-    before_label: readString(data.before_label, "Before"),
-    after_label: readString(data.after_label, "After"),
+    before_label: readString(data.before_label, demo("Before")),
+    after_label: readString(data.after_label, demo("After")),
     items: safeItems,
   };
 }
@@ -2469,39 +2470,39 @@ function readBeforeAfterData(value: unknown): BeforeAfterInfographicData {
 function readImpactEffortData(value: unknown): ImpactEffortMatrixInfographicData {
   const data = readRecord(value);
   const defaults: TimelineInfographicItem[] = [
-    { heading: "Quick Wins", description: "High-impact initiatives requiring relatively low effort." },
-    { heading: "Strategic Priorities", description: "High-impact initiatives requiring significant investment." },
-    { heading: "Deprioritize", description: "Low-impact initiatives requiring substantial effort." },
-    { heading: "Fill-ins", description: "Low-impact initiatives that are easy to implement." },
+    { heading: demo("Quick Wins"), description: demo("High-impact initiatives requiring relatively low effort.") },
+    { heading: demo("Strategic Priorities"), description: demo("High-impact initiatives requiring significant investment.") },
+    { heading: demo("Deprioritize"), description: demo("Low-impact initiatives requiring substantial effort.") },
+    { heading: demo("Fill-ins"), description: demo("Low-impact initiatives that are easy to implement.") },
   ];
   const items = readArray(data.items).map(readTimelineItem);
   return {
     type: "impact_effort_matrix",
-    x_axis_label: readString(data.x_axis_label, "Impact"),
-    y_axis_label: readString(data.y_axis_label, "Effort"),
-    low_label: readString(data.low_label, "Low"),
-    high_label: readString(data.high_label, "High"),
+    x_axis_label: readString(data.x_axis_label, demo("Impact")),
+    y_axis_label: readString(data.y_axis_label, demo("Effort")),
+    low_label: readString(data.low_label, demo("Low")),
+    high_label: readString(data.high_label, demo("High")),
     items: defaults.map((fallback, index) => items[index] ?? fallback),
   };
 }
 
 function readComparisonMatrixData(value: unknown): ComparisonMatrixInfographicData {
   const data = readRecord(value);
-  const criteria = readArray(data.criteria).map((item, index) => readString(item, `Criterion ${index + 1}`));
-  const safeCriteria = criteria.length > 0 ? criteria : ["Market Access", "Investment Required", "Speed to Market"];
+  const criteria = readArray(data.criteria).map((item, index) => readString(item, demo(`Criterion ${index + 1}`)));
+  const safeCriteria = criteria.length > 0 ? criteria : [demo("Market Access"), demo("Investment Required"), demo("Speed to Market")];
   const items = readArray(data.items).map((value, index) => {
     const item = readRecord(value);
     const values = readArray(item.values).map((entry) => readString(entry, ""));
     return {
       icon: normalizeInfographicIcon(item.icon, item.color) ?? defaultInfographicIcon(index),
-      heading: readString(item.heading, `Option ${index + 1}`),
+      heading: readString(item.heading, demo(`Option ${index + 1}`)),
       values: safeCriteria.map((_, valueIndex) => values[valueIndex] ?? ""),
     };
   });
   return {
     type: "comparison_matrix",
     criteria: safeCriteria,
-    items: items.length > 0 ? items : [{ icon: defaultInfographicIcon(), heading: "Option 1", values: safeCriteria.map(() => "") }],
+    items: items.length > 0 ? items : [{ icon: defaultInfographicIcon(), heading: demo("Option 1"), values: safeCriteria.map(() => "") }],
   };
 }
 
@@ -2515,7 +2516,7 @@ function readHierarchyData(
     return {
       id: readString(item.id, `node-${index + 1}`),
       parent_id: readNullableString(item.parent_id),
-      heading: readString(item.heading, `Item ${index + 1}`),
+      heading: readString(item.heading, demo(`Item ${index + 1}`)),
       description: readNullableString(item.description),
     };
   });
@@ -2533,7 +2534,7 @@ function readConversionFunnelData(
     const item = readRecord(value);
     return {
       value: Math.min(100, Math.max(0, readNumber(item.value, 60 - index * 10))),
-      heading: readString(item.heading, `Stage ${index + 1}`),
+      heading: readString(item.heading, demo(`Stage ${index + 1}`)),
       description: readNullableString(item.description),
     };
   });
@@ -2542,7 +2543,7 @@ function readConversionFunnelData(
     items:
       items.length > 0
         ? items
-        : [{ value: 50, heading: "Stage 1", description: "" }],
+        : [{ value: 50, heading: demo("Stage 1"), description: "" }],
   };
 }
 
@@ -2561,7 +2562,7 @@ function readMindMapData(value: unknown): MindMapInfographicData {
         : [
             {
               icon: defaultInfographicIcon(),
-              heading: "Node 1",
+              heading: demo("Node 1"),
               description: "",
               items: [],
             },
@@ -2585,22 +2586,22 @@ function readPillarFrameworkData(value: unknown): PillarFrameworkInfographicData
   const items = readArray(data.items).map(readTimelineItem);
   return {
     type: "pillar_framework",
-    title: readString(data.title, "Growth & Transformation Framework"),
-    items: items.length > 0 ? items : [{ icon: defaultInfographicIcon(), heading: "Customer", description: "", focus: "Experience & Value" }],
+    title: readString(data.title, demo("Growth & Transformation Framework")),
+    items: items.length > 0 ? items : [{ icon: defaultInfographicIcon(), heading: demo("Customer"), description: "", focus: demo("Experience & Value") }],
   };
 }
 
 function readTransformationHubData(value: unknown): TransformationHubInfographicData {
   const data = readRecord(value);
   const items = readArray(data.items).map(readTimelineItem);
-  return { type: "transformation_hub", center_label: readString(data.center_label, "Business Transformation"), items: items.length > 0 ? items : [{ heading: "Strategy" }, { heading: "Process" }] };
+  return { type: "transformation_hub", center_label: readString(data.center_label, demo("Business Transformation")), items: items.length > 0 ? items : [{ heading: demo("Strategy") }, { heading: demo("Process") }] };
 }
 
 function readRiskMatrixData(value: unknown): RiskMatrixInfographicData {
   const data = readRecord(value);
-  const defaults = ["Identify", "Prioritize", "Assess", "Respond"].map((heading, index) => ({ icon: defaultInfographicIcon(index), heading, description: "Add a description." }));
+  const defaults = [demo("Identify"), demo("Prioritize"), demo("Assess"), demo("Respond")].map((heading, index) => ({ icon: defaultInfographicIcon(index), heading, description: demo("Add a description.") }));
   const items = readArray(data.items).map(readTimelineItem);
-  return { type: "risk_matrix", center_label: readString(data.center_label, "RISK"), items: defaults.map((fallback, index) => items[index] ?? fallback) };
+  return { type: "risk_matrix", center_label: readString(data.center_label, demo("RISK")), items: defaults.map((fallback, index) => items[index] ?? fallback) };
 }
 
 function readMindMapNode(value: unknown): MindMapInfographicNode {

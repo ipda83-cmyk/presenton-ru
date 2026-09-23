@@ -47,6 +47,7 @@ import {
 import { ChartColorPaletteCard } from "@/components/slide-editor/charts/ChartColorPalette";
 import { TemplateV2ChartJsElement } from "@/components/slide-editor/charts/TemplateV2ChartJsElement";
 import { useTranslations } from "next-intl";
+import { demo, isDemoDefault } from "@/components/slide-editor/content/demoContent";
 
 const CHART_TYPES: Array<{ value: ChartType }> = [
   { value: "bar" },
@@ -546,7 +547,7 @@ function defaultChartLegendVisible(chart: ChartElement) {
     chart.chart_type === "pie" ||
     chart.chart_type === "donut" ||
     series.length > 1 ||
-    Boolean(series[0]?.name && series[0].name !== "Series 1")
+    Boolean(series[0]?.name && !isDemoDefault(series[0].name, "Series 1"))
   );
 }
 
@@ -1111,13 +1112,13 @@ function EditableDataTable({
   colors: string[];
 }) {
   const t = useTranslations("slideEditor");
-  const safeCategories = categories.length > 0 ? categories : ["Item 1"];
+  const safeCategories = categories.length > 0 ? categories : [demo("Item 1")];
   const safeSeries =
     series.length > 0
       ? series
       : [
         {
-          name: "Series 1",
+          name: demo("Series 1"),
           values: normalizeValues([], safeCategories.length),
         },
       ];
@@ -1205,7 +1206,7 @@ function EditableDataTable({
   const addRow = () => {
     const nextCategories = [
       ...safeCategories,
-      `Item ${safeCategories.length + 1}`,
+      demo(`Item ${safeCategories.length + 1}`),
     ];
     onUpdate(
       nextCategories,
@@ -1237,7 +1238,7 @@ function EditableDataTable({
     const nextSeries = [
       ...safeSeries,
       {
-        name: `Series ${safeSeries.length + 1}`,
+        name: demo(`Series ${safeSeries.length + 1}`),
         values: normalizeValues([], safeCategories.length),
       },
     ];
@@ -1589,7 +1590,7 @@ function ColumnMenuItem({
 
 function safeCategoriesForChart(element: ChartElement) {
   const categories = resolvedChartCategories(element);
-  return (categories.length > 0 ? categories : ["Item 1"]).map(limitChartText);
+  return (categories.length > 0 ? categories : [demo("Item 1")]).map(limitChartText);
 }
 
 function normalizedSeries(element: ChartElement, categoryLength: number) {
@@ -1605,7 +1606,7 @@ function normalizedSeries(element: ChartElement, categoryLength: number) {
   }
   return [
     {
-      name: limitChartText(element.title ?? "Series 1"),
+      name: limitChartText(element.title ?? demo("Series 1")),
       values: normalizeValues([], length),
     },
   ];
@@ -1623,14 +1624,14 @@ function clearChartData(chart: ChartElement): ChartElement {
     chart.categories && chart.categories.length > 0
       ? chart.categories
       : chartData.length > 0
-        ? chartData.map((datum, index) => datum.label || `Item ${index + 1}`)
+        ? chartData.map((datum, index) => datum.label || demo(`Item ${index + 1}`))
         : resolvedChartCategories(chart);
   const sourceSeries =
     chart.series && chart.series.length > 0
       ? chart.series
       : [
         {
-          name: chart.title ?? "Series 1",
+          name: chart.title ?? demo("Series 1"),
           values: chartData.map((datum) => datum.value),
         },
       ];
@@ -1645,7 +1646,7 @@ function clearChartData(chart: ChartElement): ChartElement {
   );
   const categories = Array.from(
     { length: valueLength },
-    (_, index) => limitChartText(sourceCategories[index] ?? `Item ${index + 1}`),
+    (_, index) => limitChartText(sourceCategories[index] ?? demo(`Item ${index + 1}`)),
   );
   const series = sourceSeries.map((item) => ({
     ...item,

@@ -28,6 +28,7 @@ import {
   type VectorCurve,
 } from "@/components/slide-editor/types";
 import { normalizeInfographicIcon } from "@/components/slide-editor/infographics/infographic-editing";
+import { demo } from "@/components/slide-editor/content/demoContent";
 
 const MIN_ELEMENT_SIZE = 1;
 const MAX_BORDER_RADIUS = 128;
@@ -1010,7 +1011,7 @@ function adaptChart(raw: UnknownRecord): SlideElement {
     ...baseElement(raw),
     type: "chart",
     chart_type: chartType,
-    data: data.length > 0 ? data : [{ label: "Data", value: 0 }],
+    data: data.length > 0 ? data : [{ label: demo("Data"), value: 0 }],
     title: truncateString(readString(raw.title) ?? "", 80) || null,
     title_color: readColor(readValue(raw, "title_color") ?? raw.titleColor),
     legend_color: readColor(readValue(raw, "legend_color") ?? raw.legendColor),
@@ -1188,17 +1189,17 @@ function adaptInfographicData(
       .filter((item): item is UnknownRecord => Boolean(item))
       .map((item, index) => ({
         label: truncateString(
-          readString(item.label) ?? `Phase ${index + 1}`,
+          readString(item.label) ?? demo(`Phase ${index + 1}`),
           80,
         ),
       }));
-    const safeColumns = columns.length > 0 ? columns : [{ label: "Phase 1" }];
+    const safeColumns = columns.length > 0 ? columns : [{ label: demo("Phase 1") }];
     const rows = readArray(data, "rows")
       .map(asRecord)
       .filter((item): item is UnknownRecord => Boolean(item))
       .map((row, rowIndex) => ({
         label: truncateString(
-          readString(row.label) ?? `Workstream ${rowIndex + 1}`,
+          readString(row.label) ?? demo(`Workstream ${rowIndex + 1}`),
           80,
         ),
         items: readArray(row, "items")
@@ -1224,7 +1225,7 @@ function adaptInfographicData(
     return {
       type,
       columns: safeColumns,
-      rows: rows.length > 0 ? rows : [{ label: "Workstream", items: [] }],
+      rows: rows.length > 0 ? rows : [{ label: demo("Workstream"), items: [] }],
     };
   }
 
@@ -1255,11 +1256,11 @@ function adaptInfographicData(
           ? items
           : type === "pyramid"
             ? [
-                { heading: "Foundation" },
-                { heading: "Efficiency" },
-                { heading: "Innovation" },
+                { heading: demo("Foundation") },
+                { heading: demo("Efficiency") },
+                { heading: demo("Innovation") },
               ]
-            : [{ heading: "Milestone" }],
+            : [{ heading: demo("Milestone") }],
     };
   }
 
@@ -1270,24 +1271,24 @@ function adaptInfographicData(
     return {
       type,
       center_image: truncateString(readString(data.center_image) ?? "", 2000) || null,
-      items: items.length > 0 ? items : [{ heading: "Step 1" }],
+      items: items.length > 0 ? items : [{ heading: demo("Step 1") }],
     };
   }
 
   if (type === "pillar_framework") {
     const items = readArray(data, "items").map(adaptInfographicTextItem).filter((item): item is NonNullable<typeof item> => Boolean(item));
-    return { type, title: truncateString(readString(data.title) ?? "Growth & Transformation Framework", 120), items: items.length > 0 ? items : [{ heading: "Customer", focus: "Experience & Value" }] };
+    return { type, title: truncateString(readString(data.title) ?? demo("Growth & Transformation Framework"), 120), items: items.length > 0 ? items : [{ heading: demo("Customer"), focus: demo("Experience & Value") }] };
   }
 
   if (type === "transformation_hub") {
     const items = readArray(data, "items").map(adaptInfographicTextItem).filter((item): item is NonNullable<typeof item> => Boolean(item));
-    return { type, center_label: truncateString(readString(data.center_label) ?? "Business Transformation", 120), items: items.length > 0 ? items : [{ heading: "Strategy" }, { heading: "Process" }] };
+    return { type, center_label: truncateString(readString(data.center_label) ?? demo("Business Transformation"), 120), items: items.length > 0 ? items : [{ heading: demo("Strategy") }, { heading: demo("Process") }] };
   }
 
   if (type === "risk_matrix") {
     const items = readArray(data, "items").map(adaptInfographicTextItem).filter((item): item is NonNullable<typeof item> => Boolean(item));
-    const defaults = ["Identify", "Prioritize", "Assess", "Respond"];
-    return { type, center_label: truncateString(readString(data.center_label) ?? "RISK", 4), items: defaults.map((heading, index) => items[index] ?? { heading }) };
+    const defaults = [demo("Identify"), demo("Prioritize"), demo("Assess"), demo("Respond")];
+    return { type, center_label: truncateString(readString(data.center_label) ?? demo("RISK"), 4), items: defaults.map((heading, index) => items[index] ?? { heading }) };
   }
 
   if (type === "conversion_funnel" || type === "vertical_funnel") {
@@ -1300,7 +1301,7 @@ function adaptInfographicData(
           0,
           100,
         ),
-        heading: truncateString(readString(item.heading) ?? `Stage ${index + 1}`, 80),
+        heading: truncateString(readString(item.heading) ?? demo(`Stage ${index + 1}`), 80),
         description: truncateString(readString(item.description) ?? "", 280) || null,
       }));
     return {
@@ -1308,7 +1309,7 @@ function adaptInfographicData(
       items:
         items.length > 0
           ? items
-          : [{ value: 50, heading: "Stage 1", description: null }],
+          : [{ value: 50, heading: demo("Stage 1"), description: null }],
     };
   }
 
@@ -1319,12 +1320,12 @@ function adaptInfographicData(
     const evenItems = items.slice(0, items.length - (items.length % 2));
     return {
       type,
-      before_label: truncateString(readString(data.before_label) ?? "Before", 80),
-      after_label: truncateString(readString(data.after_label) ?? "After", 80),
+      before_label: truncateString(readString(data.before_label) ?? demo("Before"), 80),
+      after_label: truncateString(readString(data.after_label) ?? demo("After"), 80),
       items:
         evenItems.length >= 2
           ? evenItems
-          : [{ heading: "Before" }, { heading: "After" }],
+          : [{ heading: demo("Before") }, { heading: demo("After") }],
     };
   }
 
@@ -1332,13 +1333,13 @@ function adaptInfographicData(
     const items = readArray(data, "items")
       .map(adaptInfographicTextItem)
       .filter((item): item is NonNullable<typeof item> => Boolean(item));
-    const defaults = ["Quick Wins", "Strategic Priorities", "Deprioritize", "Fill-ins"];
+    const defaults = [demo("Quick Wins"), demo("Strategic Priorities"), demo("Deprioritize"), demo("Fill-ins")];
     return {
       type,
-      x_axis_label: truncateString(readString(data.x_axis_label) ?? "Impact", 80),
-      y_axis_label: truncateString(readString(data.y_axis_label) ?? "Effort", 80),
-      low_label: truncateString(readString(data.low_label) ?? "Low", 40),
-      high_label: truncateString(readString(data.high_label) ?? "High", 40),
+      x_axis_label: truncateString(readString(data.x_axis_label) ?? demo("Impact"), 80),
+      y_axis_label: truncateString(readString(data.y_axis_label) ?? demo("Effort"), 80),
+      low_label: truncateString(readString(data.low_label) ?? demo("Low"), 40),
+      high_label: truncateString(readString(data.high_label) ?? demo("High"), 40),
       items: defaults.map((heading, index) => items[index] ?? { heading }),
     };
   }
@@ -1347,7 +1348,7 @@ function adaptInfographicData(
     const criteria = readArray(data, "criteria")
       .map((value) => truncateString(readString(value) ?? "", 80))
       .filter(Boolean);
-    const safeCriteria = criteria.length > 0 ? criteria : ["Criterion 1"];
+    const safeCriteria = criteria.length > 0 ? criteria : [demo("Criterion 1")];
     const items = readArray(data, "items")
       .map(asRecord)
       .filter((item): item is UnknownRecord => Boolean(item))
@@ -1356,14 +1357,14 @@ function adaptInfographicData(
         const values = readArray(item, "values").map((value) => truncateString(readString(value) ?? "", 80));
         return {
           icon: normalizedIcon ?? undefined,
-          heading: truncateString(readString(item.heading) ?? `Option ${index + 1}`, 120),
+          heading: truncateString(readString(item.heading) ?? demo(`Option ${index + 1}`), 120),
           values: safeCriteria.map((_, valueIndex) => values[valueIndex] ?? ""),
         };
       });
     return {
       type,
       criteria: safeCriteria,
-      items: items.length > 0 ? items : [{ heading: "Option 1", values: safeCriteria.map(() => "") }],
+      items: items.length > 0 ? items : [{ heading: demo("Option 1"), values: safeCriteria.map(() => "") }],
     };
   }
 
@@ -1374,7 +1375,7 @@ function adaptInfographicData(
       .map((item, index) => ({
         id: truncateString(readString(item.id) ?? `node-${index + 1}`, 80),
         parent_id: truncateString(readString(item.parent_id) ?? "", 80) || null,
-        heading: truncateString(readString(item.heading) ?? `Item ${index + 1}`, 120),
+        heading: truncateString(readString(item.heading) ?? demo(`Item ${index + 1}`), 120),
         description: truncateString(readString(item.description) ?? "", 240) || null,
       }));
     return {
@@ -1390,7 +1391,7 @@ function adaptInfographicData(
     return {
       type,
       items:
-        items.length > 0 ? items : [{ heading: "Core idea", items: [] }],
+        items.length > 0 ? items : [{ heading: demo("Core idea"), items: [] }],
     };
   }
 
@@ -1867,7 +1868,7 @@ function adaptTextRuns(value: unknown[], fallbackText?: string | null): TextRun[
     .slice(0, 24);
 
   if (runs.length > 0) return runs;
-  return [{ text: truncateString(fallbackText || "Text", 700) }];
+  return [{ text: truncateString(fallbackText || demo("Text"), 700) }];
 }
 
 function adaptTextListItems(value: unknown[]): TextListItem[] {
@@ -1892,7 +1893,7 @@ function adaptTextListItems(value: unknown[]): TextListItem[] {
     .filter((item): item is TextRun[] => Boolean(item?.length))
     .slice(0, 8);
 
-  return items.length > 0 ? items : [[textRun("List item")]];
+  return items.length > 0 ? items : [[textRun(demo("List item"))]];
 }
 
 function adaptTableCells(value: unknown[]): TableCell[] {
@@ -1951,7 +1952,7 @@ function adaptChartCategories(value: unknown[]): string[] {
   return value
     .map((item, index) =>
       truncateString(readString(item) ?? readString(asRecord(item)?.label) ?? "", 40) ||
-      `Item ${index + 1}`,
+      demo(`Item ${index + 1}`),
     )
     .filter(Boolean)
     .slice(0, 24);
@@ -1967,7 +1968,7 @@ function adaptChartSeries(value: unknown): ChartSeries | null {
     .slice(0, 24);
   if (values.length === 0) return null;
   return {
-    name: truncateString(readString(record.name) ?? "Series", 80) || "Series",
+    name: truncateString(readString(record.name) ?? demo("Series"), 80) || demo("Series"),
     values,
   };
 }
@@ -2047,7 +2048,7 @@ function isFullSlideFilledShape(
 function titleFromLayout(layout: TemplateV2Layout, index: number) {
   const id = readString(layout.id);
   const slideNumber = id?.match(/\d+/)?.[0] ?? `${index + 1}`;
-  return truncateString(`Slide ${slideNumber}`, 60);
+  return truncateString(demo(`Slide ${slideNumber}`), 60);
 }
 
 function readValue(record: UnknownRecord, key: string) {

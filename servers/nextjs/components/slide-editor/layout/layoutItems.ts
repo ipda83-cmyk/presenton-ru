@@ -1,3 +1,4 @@
+import { demo } from "@/components/slide-editor/content/demoContent";
 type RawRecord = Record<string, unknown>;
 
 export type LayoutItemStats = {
@@ -86,7 +87,7 @@ function defaultLayoutItem(): RawRecord {
     type: "text",
     position: { x: 0, y: 0 },
     size: { width: 1, height: 1 },
-    runs: [{ text: "New item" }],
+    runs: [{ text: demo("New item") }],
     font: {
       family: "Arial",
       size: 18,

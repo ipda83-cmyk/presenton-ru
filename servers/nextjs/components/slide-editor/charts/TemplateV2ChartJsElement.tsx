@@ -26,6 +26,7 @@ import {
   withHash,
   type RawElement,
 } from "@/components/slide-editor/model/core";
+import { demo, isDemoDefault } from "@/components/slide-editor/content/demoContent";
 
 type RawChartPoint = {
   x: number;
@@ -301,7 +302,7 @@ function createChartJsConfig(
   const autoShowLegend =
     kind.pieLike ||
     datasets.length > 1 ||
-    Boolean(datasets[0]?.name && datasets[0].name !== "Series 1");
+    Boolean(datasets[0]?.name && !isDemoDefault(datasets[0].name, "Series 1"));
   const showLegend =
     readBoolean(
       "legend" in element ? element.legend : element.showLegend,
@@ -825,17 +826,17 @@ function rawChartCategories(
   if (categories.length > 0) {
     return Array.from(
       { length },
-      (_, index) => categories[index] ?? `Item ${index + 1}`,
+      (_, index) => categories[index] ?? demo(`Item ${index + 1}`),
     );
   }
   if (dataLabels.length > 0) {
     return Array.from(
       { length },
-      (_, index) => dataLabels[index] ?? `Item ${index + 1}`,
+      (_, index) => dataLabels[index] ?? demo(`Item ${index + 1}`),
     );
   }
 
-  return Array.from({ length }, (_, index) => `Item ${index + 1}`);
+  return Array.from({ length }, (_, index) => demo(`Item ${index + 1}`));
 }
 
 function rawChartDatasets(
@@ -865,7 +866,7 @@ function rawChartDatasets(
         color:
           colors[index % colors.length] ??
           DEFAULT_CHART_COLORS[index % DEFAULT_CHART_COLORS.length],
-        name: readString(item.name) ?? `Series ${index + 1}`,
+        name: readString(item.name) ?? demo(`Series ${index + 1}`),
         categoryColors: effectiveSeries.length === 1 ? colors : undefined,
         points,
         values,
@@ -883,7 +884,7 @@ function rawChartDatasets(
       color:
         colors[0] ??
         safeChartColor(readString(element.color), DEFAULT_CHART_COLORS[0]),
-      name: readString(element.title) ?? "Series 1",
+      name: readString(element.title) ?? demo("Series 1"),
       categoryColors: colors,
       points: normalizePoints(
         rawData.map((value, valueIndex) => chartPoint(value, valueIndex)),
@@ -945,7 +946,7 @@ function normalizePoints(
 function emptyDataset(): RawChartDataset {
   return {
     color: DEFAULT_CHART_COLORS[0],
-    name: "Series 1",
+    name: demo("Series 1"),
     points: [{ x: 1, y: 0 }],
     values: [0],
   };

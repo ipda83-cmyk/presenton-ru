@@ -19,7 +19,7 @@ import SlideContent from "./SlideContent";
 import { Button } from "@/components/ui/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   AlertCircle,
   ChevronRight,
@@ -53,6 +53,10 @@ import {
   type TemplateV2SurfaceSelectedDetail,
 } from "@/components/slide-editor/events/events";
 import { isEditableTarget } from "@/components/slide-editor/model/core";
+import {
+  resolvePresentationContentLocale,
+  setContentLocale,
+} from "@/components/slide-editor/content/demoContent";
 
 function hasTemplateV2Layouts(layout: unknown): boolean {
   if (!layout || typeof layout !== "object") return false;
@@ -194,6 +198,19 @@ const PresentationPage: React.FC<PresentationPageProps> = ({
     (state: RootState) => state.presentationGeneration
   );
   const presentationDataRef = useRef(presentationData);
+  const uiLocale = useLocale();
+
+  // Placeholder text the editor inserts into slides follows the presentation's
+  // own language, not the interface language.
+  useEffect(() => {
+    setContentLocale(
+      resolvePresentationContentLocale(
+        presentationData,
+        uiLocale === "ru" ? "ru" : "en",
+      ),
+    );
+  }, [presentationData, uiLocale]);
+  useEffect(() => () => setContentLocale(null), []);
   const slidesLength = presentationData?.slides?.length ?? 0;
   const isSmartPresentation =
     searchParams.get("type") === "smart" ||

@@ -22,6 +22,7 @@ import {
   templateThemeGraphColors,
   type TemplateTheme,
 } from "@/lib/template-theme";
+import { localizeDemoContent } from "@/components/slide-editor/content/demoContent";
 
 const DEFAULT_CHART_INSERT_POSITION = { x: 128, y: 115 };
 const DEFAULT_CHART_INSERT_SIZE = { width: 717, height: 410 };
@@ -2740,35 +2741,35 @@ export function createTextInsertElements(
   kind?: string,
   theme: TemplateTheme = DEFAULT_TEMPLATE_THEME,
 ): SlideElement[] {
-  return themeElements(createDefaultTextInsertElements(kind), theme);
+  return localizeDemoContent(themeElements(createDefaultTextInsertElements(kind), theme));
 }
 
 export function createChartInsertElements(
   kind?: string,
   theme: TemplateTheme = DEFAULT_TEMPLATE_THEME,
 ): SlideElement[] {
-  return themeElements(createDefaultChartInsertElements(kind), theme);
+  return localizeDemoContent(themeElements(createDefaultChartInsertElements(kind), theme));
 }
 
 export function createInfographicInsertElements(
   kind?: string,
   theme: TemplateTheme = DEFAULT_TEMPLATE_THEME,
 ): SlideElement[] {
-  return themeElements(createDefaultInfographicInsertElements(kind), theme);
+  return localizeDemoContent(themeElements(createDefaultInfographicInsertElements(kind), theme));
 }
 
 export function createTableInsertElements(
   kind?: string,
   theme: TemplateTheme = DEFAULT_TEMPLATE_THEME,
 ): SlideElement[] {
-  return themeElements(createDefaultTableInsertElements(kind), theme);
+  return localizeDemoContent(themeElements(createDefaultTableInsertElements(kind), theme));
 }
 
 export function createImageInsertContent(
   kind?: string,
   theme: TemplateTheme = DEFAULT_TEMPLATE_THEME,
 ): EditorInsertContent {
-  const content = createDefaultImageInsertContent(kind);
+  const content = localizeDemoContent(createDefaultImageInsertContent(kind));
   return {
     ...content,
     elements: content.elements
@@ -2785,5 +2786,5 @@ export function createElementInsertElements(
   kind?: string,
   theme: TemplateTheme = DEFAULT_TEMPLATE_THEME,
 ): SlideElement[] {
-  return themeElements(createDefaultElementInsertElements(kind), theme);
+  return localizeDemoContent(themeElements(createDefaultElementInsertElements(kind), theme));
 }

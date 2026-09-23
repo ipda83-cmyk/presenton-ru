@@ -6,6 +6,7 @@ import type {
   InfographicType,
 } from "@/components/slide-editor/types";
 import { defaultInfographicIcon } from "@/components/slide-editor/infographics/infographic-icons";
+import { localizeDemoContent } from "@/components/slide-editor/content/demoContent";
 
 const DEFAULT_PALETTE = [
   "FFFFFF",
@@ -546,7 +547,16 @@ export function canRemoveInfographicItemAtPath(
   return siblings.length > minimum;
 }
 
+// New items carry placeholder text, so it follows the presentation language.
 function createInfographicToolbarItem(
+  type: InfographicType,
+  items: unknown[],
+  data: InfographicRecord,
+): InfographicRecord {
+  return localizeDemoContent(buildInfographicToolbarItem(type, items, data));
+}
+
+function buildInfographicToolbarItem(
   type: InfographicType,
   items: unknown[],
   data: InfographicRecord,

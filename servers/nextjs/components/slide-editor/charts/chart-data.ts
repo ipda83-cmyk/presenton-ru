@@ -4,6 +4,7 @@ import type {
   ChartSeries,
   ChartType,
 } from "@/components/slide-editor/types";
+import { demo } from "@/components/slide-editor/content/demoContent";
 
 export type ResolvedChartDataset = {
   name: string;
@@ -100,14 +101,14 @@ export function resolvedChartCategories(element: ChartElement): string[] {
     );
     return Array.from(
       { length: categoryLength },
-      (_, index) => element.categories?.[index] ?? `Item ${index + 1}`,
+      (_, index) => element.categories?.[index] ?? demo(`Item ${index + 1}`),
     );
   }
 
   if (seriesLength > 0) {
     return Array.from(
       { length: Math.min(24, seriesLength) },
-      (_, index) => `Item ${index + 1}`,
+      (_, index) => demo(`Item ${index + 1}`),
     );
   }
 
@@ -230,7 +231,7 @@ export function resolvedChartColorTargets(
       label:
         categories[index] ??
         element.data[index]?.label ??
-        `Item ${index + 1}`,
+        demo(`Item ${index + 1}`),
       mode,
     }));
   }
@@ -249,7 +250,7 @@ export function chartDataFromSeriesWithColors(
   const labels =
     categories.length > 0
       ? categories
-      : first.values.map((_, index) => `Item ${index + 1}`);
+      : first.values.map((_, index) => demo(`Item ${index + 1}`));
   const fallbackColor = colors[0] ?? DEFAULT_CHART_COLORS[0];
 
   return labels.slice(0, 8).map((label, index) => ({
