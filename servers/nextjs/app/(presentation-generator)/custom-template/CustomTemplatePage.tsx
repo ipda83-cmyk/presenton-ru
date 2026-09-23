@@ -60,6 +60,7 @@ import { ensureTailwindBrowserScript } from "@/lib/tailwind-browser";
 import { TemplateV2LayoutPreview } from "./components/EachSlide/TemplateV2LayoutPreview";
 import { useFileUpload } from "./hooks/useFileUpload";
 import { useTemplateCreation } from "./hooks/useTemplateCreation";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import type {
   FontData,
   FontItem,
@@ -163,6 +164,10 @@ function StudioTopBar({ activeStep }: { activeStep: StudioStep }) {
             );
           })}
         </nav>
+
+        <div className="pointer-events-auto max-md:hidden">
+          <LanguageSwitcher />
+        </div>
       </div>
     </header>
   );

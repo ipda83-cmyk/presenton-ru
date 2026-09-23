@@ -56,6 +56,7 @@ import { KeyboardShortcutsDialog } from "./KeyboardShortcutsDialog";
 import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { v4 as uuidv4 } from "uuid";
 import StreamingGenerationMetrics from "./StreamingGenerationMetrics";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const MAX_EXPORT_TITLE_LENGTH = 40;
 
@@ -747,6 +748,7 @@ const PresentationHeader = ({
               <ExportOptions mobile={false} />
             </PopoverContent>
           </Popover>
+          <LanguageSwitcher size="toolbar" className="max-lg:hidden" />
         </div>
       </div>
       <Dialog

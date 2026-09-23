@@ -1,7 +1,8 @@
 """Per-user interface language.
 
-The UI locale lives in the NEXT_LOCALE cookie (read by both the Next.js
-frontend and utils.i18n.LocaleMiddleware). For signed-in users the choice is
+The UI language preference (``ru``, ``en`` or ``auto`` = follow the browser)
+lives in the NEXT_LOCALE cookie (read by both the Next.js frontend and
+utils.i18n.LocaleMiddleware). For signed-in users the choice is
 also stored server-side so it follows them to other browsers: resolution is
 profile -> cookie -> default. The profile value is applied at login by
 re-issuing the cookie.
@@ -21,7 +22,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import Response
 
 from models.sql.key_value import KeyValueSqlModel
-from utils.i18n import LOCALE_COOKIE, normalize_locale
+from utils.i18n import LOCALE_COOKIE, normalize_preference
 
 LOCALE_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
 logger = logging.getLogger(__name__)
@@ -51,7 +52,7 @@ async def get_user_locale(
     if row is None or not isinstance(row.value, dict):
         return None
     value = row.value.get("locale")
-    return normalize_locale(value) if isinstance(value, str) else None
+    return normalize_preference(value) if isinstance(value, str) else None
 
 
 async def set_user_locale(

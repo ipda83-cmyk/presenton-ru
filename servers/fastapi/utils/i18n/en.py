@@ -37,6 +37,7 @@ MESSAGES: dict[str, str] = {
     "provider.rateLimited": "{prefix} is temporarily rate limited. Please wait and try again.",
     "provider.modelUnavailable": "The selected {provider} model is not available. Choose another model or check model access.",
     "provider.failed": "{prefix} failed. Please try again.",
+    "presentation.untitled": "Untitled Presentation",
 }
 
 # Request validation (422): English keeps pydantic's own wording.

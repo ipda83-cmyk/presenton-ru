@@ -6,6 +6,7 @@ from utils.i18n import (
 )
 
 _LOCALE_HEADER = LOCALE_HEADER.encode("latin-1")
+_ACCEPT_LANGUAGE = b"accept-language"
 _CONTENT_LANGUAGE = b"content-language"
 
 
@@ -26,14 +27,19 @@ class LocaleMiddleware:
             return
 
         header_locale = None
+        accept_language = None
         cookie_parts: list[str] = []
         for name, value in scope.get("headers") or ():
             if name == _LOCALE_HEADER:
                 header_locale = value.decode("latin-1")
+            elif name == _ACCEPT_LANGUAGE:
+                accept_language = value.decode("latin-1")
             elif name == b"cookie":
                 # HTTP/2 clients may split cookies across several headers.
                 cookie_parts.append(value.decode("latin-1"))
-        locale = resolve_locale(header_locale, "; ".join(cookie_parts) or None)
+        locale = resolve_locale(
+            header_locale, "; ".join(cookie_parts) or None, accept_language
+        )
 
         async def send_with_language(message):
             if message["type"] == "http.response.start":

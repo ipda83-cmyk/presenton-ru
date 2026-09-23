@@ -117,11 +117,11 @@ const DashboardSidebar = ({
                 </Link>
                 <div className="py-2"/>
                 <Link
-                    href="https://docs.presenton.ai/help"
-                    target="_blank"
+                    prefetch={false}
+                    href="/help"
                     className="flex flex-col items-center gap-2 transition-colors"
                 >
-                    <HelpCircle className="h-4 w-4" />
+                    <HelpCircle className={`h-4 w-4 ${pathname === "/help" ? "text-[#5146E5]" : ""}`} />
                     <span className="text-[11px] text-slate-800">{t("sidebar.help")}</span>
                 </Link>
             </div>

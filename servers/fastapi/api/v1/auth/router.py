@@ -19,7 +19,13 @@ from api.v1.auth.users import (
 from models.sql.user import User
 from services.database import get_async_session
 from utils.get_env import is_disable_auth_enabled
-from utils.i18n import get_current_locale, http_error
+from utils.i18n import (
+    LOCALE_COOKIE,
+    cookie_value,
+    get_current_locale,
+    http_error,
+    normalize_preference,
+)
 from api.v1.auth.locale import (
     get_user_locale,
     set_locale_cookie,
@@ -191,19 +197,23 @@ async def login(
     )
     _set_login_cookie(response, token, request)
     # Profile language wins over this browser's cookie; the first sign-in
-    # remembers the language the user is currently using. The id is read up
-    # front: a failed (and rolled back) language lookup expires `user`.
+    # remembers the language the user is currently using ("auto" stays
+    # "auto"). The id is read up front: a failed (and rolled back) language
+    # lookup expires `user`.
     user_id = user.id
     locale = await get_user_locale(session, user_id)
     if locale is None:
-        locale = get_current_locale()
+        locale = normalize_preference(
+            cookie_value(request.headers.get("cookie"), LOCALE_COOKIE)
+        ) or get_current_locale()
         await set_user_locale(session, user_id, locale)
     set_locale_cookie(response, locale, secure=_secure_request(request))
     return response
 
 
 class LocaleUpdateRequest(BaseModel):
-    locale: Literal["ru", "en"]
+    # "auto" follows the browser language (Accept-Language).
+    locale: Literal["ru", "en", "auto"]
 
 
 @API_V1_AUTH_ROUTER.put("/locale")

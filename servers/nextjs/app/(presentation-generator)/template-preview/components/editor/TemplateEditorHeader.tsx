@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const SAVE_BUTTON_GRADIENT =
   "linear-gradient(270deg, rgb(213, 202, 252) 2.4038%, rgb(227, 210, 235) 27.885%, rgb(244, 220, 211) 69.231%, rgb(253, 228, 194) 100%)";
@@ -201,6 +202,7 @@ export function TemplateEditorHeader({
             )}
           </GradientActionButton>
         ) : null}
+        <LanguageSwitcher className="max-lg:hidden" />
       </div>
     </header>
   );

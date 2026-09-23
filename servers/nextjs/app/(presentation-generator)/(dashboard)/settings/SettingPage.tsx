@@ -32,6 +32,7 @@ import {
   requestChatGptReauth,
 } from "@/utils/chatgptAuth";
 import { useTranslations } from "next-intl";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const STOCK_IMAGE_PROVIDERS = new Set(["pexels", "pixabay"]);
 
@@ -438,13 +439,16 @@ const SettingsPage = () => {
         />
         <div className="custom_scrollbar min-h-0 w-full flex-1 overflow-y-auto pb-36 pr-5">
           <div className="sticky right-0 top-0 z-40 mb-4 bg-white/90 py-[28px] backdrop-blur">
-            <div className="flex  gap-3 items-center ">
-              <h3 className=" text-[28px] tracking-[-0.84px] font-syne font-normal text-black flex items-center gap-2">
-                {t("title")}
-              </h3>
-              <p className="text-[10px] px-2.5 py-0.5 rounded-[50px] text-[#7A5AF8] border border-[#EDEEEF]  font-medium ">
-                {textSummary} · {imageSummary} · {webSearchSummary}
-              </p>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex  gap-3 items-center ">
+                <h3 className=" text-[28px] tracking-[-0.84px] font-syne font-normal text-black flex items-center gap-2">
+                  {t("title")}
+                </h3>
+                <p className="text-[10px] px-2.5 py-0.5 rounded-[50px] text-[#7A5AF8] border border-[#EDEEEF]  font-medium ">
+                  {textSummary} · {imageSummary} · {webSearchSummary}
+                </p>
+              </div>
+              <LanguageSwitcher size="md" />
             </div>
           </div>
 

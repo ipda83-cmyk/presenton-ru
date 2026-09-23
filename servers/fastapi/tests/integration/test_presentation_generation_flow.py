@@ -21,6 +21,7 @@ from models.sql.slide import SlideModel
 from models.sql.template_v2 import TemplateV2
 from templates.presentation_layout import PresentationLayoutModel, SlideLayoutModel
 from tests.conftest import FakeAsyncSession
+from utils.i18n import reset_current_locale, set_current_locale
 
 
 class FakeRequest:
@@ -483,6 +484,28 @@ def test_create_blank_presentation_is_template_free_and_editable():
     assert response.n_slides == 1
     assert len(response.slides) == 1
     assert response.slides[0].id == slide.id
+
+
+def test_blank_presentation_follows_the_interface_language():
+    class BlankPresentationSession(FakeAsyncSession):
+        async def refresh(self, obj):
+            now = datetime.now()
+            if isinstance(obj, PresentationModel):
+                obj.created_at = obj.created_at or now
+                obj.updated_at = obj.updated_at or now
+
+    session = BlankPresentationSession()
+    token = set_current_locale("ru")
+    try:
+        _run(presentation_endpoint.create_blank_presentation(sql_session=session))
+    finally:
+        reset_current_locale(token)
+
+    presentation = next(
+        item for item in session.added if isinstance(item, PresentationModel)
+    )
+    assert presentation.title == "Презентация без названия"
+    assert presentation.language == "Russian (Русский)"
 
 
 def test_blank_presentation_slide_ui_returns_an_independent_copy():

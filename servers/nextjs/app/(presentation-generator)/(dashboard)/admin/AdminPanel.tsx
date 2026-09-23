@@ -29,6 +29,7 @@ import { formatFastApiDetail } from "@/utils/authErrors";
 import { copyTextToClipboard } from "@/utils/clipboard";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
 import { useLocale, useTranslations } from "next-intl";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 type AdminUser = {
   id: string;
@@ -464,9 +465,12 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
     >
       <div className={embedded ? "max-w-5xl" : "mx-auto max-w-5xl"}>
         {!embedded ? (
-          <h1 className="font-syne font-medium text-[28px] tracking-[-0.84px] text-black">
-            {t("title")}
-          </h1>
+          <div className="flex items-center justify-between gap-3">
+            <h1 className="font-syne font-medium text-[28px] tracking-[-0.84px] text-black">
+              {t("title")}
+            </h1>
+            <LanguageSwitcher size="md" />
+          </div>
         ) : null}
 
         <div

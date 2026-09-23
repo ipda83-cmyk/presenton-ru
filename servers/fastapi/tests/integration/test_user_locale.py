@@ -105,6 +105,11 @@ def test_locale_update_validates_input_and_works_anonymously(monkeypatch, tmp_pa
         response = client.put("/api/v1/auth/locale", json=bad)
         assert response.status_code == 422
 
+    auto = client.put("/api/v1/auth/locale", json={"locale": "auto"})
+    assert auto.status_code == 200
+    assert auto.json() == {"locale": "auto", "persisted": False}
+    assert auto.cookies.get("NEXT_LOCALE") == "auto"
+
     anonymous = client.put("/api/v1/auth/locale", json={"locale": "ru"})
     assert anonymous.status_code == 200
     assert anonymous.json() == {"locale": "ru", "persisted": False}
@@ -130,4 +135,34 @@ def test_login_survives_a_missing_language_store(monkeypatch, tmp_path):
     )
     assert status.status_code == 200
     assert status.json()["locale"] is None
+    asyncio.run(engine.dispose())
+
+
+def test_auto_preference_is_remembered_and_follows_the_browser(monkeypatch, tmp_path):
+    monkeypatch.setenv("USER_CONFIG_PATH", str(tmp_path / "userConfig.json"))
+    monkeypatch.delenv("DISABLE_AUTH", raising=False)
+    client, engine = _build_client(tmp_path)
+    _setup_admin(client)
+
+    first = _login(client, "auto")
+    assert first.cookies.get("NEXT_LOCALE") == "auto"
+    session_cookie = first.cookies[SESSION_COOKIE_NAME]
+    status = client.get(
+        "/api/v1/auth/status",
+        headers={"Cookie": f"{SESSION_COOKIE_NAME}={session_cookie}"},
+    )
+    assert status.json()["locale"] == "auto"
+
+    # A new browser gets "auto" back from the profile, and errors follow its
+    # language.
+    client.cookies.clear()
+    assert _login(client).cookies.get("NEXT_LOCALE") == "auto"
+    client.cookies.clear()
+    failed = client.post(
+        "/api/v1/auth/login",
+        json={"username": "admin", "password": "wrong-password"},
+        headers={"Cookie": "NEXT_LOCALE=auto", "Accept-Language": "en-US,en;q=0.9"},
+    )
+    assert failed.status_code == 401
+    assert failed.json()["detail"] == "Unauthorized"
     asyncio.run(engine.dispose())

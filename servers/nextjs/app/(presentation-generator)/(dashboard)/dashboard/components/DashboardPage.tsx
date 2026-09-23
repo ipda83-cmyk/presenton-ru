@@ -26,6 +26,7 @@ import { notify } from "@/components/ui/sonner";
 import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { IMAGE_PROVIDERS, LLM_PROVIDERS } from "@/utils/providerConstants";
 import { useTranslations } from "next-intl";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const GITHUB_REPOSITORY_URL = "https://github.com/presenton/presenton";
 const DISCORD_INVITE_URL = "https://discord.com/invite/9ZsKKxudNE";
@@ -348,6 +349,8 @@ function DashboardHeader() {
               />
             </Link>
           </div>
+
+          <LanguageSwitcher size="md" />
 
           {isElectronApp && (
             <Link

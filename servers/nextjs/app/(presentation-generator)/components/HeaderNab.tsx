@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const HeaderNav = () => {
 
@@ -42,7 +41,6 @@ const HeaderNav = () => {
           </span>
         </Link>
       )}
-      <LanguageSwitcher className="ml-1" />
     </div>
   );
 };

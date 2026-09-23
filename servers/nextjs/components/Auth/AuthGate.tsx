@@ -13,6 +13,7 @@ import {
 import { notify } from "@/components/ui/sonner";
 import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 type AuthStatus = {
   configured: boolean;
@@ -320,6 +321,9 @@ export default function AuthGate() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white p-6 font-syne">
+      <div className="absolute right-6 top-6 z-20">
+        <LanguageSwitcher />
+      </div>
       <section className="relative z-10 w-full max-w-lg rounded-[20px] border border-[#EDEEEF] bg-[#F9F8F8] p-7 sm:p-10">
         <div className="mb-7">
           <div className="flex items-center gap-4">

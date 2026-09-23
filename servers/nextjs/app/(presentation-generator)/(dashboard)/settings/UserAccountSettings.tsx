@@ -2,6 +2,7 @@ import { UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import LogoutButton from "@/components/Auth/LogoutButton";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 type UserAccountSettingsProps = {
   username: string;
@@ -41,10 +42,11 @@ export default function UserAccountSettings({
         </aside>
 
         <div className="w-full overflow-y-auto pb-20 pr-6">
-          <div className="sticky right-0 top-0 z-50 mb-4 py-[28px] backdrop-blur">
+          <div className="sticky right-0 top-0 z-50 mb-4 flex items-center justify-between gap-3 py-[28px] backdrop-blur">
             <h1 className="font-syne text-[28px] font-normal tracking-[-0.84px] text-black">
               {t("title")}
             </h1>
+            <LanguageSwitcher size="md" />
           </div>
 
           <section

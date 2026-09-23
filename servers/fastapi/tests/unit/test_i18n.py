@@ -16,6 +16,8 @@ from utils.i18n import (
     SOURCE_LOCALE,
     cookie_value,
     en,
+    negotiate_locale,
+    normalize_preference,
     get_current_locale,
     http_error,
     normalize_locale,
@@ -113,6 +115,49 @@ def test_resolve_locale_precedence():
     # Unsupported header falls through to the cookie, then to the default.
     assert resolve_locale("fr", "NEXT_LOCALE=en") == "en"
     assert resolve_locale("fr", "NEXT_LOCALE=de") == "ru"
+
+
+# Same cases as negotiateLocale in servers/nextjs/tests (i18n-config.test.mjs).
+@pytest.mark.parametrize(
+    ("header", "expected"),
+    [
+        ("en-US,en;q=0.9", "en"),
+        ("ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7", "ru"),
+        ("de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7", "en"),
+        ("de,fr", None),
+        ("en;q=0.5, ru;q=0.8", "ru"),
+        ("ru;q=0, en", "en"),
+        ("en;q=abc, ru", "ru"),
+        ("*", None),
+        ("  EN-gb ", "en"),
+        ("", None),
+        (None, None),
+    ],
+)
+def test_negotiate_locale(header, expected):
+    assert negotiate_locale(header) == expected
+
+
+def test_normalize_preference():
+    assert normalize_preference("auto") == "auto"
+    assert normalize_preference(" AUTO ") == "auto"
+    assert normalize_preference("en-US") == "en"
+    assert normalize_preference("automatic") is None
+    assert normalize_preference(None) is None
+
+
+def test_resolve_locale_auto_follows_the_browser_only_when_asked():
+    english_browser = "en-US,en;q=0.9"
+    assert resolve_locale(None, "NEXT_LOCALE=auto", english_browser) == "en"
+    assert resolve_locale(None, "NEXT_LOCALE=auto", "ru-RU,ru") == "ru"
+    # Unsupported or missing browser language -> default.
+    assert resolve_locale(None, "NEXT_LOCALE=auto", "de") == "ru"
+    assert resolve_locale(None, "NEXT_LOCALE=auto", None) == "ru"
+    # An explicit choice (or no choice) is never overridden by the browser.
+    assert resolve_locale(None, "NEXT_LOCALE=ru", english_browser) == "ru"
+    assert resolve_locale(None, None, english_browser) == "ru"
+    # The explicit header still wins over "auto".
+    assert resolve_locale("ru", "NEXT_LOCALE=auto", english_browser) == "ru"
 
 
 # --- translation --------------------------------------------------------------
@@ -246,6 +291,16 @@ def test_middleware_reads_cookie_and_header(client):
         == "en"
     )
     assert client.get("/who", headers={"Cookie": "NEXT_LOCALE=klingon"}).json()["locale"] == "ru"
+
+
+def test_middleware_auto_uses_accept_language(client):
+    english = {"Cookie": "NEXT_LOCALE=auto", "Accept-Language": "en-US,en;q=0.9"}
+    response = client.get("/who", headers=english)
+    assert response.json() == {"locale": "en", "msg": "Unauthorized"}
+    assert response.headers["content-language"] == "en"
+    assert (
+        client.get("/who", headers={"Accept-Language": "en-US"}).json()["locale"] == "ru"
+    )
 
 
 def test_middleware_joins_split_cookie_headers():

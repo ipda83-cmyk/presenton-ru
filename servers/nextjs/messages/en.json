@@ -3,7 +3,9 @@
     "label": "Interface language",
     "switchTo": "Switch to {lang}",
     "ru": "Русский",
-    "en": "English"
+    "en": "English",
+    "auto": "Auto",
+    "autoHint": "Auto — follows your browser language (now: {lang})"
   },
   "common": {
     "remove": "Remove",
@@ -742,7 +744,8 @@
       "dashboard": "Dashboard",
       "templates": "Standard",
       "designs": "Smart",
-      "community": "Community"
+      "community": "Community",
+      "help": "Help"
     },
     "newPresentation": "New presentation",
     "newShort": "New",
@@ -2599,5 +2602,145 @@
     "vertexKeyOrProject": "Vertex AI requires either a Vertex API key or a GCP project.",
     "vertexModeConflict": "Use either Vertex API key mode or project/location mode, not both.",
     "vertexModel": "Vertex model is required."
+  },
+  "help": {
+    "metaTitle": "Help",
+    "title": "Help",
+    "intro": "A short guide to Presenton. The full developer documentation is linked from every section.",
+    "docsLink": "Full documentation",
+    "moreInDocs": "More in the documentation",
+    "contents": "Contents",
+    "sections": {
+      "start": {
+        "title": "Getting started",
+        "steps": [
+          "Open Settings and choose a text AI provider — for example OpenAI, Anthropic, Google, or a local model through Ollama or LM Studio. Enter the API key and click Save Configuration. Generation cannot start without a provider.",
+          "Optionally choose an image provider there too (Pexels and Pixabay stock photos or image generation) and a web search provider.",
+          "On the Dashboard click Create new Presentation and describe the topic. You can attach material: Word, PowerPoint, spreadsheets, PDF, TXT or images.",
+          "Set the number of slides and the presentation language, then pick a mode. Standard uses a fixed layout for predictable results. Smart uses a flexible layout that adapts to the content.",
+          "Review the outline: add, rewrite or reorder slides, or regenerate the outline. Then choose a template and start the generation.",
+          "In the editor change text, images, charts and icons right on the slide, or ask the AI assistant in the chat. Present starts the slideshow, Export saves a PPTX or PDF file.",
+          "To build a presentation by hand, choose Blank Presentation on the Dashboard."
+        ]
+      },
+      "language": {
+        "title": "Interface language and presentation language",
+        "items": [
+          "Switch the interface language with the RU / EN / Auto buttons in the top-right corner of the screen.",
+          "Auto follows your browser: if its languages include Russian or English, the higher-ranked one is used; otherwise Russian.",
+          "The choice is saved in the browser and in your account, so it stays the same when you sign in on another device.",
+          "The presentation language is chosen separately when you create a presentation. For example, the interface can be in Russian while the slides are in English.",
+          "Sample text in new blocks, tables and charts is written in the presentation language."
+        ]
+      },
+      "templates": {
+        "title": "Templates and community",
+        "items": [
+          "Templates contains the built-in templates and your own ones.",
+          "New Template turns your presentation into a template: upload a PPTX file (up to 100 MB), the AI analyzes the slide layouts, and you review and save the result. Accurate layouts need a model that understands images.",
+          "If the template uses custom fonts, upload their files (.ttf / .otf) so the slides look like the original.",
+          "Community shows designs made by other users: pick one and describe the presentation you want from it."
+        ]
+      },
+      "generation": {
+        "title": "When generation fails",
+        "items": [
+          {
+            "problem": "Generation does not start or fails right away",
+            "solution": "Check in Settings that a text provider is selected, the key is correct and the provider's quota or balance is not exhausted. The error message usually names the cause."
+          },
+          {
+            "problem": "Generation hangs or stops midway",
+            "solution": "Reduce the number of slides, make the prompt shorter and more focused, and attach less material. Wait for uploads to finish before starting the generation."
+          },
+          {
+            "problem": "Slides come out incomplete or broken",
+            "solution": "For local and custom models check the URL, model name and key: the model must support structured (JSON) output. Container logs show provider errors, timeouts and memory problems."
+          },
+          {
+            "problem": "The result is weak",
+            "solution": "Give more source material, state the audience and goal, and fix the outline before generating — this matters more than switching models."
+          }
+        ]
+      },
+      "content": {
+        "title": "Files and images",
+        "items": [
+          {
+            "problem": "A file does not upload",
+            "solution": "Check the format and remove password protection. Re-save old .doc, .ppt and .xls files as .docx, .pptx and .xlsx."
+          },
+          {
+            "problem": "Text is extracted poorly",
+            "solution": "Use documents with a text layer or good-quality scans. Clean table markup and consistent labels help."
+          },
+          {
+            "problem": "Slides have no images",
+            "solution": "Check the image provider and its key in Settings — image generation may be turned off."
+          },
+          {
+            "problem": "A local model (Ollama, LM Studio) is unreachable",
+            "solution": "Inside Docker, localhost points to the container itself. Use http://host.docker.internal with the model's port (11434 for Ollama) or the service name on the Docker network."
+          }
+        ]
+      },
+      "export": {
+        "title": "Editing and export",
+        "items": [
+          {
+            "problem": "The AI assistant edits the wrong thing",
+            "solution": "Ask for one change at a time and name the slide to change."
+          },
+          {
+            "problem": "Changes do not show up",
+            "solution": "Refresh the page: the presentation is saved automatically and the latest saved version opens after a refresh."
+          },
+          {
+            "problem": "The exported file looks different from the editor",
+            "solution": "Before exporting, check for text overflowing its boxes and how images, charts and tables are cropped. Open the file in PowerPoint, Keynote or LibreOffice to see where the problem is."
+          },
+          {
+            "problem": "Fonts look different in the file",
+            "solution": "Custom fonts must be installed on the computer that opens the file, or embedded in it."
+          },
+          {
+            "problem": "Export does not finish",
+            "solution": "On your own server, check that the data folder (/app_data) is writable and there is enough disk space and memory."
+          }
+        ]
+      },
+      "hosting": {
+        "title": "Self-hosting",
+        "items": [
+          {
+            "problem": "The app does not open",
+            "solution": "Make sure the container is running (docker ps), the host port is free and mapped to container port 80. The container logs (docker logs) show the cause."
+          },
+          {
+            "problem": "Presentations or settings are gone",
+            "solution": "Everything is stored in /app_data inside the container. A new container must mount the same host folder, otherwise it starts empty."
+          },
+          {
+            "problem": "The AI provider does not connect",
+            "solution": "Check the URL, model and key, make sure the provider works outside Presenton and is reachable from the container, and that the model is installed and running."
+          },
+          {
+            "problem": "Before upgrading",
+            "solution": "Back up the app_data folder, pin a specific image version, and after the upgrade test providers, templates, the editor and export."
+          }
+        ]
+      },
+      "support": {
+        "title": "Reporting a problem",
+        "steps": [
+          "Copy the exact error message and note when it happened.",
+          "Reproduce the problem with the smallest possible example.",
+          "Check whether it affects one presentation or all of them.",
+          "Remove API keys and passwords before sharing logs or configuration."
+        ],
+        "github": "Report a bug on GitHub",
+        "discord": "Ask on Discord"
+      }
+    }
   }
 }

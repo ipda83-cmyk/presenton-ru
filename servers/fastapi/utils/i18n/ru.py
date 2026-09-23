@@ -38,6 +38,7 @@ MESSAGES: dict[str, str] = {
     "provider.rateLimited": "{prefix}: превышен лимит запросов. Подождите немного и попробуйте снова.",
     "provider.modelUnavailable": "Выбранная модель {provider} недоступна. Выберите другую модель или проверьте доступ к ней.",
     "provider.failed": "{prefix}: ошибка. Попробуйте снова.",
+    "presentation.untitled": "Презентация без названия",
 }
 
 # Request validation (422), keyed by pydantic error ``type``; placeholders come

@@ -125,7 +125,7 @@ from utils.llm_calls.generate_smart_presentation import (
 )
 from utils.get_env import is_community_enabled
 import uuid
-from utils.i18n import t
+from utils.i18n import get_current_locale, t
 
 logger = logging.getLogger(__name__)
 
@@ -1726,13 +1726,16 @@ async def create_blank_presentation(
     sql_session: AsyncSession = Depends(get_async_session),
 ):
     presentation_id = uuid.uuid4()
+    # A blank deck has no prompt to infer the language from: it starts in the
+    # interface language, so its title and the sample text of inserted blocks
+    # match what the user sees.
     presentation = PresentationModel(
         id=presentation_id,
         version=PresentationVersion.V2_STANDARD,
         content="",
         n_slides=1,
-        language="English",
-        title="Untitled Presentation",
+        language="Russian (Русский)" if get_current_locale() == "ru" else "English",
+        title=t("presentation.untitled"),
         layout=None,
         fonts=None,
         include_title_slide=False,

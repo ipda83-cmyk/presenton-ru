@@ -6,6 +6,8 @@ import MixpanelInitializer from "./MixpanelInitializer";
 import { Toaster } from "@/components/ui/sonner";
 import TailwindBrowserRuntime from "@/components/runtime/TailwindBrowserRuntime";
 import ClientI18nBridge from "@/components/ClientI18nBridge";
+import { LocalePreferenceProvider } from "@/components/LocalePreferenceProvider";
+import { getLocalePreference } from "@/app/actions/locale";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
@@ -63,20 +65,23 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const messages = await getMessages();
+  const localePreference = await getLocalePreference();
 
   return (
     <html lang={locale}>
       <body className="antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <ClientI18nBridge />
-          <Providers>
-            <MixpanelInitializer>
+          <LocalePreferenceProvider value={localePreference}>
+            <ClientI18nBridge />
+            <Providers>
+              <MixpanelInitializer>
 
-              {children}
+                {children}
 
-            </MixpanelInitializer>
-          </Providers>
-          <Toaster position="top-center" />
+              </MixpanelInitializer>
+            </Providers>
+            <Toaster position="top-center" />
+          </LocalePreferenceProvider>
         </NextIntlClientProvider>
         <TailwindBrowserRuntime />
       </body>

@@ -1,6 +1,7 @@
 import React from 'react'
 import { MixpanelEvent, trackEvent } from '@/utils/mixpanel'
 import { useTranslations } from 'next-intl'
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const OnBoardingHeader = ({
     currentStep,
@@ -29,7 +30,7 @@ const OnBoardingHeader = ({
     };
 
     return (
-        <div className='sticky top-8 z-20 flex items-center font-syne justify-end mt-7 mb-[52px]'>
+        <div className='sticky top-8 z-20 flex items-center gap-6 font-syne justify-end mt-7 mb-[52px]'>
             <div className='flex items-center gap-1'>
                 {STEPS.map((label, index) => {
                     const number = index + 1;
@@ -50,6 +51,7 @@ const OnBoardingHeader = ({
                     );
                 })}
             </div>
+            <LanguageSwitcher />
         </div>
     )
 }

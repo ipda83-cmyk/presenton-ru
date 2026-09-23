@@ -2,8 +2,10 @@
 
 Locale resolution for HTTP requests mirrors the frontend
 (servers/nextjs/i18n/request.ts): ``X-Locale`` header -> ``NEXT_LOCALE``
-cookie -> Russian. Accept-Language is ignored on purpose: the frontend ignores
-it too, so honouring it here would show English errors inside a Russian UI.
+cookie -> Russian. The cookie holds the user's *preference*: ``ru``, ``en`` or
+``auto``. Accept-Language is consulted only for ``auto`` (with the same
+negotiation as the frontend), so an explicit choice is never overridden by the
+browser and the errors always match the language of the UI.
 
 Outside a request (startup jobs, CLI, tests) messages stay in the English
 source language, so code paths that never see a user keep their old output.
@@ -13,6 +15,7 @@ build bundles them through normal imports.
 """
 
 import logging
+import re
 from collections.abc import Mapping
 from contextvars import ContextVar, Token
 
@@ -22,6 +25,8 @@ from utils.i18n import en as _en
 from utils.i18n import ru as _ru
 
 SUPPORTED_LOCALES = ("ru", "en")
+AUTO_LOCALE = "auto"
+LOCALE_PREFERENCES = (*SUPPORTED_LOCALES, AUTO_LOCALE)
 DEFAULT_LOCALE = "ru"
 SOURCE_LOCALE = "en"
 LOCALE_COOKIE = "NEXT_LOCALE"
@@ -56,12 +61,53 @@ def cookie_value(cookie_header: str | None, name: str) -> str | None:
     return None
 
 
-def resolve_locale(header_value: str | None, cookie_header: str | None) -> str:
-    return (
-        normalize_locale(header_value)
-        or normalize_locale(cookie_value(cookie_header, LOCALE_COOKIE))
-        or DEFAULT_LOCALE
-    )
+def normalize_preference(value: str | None) -> str | None:
+    """``ru``/``en``/``auto`` as stored in the cookie and the user profile."""
+    if value and value.strip().lower() == AUTO_LOCALE:
+        return AUTO_LOCALE
+    return normalize_locale(value)
+
+
+_QUALITY = re.compile(r"0(\.\d{0,3})?|1(\.0{0,3})?")
+
+
+def negotiate_locale(accept_language: str | None) -> str | None:
+    """First supported language of an Accept-Language header, by q-value.
+
+    Keep in sync with ``negotiateLocale`` in servers/nextjs/i18n/config.ts.
+    """
+    if not accept_language:
+        return None
+    ranked: list[tuple[float, int, str]] = []
+    for index, part in enumerate(accept_language.split(",")):
+        tag, *params = [item.strip() for item in part.split(";")]
+        quality = 1.0
+        for param in params:
+            name, _, value = param.partition("=")
+            if name.strip().lower() == "q":
+                value = value.strip()
+                quality = float(value) if _QUALITY.fullmatch(value) else 0.0
+        if tag and quality > 0:
+            ranked.append((-quality, index, tag))
+    for _, _, tag in sorted(ranked):
+        locale = normalize_locale(tag)
+        if locale:
+            return locale
+    return None
+
+
+def resolve_locale(
+    header_value: str | None,
+    cookie_header: str | None,
+    accept_language: str | None = None,
+) -> str:
+    header_locale = normalize_locale(header_value)
+    if header_locale:
+        return header_locale
+    preference = normalize_preference(cookie_value(cookie_header, LOCALE_COOKIE))
+    if preference == AUTO_LOCALE:
+        return negotiate_locale(accept_language) or DEFAULT_LOCALE
+    return preference or DEFAULT_LOCALE
 
 
 def get_current_locale() -> str:

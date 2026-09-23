@@ -9,6 +9,7 @@ import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
 import { useTranslations } from "next-intl";
 import { ensureTailwindBrowserScript } from "@/lib/tailwind-browser";
 import { useTemplateSummaries, TemplateTab } from "../../../hooks/useTemplateSummaries";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
   ProcessingTemplateListCard,
   TemplateListCard,
@@ -105,6 +106,7 @@ const LayoutPreview = () => {
               <span className="md:hidden">{t("newShort")}</span>
               <ChevronRight className="w-4 h-4" />
             </Link>
+            <LanguageSwitcher size="md" />
           </div>
         </div>
       </div>

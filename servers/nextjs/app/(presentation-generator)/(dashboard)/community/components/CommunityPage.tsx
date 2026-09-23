@@ -36,6 +36,7 @@ import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
 import { useTranslations } from "next-intl";
 import CommunityDesignPreviewDialog from "./CommunityDesignPreviewDialog";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const PAGE_SIZE = 20;
 
@@ -247,13 +248,16 @@ export default function CommunityPage() {
         <h1 className="font-syne text-[22px] font-medium tracking-[-0.66px] text-[#101323]">
           {t("title")}
         </h1>
-        <Link
-          href="/upload"
-          className="inline-flex h-10 items-center gap-2 rounded-full bg-[linear-gradient(270deg,#D5CAFC_2.4%,#E3D2EB_27.88%,#F4DCD3_69.23%,#FDE4C2_100%)] px-4 font-syne text-sm font-medium text-[#191919] shadow-sm transition hover:shadow-md"
-        >
-          {t("newPresentation")}
-          <ChevronRight className="h-4 w-4" />
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/upload"
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-[linear-gradient(270deg,#D5CAFC_2.4%,#E3D2EB_27.88%,#F4DCD3_69.23%,#FDE4C2_100%)] px-4 font-syne text-sm font-medium text-[#191919] shadow-sm transition hover:shadow-md"
+          >
+            {t("newPresentation")}
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+          <LanguageSwitcher size="md" />
+        </div>
       </header>
 
       <main className="px-7 py-8">
