@@ -2,9 +2,10 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { getApiUrl } from "@/utils/api";
 import { isAuthDisabled } from "@/utils/auth";
-import { formatFastApiDetail, UNAUTHORIZED_DETAIL } from "@/utils/authErrors";
+import { formatFastApiDetail } from "@/utils/authErrors";
 import {
   PRESENTON_SPLASH_MIN_DURATION_MS,
   PresentonSplashLoader,
@@ -28,6 +29,7 @@ const initialStatus: AuthStatus = {
 };
 
 export default function AuthGate() {
+  const t = useTranslations("auth");
   const [status, setStatus] = useState<AuthStatus>(initialStatus);
   const [isLoading, setIsLoading] = useState(true);
   const [isRedirecting, setIsRedirecting] = useState(false);
@@ -90,7 +92,7 @@ export default function AuthGate() {
         trackEvent(MixpanelEvent.Auth_Unauthorized_Redirect, {
           configured: true,
         });
-        notify.error("Unauthorized", "Sign in to view this page.", {
+        notify.error(t("unauthorizedTitle"), t("unauthorizedBody"), {
           id: "auth-unauthorized-redirect",
           duration: 5000,
         });
@@ -137,10 +139,7 @@ export default function AuthGate() {
           "Could not load login state"
         ),
       });
-      notify.error(
-        "Could not load login",
-        "We could not connect to the login service. Please refresh and try again."
-      );
+      notify.error(t("loadFailedTitle"), t("loadFailedBody"));
     } finally {
       setIsLoading(false);
     }
@@ -176,10 +175,7 @@ export default function AuthGate() {
         flow: isSetupMode ? "setup" : "sign_in",
         reason: "username_too_short",
       });
-      notify.warning(
-        "Username too short",
-        "Your username must be at least 3 characters."
-      );
+      notify.warning(t("usernameTooShortTitle"), t("usernameTooShortBody"));
       return;
     }
 
@@ -190,8 +186,8 @@ export default function AuthGate() {
         reason: "password_too_short",
       });
       notify.warning(
-        "Password too short",
-        `Your password must be at least ${minimumPasswordLength} characters.`
+        t("passwordTooShortTitle"),
+        t("passwordTooShortBody", { min: minimumPasswordLength })
       );
       return;
     }
@@ -201,10 +197,7 @@ export default function AuthGate() {
         flow: "setup",
         reason: "passwords_do_not_match",
       });
-      notify.warning(
-        "Passwords do not match",
-        "Make sure both password fields match before continuing."
-      );
+      notify.warning(t("mismatchTitle"), t("mismatchBody"));
       return;
     }
 
@@ -236,7 +229,10 @@ export default function AuthGate() {
 
       const payload = await response.json();
       if (!response.ok) {
-        const detail = formatFastApiDetail(payload?.detail);
+        // formatFastApiDetail() falls back to an English "Unauthorized"; skip it
+        // when there is no detail so the localized generic message shows instead.
+        const detail =
+          payload?.detail === undefined ? "" : formatFastApiDetail(payload.detail);
         trackEvent(
           isSetupMode
             ? MixpanelEvent.Auth_Setup_Failed
@@ -250,16 +246,13 @@ export default function AuthGate() {
           }
         );
         if (response.status === 401) {
-          notify.error(
-            "Sign-in failed",
-            detail === UNAUTHORIZED_DETAIL
-              ? "The username or password is incorrect. Please try again."
-              : detail
-          );
+          // Login only answers 401 for bad credentials. Match on the status,
+          // not the detail text: the backend now localizes that text.
+          notify.error(t("signInFailed"), t("wrongCredentials"));
         } else {
           notify.error(
-            isSetupMode ? "Could not create account" : "Sign-in failed",
-            detail || "Something went wrong. Please try again."
+            isSetupMode ? t("createFailed") : t("signInFailed"),
+            detail || t("genericError")
           );
         }
         return;
@@ -277,7 +270,7 @@ export default function AuthGate() {
         });
         setPassword("");
         setConfirmPassword("");
-        notify.success("Account created", "Sign in with your new username and password to continue.", {
+        notify.success(t("accountCreatedTitle"), t("accountCreatedBody"), {
           duration: 6000,
         });
         return;
@@ -295,10 +288,7 @@ export default function AuthGate() {
       });
       setPassword("");
       setConfirmPassword("");
-      notify.success(
-        "Signed in",
-        "Welcome back. Loading your workspace."
-      );
+      notify.success(t("signedInTitle"), t("signedInBody"));
     } catch (submitError) {
       console.error(submitError);
       trackEvent(
@@ -313,10 +303,7 @@ export default function AuthGate() {
           ),
         }
       );
-      notify.error(
-        "Login unavailable",
-        "The login service is unavailable right now. Please try again in a moment."
-      );
+      notify.error(t("unavailableTitle"), t("unavailableBody"));
     } finally {
       setIsSubmitting(false);
     }
@@ -328,7 +315,7 @@ export default function AuthGate() {
     status.authenticated ||
     !hasMetSplashDuration
   ) {
-    return <PresentonSplashLoader message="Preparing your workspace..." />;
+    return <PresentonSplashLoader message={t("preparing")} />;
   }
 
   return (
@@ -347,25 +334,23 @@ export default function AuthGate() {
             </div>
             <div>
               <p className="font-syne text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7A5AF8]">
-                Secure instance
+                {t("secureInstance")}
               </p>
               <h1 className="mt-1 font-syne text-xl font-normal leading-tight tracking-[-0.03em] text-black sm:text-[22px]">
-                {isSetupMode ? "Create your admin login" : "Sign in to continue"}
+                {isSetupMode ? t("setupHeading") : t("signInHeading")}
               </h1>
             </div>
           </div>
         </div>
 
         <p className="max-w-md text-sm leading-relaxed text-[#6B7280]">
-          {isSetupMode
-            ? "One-time setup for this deployment. You will use the same username and password on future visits."
-            : "This deployment is protected. Enter your credentials to open the app."}
+          {isSetupMode ? t("setupIntro") : t("signInIntro")}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-7 space-y-5">
           <div className="space-y-2">
             <label htmlFor="username" className="block text-sm font-medium text-[#374151]">
-              Username
+              {t("usernameLabel")}
             </label>
             <input
               id="username"
@@ -374,11 +359,11 @@ export default function AuthGate() {
               onChange={(event) =>
                 setUsername(event.target.value.replace(/\s/g, ""))
               }
-              placeholder="Username"
+              placeholder={t("usernameLabel")}
               minLength={3}
               maxLength={128}
               pattern="\S+"
-              title="Username cannot contain spaces"
+              title={t("usernameNoSpaces")}
               required
               spellCheck={false}
               className="h-12 w-full rounded-lg border border-[#E1E1E5] bg-white px-4 text-sm text-[#191919] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#7A5AF8] focus:ring-2 focus:ring-[#7A5AF8]/15"
@@ -388,7 +373,7 @@ export default function AuthGate() {
 
           <div className="space-y-2">
             <label htmlFor="password" className="block text-sm font-medium text-[#374151]">
-              Password
+              {t("passwordLabel")}
             </label>
             <input
               id="password"
@@ -397,7 +382,7 @@ export default function AuthGate() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder={
-                isSetupMode ? "At least 8 characters" : "Enter your password"
+                isSetupMode ? t("passwordPlaceholderSetup") : t("passwordPlaceholderSignIn")
               }
               minLength={isSetupMode ? 8 : 6}
               maxLength={128}
@@ -410,7 +395,7 @@ export default function AuthGate() {
           {isSetupMode ? (
             <div className="space-y-2">
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-[#374151]">
-                Confirm password
+                {t("confirmLabel")}
               </label>
               <input
                 id="confirmPassword"
@@ -418,7 +403,7 @@ export default function AuthGate() {
                 autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
-                placeholder="Re-enter your password"
+                placeholder={t("confirmPlaceholder")}
                 minLength={8}
                 maxLength={128}
                 required
@@ -430,7 +415,7 @@ export default function AuthGate() {
 
           {!isSetupMode && status.configured ? (
             <p className="rounded-lg border border-[#EDEEEF] bg-white px-4 py-3 text-xs leading-relaxed text-[#6B7280]">
-              Use the username and password provided by your administrator.
+              {t("adminHint")}
             </p>
           ) : null}
 
@@ -441,11 +426,11 @@ export default function AuthGate() {
           >
             {isSubmitting
               ? isSetupMode
-                ? "Saving credentials…"
-                : "Signing in…"
+                ? t("savingCredentials")
+                : t("signingIn")
               : isSetupMode
-                ? "Create account"
-                : "Sign in"}
+                ? t("createAccount")
+                : t("signIn")}
           </button>
         </form>
       </section>
