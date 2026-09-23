@@ -233,4 +233,8 @@ ERRORS: dict[str, str] = {
     "err.router.webhookSubscriptionNotFound": "Webhook subscription not found",
     "err.presentonCloudProxy.providerNotConnected": "Presenton is selected but the global provider is not connected",
     "err.presentonCloudProxy.slideRequired": "A valid presentation slide is required",
+    "err.officeDocument.couldNotRead": "Could not read {member}",
+    "err.officeDocument.legacyFormat": "{extension} files require an external office conversion engine; save the document in a modern OOXML or OpenDocument format first",
+    "err.officeDocument.couldNotParse": "Could not parse {filename}",
+    "err.officeDocument.unsupportedFormat": "Unsupported office document format: {extension}",
 }

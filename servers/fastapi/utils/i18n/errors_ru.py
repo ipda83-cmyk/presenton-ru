@@ -233,4 +233,8 @@ ERRORS: dict[str, str] = {
     "err.router.webhookSubscriptionNotFound": "Подписка на вебхук не найдена",
     "err.presentonCloudProxy.providerNotConnected": "Выбран Presenton, но глобальный провайдер не подключён",
     "err.presentonCloudProxy.slideRequired": "Нужен корректный слайд презентации",
+    "err.officeDocument.couldNotRead": "Не удалось прочитать {member}",
+    "err.officeDocument.legacyFormat": "Для файлов {extension} нужен внешний конвертер офисных документов; сначала сохраните документ в современном формате OOXML или OpenDocument",
+    "err.officeDocument.couldNotParse": "Не удалось разобрать {filename}",
+    "err.officeDocument.unsupportedFormat": "Неподдерживаемый формат офисного документа: {extension}",
 }

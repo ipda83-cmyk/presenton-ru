@@ -3,6 +3,7 @@ import re
 import zipfile
 from pathlib import Path
 from xml.etree import ElementTree
+from utils.i18n import t
 
 
 class OfficeDocumentError(Exception):
@@ -32,7 +33,9 @@ def _read_xml(archive: zipfile.ZipFile, member: str) -> ElementTree.Element:
     try:
         return ElementTree.fromstring(archive.read(member))
     except (KeyError, ElementTree.ParseError) as exc:
-        raise OfficeDocumentError(f"Could not read {member}") from exc
+        raise OfficeDocumentError(
+            t("err.officeDocument.couldNotRead", member=member)
+        ) from exc
 
 
 def _text_nodes(root: ElementTree.Element) -> list[str]:
@@ -149,8 +152,7 @@ def extract_office_document_text(file_path: str) -> str:
 
     if extension in _UNSUPPORTED_LEGACY_EXTENSIONS:
         raise OfficeDocumentError(
-            f"{extension} files require an external office conversion engine; "
-            "save the document in a modern OOXML or OpenDocument format first"
+            t("err.officeDocument.legacyFormat", extension=extension)
         )
 
     try:
@@ -165,7 +167,9 @@ def extract_office_document_text(file_path: str) -> str:
                 return _extract_odf(archive)
     except (OSError, zipfile.BadZipFile) as exc:
         raise OfficeDocumentError(
-            f"Could not parse {os.path.basename(file_path)}"
+            t("err.officeDocument.couldNotParse", filename=os.path.basename(file_path))
         ) from exc
 
-    raise OfficeDocumentError(f"Unsupported office document format: {extension}")
+    raise OfficeDocumentError(
+        t("err.officeDocument.unsupportedFormat", extension=extension)
+    )
