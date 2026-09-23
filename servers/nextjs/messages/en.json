@@ -987,7 +987,20 @@
     "noneAvailable": "No templates available.",
     "serviceUnreachable": "The template service could not be reached. Please try again.",
     "loadErrorTitle": "Could not load templates",
-    "loadOneFailed": "Failed to load template"
+    "loadOneFailed": "Failed to load template",
+    "builtin": {
+      "dynamic": "Bold, high-contrast layouts with dark textured backgrounds and warm accents for impactful, story-driven presentations.",
+      "editorial": "Magazine-inspired layouts with refined typography, bold blue accents, and polished compositions for narrative, insight-rich presentations.",
+      "executive": "Leadership-ready layouts with bold typography, crisp structure, and subtle violet accents for strategic, decision-focused presentations.",
+      "general": "General template best for simple presentations, great spacing and clean layout.",
+      "modern": "Clean, contemporary layouts with generous whitespace, confident typography, and bold visual accents for a polished presentation.",
+      "momentum": "A polished, high-energy business template for strategy, performance, product, and leadership presentations, combining bold typography, fluid accents, strong data storytelling, and versatile editorial layouts.",
+      "mosaic": "Vibrant, modular layouts with bold color blocking, rounded geometric frames, and playful editorial compositions for energetic, visually driven presentations.",
+      "standard": "Balanced, adaptable layouts that keep business and everyday content clear, organized, and easy to follow.",
+      "swift": "Bright, energetic layouts with crisp structure and visual momentum for concise, fast-paced presentations.",
+      "verdant": "Refined, organic layouts with expressive serif typography and flowing green accents for polished, narrative-driven presentations."
+    },
+    "layoutsBadge": "Layouts-{count}"
   },
   "docsPreview": {
     "readErrorTitle": "Could not read document",

@@ -83,6 +83,12 @@ export const TemplateListCard = memo(function TemplateListCard({
   selectionPage?: boolean;
 }) {
   const t = useTranslations("templates");
+  // Built-in templates ship English descriptions; ids are fixed words
+  // ("general", "modern", ...), user templates have generated ids.
+  const builtinDescriptionKey = `builtin.${template.id}`;
+  const description = t.has(builtinDescriptionKey)
+    ? t(builtinDescriptionKey)
+    : template.description;
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (event.currentTarget.getAttribute("aria-disabled") === "true") {
@@ -180,7 +186,7 @@ export const TemplateListCard = memo(function TemplateListCard({
           >
             {template.name}
           </h3>
-          {template.description && (
+          {description && (
             <p
               className={cn(
                 "line-clamp-2 font-syne",
@@ -192,7 +198,7 @@ export const TemplateListCard = memo(function TemplateListCard({
                     )
               )}
             >
-              {template.description}
+              {description}
             </p>
           )}
           {statusLabel && (

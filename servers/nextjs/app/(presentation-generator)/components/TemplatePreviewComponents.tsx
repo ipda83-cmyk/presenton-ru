@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import React, { memo } from "react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 export function TemplatePreviewStage({
@@ -34,6 +35,7 @@ export const LayoutsBadge = memo(function LayoutsBadge({
   count: number;
   selectionPage?: boolean;
 }) {
+    const t = useTranslations("templates");
     return (
       <span
         className={cn(
@@ -43,7 +45,7 @@ export const LayoutsBadge = memo(function LayoutsBadge({
             : "left-4 top-3.5 bg-[#333333] px-3 py-1 font-semibold"
         )}
       >
-        Layouts-{count}
+        {t("layoutsBadge", { count })}
       </span>
     );
 });
