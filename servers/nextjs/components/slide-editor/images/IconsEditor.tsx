@@ -416,7 +416,7 @@ const IconsEditor = ({
                 <div className="flex min-h-0 flex-1 flex-col px-4 sm:px-5">
                   <div className="mb-2 flex flex-none items-center justify-between">
                     <p className="text-[12px] font-medium text-[#666]">
-                      Similar icons
+                      {t("icon.similarIcons")}
                     </p>
                     {!loading && icons.length > 0 ? (
                       <p className="text-[11px] text-[#999]">
@@ -444,7 +444,7 @@ const IconsEditor = ({
                             <button
                               key={`${iconSrc}-${index}`}
                               type="button"
-                              aria-label={`Select icon ${index + 1}`}
+                              aria-label={t("icon.selectIconN", { n: index + 1 })}
                               aria-pressed={isSelected}
                               onClick={() => setSelectedIconUrl(iconSrc)}
                               className={cn(

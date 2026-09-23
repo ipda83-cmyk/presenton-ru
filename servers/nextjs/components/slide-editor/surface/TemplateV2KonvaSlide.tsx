@@ -3390,7 +3390,7 @@ function TemplateV2KonvaSlideComponent({
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-white/35">
           <div className="flex items-center gap-2 rounded-full bg-white px-3 py-2 text-xs font-medium text-[#191919] shadow-md">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Uploading image...
+            {t("image.uploading")}
           </div>
         </div>
       ) : null}

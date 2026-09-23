@@ -29,7 +29,7 @@ import React, {
 } from "react";
 import Image from "next/image";
 import { notify } from "@/components/ui/sonner";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useDispatch, useSelector } from "react-redux";
 import MarkdownRenderer from "@/components/MarkDownRender";
 import { ImagesApi } from "../../services/api/images";
@@ -146,60 +146,114 @@ type ChatConversationListItem = ChatConversationSummary & {
   title?: string;
 };
 
-const describeHtmlSelection = (selection: ChatHtmlSelection) => {
+type ChatLabelTranslator = (
+  key: string,
+  values?: Record<string, string | number>,
+) => string;
+
+// Element types the template-v2 editor reports for a selection; anything else
+// falls back to the generic "element" label.
+const CONTEXT_ELEMENT_TYPES = new Set([
+  "text",
+  "text-list",
+  "image",
+  "icon",
+  "chart",
+  "table",
+  "latex",
+  "vector",
+  "container",
+  "group",
+  "grid",
+  "flex",
+  "list-view",
+  "grid-view",
+  "infographic",
+  "decision_tree",
+  "org_chart",
+]);
+
+const describeElementType = (type: string | undefined, t: ChatLabelTranslator) =>
+  type && CONTEXT_ELEMENT_TYPES.has(type)
+    ? t(`ctx.type.${type}`)
+    : t("ctx.element");
+
+const describeHtmlSelection = (
+  selection: ChatHtmlSelection,
+  t: ChatLabelTranslator,
+) => {
   const tag = selection.elementTag?.toLowerCase();
   const elementLabel =
     tag && /^h[1-6]$/.test(tag)
-      ? "Heading"
+      ? t("ctx.heading")
       : tag === "p"
-        ? "Paragraph"
+        ? t("ctx.paragraph")
         : tag === "img"
-          ? "Image"
+          ? t("ctx.image")
           : tag
             ? tag.toUpperCase()
-            : "Element";
+            : t("ctx.element");
   const selectedText = selection.selectedText?.replace(/\s+/g, " ").trim();
   return selectedText ? `${elementLabel} · ${selectedText}` : elementLabel;
 };
 
+// Chip for the chat composer. The editor's targetLabel is built from template
+// data (component descriptions/ids, usually English) and is also sent to the
+// model as context, so the chip gets a short UI-language label and the
+// template's own wording moves to the tooltip.
 const describeTemplateV2Target = (
   target: NonNullable<ChatProps["selectedTemplateV2Target"]>,
-) =>
-  target.kind === "multi-component"
-    ? target.targetLabel || `${target.components.length} components selected`
-    : target.targetLabel ||
-      target.componentLabel ||
-      target.elementName ||
-      target.elementType ||
-      target.componentId ||
-      target.kind;
+  t: ChatLabelTranslator,
+): { label: string; title: string } => {
+  if (target.kind === "multi-component") {
+    const label = t("ctx.componentsSelected", { count: target.components.length });
+    const names = (target.componentLabels ?? []).filter(Boolean).join("; ");
+    return { label, title: names ? `${label}: ${names}` : label };
+  }
+  if (target.kind === "element") {
+    const label = describeElementType(target.elementType, t);
+    const details = [target.elementName, target.componentLabel]
+      .filter(Boolean)
+      .join(" · ");
+    return { label, title: details ? `${label}: ${details}` : label };
+  }
+  const label =
+    typeof target.componentIndex === "number"
+      ? t("ctx.blockN", { n: target.componentIndex + 1 })
+      : t("ctx.block");
+  const details = target.componentLabel || target.componentId;
+  return { label, title: details ? `${label}: ${details}` : label };
+};
 
 const buildMessageContextTags = ({
   currentSlide,
   htmlSelection,
   templateTarget,
+  t,
 }: {
   currentSlide?: number;
   htmlSelection: ChatHtmlSelection | null;
   templateTarget: ChatProps["selectedTemplateV2Target"];
+  t: ChatLabelTranslator;
 }): ChatContextTag[] => {
   const tags: ChatContextTag[] = [];
   if (typeof currentSlide === "number") {
+    const slideLabel = t("ctx.slideN", { n: currentSlide + 1 });
     tags.push({
       id: "slide",
-      label: `Slide ${currentSlide + 1}`,
-      title: `Slide ${currentSlide + 1}`,
+      label: slideLabel,
+      title: slideLabel,
     });
   }
   if (templateTarget) {
-    const label = describeTemplateV2Target(templateTarget);
-    tags.push({ id: "target", label, title: label });
+    const { label, title } = describeTemplateV2Target(templateTarget, t);
+    tags.push({ id: "target", label, title });
   } else if (htmlSelection) {
-    const label = describeHtmlSelection(htmlSelection);
+    const label = describeHtmlSelection(htmlSelection, t);
     tags.push({
       id: "target",
       label,
-      title: `${label}. The selected element HTML is sent with the prompt.`,
+      title: t("ctx.htmlSent", { label }),
     });
   }
   return tags;
@@ -282,11 +336,6 @@ const getHistoryConversationTitle = (rows: ChatHistoryMessage[]) => {
   return title.length > 80 ? `${title.slice(0, 80).trimEnd()}…` : title;
 };
 
-const CONVERSATION_DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
-});
 
 const getConversationTitle = (
   conversation: ChatConversationListItem,
@@ -302,11 +351,15 @@ const getConversationTitle = (
   return preview.length > 54 ? `${preview.slice(0, 54).trimEnd()}…` : preview;
 };
 
-const formatConversationDate = (value?: string | null) => {
+const formatConversationDate = (locale: string, value?: string | null) => {
   if (!value) return "";
   const timestamp = Date.parse(value);
   if (!Number.isFinite(timestamp)) return "";
-  return CONVERSATION_DATE_FORMATTER.format(timestamp);
+  return new Intl.DateTimeFormat(locale, {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(timestamp);
 };
 
 const ConversationControls = ({
@@ -333,6 +386,7 @@ const ConversationControls = ({
   onNewChat: () => void;
 }) => {
   const t = useTranslations("chat");
+  const locale = useLocale();
   return (
   <div className="flex items-center gap-1.5">
     <Popover open={isOpen} onOpenChange={onOpenChange}>
@@ -387,7 +441,7 @@ const ConversationControls = ({
                 conversation.conversation_id === activeConversationId;
               const isDeleting =
                 conversation.conversation_id === deletingConversationId;
-              const updatedAt = formatConversationDate(conversation.updated_at);
+              const updatedAt = formatConversationDate(locale, conversation.updated_at);
               return (
                 <div
                   key={conversation.conversation_id}
@@ -1684,6 +1738,7 @@ const Chat = ({
         currentSlide,
         htmlSelection: selectionContext,
         templateTarget: selectedTemplateV2Target,
+        t,
       }),
     };
 
@@ -2226,13 +2281,16 @@ const Chat = ({
   const chatSlideReference =
     typeof currentSlide === "number" &&
       hiddenOverlaySlideReference !== currentSlide
-      ? `Slide ${currentSlide + 1}`
+      ? t("ctx.slideN", { n: currentSlide + 1 })
       : "";
   const chatTargetReference = selectedTemplateV2Target
-    ? describeTemplateV2Target(selectedTemplateV2Target)
+    ? describeTemplateV2Target(selectedTemplateV2Target, t)
     : chatHtmlSelection
-      ? describeHtmlSelection(chatHtmlSelection)
-      : "";
+      ? (() => {
+          const label = describeHtmlSelection(chatHtmlSelection, t);
+          return { label, title: t("ctx.htmlSent", { label }) };
+        })()
+      : null;
   const clearChatTargetReference = chatHtmlSelection
     ? () => dispatch(clearChatHtmlSelection())
     : onClearChatTargetReference;
@@ -2251,10 +2309,8 @@ const Chat = ({
       ? [
           {
             id: "target",
-            label: chatTargetReference,
-            title: chatHtmlSelection
-              ? `${chatTargetReference}. The selected element HTML is sent with the prompt.`
-              : chatTargetReference,
+            label: chatTargetReference.label,
+            title: chatTargetReference.title,
             onRemove: clearChatTargetReference,
           },
         ]
@@ -2465,8 +2521,8 @@ const Chat = ({
                                 className="flex h-[14px] w-[14px] shrink-0 items-center justify-center text-[#808080] transition-colors hover:text-[#333333]"
                                 aria-label={
                                   isEditPreviewExpanded
-                                    ? "Hide edit comparison"
-                                    : "Show edit comparison"
+                                    ? t("hideEditComparison")
+                                    : t("showEditComparison")
                                 }
                                 aria-expanded={isEditPreviewExpanded}
                               >
@@ -2947,7 +3003,7 @@ const Chat = ({
 
                 <div className="mt-10">
                   <h4 className="mb-2 text-[10px] font-normal leading-[15px] tracking-[0.367px] text-[#99A1AF]">
-                    QUICK PROMPTS
+                    {t("quickPrompts")}
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {presentationQuickPrompts.map((prompt) => (
@@ -3336,7 +3392,7 @@ const Chat = ({
               onClick={() => inputRef.current?.focus()}
               disabled={chatInputDisabled}
               className="inline-flex h-[30px] items-center gap-1.5 rounded-[64px] border border-[#EDEEEF] bg-white px-3 text-[12px] font-medium text-[#4A4A4A] transition-colors hover:bg-[#FAFAFA] disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label="Focus prompt input"
+              aria-label={t("focusPromptInput")}
             >
               <svg
                 width="13"
@@ -3354,7 +3410,7 @@ const Chat = ({
                   fill="#7A5AF8"
                 />
               </svg>
-              Prompt
+              {t("promptBtn")}
             </button>
           </div>
           <div className="ml-auto mr-2 flex items-center gap-2">
@@ -3363,14 +3419,14 @@ const Chat = ({
                 type="button"
                 onClick={stopStreaming}
                 className="flex items-center gap-1.5 whitespace-nowrap rounded-[34px] border border-[#E4E7EC] bg-white px-3 py-2 text-sm font-medium text-[#344054] transition-colors hover:bg-[#F9FAFB]"
-                aria-label="Stop chat response"
+                aria-label={t("stopResponse")}
               >
                 <Loader2
                   className="h-3 w-3 animate-spin text-[#667085]"
                   aria-hidden="true"
                 />
                 <Square className="h-3 w-3 fill-current" aria-hidden="true" />
-                Stop
+                {t("stop")}
               </button>
             ) : (
               <button
@@ -3388,7 +3444,7 @@ const Chat = ({
                   background:
                     "linear-gradient(270deg, #D5CAFC 2.4%, #E3D2EB 27.88%, #F4DCD3 69.23%, #FDE4C2 100%)",
                 }}
-                aria-label="Send prompt"
+                aria-label={t("sendPrompt")}
               >
                 <ArrowUp className="h-4 w-4 text-[#191919]" />
               </button>

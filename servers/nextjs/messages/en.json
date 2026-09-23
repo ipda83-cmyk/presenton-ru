@@ -340,6 +340,21 @@
         "label": "Keyboard shortcuts",
         "desc": "Open this keyboard-shortcuts guide."
       }
+    },
+    "metricTps": "{value} t/s",
+    "render": {
+      "slideN": "Slide {n}",
+      "newPage": "New page",
+      "createFromPrompt": "Create slide from prompt",
+      "writePrompt": "Write prompt",
+      "promptPlaceholder": "Start with your idea... we'll handle the slides",
+      "createSlide": "Create slide",
+      "creatingSlide": "Creating slide",
+      "previewUnavailable": "Preview unavailable",
+      "previewAria": "Template v2 slide preview",
+      "aiEdit": "AI edit",
+      "renderError": "Slide render error",
+      "renderErrorLabel": "{label} render error"
     }
   },
   "chat": {
@@ -556,6 +571,40 @@
         "defaultStart": "Working on it.",
         "defaultDone": "Finished that step."
       }
+    },
+    "hideEditComparison": "Hide edit comparison",
+    "showEditComparison": "Show edit comparison",
+    "focusPromptInput": "Focus prompt input",
+    "stop": "Stop",
+    "ctx": {
+      "slideN": "Slide {n}",
+      "heading": "Heading",
+      "paragraph": "Paragraph",
+      "image": "Image",
+      "element": "Element",
+      "componentsSelected": "{count} components selected",
+      "htmlSent": "{label}. The selected element HTML is sent with the prompt.",
+      "type": {
+        "text": "text",
+        "text-list": "text-list",
+        "image": "image",
+        "icon": "icon",
+        "chart": "chart",
+        "table": "table",
+        "latex": "latex",
+        "vector": "vector",
+        "container": "container",
+        "group": "group",
+        "grid": "grid",
+        "flex": "flex",
+        "list-view": "list-view",
+        "grid-view": "grid-view",
+        "infographic": "infographic",
+        "decision_tree": "decision_tree",
+        "org_chart": "org_chart"
+      },
+      "blockN": "Block {n}",
+      "block": "Block"
     }
   },
   "insert": {
@@ -1892,7 +1941,9 @@
       "couldNotLoadTitle": "Could not load icons",
       "couldNotLoadBody": "Failed to fetch icons. Please try again.",
       "iconRequiredTitle": "Icon required",
-      "iconRequiredBody": "Select an icon before replacing."
+      "iconRequiredBody": "Select an icon before replacing.",
+      "similarIcons": "Similar icons",
+      "selectIconN": "Select icon {n}"
     },
     "layout": {
       "gap": "Gap",
@@ -1912,7 +1963,8 @@
       "position": "Position",
       "width": "Width",
       "radius": "Radius",
-      "blur": "Blur"
+      "blur": "Blur",
+      "alignment": "Alignment"
     },
     "image": {
       "invalidFileTitle": "Invalid file",
@@ -1954,7 +2006,8 @@
       "chooseValidFile": "Please choose a valid image file.",
       "uploadNoUrl": "Upload did not return an image URL.",
       "uploadedTitle": "Image uploaded",
-      "couldNotUpload": "Could not upload image."
+      "couldNotUpload": "Could not upload image.",
+      "uploading": "Uploading image..."
     },
     "shape": {
       "fillTitle": "Shape fill",
@@ -2025,7 +2078,12 @@
       "numberedList": "Numbered list",
       "noList": "No list",
       "horizontalAlignment": "Horizontal alignment",
-      "alignmentUnavailable": "Alignment is unavailable for list text"
+      "alignmentUnavailable": "Alignment is unavailable for list text",
+      "latexToText": "Convert LaTeX to text",
+      "textToLatex": "Convert selected text to LaTeX",
+      "allFonts": "All Fonts",
+      "templateFonts": "Template Fonts",
+      "localFonts": "Local Fonts"
     },
     "chart": {
       "colors": "Chart colors",
@@ -2091,7 +2149,15 @@
       "addRow": "Add Row",
       "addColumn": "Add Column",
       "moveColumnRight": "Move Column Right",
-      "moveColumnLeft": "Move Column Left"
+      "moveColumnLeft": "Move Column Left",
+      "tabData": "Data",
+      "tabCustomize": "Customize",
+      "changeColorN": "Change chart color {n}",
+      "dataTableTitle": "Edit Data Table",
+      "dataTableDesc": "Edit Data Table",
+      "clearData": "Clear data",
+      "save": "Save",
+      "chartsLabel": "Charts"
     }
   },
   "auth": {
@@ -2133,5 +2199,89 @@
     "signingIn": "Signing in…",
     "createAccount": "Create account",
     "signIn": "Sign in"
+  },
+  "ui": {
+    "close": "Close",
+    "loading": "Loading",
+    "dismissNotification": "Dismiss notification",
+    "notifications": "Notifications",
+    "gotIt": "Got it!"
+  },
+  "imgEditor": {
+    "title": "Update Image",
+    "tabStock": "Stock search",
+    "tabAi": "AI Generate",
+    "tabUpload": "Upload",
+    "tabEdit": "Edit",
+    "currentPrompt": "Current Prompt",
+    "searchKeywords": "Search keywords",
+    "imageDescription": "Image Description",
+    "stockPlaceholder": "e.g. team collaboration, modern office, sunset mountains…",
+    "aiPlaceholder": "Describe the image you want to generate...",
+    "searching": "Searching…",
+    "searchStock": "Search stock images",
+    "generating": "Generating...",
+    "generate": "Generate Image",
+    "resultsHint": "Results — click an image to use it",
+    "runSearchHint": "Run a search to see thumbnails from {provider}.",
+    "previewAlt": "Preview",
+    "previousGenerated": "Previous Generated Images",
+    "uploading": "Uploading your image...",
+    "clickToUpload": "Click to upload an image",
+    "maxSize": "Maximum file size: 5MB",
+    "uploadedPreview": "Uploaded Image Preview",
+    "processing": "Processing...",
+    "uploadedAlt": "Uploaded preview",
+    "clickToUse": "Click to use this image",
+    "uploadedImages": "Uploaded Images:",
+    "use": "Use",
+    "currentImage": "Current Image",
+    "clickChangeFocus": "Click to Change Focus Point",
+    "clickSetFocus": "Click anywhere to set focus point",
+    "done": "Done",
+    "loadImagesTitle": "Could not load images",
+    "loadPreviousFailed": "Failed to get previous generated images. Please try again.",
+    "loadUploadedFailed": "Failed to get uploaded images. Please try again.",
+    "enterKeywords": "Please enter search keywords",
+    "addApiKey": "Add your {provider} API key in Settings to search stock images.",
+    "noImagesFound": "No images found. Try different keywords.",
+    "stockSearchFailed": "Stock search failed. Please try again.",
+    "enterPrompt": "Please enter a prompt",
+    "generateFailed": "Failed to generate image. Please try again.",
+    "generationFailedTitle": "Image generation failed",
+    "fileTooLarge": "File size should be less than 5MB",
+    "notAnImage": "Please upload an image file",
+    "uploadFailed": "Failed to upload image. Please try again.",
+    "uploadFailedTitle": "Upload failed",
+    "deletedTitle": "Image deleted",
+    "deletedBody": "The image was removed from your uploads.",
+    "deleteFailedTitle": "Could not delete image",
+    "deleteFailed": "Failed to delete image. Please try again.",
+    "replaceImage": "Replace image",
+    "focusPoint": "Focus point",
+    "fit": {
+      "cover": "Fill",
+      "contain": "Contain",
+      "fill": "Stretch"
+    }
+  },
+  "config": {
+    "loading": "Loading Presenton...",
+    "providerSetupTitle": "Provider setup required",
+    "providerSetupBody": "Choose and configure a text provider before opening other pages.",
+    "cloudDisconnected": "Presenton Cloud is disconnected. Choose a text provider to continue.",
+    "backendUnreachableTitle": "Cannot reach backend",
+    "backendUnreachableBody": "Check the backend service and try again.",
+    "backendConnectionHint": "Check that the FastAPI backend is running and that the frontend can reach it.",
+    "cloudVerifyTitle": "Could not verify Presenton Cloud",
+    "keptOpenTryAgain": "Your current page has been kept open. Try again after checking the backend service.",
+    "keptOpenRefresh": "Your current page has been kept open. Refresh after checking the backend service.",
+    "providerVerifyTitle": "Could not verify provider settings",
+    "configLoadTitle": "Could not load configuration",
+    "providerLoadTitle": "Could not load provider settings",
+    "ollamaTitle": "Could not connect to Ollama",
+    "ollamaBody": "Check the Ollama URL and try again.",
+    "instanceNotConfiguredTitle": "Instance not configured",
+    "instanceNotConfiguredBody": "Ask the administrator to configure the AI providers in Settings."
   }
 }

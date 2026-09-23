@@ -112,7 +112,7 @@ export function ChartEditorContent({
         </div>
 
         <label className="mb-2 block text-[12px] font-medium text-[#686873]">
-          Chart type
+          {t("chart.chartType")}
         </label>
         <ChartTypeSelect
           value={chart.chart_type}
@@ -131,7 +131,7 @@ export function ChartEditorContent({
                 }`}
               onClick={() => setTab("data")}
             >
-              Data
+              {t("chart.tabData")}
             </button>
             <button
               type="button"
@@ -141,7 +141,7 @@ export function ChartEditorContent({
                 }`}
               onClick={() => setTab("customize")}
             >
-              Customize
+              {t("chart.tabCustomize")}
             </button>
           </div>
 
@@ -274,6 +274,7 @@ function ChartDataPanel({
   chart: ChartElement;
   onOpenDataModal: () => void;
 }) {
+  const t = useTranslations("slideEditor");
   const categories = safeCategoriesForChart(chart);
   const series = normalizedSeries(chart, categories.length);
 
@@ -286,7 +287,7 @@ function ChartDataPanel({
         onClick={onOpenDataModal}
       >
         <Pencil size={15} strokeWidth={2} />
-        Edit data
+        {t("chart.editData")}
       </button>
     </div>
   );
@@ -574,7 +575,7 @@ function ChartSeriesColorControls({
           <button
             type="button"
             key={`${target.mode}-${target.index}`}
-            aria-label={`Change chart color ${target.index + 1}`}
+            aria-label={t("chart.changeColorN", { n: target.index + 1 })}
             className={`grid h-8 w-8 place-items-center rounded-full border bg-white p-1 transition ${paletteAnchor?.index === target.index
               ? "border-[#7C51F8] ring-2 ring-[#E9E2FF]"
               : "border-[#E6E6EA] hover:border-[#B8A3F8]"
@@ -966,10 +967,10 @@ function ChartDataModal({
           <header className="flex h-[70px] shrink-0 items-center justify-between border-b border-[#ECECF1] px-5">
             <div>
               <h2 className="text-[15px] font-semibold text-[#191919]">
-                Edit Data Table
+                {t("chart.dataTableTitle")}
               </h2>
               <p className="mt-1 text-[11px] text-[#8B8B94]">
-                Edit Data Table
+                {t("chart.dataTableDesc")}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -983,7 +984,7 @@ function ChartDataModal({
                 }
               >
                 <Trash2 size={14} strokeWidth={2} />
-                Clear data
+                {t("chart.clearData")}
               </button>
               <button
                 type="button"
@@ -993,7 +994,7 @@ function ChartDataModal({
                   onClose();
                 }}
               >
-                Save
+                {t("chart.save")}
               </button>
             </div>
           </header>
@@ -1001,7 +1002,7 @@ function ChartDataModal({
           <div className="flex min-h-0 flex-1 overflow-hidden">
             <aside className="min-h-0 w-[255px] shrink-0 overflow-y-auto overscroll-contain border-r border-[#ECECF1] px-4 py-4 hide-scrollbar">
               <label className="mb-2 block text-[12px] font-medium text-[#191919]">
-                Charts
+                {t("chart.chartsLabel")}
               </label>
               <ChartTypeSelect
                 compact

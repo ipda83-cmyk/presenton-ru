@@ -27,7 +27,7 @@ import {
 } from "@/app/(presentation-generator)/components/TemplateV2HtmlSlidePreview";
 import MarkdownRenderer from "@/components/MarkDownRender";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export const PresentationCard = ({
   id,
@@ -47,6 +47,7 @@ export const PresentationCard = ({
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("dash");
+  const locale = useLocale();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showActions, setShowActions] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
@@ -196,7 +197,7 @@ export const PresentationCard = ({
                 <MarkdownRenderer content={title} className="text-sm mb-0  font-syne text-[#191919] font-semibold  overflow-hidden line-clamp-1" />
               </div>
               <p className="text-[#808080] text-sm font-syne">
-                {new Date(presentation?.created_at).toLocaleDateString()}
+                {new Date(presentation?.created_at).toLocaleDateString(locale)}
               </p>
 
             </div>

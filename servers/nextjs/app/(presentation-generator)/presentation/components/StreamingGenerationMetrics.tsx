@@ -1,21 +1,8 @@
 "use client";
 
 import type { GenerationMetrics } from "@/store/slices/presentationGeneration";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
-const integerFormatter = new Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 0,
-});
-
-const decimalFormatter = new Intl.NumberFormat("en-US", {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
-
-const formatTokens = (value: number | null, estimated = false) => {
-  if (value === null || !Number.isFinite(value)) return "—";
-  return `${estimated ? "~" : ""}${integerFormatter.format(Math.round(value))}`;
-};
 
 export default function StreamingGenerationMetrics({
   metrics,
@@ -23,6 +10,13 @@ export default function StreamingGenerationMetrics({
   metrics: GenerationMetrics;
 }) {
   const t = useTranslations("editor");
+  const format = useFormatter();
+  const formatTokens = (value: number | null, estimated = false) => {
+    if (value === null || !Number.isFinite(value)) return "—";
+    return `${estimated ? "~" : ""}${format.number(Math.round(value), {
+      maximumFractionDigits: 0,
+    })}`;
+  };
   const thinkingPending =
     metrics.supports_thinking &&
     metrics.thinking_tokens_estimated &&
@@ -75,7 +69,12 @@ export default function StreamingGenerationMetrics({
         ) : null}
         <span className="h-3.5 w-px bg-[#D8D8DF]" aria-hidden="true" />
         <span className="whitespace-nowrap">
-          {decimalFormatter.format(metrics.tokens_per_second)} t/s
+          {t("metricTps", {
+            value: format.number(metrics.tokens_per_second, {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            }),
+          })}
         </span>
       </div>
     </div>

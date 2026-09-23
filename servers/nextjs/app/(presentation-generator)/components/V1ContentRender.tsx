@@ -4,6 +4,7 @@ import React, { useMemo, useState, type FormEvent } from "react";
 import SlideErrorBoundary from "../components/SlideErrorBoundary";
 
 import { ArrowUp, PenLine } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
     type TemplateV2Layout,
 } from "@/components/slide-editor/importing/template-v2-import";
@@ -46,6 +47,7 @@ function TemplateV2PromptOverlay({
     showLayoutPreview: boolean;
     onDismiss?: () => void;
 }) {
+    const t = useTranslations("editor");
     const [prompt, setPrompt] = useState("");
     const [isPromptVisible, setIsPromptVisible] = useState(true);
 
@@ -84,7 +86,7 @@ function TemplateV2PromptOverlay({
         <div className="pointer-events-none absolute inset-0 z-20 font-syne">
             <div className="absolute inset-0 bg-white" aria-hidden="true" />
             <div className="absolute left-[76px] top-[76px] text-[44px] font-medium leading-none text-[#191919]/[0.04]">
-                New page
+                {t("render.newPage")}
             </div>
             <div
                 aria-hidden="true"
@@ -113,7 +115,7 @@ function TemplateV2PromptOverlay({
                 </div>
             ) : null}
             <form
-                aria-label="Create slide from prompt"
+                aria-label={t("render.createFromPrompt")}
                 onSubmit={submitPrompt}
                 onPointerDown={(event) => event.stopPropagation()}
                 style={{ translate: "none" }}
@@ -126,21 +128,21 @@ function TemplateV2PromptOverlay({
                             htmlFor={`blank-slide-prompt-${slideIndex}`}
                             className="block text-[18px] font-normal leading-[22px] text-[#333333]"
                         >
-                            Write prompt
+                            {t("render.writePrompt")}
                         </label>
                         <input
                             id={`blank-slide-prompt-${slideIndex}`}
                             autoFocus
                             value={prompt}
                             onChange={(event) => setPrompt(event.target.value)}
-                            placeholder="Start with your idea... we'll handle the slides"
+                            placeholder={t("render.promptPlaceholder")}
                             className="mt-3 h-8 w-full border-0 bg-transparent p-0 text-[18px] font-normal leading-8 text-[#191919] outline-none placeholder:text-[#9B9BA1]"
                         />
                     </div>
                 </div>
                 <button
                     type="submit"
-                    aria-label="Create slide"
+                    aria-label={t("render.createSlide")}
                     disabled={!prompt.trim()}
                     style={{
                         background:
@@ -188,6 +190,7 @@ export const V1ContentRender = ({
 }) => {
 
 
+    const t = useTranslations("editor");
     const safeSlide = slide ?? {};
 
     const isBlankSlide = isBlankPresentationSlide(safeSlide);
@@ -221,7 +224,7 @@ export const V1ContentRender = ({
 
 
     return (
-        <SlideErrorBoundary label={`Slide ${(safeSlide.index ?? 0) + 1}`}>
+        <SlideErrorBoundary label={t("render.slideN", { n: (safeSlide.index ?? 0) + 1 })}>
             <div className="relative h-full w-full">
                 <TemplateV2KonvaSlide
                     layout={directLayout ?? BLANK_TEMPLATE_V2_LAYOUT}

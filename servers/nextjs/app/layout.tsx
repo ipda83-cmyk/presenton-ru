@@ -70,9 +70,9 @@ export default async function RootLayout({
 
             </MixpanelInitializer>
           </Providers>
+          <Toaster position="top-center" />
         </NextIntlClientProvider>
         <TailwindBrowserRuntime />
-        <Toaster position="top-center" />
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 
 import { useId, useState, type FormEvent } from "react";
 import { ArrowUp, Loader2, PenLine } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { TemplateV2Layout } from "@/components/slide-editor/importing/template-v2-import";
 import { TemplateV2HtmlSlidePreview } from "../components/TemplateV2HtmlSlidePreview";
 import {
@@ -43,6 +44,7 @@ export function TemplateV2PromptOverlay({
   onDismiss,
   onSubmitPrompt,
 }: TemplateV2PromptOverlayProps) {
+  const t = useTranslations("editor");
   const inputId = useId();
   const [prompt, setPrompt] = useState("");
   const [isPromptVisible, setIsPromptVisible] = useState(true);
@@ -103,7 +105,7 @@ export function TemplateV2PromptOverlay({
     <div className="pointer-events-none absolute inset-0 z-20 font-syne">
       <div className="absolute inset-0 bg-white" aria-hidden="true" />
       <div className="absolute left-[76px] top-[76px] text-[44px] font-medium leading-none text-[#191919]/[0.04]">
-        New page
+        {t("render.newPage")}
       </div>
       <div
         aria-hidden="true"
@@ -130,7 +132,7 @@ export function TemplateV2PromptOverlay({
       ) : null}
       <form
         aria-busy={submitting}
-        aria-label="Create slide from prompt"
+        aria-label={t("render.createFromPrompt")}
         onSubmit={submitPrompt}
         onPointerDown={(event) => event.stopPropagation()}
         style={{ translate: "none" }}
@@ -146,7 +148,7 @@ export function TemplateV2PromptOverlay({
               htmlFor={inputId}
               className="block text-[18px] font-normal leading-[22px] text-[#333333]"
             >
-              Write prompt
+              {t("render.writePrompt")}
             </label>
             <input
               id={inputId}
@@ -154,14 +156,14 @@ export function TemplateV2PromptOverlay({
               disabled={submitting}
               value={prompt}
               onChange={(event) => setPrompt(event.target.value)}
-              placeholder="Start with your idea... we'll handle the slides"
+              placeholder={t("render.promptPlaceholder")}
               className="mt-3 h-8 w-full border-0 bg-transparent p-0 text-[18px] font-normal leading-8 text-[#191919] outline-none placeholder:text-[#9B9BA1] disabled:cursor-wait"
             />
           </div>
         </div>
         <button
           type="submit"
-          aria-label={submitting ? "Creating slide" : "Create slide"}
+          aria-label={submitting ? t("render.creatingSlide") : t("render.createSlide")}
           disabled={!prompt.trim() || submitting}
           style={{
             background:

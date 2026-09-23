@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ChevronDown, Focus, Maximize, Minimize } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,11 +13,7 @@ import {
 
 type ObjectFitMode = "cover" | "contain" | "fill";
 
-const FIT_OPTIONS: Array<{ value: ObjectFitMode; label: string }> = [
-  { value: "cover", label: "Fill" },
-  { value: "contain", label: "Contain" },
-  { value: "fill", label: "Stretch" },
-];
+const FIT_OPTIONS: ObjectFitMode[] = ["cover", "contain", "fill"];
 
 function PatternIcon() {
   const cells = [
@@ -52,7 +49,8 @@ export function ImageEditorToolbar({
   onToggleFocusPoint: () => void;
   onReplaceImage: () => void;
 }) {
-  const fitLabel = FIT_OPTIONS.find((item) => item.value === objectFit)?.label ?? "Fill";
+  const t = useTranslations("imgEditor");
+  const fitLabel = t(`fit.${FIT_OPTIONS.includes(objectFit) ? objectFit : "cover"}`);
 
   return (
     <div className="inline-flex items-center gap-3 rounded-[6px] bg-white px-[10px] py-[6px] shadow-[0_0_4px_rgba(0,0,0,0.15)]">
@@ -73,14 +71,14 @@ export function ImageEditorToolbar({
         >
           {FIT_OPTIONS.map((option) => (
             <DropdownMenuItem
-              key={option.value}
-              onSelect={() => onObjectFitChange(option.value)}
+              key={option}
+              onSelect={() => onObjectFitChange(option)}
               className={cn(
                 "cursor-pointer rounded-none px-3 py-2 text-[14px] text-[#191919] font-manrope focus:bg-[#F6F6F9]",
-                objectFit === option.value && "bg-[#F4F1FF] text-[#7C3AED]",
+                objectFit === option && "bg-[#F4F1FF] text-[#7C3AED]",
               )}
             >
-              {option.label}
+              {t(`fit.${option}`)}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -90,8 +88,8 @@ export function ImageEditorToolbar({
 
       <button
         type="button"
-        title="Replace image"
-        aria-label="Replace image"
+        title={t("replaceImage")}
+        aria-label={t("replaceImage")}
         onClick={onReplaceImage}
         className="rounded-[2px] p-1 text-[#191919] hover:bg-[#F8F8FA]"
       >
@@ -111,8 +109,8 @@ export function ImageEditorToolbar({
       <div className="inline-flex items-center gap-3">
         <button
           type="button"
-          title="Fill"
-          aria-label="Fill"
+          title={t("fit.cover")}
+          aria-label={t("fit.cover")}
           onClick={() => onObjectFitChange("cover")}
           className={cn(
             "rounded-[2px] p-1 text-[#191919] hover:bg-[#F8F8FA]",
@@ -123,8 +121,8 @@ export function ImageEditorToolbar({
         </button>
         <button
           type="button"
-          title="Contain"
-          aria-label="Contain"
+          title={t("fit.contain")}
+          aria-label={t("fit.contain")}
           onClick={() => onObjectFitChange("contain")}
           className={cn(
             "rounded-[2px] p-1 text-[#191919] hover:bg-[#F8F8FA]",
@@ -135,8 +133,8 @@ export function ImageEditorToolbar({
         </button>
         <button
           type="button"
-          title="Stretch"
-          aria-label="Stretch"
+          title={t("fit.fill")}
+          aria-label={t("fit.fill")}
           onClick={() => onObjectFitChange("fill")}
           className={cn(
             "rounded-[2px] p-1 text-[#191919] hover:bg-[#F8F8FA]",
@@ -151,8 +149,8 @@ export function ImageEditorToolbar({
 
       <button
         type="button"
-        title="Focus point"
-        aria-label="Focus point"
+        title={t("focusPoint")}
+        aria-label={t("focusPoint")}
         onClick={onToggleFocusPoint}
         className={cn(
           "rounded-[2px] p-1 text-[#191919] hover:bg-[#F8F8FA]",

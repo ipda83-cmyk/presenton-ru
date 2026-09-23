@@ -22,6 +22,7 @@ import { ImagesApi } from "../services/api/images";
 import { ImageAssetResponse } from "../services/api/types";
 import { resolveBackendAssetSource } from "@/utils/api";
 import { ImageEditorToolbar } from "./ImageEditorToolbar";
+import { useTranslations } from "next-intl";
 
 const STOCK_IMAGE_PROVIDERS = new Set(["pexels", "pixabay"]);
 
@@ -54,6 +55,7 @@ const ImageEditor = ({
   onFocusPointClick,
   onImageChange,
 }: ImageEditorProps) => {
+  const t = useTranslations("imgEditor");
   const llmConfig = useSelector((state: RootState) => state.userConfig.llm_config);
   const stockImageProvider = useMemo(() => {
     if (llmConfig?.DISABLE_IMAGE_GENERATION) return null;
@@ -139,12 +141,9 @@ const ImageEditor = ({
         await PresentationGenerationApi.getPreviousGeneratedImages();
       setPreviousGeneratedImages(response);
     } catch (error: any) {
-      notify.error("Could not load images", "Failed to get previous generated images. Please try again.");
+      notify.error(t("loadImagesTitle"), t("loadPreviousFailed"));
       console.error("error in getting previous generated images", error);
-      setError(
-        error.message ||
-          "Failed to get previous generated images. Please try again."
-      );
+      setError(error.message || t("loadPreviousFailed"));
     }
   };
 
@@ -229,7 +228,7 @@ const ImageEditor = ({
    */
   const handleStockImageSearch = async () => {
     if (!prompt.trim()) {
-      setError("Please enter search keywords");
+      setError(t("enterKeywords"));
       return;
     }
     if (!stockImageProvider) return;
@@ -241,7 +240,9 @@ const ImageEditor = ({
 
     if (!apiKey) {
       setError(
-        `Add your ${stockImageProvider === "pexels" ? "Pexels" : "Pixabay"} API key in Settings to search stock images.`
+        t("addApiKey", {
+          provider: stockImageProvider === "pexels" ? "Pexels" : "Pixabay",
+        })
       );
       return;
     }
@@ -255,12 +256,12 @@ const ImageEditor = ({
       });
       setStockSearchResults(urls);
       if (urls.length === 0) {
-        setError("No images found. Try different keywords.");
+        setError(t("noImagesFound"));
       }
     } catch (err: unknown) {
       console.error("Stock image search error", err);
       const message =
-        err instanceof Error ? err.message : "Stock search failed. Please try again.";
+        err instanceof Error ? err.message : t("stockSearchFailed");
       setError(message);
       setStockSearchResults([]);
     } finally {
@@ -273,7 +274,7 @@ const ImageEditor = ({
    */
   const handleGenerateImage = async () => {
     if (!prompt) {
-      setError("Please enter a prompt");
+      setError(t("enterPrompt"));
       return;
     }
     if (stockImageProvider) {
@@ -291,9 +292,9 @@ const ImageEditor = ({
       setPreviewImages(resolveEditorImageSource(response));
     } catch (err: any) {
       console.error("Error in image generation", err);
-      const message = err.message || "Failed to generate image. Please try again.";
+      const message = err.message || t("generateFailed");
       setError(message);
-      notify.error("Image generation failed", message);
+      notify.error(t("generationFailedTitle"), message);
     } finally {
       setIsGenerating(false);
     }
@@ -310,13 +311,13 @@ const ImageEditor = ({
 
     // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-      setUploadError("File size should be less than 5MB");
+      setUploadError(t("fileTooLarge"));
       return;
     }
 
     // Validate file type
     if (!file.type.startsWith("image/")) {
-      setUploadError("Please upload an image file");
+      setUploadError(t("notAnImage"));
       return;
     }
     try {
@@ -326,8 +327,8 @@ const ImageEditor = ({
       const result = await ImagesApi.uploadImage(file);
       setUploadedImageUrl(resolveEditorImageSource(result));
     } catch (err:any) {
-      setUploadError("Failed to upload image. Please try again.");
-      notify.error("Upload failed", err.message || "Failed to upload image. Please try again.");
+      setUploadError(t("uploadFailed"));
+      notify.error(t("uploadFailedTitle"), err.message || t("uploadFailed"));
       console.log("Upload error:", err.message);
     } finally {
       setIsUploading(false);
@@ -340,7 +341,7 @@ const ImageEditor = ({
       const result = await ImagesApi.getUploadedImages();
       setUploadedImages(result);
     } catch (err:any) {
-      notify.error("Could not load images", err.message || "Failed to get uploaded images. Please try again.");
+      notify.error(t("loadImagesTitle"), err.message || t("loadUploadedFailed"));
       console.log("Get uploaded images error:", err.message);
     } finally {
       setUploadedImagesLoading(false);
@@ -358,9 +359,9 @@ const ImageEditor = ({
     try {
       await ImagesApi.deleteImage(image_id);
       setUploadedImages(uploadedImages.filter((image) => image.id !== image_id));
-      notify.success("Image deleted", "The image was removed from your uploads.");
+      notify.success(t("deletedTitle"), t("deletedBody"));
     } catch (err:any) {
-      notify.error("Could not delete image", err.message || "Failed to delete image. Please try again.");
+      notify.error(t("deleteFailedTitle"), err.message || t("deleteFailed"));
     }
   };
   return (
@@ -373,39 +374,39 @@ const ImageEditor = ({
           onClick={(e) => e.stopPropagation()}
         >
           <SheetHeader>
-            <SheetTitle>Update Image</SheetTitle>
+            <SheetTitle>{t("title")}</SheetTitle>
           </SheetHeader>
 
           <div className="mt-6">
             <Tabs value={activeTab} className="w-full" onValueChange={handleTabChange}>
               <TabsList className="grid bg-blue-100 border border-blue-300 w-full grid-cols-3 mx-auto">
                 <TabsTrigger className="font-medium" value="generate">
-                  {stockImageProvider ? "Stock search" : "AI Generate"}
+                  {stockImageProvider ? t("tabStock") : t("tabAi")}
                 </TabsTrigger>
                 <TabsTrigger className="font-medium" value="upload">
-                  Upload
+                  {t("tabUpload")}
                 </TabsTrigger>
                 <TabsTrigger className="font-medium" value="edit">
-                  Edit
+                  {t("tabEdit")}
                 </TabsTrigger>
               </TabsList>
               {/* Generate Tab */}
               <TabsContent value="generate" className="mt-4 space-y-4 overflow-y-auto hide-scrollbar h-[85vh]">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-sm font-medium mb-1">Current Prompt</h3>
+                    <h3 className="text-sm font-medium mb-1">{t("currentPrompt")}</h3>
                     <p className="text-sm text-gray-500">{promptContent}</p>
                   </div>
 
                   <div>
                     <h3 className="text-base font-medium mb-2">
-                      {stockImageProvider ? "Search keywords" : "Image Description"}
+                      {stockImageProvider ? t("searchKeywords") : t("imageDescription")}
                     </h3>
                     <Textarea
                       placeholder={
                         stockImageProvider
-                          ? "e.g. team collaboration, modern office, sunset mountains…"
-                          : "Describe the image you want to generate..."
+                          ? t("stockPlaceholder")
+                          : t("aiPlaceholder")
                       }
                       value={prompt}
                       onChange={(e) => setPrompt(e.target.value)}
@@ -425,18 +426,18 @@ const ImageEditor = ({
                     )}
                     {stockImageProvider
                       ? isSearchingStock
-                        ? "Searching…"
-                        : "Search stock images"
+                        ? t("searching")
+                        : t("searchStock")
                       : isGenerating
-                        ? "Generating..."
-                        : "Generate Image"}
+                        ? t("generating")
+                        : t("generate")}
                   </Button>
 
                   {error && <p className="text-red-500 text-sm">{error}</p>}
 
                   {stockImageProvider ? (
                     <div className="space-y-3">
-                      <h3 className="text-sm font-medium">Results — click an image to use it</h3>
+                      <h3 className="text-sm font-medium">{t("resultsHint")}</h3>
                       <div className="grid grid-cols-2 gap-3">
                         {isSearchingStock
                           ? Array.from({ length: 8 }).map((_, index) => (
@@ -462,8 +463,10 @@ const ImageEditor = ({
                       </div>
                       {!isSearchingStock && stockSearchResults.length === 0 && (
                         <p className="text-sm text-gray-500">
-                          Run a search to see thumbnails from{" "}
-                          {stockImageProvider === "pexels" ? "Pexels" : "Pixabay"}.
+                          {t("runSearchHint", {
+                            provider:
+                              stockImageProvider === "pexels" ? "Pexels" : "Pixabay",
+                          })}
                         </p>
                       )}
                     </div>
@@ -485,7 +488,7 @@ const ImageEditor = ({
                             {previewImages && (
                               <img
                                 src={previewImages}
-                                alt={`Preview`}
+                                alt={t("previewAlt")}
                                 className="w-full h-full object-cover"
                               />
                             )}
@@ -495,7 +498,7 @@ const ImageEditor = ({
                       {previousGeneratedImages.length > 0 && (
                         <div className="mt-4">
                           <h3 className="text-sm font-medium mb-2">
-                            Previous Generated Images
+                            {t("previousGenerated")}
                           </h3>
                           <div className="grid grid-cols-2 gap-4  ">
                             {previousGeneratedImages.map((image) => (
@@ -554,11 +557,11 @@ const ImageEditor = ({
                       )}
                       <span className="text-sm text-gray-600">
                         {isUploading
-                          ? "Uploading your image..."
-                          : "Click to upload an image"}
+                          ? t("uploading")
+                          : t("clickToUpload")}
                       </span>
                       <span className="text-xs text-gray-500 mt-1">
-                        Maximum file size: 5MB
+                        {t("maxSize")}
                       </span>
                     </label>
                   </div>
@@ -572,7 +575,7 @@ const ImageEditor = ({
                   {(uploadedImageUrl || isUploading) && (
                     <div className="mt-4">
                       <h3 className="text-sm font-medium mb-2">
-                        Uploaded Image Preview
+                        {t("uploadedPreview")}
                       </h3>
                       <div className="aspect-[4/3] relative rounded-lg overflow-hidden border border-gray-200">
                         {isUploading ? (
@@ -580,7 +583,7 @@ const ImageEditor = ({
                             <div className="flex flex-col items-center">
                               <div className="w-8 h-8 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mb-2" />
                               <span className="text-sm text-gray-500">
-                                Processing...
+                                {t("processing")}
                               </span>
                             </div>
                           </div>
@@ -594,13 +597,13 @@ const ImageEditor = ({
                             >
                               <img
                                 src={uploadedImageUrl}
-                                alt="Uploaded preview"
+                                alt={t("uploadedAlt")}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                               />
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200" />
                               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <span className="bg-white/90 px-3 py-1 rounded-full text-sm font-medium">
-                                  Click to use this image
+                                  {t("clickToUse")}
                                 </span>
                               </div>
                             </div>
@@ -610,7 +613,7 @@ const ImageEditor = ({
                     </div>
                   )}
                   <div>
-                    <h3 className="text-sm font-medium mb-2">Uploaded Images:</h3>
+                    <h3 className="text-sm font-medium mb-2">{t("uploadedImages")}</h3>
                     <div className="grid grid-cols-2 gap-4">
                       {uploadedImagesLoading ? (
                         <div className="flex items-center justify-center">
@@ -631,13 +634,13 @@ const ImageEditor = ({
                               }}/>
                               <img
                               src={resolveEditorImageSource(image)}
-                                alt="Uploaded preview"
+                                alt={t("uploadedAlt")}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                               />
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-200" />
                               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <span className="bg-white/90 px-3 py-1 rounded-full text-xs font-medium">
-                                  Use
+                                  {t("use")}
                                 </span>
                               </div>
                             </div>
@@ -658,7 +661,7 @@ const ImageEditor = ({
                     onToggleFocusPoint={toggleFocusPointMode}
                     onReplaceImage={() => setActiveTab("generate")}
                   />
-                  <h3 className="text-sm font-medium mb-2">Current Image</h3>
+                  <h3 className="text-sm font-medium mb-2">{t("currentImage")}</h3>
                   <div
                     onClick={(e) => {
                       if (isFocusPointMode) {
@@ -669,7 +672,7 @@ const ImageEditor = ({
                     className="aspect-[4/3] group  rounded-lg overflow-hidden relative border border-gray-200"
                   >
                     <p className="group-hover:opacity-100 opacity-0 transition-opacity absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm text-center font-medium bg-black/50 text-white px-2 py-1 rounded">
-                      Click to Change Focus Point
+                      {t("clickChangeFocus")}
                     </p>
                     {previewImages && (
                       <img
@@ -682,7 +685,7 @@ const ImageEditor = ({
                           objectFit: objectFit,
                           objectPosition: `${focusPoint.x}% ${focusPoint.y}%`,
                         }}
-                        alt={`Preview`}
+                        alt={t("previewAlt")}
                         className="w-full h-full "
                       />
                     )}
@@ -690,7 +693,7 @@ const ImageEditor = ({
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                         <div className="text-white text-center p-2 bg-black/50 rounded">
                           <p className="text-sm font-medium pointer-events-none">
-                            Click anywhere to set focus point
+                            {t("clickSetFocus")}
                           </p>
                           <button
                             className="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
@@ -699,7 +702,7 @@ const ImageEditor = ({
                               toggleFocusPointMode();
                             }}
                           >
-                            Done
+                            {t("done")}
                           </button>
                         </div>
 

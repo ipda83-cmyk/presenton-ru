@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   loadChartBrowserRuntime,
   type ChartConfigurationLike as ChartConfiguration,
@@ -234,6 +235,7 @@ export function TemplateV2HtmlSlidePreview({
   className?: string;
   contentClassName?: string;
 }) {
+  const t = useTranslations("editor");
   const containerRef = useRef<HTMLDivElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -409,7 +411,7 @@ export function TemplateV2HtmlSlidePreview({
             : undefined
         }
       >
-        Preview unavailable
+        {t("render.previewUnavailable")}
       </div>
     );
   }
@@ -451,7 +453,7 @@ export function TemplateV2HtmlSlidePreview({
       >
         <div
           ref={contentRef}
-          aria-label="Template v2 slide preview"
+          aria-label={t("render.previewAria")}
           data-tailwind-runtime-scope
           className={`block h-full w-full bg-white ${contentClassName}`}
           style={{ pointerEvents: "none" }}

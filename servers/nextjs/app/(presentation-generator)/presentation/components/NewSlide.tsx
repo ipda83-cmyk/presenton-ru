@@ -102,14 +102,16 @@ const LayoutItem = memo(({ layout, onSelect }: LayoutItemProps) => {
     return () => resizeObserver.disconnect();
   }, []);
 
+  const displayName =
+    isEmptySlide || !layoutName ? t("emptySlide") : layoutName;
   const selectLayout = () => onSelect(sampleData, layoutId);
 
   return (
     <div
       role="button"
       tabIndex={0}
-      aria-label={t("addLayout", { name: layoutName || t("emptySlide") })}
-      title={layoutName || t("emptySlide")}
+      aria-label={t("addLayout", { name: displayName })}
+      title={displayName}
       onClick={selectLayout}
       onKeyDown={(event) => {
         if (event.key !== "Enter" && event.key !== " ") return;

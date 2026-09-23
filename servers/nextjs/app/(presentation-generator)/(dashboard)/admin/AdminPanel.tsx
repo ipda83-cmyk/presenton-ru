@@ -28,7 +28,7 @@ import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { formatFastApiDetail } from "@/utils/authErrors";
 import { copyTextToClipboard } from "@/utils/clipboard";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type AdminUser = {
   id: string;
@@ -78,6 +78,7 @@ const inputClass =
 
 export default function AdminPanel({ embedded = false }: AdminPanelProps) {
   const t = useTranslations("admin");
+  const locale = useLocale();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [apiKeyTokens, setApiKeyTokens] = useState<Record<string, string>>({});
@@ -576,7 +577,7 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
                       <p className="mt-1 text-xs text-[#667085]">
                         {user.role === "admin" ? t("roleAdmin") : t("roleUser")}
                         {user.created_at
-                          ? ` · ${new Date(user.created_at).toLocaleDateString()}`
+                          ? ` · ${new Date(user.created_at).toLocaleDateString(locale)}`
                           : ""}
                       </p>
                     </div>
@@ -715,9 +716,9 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
                           {isVisible && token ? token : `sk-presenton-••••••••${apiKey.id.slice(-4)}`}
                         </code>
                         <p className="mt-1 text-[11px] text-[#98A2B3]">
-                          {user?.username ?? apiKey.user_id} · {t("keyExpires", { date: new Date(apiKey.expires_at).toLocaleDateString() })}
+                          {user?.username ?? apiKey.user_id} · {t("keyExpires", { date: new Date(apiKey.expires_at).toLocaleDateString(locale) })}
                           {apiKey.last_used_at
-                            ? t("keyLastUsed", { date: new Date(apiKey.last_used_at).toLocaleDateString() })
+                            ? t("keyLastUsed", { date: new Date(apiKey.last_used_at).toLocaleDateString(locale) })
                             : t("keyNeverUsed")}
                         </p>
                       </div>

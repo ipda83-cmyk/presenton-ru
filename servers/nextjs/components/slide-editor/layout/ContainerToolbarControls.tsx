@@ -303,7 +303,7 @@ export function TemplateV2ContainerToolbarControls({
           <Panel className="flex w-[240px] flex-col items-start gap-[14px] rounded-[12px] border border-[#E8E9EE] p-3 font-manrope text-[12px] font-medium leading-6 text-[#191919] shadow-[0_8px_24px_rgba(16,24,40,0.12)]">
             <div className="flex w-full items-center justify-between">
               <span className="font-manrope text-[12px] font-medium leading-6 text-[#191919]">
-                Border Radius
+                {t("container.cornerRadius")}
               </span>
               <span
                 aria-hidden
@@ -356,7 +356,7 @@ export function TemplateV2ContainerToolbarControls({
           onClick={() => onToggle("shadow")}
           className="px-3"
         >
-          Shadow
+          {t("container.shadow")}
         </ContainerControlButton>
         {openPanel === "shadow" ? (
           <Panel className="flex w-[320px] flex-col items-start gap-[14px] rounded-[12px] border border-[#E8E9EE] p-3 font-manrope text-[12px] font-medium leading-6 text-[#191919] shadow-[0_8px_24px_rgba(16,24,40,0.12)]">
@@ -437,7 +437,7 @@ export function TemplateV2ContainerToolbarControls({
           <Panel className="flex w-[320px] flex-col items-start gap-[14px] rounded-[12px] border border-[#E8E9EE] p-3 font-manrope text-[12px] font-medium leading-6 text-[#191919] shadow-[0_8px_24px_rgba(16,24,40,0.12)]">
             <div className="flex items-start justify-between gap-3">
               <span className="pt-1 font-manrope text-[12px] font-medium leading-6 text-[#191919]">
-                Alignment
+                {t("container.alignment")}
               </span>
               <div className="grid grid-cols-3 gap-2 rounded-[10px] border border-[#DDDEE4] bg-[#F8F9FC] p-2">
                 {ALIGNMENT_MATRIX.map((point) => {

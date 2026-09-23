@@ -562,8 +562,8 @@ export function TextToolbar({
             <ToolbarButton
               title={
                 selectionIsLatex
-                  ? "Convert LaTeX to text"
-                  : "Convert selected text to LaTeX"
+                  ? t("text.latexToText")
+                  : t("text.textToLatex")
               }
               controlId="latex"
               disabled={!latexToggleRange}
@@ -858,10 +858,10 @@ function FontFamilyPicker({
     [activeFamilies, hasSearchQuery, normalizedQuery, searchFamilies],
   );
   const activeTitle = hasSearchQuery
-    ? "All Fonts"
+    ? t("text.allFonts")
     : activeSource === "template" && templateFamilies.length > 0
-      ? "Template Fonts"
-      : "Local Fonts";
+      ? t("text.templateFonts")
+      : t("text.localFonts");
   const swapFontSource = () => {
     setSearching(false);
     setQuery(selectedFamily);

@@ -16,7 +16,11 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 
+import { createElement } from 'react'
 import { mount } from 'cypress/react'
+import { NextIntlClientProvider } from 'next-intl'
+
+import messages from '../../messages/en.json'
 
 // Augment the Cypress namespace to include type definitions for
 // your custom command.
@@ -30,7 +34,17 @@ declare global {
   }
 }
 
-Cypress.Commands.add('mount', mount)
+// Components use next-intl; mount them inside the same provider the app root
+// layout supplies, with the English catalog so existing assertions still hold.
+Cypress.Commands.add('mount', ((component, options) =>
+  mount(
+    createElement(NextIntlClientProvider, {
+      locale: 'en',
+      messages,
+      children: component,
+    }),
+    options,
+  )) as typeof mount)
 
 // Example use:
 // cy.mount(<MyComponent />)

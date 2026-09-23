@@ -1,4 +1,5 @@
 import { Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export type SmartSelectionRect = {
   left: number;
@@ -14,6 +15,7 @@ export default function SmartHtmlSelectionOverlay({
   hoverRect: SmartSelectionRect | null;
   selectionRect: SmartSelectionRect | null;
 }) {
+  const t = useTranslations("editor");
   return (
     <>
       {hoverRect && (
@@ -42,7 +44,7 @@ export default function SmartHtmlSelectionOverlay({
             style={{ top: selectionRect.top > 28 ? -22 : 2 }}
           >
             <Sparkles className="h-3 w-3" />
-            AI edit
+            {t("render.aiEdit")}
           </span>
         </div>
       )}

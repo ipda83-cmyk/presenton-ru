@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { V1ContentRender } from "../../(presentation-generator)/components/V1ContentRender";
 import SmartHtmlEditor from "./SmartHtmlEditor";
@@ -49,6 +50,7 @@ const SlideScale = ({
   showTemplatePromptOverlay?: boolean;
   onTemplatePromptOverlayDismiss?: () => void;
 }) => {
+  const t = useTranslations("editor");
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [box, setBox] = useState({ w: 0, h: 0 });
 
@@ -142,14 +144,14 @@ const SlideScale = ({
                   slide={slide}
                   renderIndex={renderIndex}
                   fonts={fonts}
-                  title={`Slide ${(renderIndex ?? slide.index ?? 0) + 1}`}
+                  title={t("render.slideN", { n: (renderIndex ?? slide.index ?? 0) + 1 })}
                 />
               ) : (
                 <SmartHtmlSlide
                   fixedSize
                   fonts={fonts}
                   html={slide.html_content}
-                  title={`Slide ${(renderIndex ?? slide.index ?? 0) + 1}`}
+                  title={t("render.slideN", { n: (renderIndex ?? slide.index ?? 0) + 1 })}
                 />
               )
             ) : (

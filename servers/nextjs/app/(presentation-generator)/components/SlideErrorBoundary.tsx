@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslations } from "next-intl";
 
 interface SlideErrorBoundaryProps {
   children: React.ReactNode;
@@ -11,6 +12,26 @@ interface SlideErrorBoundaryProps {
 interface SlideErrorBoundaryState {
   hasError: boolean;
   errorMessage: string;
+}
+
+function SlideErrorFallback({
+  label,
+  errorMessage,
+}: {
+  label?: string;
+  errorMessage: string;
+}) {
+  const t = useTranslations("editor");
+  return (
+    <div className="aspect-video w-full h-full bg-red-50 text-red-700 flex flex-col items-start justify-start p-4 space-y-2 rounded-md border border-red-200">
+      <div className="text-sm font-semibold">
+        {label ? t("render.renderErrorLabel", { label }) : t("render.renderError")}
+      </div>
+      <pre className="text-xs whitespace-pre-wrap break-words max-h-full overflow-auto bg-red-100 rounded-md p-2 border border-red-200">
+        {errorMessage}
+      </pre>
+    </div>
+  );
 }
 
 export class SlideErrorBoundary extends React.Component<
@@ -46,14 +67,10 @@ export class SlideErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="aspect-video w-full h-full bg-red-50 text-red-700 flex flex-col items-start justify-start p-4 space-y-2 rounded-md border border-red-200">
-          <div className="text-sm font-semibold">
-            {this.props.label ? `${this.props.label} render error` : "Slide render error"}
-          </div>
-          <pre className="text-xs whitespace-pre-wrap break-words max-h-full overflow-auto bg-red-100 rounded-md p-2 border border-red-200">
-            {this.state.errorMessage}
-          </pre>
-        </div>
+        <SlideErrorFallback
+          label={this.props.label}
+          errorMessage={this.state.errorMessage}
+        />
       );
     }
     return this.props.children;

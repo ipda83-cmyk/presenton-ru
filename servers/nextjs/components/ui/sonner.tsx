@@ -2,6 +2,7 @@
 
 import type React from "react"
 import { BadgeCheck, Loader2, ShieldAlert, TriangleAlert } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { Toaster as Sonner, toast as sonnerToast, type ExternalToast } from "sonner"
 
 type NotifyOptions = Pick<
@@ -58,13 +59,14 @@ export const notify = {
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
 const Toaster = ({ icons, ...props }: ToasterProps) => {
+  const t = useTranslations("ui")
   const defaultIcons: NonNullable<ToasterProps["icons"]> = {
     success: <BadgeCheck aria-hidden="true" />,
     error: <ShieldAlert aria-hidden="true" />,
     info: <NeutralToastIcon />,
     warning: <TriangleAlert aria-hidden="true" />,
     loading: <Loader2 aria-hidden="true" className="animate-spin" />,
-    close: <span aria-hidden="true">Got it!</span>,
+    close: <span aria-hidden="true">{t("gotIt")}</span>,
   }
 
   return (
@@ -321,9 +323,10 @@ const Toaster = ({ icons, ...props }: ToasterProps) => {
         className="toaster group z-50 bg-transparent"
         icons={{ ...defaultIcons, ...(icons ?? {}) }}
         closeButton
+        containerAriaLabel={t("notifications")}
         toastOptions={{
           closeButton: true,
-          closeButtonAriaLabel: "Dismiss notification",
+          closeButtonAriaLabel: t("dismissNotification"),
           classNames: {
             toast: "group toast",
             description: "group-[.toast]:text-muted-foreground",
