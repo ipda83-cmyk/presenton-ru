@@ -1,4 +1,7 @@
+from typing import Literal
+
 from fastapi import APIRouter, Depends, Request
+from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,7 +19,12 @@ from api.v1.auth.users import (
 from models.sql.user import User
 from services.database import get_async_session
 from utils.get_env import is_disable_auth_enabled
-from utils.i18n import http_error
+from utils.i18n import get_current_locale, http_error
+from api.v1.auth.locale import (
+    get_user_locale,
+    set_locale_cookie,
+    set_user_locale,
+)
 from api.v1.auth.config import (
     SESSION_COOKIE_NAME,
     SESSION_TTL_SECONDS,
@@ -68,6 +76,7 @@ async def get_status(
             "username": "electron",
             "user_id": None,
             "role": "admin",
+            "locale": None,
         }
     configured = await _account_count(session) > 0
     return {
@@ -76,6 +85,7 @@ async def get_status(
         "username": user.username if user else None,
         "user_id": str(user.id) if user else None,
         "role": "admin" if user and user.is_superuser else ("user" if user else None),
+        "locale": await get_user_locale(session, user.id) if user else None,
     }
 
 
@@ -180,6 +190,34 @@ async def login(
         }
     )
     _set_login_cookie(response, token, request)
+    # Profile language wins over this browser's cookie; the first sign-in
+    # remembers the language the user is currently using. The id is read up
+    # front: a failed (and rolled back) language lookup expires `user`.
+    user_id = user.id
+    locale = await get_user_locale(session, user_id)
+    if locale is None:
+        locale = get_current_locale()
+        await set_user_locale(session, user_id, locale)
+    set_locale_cookie(response, locale, secure=_secure_request(request))
+    return response
+
+
+class LocaleUpdateRequest(BaseModel):
+    locale: Literal["ru", "en"]
+
+
+@API_V1_AUTH_ROUTER.put("/locale")
+async def update_locale(
+    body: LocaleUpdateRequest,
+    request: Request,
+    session: AsyncSession = Depends(get_async_session),
+    user: User | None = Depends(read_user_from_cookie),
+):
+    """Remember the interface language for the signed-in user (and this browser)."""
+    if user is not None:
+        await set_user_locale(session, user.id, body.locale)
+    response = JSONResponse({"locale": body.locale, "persisted": user is not None})
+    set_locale_cookie(response, body.locale, secure=_secure_request(request))
     return response
 
 

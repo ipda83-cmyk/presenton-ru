@@ -25,6 +25,7 @@ from api.v1.auth.users import (
 from models.sql.user import User
 from models.sql.api_key import ApiKey
 from models.sql.key_value import KeyValueSqlModel
+from api.v1.auth.locale import delete_user_locale
 from services.database import get_async_session
 from services.provider_settings import get_provider_settings, save_provider_settings
 from services.presenton_cloud import get_presenton_provider, has_cloud_credentials
@@ -250,6 +251,7 @@ async def delete_user(
             KeyValueSqlModel.key == f"presentation_custom_themes:{user.id}"
         )
     )
+    await delete_user_locale(session, user.id)
     await session.delete(user)
     await session.commit()
     roots = (

@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { setLocale } from "@/app/actions/locale";
 import { locales, type AppLocale } from "@/i18n/config";
+import { getApiUrl } from "@/utils/api";
 
-// Переключатель языка интерфейса (RU/EN). Сохраняет выбор и перерисовывает страницу.
+// Переключатель языка интерфейса (RU/EN). Сохраняет выбор (кука + профиль
+// пользователя) и перерисовывает страницу.
 export default function LanguageSwitcher({ className = "" }: { className?: string }) {
   const active = useLocale() as AppLocale;
   const t = useTranslations("language");
@@ -16,6 +18,19 @@ export default function LanguageSwitcher({ className = "" }: { className?: strin
   const change = (next: AppLocale) => {
     if (next === active || pending) return;
     startTransition(async () => {
+      // Signed-in users keep the choice in their profile so it follows them
+      // to other browsers. Best effort: anonymous visitors get a 401 and the
+      // cookie below still applies.
+      try {
+        await fetch(getApiUrl("/api/v1/auth/locale"), {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ locale: next }),
+        });
+      } catch {
+        // offline / backend unavailable: keep the local choice
+      }
       await setLocale(next);
       router.refresh();
     });
