@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { notify } from "@/components/ui/sonner";
+import { useTranslations } from "next-intl";
 import { getHeader, getHeaderForFormData } from "@/app/(presentation-generator)/services/api/header";
 import { ApiResponseHandler } from "@/app/(presentation-generator)/services/api/api-error-handler";
 import {
@@ -113,6 +114,7 @@ function errorMessageFromUnknown(error: unknown, fallback: string): string {
 }
 
 export const useTemplateCreation = () => {
+    const t = useTranslations("custom");
     const [state, setState] = useState<TemplateCreationState>(initialState);
     const [uploadedFonts, setUploadedFonts] = useState<UploadedFont[]>([]);
     const [slides, setSlides] = useState<ProcessedSlide[]>([]);
@@ -155,7 +157,7 @@ export const useTemplateCreation = () => {
 
             const data = await ApiResponseHandler.handleResponse(
                 response,
-                "Failed to check fonts in the presentation"
+                t("gen.checkFontsFailed")
             );
 
             updateState({
@@ -172,7 +174,7 @@ export const useTemplateCreation = () => {
 
             return data;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : "Font check failed";
+            const errorMessage = error instanceof Error ? error.message : t("gen.fontCheckFailed");
             updateState({ error: errorMessage, isLoading: false });
             trackEvent(MixpanelEvent.CustomTemplate_Font_Check_Failed, {
                 file_size_bucket: bucketFileSize(pptxFile.size),
@@ -181,7 +183,7 @@ export const useTemplateCreation = () => {
                     : "",
                 error_message: sanitizeAnalyticsError(error, "Font check failed"),
             });
-            notify.error("Font check failed", errorMessage);
+            notify.error(t("gen.fontCheckFailed"), errorMessage);
             return null;
         }
     }, [updateState]);
@@ -191,7 +193,7 @@ export const useTemplateCreation = () => {
         // Check if font is already added
         const existingFont = uploadedFonts.find((f) => f.fontName === fontName);
         if (existingFont) {
-            notify.warning("Font already added", `Font "${fontName}" is already in your upload list.`);
+            notify.warning(t("gen.fontAlreadyAddedTitle"), t("gen.fontAlreadyAddedBody", { name: fontName }));
             return fontName;
         }
 
@@ -200,14 +202,14 @@ export const useTemplateCreation = () => {
         const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf("."));
 
         if (!validExtensions.includes(fileExtension)) {
-            notify.error("Invalid font file", "Please upload .ttf, .otf, .woff, .woff2, or .eot files.");
+            notify.error(t("gen.invalidFontTitle"), t("gen.invalidFontBody"));
             return null;
         }
 
         // Validate file size (10MB limit)
         const maxSize = 10 * 1024 * 1024;
         if (file.size > maxSize) {
-            notify.error("File too large", "Font file size must be less than 10MB.");
+            notify.error(t("gen.fileTooLargeTitle"), t("gen.fontTooLargeBody"));
             return null;
         }
 
@@ -220,14 +222,14 @@ export const useTemplateCreation = () => {
         };
 
         setUploadedFonts(prev => [...prev, newFont]);
-        notify.success("Font added", `Font "${fontName}" was added successfully.`);
+        notify.success(t("gen.fontAddedTitle"), t("gen.fontAddedBody", { name: fontName }));
         return fontName;
     }, [uploadedFonts]);
 
     // Remove a font
     const removeFont = useCallback((fontName: string) => {
         setUploadedFonts(prev => prev.filter(font => font.fontName !== fontName));
-        notify.info("Font removed", "The font was removed from your upload list.");
+        notify.info(t("gen.fontRemovedTitle"), t("gen.fontRemovedBody"));
     }, []);
 
     // Get all unsupported fonts that need upload
@@ -298,7 +300,7 @@ export const useTemplateCreation = () => {
 
             const data = await ApiResponseHandler.handleResponse(
                 response,
-                "Failed to upload fonts and preview slides"
+                t("gen.uploadFontsFailed")
             );
 
             updateState({
@@ -313,10 +315,10 @@ export const useTemplateCreation = () => {
                 duration_ms: Date.now() - startedAt,
             });
 
-            notify.success("Document prepared", "Template generation is starting now.");
+            notify.success(t("gen.documentPreparedTitle"), t("gen.documentPreparedBody"));
             return data;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : "Document preparation failed";
+            const errorMessage = error instanceof Error ? error.message : t("gen.documentPrepFailed");
             updateState({ error: errorMessage, isLoading: false });
             trackEvent(MixpanelEvent.CustomTemplate_Preview_Failed, {
                 uploaded_font_count: uploadedFonts.length,
@@ -326,7 +328,7 @@ export const useTemplateCreation = () => {
                     "Document preparation failed"
                 ),
             });
-            notify.error("Document preparation failed", errorMessage);
+            notify.error(t("gen.documentPrepFailed"), errorMessage);
             return null;
         }
     }, [getUnsupportedFonts, uploadedFonts, updateState]);
@@ -348,7 +350,7 @@ export const useTemplateCreation = () => {
 
         await ApiResponseHandler.handleResponse(
             response,
-            "Failed to save generated template layouts"
+            t("gen.saveLayoutsFailed")
         );
     }, []);
 
@@ -367,12 +369,12 @@ export const useTemplateCreation = () => {
 
         const data = await ApiResponseHandler.handleResponse(
             response,
-            `Failed to generate template layout for slide ${index + 1}`
+            t("gen.layoutForSlideFailed", { n: index + 1 })
         );
         const layout = extractCreatedTemplateV2Layouts(data)
             .find((item) => item.index === index);
         if (!layout) {
-            throw new Error("No generated layout was returned for this slide.");
+            throw new Error(t("gen.noLayoutReturned"));
         }
         return layout;
     }, []);
@@ -397,7 +399,7 @@ export const useTemplateCreation = () => {
                     index,
                     error: errorMessageFromUnknown(
                         error,
-                        "Template layout generation failed"
+                        t("gen.layoutGenFailed")
                     ),
                 });
             }
@@ -409,7 +411,7 @@ export const useTemplateCreation = () => {
             } catch (error) {
                 const saveError = errorMessageFromUnknown(
                     error,
-                    "Failed to save generated template layouts"
+                    t("gen.saveLayoutsFailed")
                 );
                 return {
                     layouts: [],
@@ -440,7 +442,7 @@ export const useTemplateCreation = () => {
 
         await ApiResponseHandler.handleResponse(
             response,
-            "Failed to generate template blocks"
+            t("gen.blocksFailed")
         );
     }, []);
 
@@ -497,11 +499,11 @@ export const useTemplateCreation = () => {
 
             const initData = await ApiResponseHandler.handleResponse(
                 initResponse,
-                "Failed to initialize template"
+                t("gen.initFailed")
             );
             const templateId = readTemplateV2InitId(initData);
             if (!templateId) {
-                throw new Error("Template initialization did not return a template id");
+                throw new Error(t("gen.initNoId"));
             }
 
             updateState({
@@ -612,7 +614,7 @@ export const useTemplateCreation = () => {
                                 ...slide,
                                 processing: false,
                                 processed: false,
-                                error: "No generated layout was returned for this slide.",
+                                error: t("gen.noLayoutReturned"),
                             };
                         }
                         return templateV2SlideFromLayout(
@@ -638,7 +640,7 @@ export const useTemplateCreation = () => {
                 } catch (error) {
                     blocksError = errorMessageFromUnknown(
                         error,
-                        "Failed to generate template blocks"
+                        t("gen.blocksFailed")
                     );
                     trackEvent(MixpanelEvent.CustomTemplate_Blocks_Generation_Failed, {
                         template_id: templateId,
@@ -666,24 +668,27 @@ export const useTemplateCreation = () => {
 
             if (failedCount > 0) {
                 notify.warning(
-                    "Some slides could not be generated",
-                    `${processedCount} of ${generatedSlides.length} slides were generated.`
+                    t("gen.someSlidesFailedTitle"),
+                    t("gen.someSlidesFailedBody", {
+                        done: processedCount,
+                        total: generatedSlides.length,
+                    })
                 );
             } else if (blocksError) {
                 notify.warning(
-                    "Template generated",
-                    `Slides were saved, but template blocks were not generated. ${blocksError}`
+                    t("gen.generatedTitle"),
+                    t("gen.generatedNoBlocks", { error: blocksError })
                 );
             } else {
                 notify.success(
-                    "Template generated",
-                    "The template was generated and saved successfully."
+                    t("gen.generatedTitle"),
+                    t("gen.generatedBody")
                 );
             }
 
             return templateId;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : "Template generation failed";
+            const errorMessage = error instanceof Error ? error.message : t("gen.templateGenFailed");
             updateState({ error: errorMessage, isLoading: false });
             trackEvent(MixpanelEvent.CustomTemplate_Creation_Failed, {
                 template_id: state.templateId,
@@ -704,7 +709,7 @@ export const useTemplateCreation = () => {
                     error: errorMessage,
                 }))
             );
-            notify.error("Generation failed", errorMessage);
+            notify.error(t("gen.generationFailedTitle"), errorMessage);
             return null;
         }
     }, [
@@ -721,7 +726,7 @@ export const useTemplateCreation = () => {
     ): Promise<string | null> => {
         const previewData = previewDataOverride ?? state.previewData;
         if (!previewData) {
-            notify.error("No preview data", "Prepare the document before continuing.");
+            notify.error(t("gen.noPreviewTitle"), t("gen.noPreviewBody"));
             return null;
         }
 
@@ -741,7 +746,7 @@ export const useTemplateCreation = () => {
     // Reconstruct a single slide (no auto-advance)
     const retrySlide = useCallback((slideIndex: number) => {
         if (!state.templateId) {
-            notify.error("Template unavailable", "Initialize the template before trying again.");
+            notify.error(t("gen.templateUnavailableTitle"), t("gen.templateUnavailableBody"));
             return;
         }
 
@@ -779,7 +784,7 @@ export const useTemplateCreation = () => {
                 }
                 const layout = createdLayouts.find((item) => item.index === slideIndex)?.layout;
                 if (!layout) {
-                    throw new Error("No generated layout was returned for this slide.");
+                    throw new Error(t("gen.noLayoutReturned"));
                 }
                 setSlides((current) =>
                     current.map((slide, index) =>
@@ -795,13 +800,13 @@ export const useTemplateCreation = () => {
                     duration_ms: Date.now() - startedAt,
                 });
                 notify.success(
-                    "Slide regenerated",
-                    `Slide ${slideIndex + 1} was regenerated successfully.`
+                    t("gen.slideRegeneratedTitle"),
+                    t("gen.slideRegeneratedBody", { n: slideIndex + 1 })
                 );
             } catch (error) {
                 const errorMessage = error instanceof Error
                     ? error.message
-                    : "Template layout generation failed";
+                    : t("gen.layoutGenFailed");
                 setSlides((current) =>
                     current.map((slide, index) =>
                         index === slideIndex
@@ -824,7 +829,7 @@ export const useTemplateCreation = () => {
                         "Template layout generation failed"
                     ),
                 });
-                notify.error(`Slide ${slideIndex + 1} failed`, errorMessage);
+                notify.error(t("gen.slideFailedTitle", { n: slideIndex + 1 }), errorMessage);
             }
         })();
     }, [

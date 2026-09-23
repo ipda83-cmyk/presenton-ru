@@ -365,12 +365,12 @@ export default function CommunityDesignPreviewDialog({
                     <div className="mt-3 flex items-center gap-2 sm:hidden">
                       <CommunityCount
                         icon={<Eye aria-hidden="true" className="h-4 w-4" strokeWidth={1.5} />}
-                        label={`${presentation.views ?? 0} views`}
+                        label={t("viewsAria", { count: presentation.views ?? 0 })}
                         value={presentation.views ?? 0}
                       />
                       <CommunityCount
                         icon={<Heart aria-hidden="true" className="h-4 w-4" strokeWidth={1.5} />}
-                        label={`${presentation.likes ?? 0} likes`}
+                        label={t("likesAria", { count: presentation.likes ?? 0 })}
                         value={presentation.likes ?? 0}
                       />
                     </div>

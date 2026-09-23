@@ -21,6 +21,7 @@ import {
   IMAGE_PROVIDERS,
   LLM_PROVIDERS,
   WEB_SEARCH_PROVIDERS,
+  providerDisplayLabel,
 } from "@/utils/providerConstants";
 import { ImagesApi } from "@/app/(presentation-generator)/services/api/images";
 import { getApiUrl } from "@/utils/api";
@@ -48,6 +49,7 @@ const SettingsPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("settings");
+  const tp = useTranslations("providers");
   const [selectedProvider, setSelectedProvider] = useState<SettingsSection>("text-provider");
   const userConfigState = useSelector((state: RootState) => state.userConfig);
   const [llmConfig, setLlmConfig] = useState<LLMConfig>(
@@ -270,7 +272,9 @@ const SettingsPage = () => {
 
   const textProviderKey = llmConfig.LLM || "";
   const textProviderLabel =
-    LLM_PROVIDERS[textProviderKey]?.label || textProviderKey || t("noTextProvider");
+    providerDisplayLabel(LLM_PROVIDERS[textProviderKey], tp("customName")) ||
+    textProviderKey ||
+    t("noTextProvider");
   const selectedTextModel =
     textProviderKey === "presenton"
       ? ""
@@ -316,14 +320,19 @@ const SettingsPage = () => {
     : llmConfig.DISABLE_IMAGE_GENERATION
       ? t("imageGenDisabled")
       : llmConfig.IMAGE_PROVIDER
-        ? IMAGE_PROVIDERS[llmConfig.IMAGE_PROVIDER]?.label ||
+        ? providerDisplayLabel(IMAGE_PROVIDERS[llmConfig.IMAGE_PROVIDER], tp("customImageName")) ||
         llmConfig.IMAGE_PROVIDER
         : t("noImageProvider");
   const webSearchProviderKey = (llmConfig.WEB_SEARCH_PROVIDER || "").toLowerCase();
   const webSearchSummary = textProviderKey === "presenton"
     ? t("cloudWebSearch")
     : llmConfig.WEB_GROUNDING
-      ? t("webSummary", { provider: WEB_SEARCH_PROVIDERS[webSearchProviderKey]?.label || t("noProvider") })
+      ? t("webSummary", {
+          provider:
+            webSearchProviderKey === "auto"
+              ? tp("webLabelAuto")
+              : WEB_SEARCH_PROVIDERS[webSearchProviderKey]?.label || t("noProvider"),
+        })
       : t("webSearchDisabled");
 
   useEffect(() => {

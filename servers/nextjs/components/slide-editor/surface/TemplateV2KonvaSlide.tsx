@@ -2686,7 +2686,7 @@ function TemplateV2KonvaSlideComponent({
         setIsUploadingImage(true);
         const uploaded = await ImagesApi.uploadImage(file);
         const imageUrl = resolveBackendAssetSource(uploaded);
-        if (!imageUrl) throw new Error("Upload did not return an image URL.");
+        if (!imageUrl) throw new Error(t("image.uploadNoUrl"));
         updateElement(target, (element) => ({
           ...element,
           data: imageUrl,
@@ -2928,7 +2928,7 @@ function TemplateV2KonvaSlideComponent({
     return (
       <div className="flex h-full aspect-video flex-col items-center justify-center rounded-lg bg-gray-100">
         <Loader2 className="mb-2 h-4 w-4 animate-spin" />
-        <p className="text-center text-sm text-gray-600">Loading slide layout...</p>
+        <p className="text-center text-sm text-gray-600">{t("image.loadingLayout")}</p>
       </div>
     );
   }

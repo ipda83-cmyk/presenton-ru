@@ -4,7 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/colla
 import { Button } from '../ui/button';
 import { ArrowUpRight, Blocks, Check, ChevronDown, ChevronLeft, ChevronUp, Eye, EyeOff, Info, Laptop, Loader2, Search } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command';
-import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS, LLM_PROVIDERS, WEB_SEARCH_PROVIDERS, providerKey } from '@/utils/providerConstants';
+import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS, LLM_PROVIDERS, WEB_SEARCH_PROVIDERS, providerDisplayLabel, providerKey } from '@/utils/providerConstants';
 import { cn } from '@/lib/utils';
 import { LLMConfig } from '@/types/llm_config';
 import { RootState } from '@/store/store';
@@ -205,7 +205,7 @@ const PresentonMode = ({
     const currentTogetherUrl = (llmConfig.TOGETHER_BASE_URL || '').trim();
     const currentOllamaUrl = llmConfig.OLLAMA_URL || '';
     const providerApiKeyBrand =
-        llmConfig.LLM === 'custom' ? 'Custom LLM'
+        llmConfig.LLM === 'custom' ? s('customLlmBrand')
             : llmConfig.LLM === 'deepseek' ? 'DeepSeek'
             : llmConfig.LLM === 'vertex' ? 'Vertex'
             : llmConfig.LLM === 'azure' ? 'Azure OpenAI'
@@ -426,7 +426,7 @@ const PresentonMode = ({
             } else {
                 const message = await getApiErrorMessage(
                     response,
-                    s("couldNotListModels", { provider: LLM_PROVIDERS[llmConfig.LLM!]?.label ?? "" })
+                    s("couldNotListModels", { provider: providerDisplayLabel(LLM_PROVIDERS[llmConfig.LLM!], tp("customName")) ?? "" })
                 );
                 console.error('Failed to fetch models');
                 setAvailableModels([]);
@@ -1231,7 +1231,7 @@ const PresentonMode = ({
                                             {provider.icon ? <img src={provider.icon} alt="" className="h-7 w-7 object-contain" /> : <span className="font-semibold">LM</span>}
                                         </div>
                                         <div>
-                                            <p className="text-sm font-medium text-[#191919]">{provider.label}</p>
+                                            <p className="text-sm font-medium text-[#191919]">{providerDisplayLabel(provider, tp("customName"))}</p>
                                             <p className="mt-1 text-xs text-[#777]">{tp(`llmDesc.${providerKey(provider.value)}`)}</p>
                                         </div>
                                     </button>
@@ -1260,8 +1260,8 @@ const PresentonMode = ({
                                     <div className="flex gap-3 items-center">
                                         <span className="text-sm font-medium text-gray-900">
                                             {llmConfig.LLM && OTHER_PROVIDER_VALUES.has(llmConfig.LLM)
-                                                ? LLM_PROVIDERS[llmConfig.LLM]
-                                                    ?.label || llmConfig.LLM
+                                                ? providerDisplayLabel(LLM_PROVIDERS[llmConfig.LLM], tp("customName")) ||
+                                                  llmConfig.LLM
                                                 : s("selectTextProviderPlaceholder")}
                                         </span>
                                     </div>
@@ -1297,7 +1297,7 @@ const PresentonMode = ({
                                                             <div className="flex flex-col space-y-1 flex-1">
                                                                 <div className="flex items-center justify-between gap-2">
                                                                     <span className="text-sm font-medium text-gray-900 capitalize">
-                                                                        {provider.label}
+                                                                        {providerDisplayLabel(provider, tp("customName"))}
                                                                     </span>
                                                                 </div>
                                                                 <span className="text-xs text-gray-600 leading-relaxed">
@@ -1350,7 +1350,7 @@ const PresentonMode = ({
                                 <>
                                     <div className='flex items-center justify-between mb-2'>
 
-                                        <label className="block text-sm font-medium capitalize text-gray-700 ">
+                                        <label className="block text-sm font-medium text-gray-700 ">
                                             {providerApiKeyLabel}
                                         </label>
                                         {llmConfig.LLM && LLM_PROVIDERS[llmConfig.LLM!]?.getApiKeyUrl && <a href={LLM_PROVIDERS[llmConfig.LLM!]?.getApiKeyUrl || ""} target='_blank' className='text-[#666666] text-xs font-normal flex items-center gap-1'>{t("getApiKey")} <ArrowUpRight className='w-3.5 h-3.5' /></a>}
@@ -1365,7 +1365,7 @@ const PresentonMode = ({
                                                 [currentApiKeyField]: e.target.value
                                             }))}
                                             className="col-start-1 row-start-1 h-12 w-full rounded-lg border border-gray-300 py-3 pl-3 pr-12 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                                            placeholder={`Enter your ${providerApiKeyLabel}`}
+                                            placeholder={s("enterYour", { label: providerApiKeyLabel })}
                                         />
                                         <button
                                             type="button"
@@ -1442,7 +1442,7 @@ const PresentonMode = ({
                                             LITELLM_BASE_URL: e.target.value
                                         }))}
                                         className="w-full px-2 py-3 outline-none border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
-                                        placeholder="e.g. http://host.docker.internal:4000/v1"
+                                        placeholder={s("egValue", { value: "http://host.docker.internal:4000/v1" })}
                                     />
                                     <p className="mt-1.5 text-xs text-gray-500">
                                         {s("litellmBaseUrlHint")}
@@ -1544,7 +1544,7 @@ const PresentonMode = ({
                                         {s("checkingModels")}
                                     </span>
                                 ) : (
-                                    "Validate & Load Models"
+                                    t("validateLoadModels")
                                 )}
                             </button>
                         )}
@@ -1561,7 +1561,7 @@ const PresentonMode = ({
                             <CreatableModelInput
                                 value={currentModel}
                                 options={availableModels}
-                                providerLabel={LLM_PROVIDERS[llmConfig.LLM!]?.label || llmConfig.LLM || "Provider"}
+                                providerLabel={providerDisplayLabel(LLM_PROVIDERS[llmConfig.LLM!], tp("customName")) || llmConfig.LLM || s("providerLabel")}
                                 onChange={(value) => {
                                     if (!currentModelField) return;
                                     setLlmConfig(prev => ({ ...prev, [currentModelField]: value }));
@@ -1658,7 +1658,7 @@ const PresentonMode = ({
                                                         ? <img src={provider.icon} alt="" className="h-7 w-7 object-contain" />
                                                         : <span className="text-sm font-semibold">{provider.label.slice(0, 1)}</span>}
                                                 </span>
-                                                <span className="text-xs font-semibold text-[#191919]">{provider.label}</span>
+                                                <span className="text-xs font-semibold text-[#191919]">{providerDisplayLabel(provider, tp("customImageName"))}</span>
                                             </button>
                                         ))}
                                         {row.some((provider) => provider.value === llmConfig.IMAGE_PROVIDER) && renderSelectedImageProviderConfig()}
@@ -1738,7 +1738,7 @@ const PresentonMode = ({
                                                     >
                                                         {provider.icon && <img src={provider.icon} alt="" className="h-7 w-7 object-contain" />}
                                                     </span>
-                                                    <span className="text-xs font-semibold text-[#191919]">{provider.label}</span>
+                                                    <span className="text-xs font-semibold text-[#191919]">{provider.value === "auto" ? tp("webLabelAuto") : provider.label}</span>
                                                     <span className="line-clamp-2 text-[10px] leading-4 text-gray-500">{tp(`webDesc.${providerKey(provider.value)}`)}</span>
                                                 </button>
                                             ))}

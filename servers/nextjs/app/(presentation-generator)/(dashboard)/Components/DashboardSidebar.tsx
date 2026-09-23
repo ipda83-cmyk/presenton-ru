@@ -95,12 +95,12 @@ const DashboardSidebar = ({
                                 "flex flex-col tex-center items-center gap-2  transition-colors",
                                 pathname === "/theme" ? "" : "ring-transparent",
                             ].join(" ")}
-                            aria-label="Theme"
-                            title="Theme"
+                            aria-label={t("themes")}
+                            title={t("themes")}
                         >
                             <div className="flex flex-col cursor-pointer tex-center items-center gap-2  transition-colors">
                                 <Palette className={`h-4 w-4 ${pathname === "/theme" ? "text-[#5146E5]" : "text-slate-600"}`} />
-                                <span className="text-[11px] text-slate-800">Themes</span>
+                                <span className="text-[11px] text-slate-800">{t("themes")}</span>
                             </div>
                         </Link> */}
                     </div>

@@ -28,7 +28,7 @@ export const LanguageSelector: React.FC<{
                     className="px-3.5 py-1 justify-between rounded-[48px] font-manrope font-semibold overflow-hidden bg-[#F7F6F9] border-[#EDEEEF] focus-visible:ring-[#5141E5] border-none"
                 >
                     <p className="text-sm font-medium truncate">
-                        {value || t("placeholder")}
+                        {value === LanguageType.Auto ? t("auto") : value || t("placeholder")}
                     </p>
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -59,7 +59,7 @@ export const LanguageSelector: React.FC<{
                                             value === language ? "opacity-100" : "opacity-0"
                                         )}
                                     />
-                                    {language}
+                                    {language === LanguageType.Auto ? t("auto") : language}
                                 </CommandItem>
                             ))}
                         </CommandGroup>

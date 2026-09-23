@@ -1,6 +1,7 @@
 import { ApiResponseError, ApiResponseHandler } from "./api-error-handler";
 import { getHeader } from "./header";
 import { getApiUrl } from "@/utils/api";
+import { tr } from "@/utils/clientI18n";
 
 export interface CommunityPresentation {
   id: number;
@@ -84,7 +85,7 @@ async function fetchCommunity<T>(
       throw error;
     }
     throw new ApiResponseError(
-      "Could not reach the Presenton server while loading Community. Check your connection and try again.",
+      tr("apiErr.communityUnreachable", "Could not reach the Presenton server while loading Community. Check your connection and try again."),
       {
         status: 0,
         code: "community_backend_unreachable",
@@ -122,7 +123,7 @@ export class CommunityPresentationApi {
         cache: "no-cache",
         signal,
       },
-      "Failed to load community references"
+      tr("apiErr.communityListFailed", "Failed to load community references")
     );
   }
 
@@ -130,7 +131,7 @@ export class CommunityPresentationApi {
     return fetchCommunity<CommunityPresentation>(
       getApiUrl(`/api/v1/ppt/community/presentations/${id}`),
       { headers: getHeader(), cache: "no-cache" },
-      "Failed to load the community reference"
+      tr("apiErr.communityOneFailed", "Failed to load the community reference")
     );
   }
 }
@@ -138,7 +139,7 @@ export class CommunityPresentationApi {
 export function getCommunityPresentationTitle(
   presentation: CommunityPresentation
 ) {
-  return presentation.title?.trim() || "Untitled presentation";
+  return presentation.title?.trim() || tr("apiErr.untitledPresentation", "Untitled presentation");
 }
 
 export function getCommunityPresentationAuthor(

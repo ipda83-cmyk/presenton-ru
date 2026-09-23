@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { useDispatch } from "react-redux";
 import {
   clearPresentationData,
@@ -124,6 +125,7 @@ export const usePresentationStreaming = (
     generationMode?: "standard" | "smart";
   } = {}
 ) => {
+  const t = useTranslations("editor");
   const dispatch = useDispatch();
   const previousSlidesLength = useRef(0);
   const preloadPresentationData = Boolean(options.preloadPresentationData);
@@ -191,7 +193,7 @@ export const usePresentationStreaming = (
       dispatch(setStreaming(false));
       setError(true);
       if (options.showToast !== false) {
-        notify.error("Presentation streaming failed", description);
+        notify.error(t("stream.failedTitle"), description);
       }
     };
 
@@ -307,7 +309,7 @@ export const usePresentationStreaming = (
           data = JSON.parse(event.data) as PresentationStreamData;
         } catch {
           if (!scheduleRetry("invalid SSE payload")) {
-            finalizeFailure("Failed to parse stream response.");
+            finalizeFailure(t("stream.parseFailed"));
           }
           return;
         }
@@ -546,7 +548,7 @@ export const usePresentationStreaming = (
                   continue;
                 }
                 shownAssetWarnings.add(detail);
-                notify.warning("Some images could not be generated", detail, {
+                notify.warning(t("stream.imagesFailedTitle"), detail, {
                   duration: 12_000,
                 });
               }
@@ -613,7 +615,7 @@ export const usePresentationStreaming = (
             } catch (error) {
               console.error("Could not finalize presentation stream:", error);
               if (!scheduleRetry("failed to parse complete payload")) {
-                finalizeFailure("Failed to load the completed presentation.");
+                finalizeFailure(t("stream.completedLoadFailed"));
               }
             }
             accumulatedChunks = "";
@@ -648,8 +650,7 @@ export const usePresentationStreaming = (
                 source: "presentation-stream",
               });
               finalizeFailure(
-                data.detail ||
-                  "Your ChatGPT session expired. Please sign in again from Settings.",
+                t("stream.chatgptExpired"),
                 { showToast: false }
               );
               break;
@@ -657,14 +658,17 @@ export const usePresentationStreaming = (
             const completedSlides = Number(data.completed_slides);
             const totalSlides = Number(data.total_slides);
             const detail =
-              data.detail || "Failed to connect to the server. Please try again.";
+              data.detail || t("stream.connectFailed");
             const detailWithProgress =
               Number.isFinite(completedSlides) && completedSlides > 0
-                ? `${detail} ${completedSlides}${
+                ? `${detail} ${
                     Number.isFinite(totalSlides) && totalSlides > 0
-                      ? ` of ${totalSlides}`
-                      : ""
-                  } slides were saved and will be reused.`
+                      ? t("stream.savedOfTotal", {
+                          done: completedSlides,
+                          total: totalSlides,
+                        })
+                      : t("stream.savedCount", { done: completedSlides })
+                  }`
                 : detail;
             if (data.retryable === false) {
               finalizeFailure(detailWithProgress);
@@ -682,7 +686,7 @@ export const usePresentationStreaming = (
       eventSource.onerror = (error) => {
         console.error("EventSource failed:", error);
         if (!scheduleRetry("connection lost")) {
-          finalizeFailure("Failed to connect to the server. Please try again.");
+          finalizeFailure(t("stream.connectFailed"));
         }
       };
     };

@@ -8,6 +8,7 @@ import {
 } from "@/utils/presentationLimits";
 import type { PresentationVersion } from "./dashboard";
 import type { Slide } from "../../types/slide";
+import { tr } from "@/utils/clientI18n";
 
 export type BlankPresentationResponse = {
   id: string;
@@ -39,7 +40,7 @@ export class PresentationGenerationApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, "Failed to upload documents");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.uploadDocumentsFailed", "Failed to upload documents"));
     } catch (error) {
       console.error("Upload error:", error);
       throw error;
@@ -64,7 +65,7 @@ export class PresentationGenerationApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, "Failed to decompose documents");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.decomposeDocumentsFailed", "Failed to decompose documents"));
     } catch (error) {
       console.error("Error in Decompose Files", error);
       throw error;
@@ -131,7 +132,7 @@ export class PresentationGenerationApi {
 
       const result = await ApiResponseHandler.handleResponse(
         response,
-        "Failed to create presentation"
+        tr("apiErr.createPresentationFailed", "Failed to create presentation")
       );
       return {
         ...result,
@@ -155,11 +156,11 @@ export class PresentationGenerationApi {
       );
       const presentation = (await ApiResponseHandler.handleResponse(
         response,
-        "Failed to create blank presentation"
+        tr("apiErr.createBlankFailed", "Failed to create blank presentation")
       )) as BlankPresentationResponse;
 
       if (!presentation || typeof presentation.id !== "string") {
-        throw new Error("Blank presentation response did not include an id");
+        throw new Error(tr("apiErr.blankNoId", "Blank presentation response did not include an id"));
       }
 
       return presentation;
@@ -187,7 +188,7 @@ export class PresentationGenerationApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, "Failed to update slide");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.updateSlideFailed", "Failed to update slide"));
     } catch (error) {
       console.error("error in slide update", error);
       throw error;
@@ -206,7 +207,7 @@ export class PresentationGenerationApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, "Failed to update presentation content");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.updateContentFailed", "Failed to update presentation content"));
     } catch (error) {
       console.error("error in presentation content update", error);
       throw error;
@@ -227,7 +228,7 @@ export class PresentationGenerationApi {
 
       return await ApiResponseHandler.handleResponse(
         response,
-        "Failed to update slide"
+        tr("apiErr.updateSlideFailed", "Failed to update slide")
       );
     } catch (error) {
       console.error("error in presentation slide update", error);
@@ -254,7 +255,7 @@ export class PresentationGenerationApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, "Failed to prepare presentation");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.preparePresentationFailed", "Failed to prepare presentation"));
     } catch (error) {
       console.error("error in data generation", error);
       throw error;
@@ -272,7 +273,7 @@ export class PresentationGenerationApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, "Failed to fetch outlines");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.fetchOutlinesFailed", "Failed to fetch outlines"));
     } catch (error) {
       console.error("error in outline fetch", error);
       throw error;
@@ -294,7 +295,7 @@ export class PresentationGenerationApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, "Failed to update outlines");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.updateOutlinesFailed", "Failed to update outlines"));
     } catch (error) {
       console.error("error in outline update", error);
       throw error;
@@ -315,7 +316,7 @@ export class PresentationGenerationApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, "Failed to generate image");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.generateImageFailed", "Failed to generate image"));
     } catch (error) {
       console.error("error in image generation", error);
       throw error;
@@ -332,7 +333,7 @@ export class PresentationGenerationApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, "Failed to get previous generated images");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.getPreviousImagesFailed", "Failed to get previous generated images"));
     } catch (error) {
       console.error("error in getting previous generated images", error);
       throw error;
@@ -360,7 +361,7 @@ export class PresentationGenerationApi {
         }
       );
 
-      const icons = await ApiResponseHandler.handleResponse(response, "Failed to search icons");
+      const icons = await ApiResponseHandler.handleResponse(response, tr("apiErr.searchIconsFailed", "Failed to search icons"));
       return Array.isArray(icons)
         ? icons.map((icon) =>
           typeof icon === "string" ? resolveBackendAssetUrl(icon) : icon

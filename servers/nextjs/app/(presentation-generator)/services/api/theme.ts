@@ -2,6 +2,7 @@ import { ApiResponseHandler } from "./api-error-handler"
 import { getHeader, getHeaderForFormData } from "./header"
 import { Theme, ThemeParams } from "./types"
 import { getApiUrl } from "@/utils/api"
+import { tr } from "@/utils/clientI18n";
 
 
 
@@ -14,7 +15,7 @@ class ThemeApi {
         headers: getHeader(),
         cache: "no-store",
       })
-      return await ApiResponseHandler.handleResponse(response, "Failed to get themes")
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.getThemesFailed", "Failed to get themes"))
     } catch (error) {
       console.error("Error getting themes:", error)
       throw error
@@ -29,7 +30,7 @@ class ThemeApi {
         body: JSON.stringify(theme),
         cache: "no-store",
       })
-      return await ApiResponseHandler.handleResponse(response, "Failed to create theme")
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.createThemeFailed", "Failed to create theme"))
     }
     catch (error) {
       console.error("Error creating theme:", error)
@@ -44,7 +45,7 @@ class ThemeApi {
         body: JSON.stringify(theme),
         cache: "no-store",
       })
-      return await ApiResponseHandler.handleResponse(response, "Failed to update theme")
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.updateThemeFailed", "Failed to update theme"))
     }
     catch (error) {
       console.error("Error updating theme:", error)
@@ -58,7 +59,7 @@ class ThemeApi {
         headers: getHeader(),
         cache: "no-store",
       })
-      return await ApiResponseHandler.handleResponse(response, "Failed to delete theme")
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.deleteThemeFailed", "Failed to delete theme"))
     }
     catch (error) {
       console.error("Error deleting theme:", error)
@@ -79,7 +80,7 @@ class ThemeApi {
         headers: getHeader(),
         body: JSON.stringify(body),
       })
-      return await ApiResponseHandler.handleResponse(response, "Failed to generate theme")
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.generateThemeFailed", "Failed to generate theme"))
     }
 
     catch (error) {
@@ -96,7 +97,7 @@ class ThemeApi {
         headers: getHeaderForFormData(),
         body: formData,
       })
-      return await ApiResponseHandler.handleResponse(response, "Failed to upload font")
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.uploadFontFailed", "Failed to upload font"))
     }
     catch (error) {
       console.error("Error uploading font:", error)
@@ -109,7 +110,7 @@ class ThemeApi {
         method: "GET",
         headers: getHeader(),
       })
-      return await ApiResponseHandler.handleResponse(response, "Failed to get user fonts")
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.getFontsFailed", "Failed to get user fonts"))
     }
     catch (error) {
       console.error("Error getting user fonts:", error)

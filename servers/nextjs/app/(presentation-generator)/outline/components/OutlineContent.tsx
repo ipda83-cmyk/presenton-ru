@@ -24,6 +24,14 @@ import { MAX_NUMBER_OF_SLIDES } from "@/utils/presentationLimits";
 import { useStableOutlineIds } from "../../components/useStableOutlineIds";
 import { OutlineItem } from "./OutlineItem";
 
+// useOutlineStreaming keeps these English strings as state (OutlinePage
+// compares against "Outline ready"), so they are translated at display time.
+const OUTLINE_STATUS_KEYS: Record<string, string> = {
+  "Preparing your presentation outline": "preparing",
+  "Reconnecting to outline stream": "reconnecting",
+  "Outline ready": "ready",
+};
+
 interface OutlineContentProps {
   outlines: { content: string }[] | null;
   isLoading: boolean;
@@ -86,7 +94,9 @@ const OutlineContent: React.FC<OutlineContentProps> = ({
       {isStreaming && (
         <div className="sr-only" role="status" aria-live="polite">
           <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
-          {statusMessage}
+          {OUTLINE_STATUS_KEYS[statusMessage]
+            ? t(`status.${OUTLINE_STATUS_KEYS[statusMessage]}`)
+            : statusMessage}
         </div>
       )}
 

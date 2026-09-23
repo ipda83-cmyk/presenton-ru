@@ -59,7 +59,7 @@ export default function BedrockManualFields({
           value={llmConfig.BEDROCK_MODEL || ''}
           onChange={(e) => onPatch({ BEDROCK_MODEL: e.target.value })}
           className={inputClass}
-          placeholder="e.g. us.anthropic.claude-3-5-haiku-20241022-v1:0"
+          placeholder={t("egValue", { value: "us.anthropic.claude-3-5-haiku-20241022-v1:0" })}
         />
       </div>
 
@@ -70,7 +70,7 @@ export default function BedrockManualFields({
           value={llmConfig.BEDROCK_REGION || ''}
           onChange={(e) => onPatch({ BEDROCK_REGION: e.target.value })}
           className={inputClass}
-          placeholder="e.g. us-east-1"
+          placeholder={t("egValue", { value: "us-east-1" })}
         />
       </div>
 

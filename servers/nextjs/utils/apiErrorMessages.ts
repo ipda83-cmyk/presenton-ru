@@ -1,3 +1,5 @@
+import { tr } from "@/utils/clientI18n";
+
 export interface ApiErrorResponse {
   detail?: unknown;
   message?: string;
@@ -137,10 +139,10 @@ export function sanitizeApiErrorMessage(
   if (!trimmed) return fallbackMessage;
 
   if (looksLikeProviderAuthError(trimmed, status)) {
-    return INVALID_API_KEY_MESSAGE;
+    return tr("apiErr.invalidApiKey", INVALID_API_KEY_MESSAGE);
   }
   if (looksLikeSafetyBlock(trimmed)) {
-    return SAFETY_BLOCK_MESSAGE;
+    return tr("apiErr.safetyBlocked", SAFETY_BLOCK_MESSAGE);
   }
   if (looksLikeRawPayload(trimmed)) {
     return fallbackMessage;

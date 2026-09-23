@@ -3,6 +3,7 @@ import {
 } from "@/app/(presentation-generator)/services/api/header";
 import { ApiResponseHandler } from "@/app/(presentation-generator)/services/api/api-error-handler";
 import { getApiUrl } from "@/utils/api";
+import { tr } from "@/utils/clientI18n";
 
 export type PresentationVersion = "v1-standard" | "v2-standard";
 
@@ -60,7 +61,7 @@ export class DashboardApi {
         return [];
       }
 
-      return await ApiResponseHandler.handleResponse(response, "Failed to fetch presentations");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.fetchPresentationsFailed", "Failed to fetch presentations"));
     } catch (error) {
       console.error("Error fetching presentations:", error);
       throw error;
@@ -81,7 +82,7 @@ export class DashboardApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, "Presentation not found");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.presentationNotFound", "Presentation not found"));
     } catch (error) {
       console.error("Error fetching presentation:", error);
       throw error;
@@ -98,12 +99,12 @@ export class DashboardApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponseWithResult(response, "Failed to delete presentation");
+      return await ApiResponseHandler.handleResponseWithResult(response, tr("apiErr.deletePresentationFailed", "Failed to delete presentation"));
     } catch (error) {
       console.error("Error deleting presentation:", error);
       return {
         success: false,
-        message: error instanceof Error ? error.message : "Failed to delete presentation",
+        message: error instanceof Error ? error.message : tr("apiErr.deletePresentationFailed", "Failed to delete presentation"),
       };
     }
   }
@@ -118,7 +119,7 @@ export class DashboardApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, "Failed to duplicate presentation");
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.duplicatePresentationFailed", "Failed to duplicate presentation"));
     } catch (error) {
       console.error("Error duplicating presentation:", error);
       throw error;

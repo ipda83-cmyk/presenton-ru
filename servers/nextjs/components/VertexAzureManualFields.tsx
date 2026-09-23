@@ -98,7 +98,7 @@ export default function VertexAzureManualFields({
               value={llmConfig.VERTEX_MODEL || ''}
               onChange={(e) => onPatch({ VERTEX_MODEL: e.target.value })}
               className={inputClass}
-              placeholder="e.g. gemini-2.5-flash"
+              placeholder={t("egValue", { value: "gemini-2.5-flash" })}
             />
           </div>
 
@@ -137,7 +137,7 @@ export default function VertexAzureManualFields({
                     value={llmConfig.VERTEX_LOCATION || ''}
                     onChange={(e) => onPatch({ VERTEX_LOCATION: e.target.value })}
                     className={inputClass}
-                    placeholder="e.g. us-central1"
+                    placeholder={t("egValue", { value: "us-central1" })}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -176,7 +176,7 @@ export default function VertexAzureManualFields({
               value={llmConfig.AZURE_OPENAI_MODEL || ''}
               onChange={(e) => onPatch({ AZURE_OPENAI_MODEL: e.target.value })}
               className={inputClass}
-              placeholder="e.g. gpt-5.4-mini"
+              placeholder={t("egValue", { value: "gpt-5.4-mini" })}
             />
           </div>
 
@@ -187,7 +187,7 @@ export default function VertexAzureManualFields({
               value={llmConfig.AZURE_OPENAI_API_VERSION || ''}
               onChange={(e) => onPatch({ AZURE_OPENAI_API_VERSION: e.target.value })}
               className={inputClass}
-              placeholder="e.g. 2024-12-01-preview"
+              placeholder={t("egValue", { value: "2024-12-01-preview" })}
             />
           </div>
         </>

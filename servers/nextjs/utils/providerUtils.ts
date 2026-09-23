@@ -3,6 +3,7 @@ import {
   getApiUrl,
 } from "@/utils/api";
 import { LLMConfig } from "@/types/llm_config";
+import { tr } from "@/utils/clientI18n";
 
 const LOCALHOST_OLLAMA_URL = "http://localhost:11434";
 const DOCKER_HOST_OLLAMA_URL = "http://host.docker.internal:11434";
@@ -251,7 +252,7 @@ const fetchAvailableOllamaModels = async (
     throw new BackendConnectionError();
   }
   if (!response.ok) {
-    throw new Error(await getApiErrorMessage(response, "Could not list Ollama models"));
+    throw new Error(await getApiErrorMessage(response, tr("apiErr.ollamaListFailed", "Could not list Ollama models")));
   }
   let models: unknown;
   try {
@@ -260,7 +261,7 @@ const fetchAvailableOllamaModels = async (
     throw new BackendConnectionError();
   }
   if (!Array.isArray(models)) {
-    throw new Error("Ollama returned an invalid model list");
+    throw new Error(tr("apiErr.ollamaInvalidList", "Ollama returned an invalid model list"));
   }
   return models.flatMap((model) => {
     if (!model || typeof model !== "object" || !("name" in model)) return [];
@@ -367,11 +368,11 @@ const fetchOllamaLibraryModels = async (): Promise<OllamaLibraryModel[]> => {
     getApiUrl("/api/v1/ppt/ollama/models/library")
   );
   if (!response.ok) {
-    throw new Error(await getApiErrorMessage(response, "Could not fetch Ollama library models"));
+    throw new Error(await getApiErrorMessage(response, tr("apiErr.ollamaLibraryFailed", "Could not fetch Ollama library models")));
   }
   const models: unknown = await response.json();
   if (!Array.isArray(models)) {
-    throw new Error("Invalid library model list");
+    throw new Error(tr("apiErr.ollamaInvalidLibrary", "Invalid library model list"));
   }
   return models.flatMap((model) => {
     if (!model || typeof model !== "object" || !("name" in model)) return [];
@@ -410,14 +411,14 @@ export const pullOllamaModel = async (
   );
 
   if (!response.ok) {
-    const msg = await getApiErrorMessage(response, "Failed to pull model");
+    const msg = await getApiErrorMessage(response, tr("apiErr.pullModelFailed", "Failed to pull model"));
     onEvent({ type: "error", detail: msg });
     return;
   }
 
   const reader = response.body?.getReader();
   if (!reader) {
-    onEvent({ type: "error", detail: "No response stream" });
+    onEvent({ type: "error", detail: tr("apiErr.noResponseStream", "No response stream") });
     return;
   }
 
@@ -441,7 +442,7 @@ export const pullOllamaModel = async (
           try {
             const data = JSON.parse(dataStr) as OllamaPullProgressEvent;
             if (currentEvent === "error" || data.type === "error") {
-              onEvent({ type: "error", detail: data.detail || "Pull failed" });
+              onEvent({ type: "error", detail: data.detail || tr("apiErr.pullFailed", "Pull failed") });
               return;
             }
             onEvent(data);

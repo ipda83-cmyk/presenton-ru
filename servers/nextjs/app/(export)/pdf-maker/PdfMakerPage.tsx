@@ -216,7 +216,7 @@ const PresentationPage = ({ presentation_id, exportCookie }: PresentationPagePro
 
     return ApiResponseHandler.handleResponse(
       response,
-      "Presentation not found"
+      t("notFound")
     );
   };
 
@@ -269,12 +269,12 @@ const PresentationPage = ({ presentation_id, exportCookie }: PresentationPagePro
             role="alert"
           >
             <AlertCircle className="w-16 h-16 mb-4 text-red-500" />
-            <strong className="font-bold text-4xl mb-2">Oops!</strong>
+            <strong className="font-bold text-4xl mb-2">{t("oops")}</strong>
             <p className="block text-2xl py-2">
-              We encountered an issue loading your presentation.
+              {t("loadIssue")}
             </p>
             <p className="text-lg py-2">
-              Please check your internet connection or try again later.
+              {t("checkConnection")}
             </p>
             <Button
               className="mt-4 bg-red-500 text-white hover:bg-red-600 focus:ring-4 focus:ring-red-300"
@@ -283,7 +283,7 @@ const PresentationPage = ({ presentation_id, exportCookie }: PresentationPagePro
                 window.location.reload();
               }}
             >
-              Retry
+              {t("retry")}
             </Button>
           </div>
         </div>

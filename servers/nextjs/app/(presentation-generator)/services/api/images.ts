@@ -2,6 +2,7 @@ import { getHeaderForFormData } from "./header";
 import { ApiResponseHandler } from "./api-error-handler";
 import { ImageAssetResponse } from "./types";
 import { getApiUrl } from "@/utils/api";
+import { tr } from "@/utils/clientI18n";
 
 interface StockSearchOptions {
   provider?: string;
@@ -22,7 +23,7 @@ export class ImagesApi {
       headers: getHeaderForFormData(),
       body: formData,
     });
-    return await ApiResponseHandler.handleResponse(response, "Failed to upload image") as ImageAssetResponse;
+    return await ApiResponseHandler.handleResponse(response, tr("apiErr.uploadImageFailed", "Failed to upload image")) as ImageAssetResponse;
   } catch (error:any) {
     console.log("Upload error:", error.message);
     throw error;
@@ -34,7 +35,7 @@ export class ImagesApi {
     const response = await fetch(getApiUrl(`/api/v1/ppt/images/uploaded`), {
       cache: "no-cache",
     });
-   return await ApiResponseHandler.handleResponse(response, "Failed to get uploaded images") as ImageAssetResponse[];
+   return await ApiResponseHandler.handleResponse(response, tr("apiErr.getUploadedImagesFailed", "Failed to get uploaded images")) as ImageAssetResponse[];
   } catch (error:any) {
     console.log("Get uploaded images error:", error);
     throw error;
@@ -47,7 +48,7 @@ export class ImagesApi {
     });
     return await ApiResponseHandler.handleResponse(
       response,
-      "Failed to get generated images",
+      tr("apiErr.getGeneratedImagesFailed", "Failed to get generated images"),
     ) as ImageAssetResponse[];
   }
 
@@ -59,7 +60,7 @@ export class ImagesApi {
     );
     return await ApiResponseHandler.handleResponse(
       response,
-      "Failed to generate image",
+      tr("apiErr.generateImageFailed", "Failed to generate image"),
     ) as string;
   }
 
@@ -68,7 +69,7 @@ export class ImagesApi {
       const response = await fetch(getApiUrl(`/api/v1/ppt/images/${image_id}`), {
         method: "DELETE"
       });
-      return await ApiResponseHandler.handleResponse(response, "Failed to delete image") as {success: boolean, message?: string};
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.deleteImageFailed", "Failed to delete image")) as {success: boolean, message?: string};
     } catch (error:any) {
       console.log("Delete image error:", error);
       throw error;
@@ -103,7 +104,7 @@ export class ImagesApi {
         method: "GET",
         headers,
       });
-      return await ApiResponseHandler.handleResponse(response, "Failed to search stock images") as string[];
+      return await ApiResponseHandler.handleResponse(response, tr("apiErr.searchStockFailed", "Failed to search stock images")) as string[];
     } catch (error:any) {
       console.log("Stock image search error:", error);
       throw error;

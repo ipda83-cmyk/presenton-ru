@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { notify } from "@/components/ui/sonner";
+import { useTranslations } from "next-intl";
 import { setPresentationData } from "@/store/slices/presentationGeneration";
 import { clearHistory } from "@/store/slices/undoRedoSlice";
 import { applyPresentationThemeToElement } from "../utils/applyPresentationThemeDom";
@@ -21,6 +22,7 @@ export const usePresentationData = (
   setLoading: (loading: boolean) => void,
   setError: (error: boolean) => void
 ) => {
+  const t = useTranslations("editor");
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -31,10 +33,7 @@ export const usePresentationData = (
       });
 
       if (data?.version === "v1-standard") {
-        notify.warning(
-          "Unsupported presentation",
-          "This deck was created in an older Presenton version. Downgrade to a compatible version to open it."
-        );
+        notify.warning(t("unsupportedTitle"), t("unsupportedBody"));
         setLoading(false);
         router.replace("/dashboard");
         return undefined;
@@ -78,7 +77,7 @@ export const usePresentationData = (
       return normalizedData;
     } catch (error) {
       setError(true);
-      notify.error("Failed to load presentation", "The presentation could not be loaded. Please try again.");
+      notify.error(t("loadFailedTitle"), t("loadFailedBody"));
       console.error("Error fetching user slides:", error);
       setLoading(false);
       return undefined;

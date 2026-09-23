@@ -11,7 +11,10 @@
     "continue": "Продолжить",
     "loading": "Загрузка...",
     "createTemplate": "Создать шаблон",
-    "templates": "Шаблоны"
+    "templates": "Шаблоны",
+    "noPresentationId": "Не указан идентификатор презентации",
+    "pleaseTryAgain": "Попробуйте ещё раз",
+    "goHome": "На главную"
   },
   "upload": {
     "prompt": {
@@ -63,7 +66,8 @@
     "languagePicker": {
       "placeholder": "Выберите язык",
       "search": "Поиск языка...",
-      "empty": "Язык не найден."
+      "empty": "Язык не найден.",
+      "auto": "Авто (английский)"
     },
     "loading": {
       "processingDocs": "Обрабатываем документы...",
@@ -100,7 +104,9 @@
       "verbosityPlaceholder": "Выберите детализацию",
       "includeToc": "Добавить оглавление",
       "titleSlide": "Титульный слайд"
-    }
+    },
+    "heroTitle": "Создайте",
+    "heroSubtitle": "Превращайте промпты и документы в презентации с помощью ИИ"
   },
   "outline": {
     "goToDashboard": "Перейти в кабинет",
@@ -156,7 +162,12 @@
     "streamFailTitle": "Ошибка стриминга плана",
     "connFailTitle": "Ошибка подключения",
     "connBody": "Не удалось подключиться к серверу. Попробуйте ещё раз.",
-    "newSlideTitle": "Заголовок слайда"
+    "newSlideTitle": "Заголовок слайда",
+    "status": {
+      "preparing": "Готовим план презентации",
+      "reconnecting": "Переподключаемся к потоку плана",
+      "ready": "План готов"
+    }
   },
   "editor": {
     "theme": "Тема",
@@ -355,7 +366,21 @@
       "aiEdit": "ИИ-правка",
       "renderError": "Ошибка отрисовки слайда",
       "renderErrorLabel": "{label}: ошибка отрисовки"
-    }
+    },
+    "stream": {
+      "failedTitle": "Ошибка генерации презентации",
+      "parseFailed": "Не удалось разобрать ответ потока.",
+      "imagesFailedTitle": "Не все изображения удалось сгенерировать",
+      "completedLoadFailed": "Не удалось загрузить готовую презентацию.",
+      "chatgptExpired": "Сессия ChatGPT истекла. Войдите снова в настройках.",
+      "connectFailed": "Не удалось подключиться к серверу. Попробуйте ещё раз.",
+      "savedOfTotal": "Сохранено слайдов: {done} из {total}, они будут использованы повторно.",
+      "savedCount": "Сохранено слайдов: {done}, они будут использованы повторно."
+    },
+    "unsupportedTitle": "Презентация не поддерживается",
+    "unsupportedBody": "Эта презентация создана в старой версии Presenton. Чтобы открыть её, используйте совместимую версию.",
+    "loadFailedTitle": "Не удалось загрузить презентацию",
+    "loadFailedBody": "Презентацию не удалось загрузить. Попробуйте ещё раз."
   },
   "chat": {
     "assistant": "Ассистент",
@@ -605,7 +630,9 @@
       },
       "blockN": "Блок {n}",
       "block": "Блок"
-    }
+    },
+    "uploadNoUrl": "Загрузка изображения не вернула адрес.",
+    "uploadNoPath": "Загрузка документа не вернула путь к файлу."
   },
   "insert": {
     "ai": "AI",
@@ -695,7 +722,9 @@
       "image": "Изображение",
       "image-text": "Изображение + текст",
       "image-grid": "Сетка изображений"
-    }
+    },
+    "componentUnavailableTitle": "Компонент недоступен",
+    "componentUnavailableBody": "Этот компонент шаблона пока нельзя вставить."
   },
   "dash": {
     "back": "НАЗАД",
@@ -780,7 +809,8 @@
       "cancel": "Отмена",
       "deleting": "Удаляем...",
       "delete": "Удалить"
-    }
+    },
+    "themes": "Темы"
   },
   "settings": {
     "filterBy": "ФИЛЬТР:",
@@ -912,7 +942,18 @@
     "codexSelectAModel": "Выберите модель",
     "codexSearchModels": "Поиск моделей…",
     "codexNoModel": "Модель не найдена.",
-    "codexSignInWith": "Войти через ChatGPT"
+    "codexSignInWith": "Войти через ChatGPT",
+    "chatgptReauthTitle": "Нужно войти в ChatGPT",
+    "chatgptReauthBody": "Сессия ChatGPT истекла. Войдите снова в настройках.",
+    "codexVerifying": "Проверяем подключение к ChatGPT…",
+    "codexCompleteInTab": "Завершите вход во вкладке браузера, которую мы открыли.",
+    "codexLogoAlt": "Логотип OpenAI",
+    "codexNoKeyNeeded": "Используйте аккаунт ChatGPT — API-ключ не нужен",
+    "customLlmBrand": "своей LLM",
+    "egValue": "например, {value}",
+    "advancedHeading": "Дополнительно",
+    "advancedDesc": "Настройка дополнительных возможностей ИИ.",
+    "enableWebGrounding": "Включить веб-обоснование (Web Grounding)"
   },
   "templates": {
     "title": "Шаблоны",
@@ -943,7 +984,10 @@
     "tabCustom": "Мои",
     "tabBuiltIn": "Встроенные",
     "loading": "Загрузка шаблонов...",
-    "noneAvailable": "Шаблонов нет."
+    "noneAvailable": "Шаблонов нет.",
+    "serviceUnreachable": "Сервис шаблонов недоступен. Попробуйте ещё раз.",
+    "loadErrorTitle": "Не удалось загрузить шаблоны",
+    "loadOneFailed": "Не удалось загрузить шаблон"
   },
   "docsPreview": {
     "readErrorTitle": "Не удалось прочитать документ",
@@ -1174,7 +1218,54 @@
     "saveAsTemplate": "Сохранить как шаблон",
     "generatingTemplate": "Генерируем шаблон",
     "createModalSubtitle": "Назовите шаблон до начала генерации.",
-    "create": "Создать"
+    "create": "Создать",
+    "gen": {
+      "checkFontsFailed": "Не удалось проверить шрифты презентации",
+      "fontCheckFailed": "Ошибка проверки шрифтов",
+      "fontAlreadyAddedTitle": "Шрифт уже добавлен",
+      "fontAlreadyAddedBody": "Шрифт «{name}» уже есть в списке загрузки.",
+      "invalidFontTitle": "Неподходящий файл шрифта",
+      "invalidFontBody": "Загрузите файлы .ttf, .otf, .woff, .woff2 или .eot.",
+      "fileTooLargeTitle": "Файл слишком большой",
+      "fontTooLargeBody": "Размер файла шрифта должен быть меньше 10 МБ.",
+      "fontAddedTitle": "Шрифт добавлен",
+      "fontAddedBody": "Шрифт «{name}» добавлен.",
+      "fontRemovedTitle": "Шрифт удалён",
+      "fontRemovedBody": "Шрифт удалён из списка загрузки.",
+      "uploadFontsFailed": "Не удалось загрузить шрифты и превью слайдов",
+      "documentPreparedTitle": "Документ подготовлен",
+      "documentPreparedBody": "Начинаем генерацию шаблона.",
+      "documentPrepFailed": "Не удалось подготовить документ",
+      "saveLayoutsFailed": "Не удалось сохранить сгенерированные макеты шаблона",
+      "layoutForSlideFailed": "Не удалось сгенерировать макет шаблона для слайда {n}",
+      "noLayoutReturned": "Для этого слайда не вернулся сгенерированный макет.",
+      "layoutGenFailed": "Не удалось сгенерировать макет шаблона",
+      "blocksFailed": "Не удалось сгенерировать блоки шаблона",
+      "initFailed": "Не удалось инициализировать шаблон",
+      "initNoId": "Инициализация шаблона не вернула его идентификатор",
+      "someSlidesFailedTitle": "Некоторые слайды не удалось сгенерировать",
+      "someSlidesFailedBody": "Сгенерировано слайдов: {done} из {total}.",
+      "generatedTitle": "Шаблон создан",
+      "generatedNoBlocks": "Слайды сохранены, но блоки шаблона не сгенерированы. {error}",
+      "generatedBody": "Шаблон сгенерирован и сохранён.",
+      "templateGenFailed": "Не удалось сгенерировать шаблон",
+      "generationFailedTitle": "Ошибка генерации",
+      "noPreviewTitle": "Нет данных для превью",
+      "noPreviewBody": "Сначала подготовьте документ.",
+      "templateUnavailableTitle": "Шаблон недоступен",
+      "templateUnavailableBody": "Инициализируйте шаблон и попробуйте ещё раз.",
+      "slideRegeneratedTitle": "Слайд пересоздан",
+      "slideRegeneratedBody": "Слайд {n} успешно пересоздан.",
+      "slideFailedTitle": "Слайд {n}: ошибка",
+      "invalidFileTitle": "Неподходящий файл",
+      "invalidPptxBody": "Выберите корректный файл PPTX.",
+      "pptxTooLargeBody": "Размер файла должен быть меньше 100 МБ.",
+      "modelWarningTitle": "Предупреждение о модели шаблона",
+      "modelWarningBody": "Templates V2 лучше всего работает с моделями, которые понимают изображения. Для надёжной генерации шаблонов используйте свежую vision-модель OpenAI или Claude Opus/Sonnet.",
+      "dontShowAgain": "Больше не показывать",
+      "unknownFont": "Неизвестный шрифт",
+      "untitledTemplate": "Шаблон без названия"
+    }
   },
   "community": {
     "title": "Сообщество",
@@ -1201,8 +1292,8 @@
     "useDesign": "Взять дизайн",
     "usePrompt": "Взять промпт",
     "byAuthor": "автор: {author}",
-    "viewsAria": "{count} просмотров",
-    "likesAria": "{count} лайков",
+    "viewsAria": "{count, plural, one {# просмотр} few {# просмотра} many {# просмотров} other {# просмотра}}",
+    "likesAria": "{count, plural, one {# лайк} few {# лайка} many {# лайков} other {# лайка}}",
     "couldNotLoadPreview": "Не удалось загрузить полный предпросмотр",
     "promptUnavailableTitle": "Промпт недоступен",
     "promptUnavailableBody": "В этой презентации сообщества нет общего промпта.",
@@ -1228,7 +1319,47 @@
     "noPromptShared": "К этой презентации не приложен промпт.",
     "creator": "Автор",
     "closePreview": "Закрыть превью",
-    "slideTitle": "«{title}», слайд {n}"
+    "slideTitle": "«{title}», слайд {n}",
+    "pickerTitle": "Сообщество",
+    "pickerSub": "Выберите необязательный эталон дизайна для умного режима.",
+    "searchDesigns": "Поиск дизайнов",
+    "loadDesignsError": "Не удалось загрузить дизайны сообщества. Попробуйте ещё раз.",
+    "clearSelection": "Снять выбор",
+    "couldNotLoadDesigns": "Не удалось загрузить дизайны сообщества",
+    "noMatchingDesigns": "Подходящих дизайнов нет",
+    "useDesignAria": "Взять «{title}»",
+    "designFallback": "дизайн сообщества",
+    "untitled": "Презентация без названия",
+    "selected": "Выбрано",
+    "sort": {
+      "default": "По умолчанию",
+      "newest": "Сначала новые",
+      "oldest": "Сначала старые",
+      "mostViewed": "Больше просмотров",
+      "leastViewed": "Меньше просмотров",
+      "mostLiked": "Больше лайков",
+      "leastLiked": "Меньше лайков",
+      "featuredFirst": "Сначала избранные",
+      "featuredLast": "Избранные в конце"
+    },
+    "sortAria": "Сортировка презентаций сообщества",
+    "filters": "Фильтры",
+    "filtersTitle": "Фильтры сообщества",
+    "filtersSub": "Отбор презентаций по дате и активности.",
+    "closeFilters": "Закрыть фильтры",
+    "createdAfter": "Созданы после",
+    "createdBefore": "Созданы до",
+    "views": "Просмотры",
+    "likes": "Лайки",
+    "clearFilters": "Сбросить фильтры",
+    "apply": "Применить",
+    "cmp": {
+      "any": "Любое",
+      "exact": "Ровно",
+      "gt": "Больше",
+      "lt": "Меньше"
+    },
+    "countPh": "Кол-во"
   },
   "admin": {
     "requestFailed": "Запрос не выполнен ({status})",
@@ -1309,7 +1440,12 @@
   },
   "pdf": {
     "loadFailedTitle": "Не удалось загрузить презентацию",
-    "loadFailedBody": "Не удалось загрузить презентацию. Попробуйте ещё раз."
+    "loadFailedBody": "Не удалось загрузить презентацию. Попробуйте ещё раз.",
+    "oops": "Ой!",
+    "loadIssue": "Не удалось загрузить вашу презентацию.",
+    "checkConnection": "Проверьте подключение к интернету или попробуйте позже.",
+    "retry": "Повторить",
+    "notFound": "Презентация не найдена"
   },
   "onb": {
     "logoAlt": "Логотип Presenton",
@@ -1536,7 +1672,8 @@
     "unverifiedSuffix": " (не проверено)",
     "moveUp": "Переместить провайдера вверх",
     "moveDown": "Переместить провайдера вниз",
-    "removeProvider": "Удалить провайдера"
+    "removeProvider": "Удалить провайдера",
+    "egValue": "например, {value}"
   },
   "providers": {
     "llmDesc": {
@@ -1606,7 +1743,9 @@
     "searchForImage": "Искать изображение в {provider}.",
     "searchAria": "Искать в {provider}",
     "generateWithAria": "Сгенерировать через {provider}",
-    "generateVariationsAria": "Сгенерировать вариаций изображения ({count}) через {provider}"
+    "generateVariationsAria": "Сгенерировать вариаций изображения ({count}) через {provider}",
+    "customName": "Своя LLM",
+    "customImageName": "Свой (OpenAI-совместимый)"
   },
   "imgPicker": {
     "title": "Заменить изображение",
@@ -1964,7 +2103,18 @@
       "width": "Толщина",
       "radius": "Скругление",
       "blur": "Размытие",
-      "alignment": "Выравнивание"
+      "alignment": "Выравнивание",
+      "point": {
+        "top-left": "Сверху слева",
+        "top-center": "Сверху по центру",
+        "top-right": "Сверху справа",
+        "middle-left": "По центру слева",
+        "middle-center": "По центру",
+        "middle-right": "По центру справа",
+        "bottom-left": "Снизу слева",
+        "bottom-center": "Снизу по центру",
+        "bottom-right": "Снизу справа"
+      }
     },
     "image": {
       "invalidFileTitle": "Некорректный файл",
@@ -2007,7 +2157,8 @@
       "uploadNoUrl": "Загрузка не вернула URL изображения.",
       "uploadedTitle": "Изображение загружено",
       "couldNotUpload": "Не удалось загрузить изображение.",
-      "uploading": "Загружаем изображение..."
+      "uploading": "Загружаем изображение...",
+      "loadingLayout": "Загружаем макет слайда..."
     },
     "shape": {
       "fillTitle": "Заливка фигуры",
@@ -2283,5 +2434,153 @@
     "ollamaBody": "Проверьте URL Ollama и попробуйте ещё раз.",
     "instanceNotConfiguredTitle": "Экземпляр не настроен",
     "instanceNotConfiguredBody": "Попросите администратора настроить ИИ-провайдеров в настройках."
+  },
+  "meta": {
+    "appTitle": "Presenton — генератор презентаций с ИИ",
+    "appDescription": "Генератор презентаций с ИИ и открытым исходным кодом: свои макеты, разные модели (OpenAI, Gemini, Ollama) и экспорт в PDF/PPTX.",
+    "logoAlt": "Логотип Presenton",
+    "uploadTitle": "Presenton | Генератор презентаций с ИИ",
+    "uploadOgTitle": "Создание презентации | Presenton",
+    "outlineTitle": "План презентации",
+    "outlineDescription": "Настройте и упорядочьте план презентации: перетаскивайте слайды, добавляйте графики и создавайте презентацию без лишних усилий.",
+    "communityTitle": "Сообщество | Presenton",
+    "communityDescription": "Дизайны и промпты презентаций от сообщества.",
+    "adminTitle": "Администрирование | Presenton",
+    "settingsTitle": "Настройки | Presenton",
+    "settingsDescription": "Страница настроек",
+    "notFoundTitle": "Страница не найдена | Presenton"
+  },
+  "notFound": {
+    "imageAlt": "Страница не найдена",
+    "heading": "Ой! Страница не найдена",
+    "body": "Похоже, такой страницы не существует. Но не переживайте: любая отличная презентация начинается с чистого слайда!",
+    "home": "На главную",
+    "start": "В начало"
+  },
+  "apiErr": {
+    "backendConnection": "Убедитесь, что бэкенд FastAPI запущен и фронтенд может к нему подключиться.",
+    "blankNoId": "Сервер не вернул идентификатор пустой презентации",
+    "chatDeleteFailed": "Не удалось удалить чат",
+    "chatHistoryFailed": "Не удалось загрузить историю чата",
+    "chatListFailed": "Не удалось загрузить список чатов",
+    "chatNoBody": "Чат не вернул ответ",
+    "chatSendFailed": "Не удалось отправить сообщение",
+    "chatSendStreamFailed": "Не удалось отправить сообщение в чат",
+    "chatStreamEnded": "Поток чата прервался до завершения",
+    "chatStreamFailed": "Ошибка потока чата",
+    "clipboardUnavailable": "Буфер обмена недоступен в этом браузере.",
+    "cloneLayoutFailed": "Не удалось скопировать макет",
+    "cloneTemplateFailed": "Не удалось скопировать шаблон",
+    "communityListFailed": "Не удалось загрузить презентации сообщества",
+    "communityOneFailed": "Не удалось загрузить презентацию сообщества",
+    "communityUnreachable": "Не удалось связаться с сервером Presenton при загрузке сообщества. Проверьте подключение и попробуйте ещё раз.",
+    "createBlankFailed": "Не удалось создать пустую презентацию",
+    "createLayoutForSlideFailed": "Не удалось создать макет для слайда {n}",
+    "createPresentationFailed": "Не удалось создать презентацию",
+    "createTemplateFailed": "Не удалось создать шаблон",
+    "createThemeFailed": "Не удалось создать тему",
+    "decomposeDocumentsFailed": "Не удалось обработать документы",
+    "deleteCustomTemplateFailed": "Не удалось удалить свой шаблон",
+    "deleteImageFailed": "Не удалось удалить изображение",
+    "deletePresentationFailed": "Не удалось удалить презентацию",
+    "deleteTemplateFailed": "Не удалось удалить шаблон",
+    "deleteThemeFailed": "Не удалось удалить тему",
+    "duplicatePresentationFailed": "Не удалось продублировать презентацию",
+    "fetchOutlinesFailed": "Не удалось загрузить план",
+    "fetchPresentationsFailed": "Не удалось загрузить презентации",
+    "generateImageFailed": "Не удалось сгенерировать изображение",
+    "generateLayoutFailed": "Не удалось сгенерировать макет шаблона",
+    "generateThemeFailed": "Не удалось сгенерировать тему",
+    "getCustomTemplateFailed": "Не удалось загрузить свой шаблон",
+    "getCustomTemplatesFailed": "Не удалось загрузить свои шаблоны",
+    "getFontsFailed": "Не удалось загрузить шрифты",
+    "getGeneratedImagesFailed": "Не удалось получить сгенерированные изображения",
+    "getPreviousImagesFailed": "Не удалось получить ранее сгенерированные изображения",
+    "getTemplateFailed": "Не удалось загрузить шаблон",
+    "getTemplateTasksFailed": "Не удалось получить последние задачи шаблонов",
+    "getTemplatesFailed": "Не удалось загрузить шаблоны",
+    "getThemesFailed": "Не удалось загрузить темы",
+    "getUploadedImagesFailed": "Не удалось получить загруженные изображения",
+    "invalidApiKey": "Неверный API-ключ. Проверьте ключ и попробуйте ещё раз.",
+    "noResponseStream": "Нет потока ответа",
+    "ollamaInvalidLibrary": "Некорректный список моделей библиотеки",
+    "ollamaInvalidList": "Ollama вернула некорректный список моделей",
+    "ollamaLibraryFailed": "Не удалось получить модели из библиотеки Ollama",
+    "ollamaListFailed": "Не удалось получить список моделей Ollama",
+    "preparePresentationFailed": "Не удалось подготовить презентацию",
+    "presentationNotFound": "Презентация не найдена",
+    "pullFailed": "Скачивание не удалось",
+    "pullModelFailed": "Не удалось скачать модель",
+    "readDocumentFailed": "Не удалось прочитать документ.",
+    "retryTemplateFailed": "Не удалось перезапустить генерацию шаблона",
+    "safetyBlocked": "Запрос заблокирован системой безопасности провайдера. Измените его и попробуйте ещё раз.",
+    "searchIconsFailed": "Не удалось выполнить поиск иконок",
+    "searchStockFailed": "Не удалось выполнить поиск по стокам",
+    "status400": "Некорректный запрос. Проверьте введённые данные и попробуйте ещё раз.",
+    "status401": "Нужна авторизация. Войдите и попробуйте ещё раз.",
+    "status403": "Доступ запрещён. У вас нет прав на это действие.",
+    "status404": "Ресурс не найден. Возможно, он был удалён или перемещён.",
+    "status409": "Конфликт. Ресурс уже существует или противоречит текущему состоянию.",
+    "status422": "Ошибка проверки данных. Проверьте введённые данные и попробуйте ещё раз.",
+    "status429": "Слишком много запросов. Подождите немного и попробуйте ещё раз.",
+    "status500": "Внутренняя ошибка сервера. Попробуйте позже.",
+    "status502": "Ошибка шлюза. Сервер временно недоступен.",
+    "status503": "Сервис недоступен. Попробуйте позже.",
+    "status504": "Превышено время ожидания шлюза. Запрос обрабатывался слишком долго.",
+    "templateThemeFailed": "Не удалось загрузить тему шаблона ({status})",
+    "untitledPresentation": "Презентация без названия",
+    "updateContentFailed": "Не удалось обновить содержимое презентации",
+    "updateLayoutsFailed": "Не удалось обновить макеты шаблона",
+    "updateOutlinesFailed": "Не удалось обновить план",
+    "updateSlideFailed": "Не удалось обновить слайд",
+    "updateTemplateFailed": "Не удалось обновить шаблон",
+    "updateThemeFailed": "Не удалось обновить тему",
+    "uploadDocumentsFailed": "Не удалось загрузить документы",
+    "uploadFontFailed": "Не удалось загрузить шрифт",
+    "uploadImageFailed": "Не удалось загрузить изображение"
+  },
+  "cfgErr": {
+    "anthropicModel": "Выберите или введите ID модели Anthropic.",
+    "apiKeyRequired": "Нужен API-ключ {provider}.",
+    "azureApiVersion": "Укажите версию API Azure OpenAI.",
+    "azureEndpoint": "Укажите адрес (endpoint) Azure.",
+    "azureModel": "Укажите имя модели Azure.",
+    "bedrockCredentials": "Укажите API-ключ Bedrock или AWS Access Key ID + Secret Key.",
+    "bedrockModel": "Укажите модель Bedrock.",
+    "cerebrasModel": "Выберите или введите ID модели Cerebras.",
+    "codexModel": "Выберите модель Codex.",
+    "codexSupported": "Выберите поддерживаемую модель Codex.",
+    "comfyUrl": "Укажите URL сервера ComfyUI.",
+    "customModel": "Введите ID или псевдоним модели для своего endpoint.",
+    "customUrl": "Введите URL своей LLM (совместимый с OpenAI).",
+    "dalleKey": "Для DALL·E 3 нужен API-ключ OpenAI.",
+    "deepseekModel": "Выберите или введите ID модели DeepSeek.",
+    "fireworksModel": "Выберите или введите ID модели Fireworks.",
+    "geminiFlashKey": "Для генерации изображений Gemini Flash нужен API-ключ Google.",
+    "googleModel": "Выберите или введите ID модели Google.",
+    "gptImageKey": "Для GPT Image 1.5 нужен API-ключ OpenAI.",
+    "litellmModel": "Выберите или введите ID или псевдоним модели LiteLLM.",
+    "litellmUrl": "Укажите базовый URL LiteLLM.",
+    "lmstudioModel": "Выберите или введите ID модели LM Studio.",
+    "maxTokensInvalid": "Максимум выходных токенов должен быть целым числом больше нуля.",
+    "nanoBananaKey": "Для NanoBanana Pro нужен API-ключ Google.",
+    "ollamaModel": "Выберите модель Ollama. Если список пуст, убедитесь, что Ollama запущена и доступна.",
+    "ollamaUrl": "Укажите URL Ollama: введите адрес сервера Ollama или нажмите «Проверить модели», чтобы подставить доступный адрес по умолчанию.",
+    "openWebuiUrl": "Укажите URL Open WebUI.",
+    "openaiCompatImage": "Для OpenAI-совместимого API изображений нужны базовый URL, API-ключ и модель.",
+    "openaiModel": "Выберите или введите ID чат-модели OpenAI на вкладке «Текстовый провайдер».",
+    "openrouterModel": "Выберите или введите ID модели OpenRouter.",
+    "saveFailed": "Не удалось сохранить конфигурацию ({status})",
+    "searxngUrl": "Укажите базовый URL SearXNG.",
+    "selectImageProvider": "Выберите провайдера изображений или отключите генерацию изображений.",
+    "selectTextProvider": "Выберите текстового провайдера.",
+    "selectWebProvider": "Выберите провайдера веб-поиска или отключите веб-поиск.",
+    "togetherModel": "Выберите или введите ID модели Together.",
+    "unknownTextProvider": "Неподдерживаемый или неизвестный текстовый провайдер.",
+    "validImageProvider": "Выберите корректного провайдера изображений.",
+    "validWebProvider": "Выберите корректного провайдера веб-поиска.",
+    "vertexKeyOrProject": "Для Vertex AI нужен API-ключ Vertex или проект GCP.",
+    "vertexModeConflict": "Используйте либо режим API-ключа Vertex, либо режим проекта/региона — не оба сразу.",
+    "vertexModel": "Укажите модель Vertex."
   }
 }

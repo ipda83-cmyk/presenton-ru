@@ -20,7 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { LLMConfig } from "@/types/llm_config";
 import { getApiErrorMessage, getApiUrl } from "@/utils/api";
-import { LLM_PROVIDERS, providerKey } from "@/utils/providerConstants";
+import { LLM_PROVIDERS, providerKey, providerDisplayLabel } from "@/utils/providerConstants";
 import { getDefaultOllamaUrl } from "@/utils/providerUtils";
 import {
   Check,
@@ -164,7 +164,8 @@ const TextProvider = ({ onInputChange, llmConfig }: OpenAIConfigProps) => {
   const currentFireworksUrl = (llmConfig.FIREWORKS_BASE_URL || "").trim();
   const currentTogetherUrl = (llmConfig.TOGETHER_BASE_URL || "").trim();
   const currentOllamaUrl = llmConfig.OLLAMA_URL || "";
-  const modelLabel = selectedProviderMeta?.label || selectedProvider;
+  const modelLabel =
+    providerDisplayLabel(selectedProviderMeta, tp("customName")) || selectedProvider;
   const modelOptions = useMemo(() => {
     if (!currentModel) return availableModels;
 
@@ -178,7 +179,7 @@ const TextProvider = ({ onInputChange, llmConfig }: OpenAIConfigProps) => {
   }, [availableModels, currentModel]);
   const providerApiKeyBrand =
     selectedProvider === "custom"
-      ? "Custom LLM"
+      ? t("customLlmBrand")
       : selectedProvider === "deepseek"
       ? "DeepSeek"
       : selectedProvider === "vertex"
@@ -516,7 +517,7 @@ const TextProvider = ({ onInputChange, llmConfig }: OpenAIConfigProps) => {
                         ) : null}
                         <span className="text-sm font-medium text-gray-900">
                           {llmConfig.LLM
-                            ? LLM_PROVIDERS[llmConfig.LLM]?.label ||
+                            ? providerDisplayLabel(LLM_PROVIDERS[llmConfig.LLM], tp("customName")) ||
                               llmConfig.LLM
                             : t("selectTextProviderPlaceholder")}
                         </span>
@@ -567,7 +568,7 @@ const TextProvider = ({ onInputChange, llmConfig }: OpenAIConfigProps) => {
                                   <div className="flex flex-col space-y-1 flex-1">
                                     <div className="flex items-center justify-between gap-2">
                                       <span className="text-sm font-medium text-gray-900 capitalize">
-                                        {provider.label}
+                                        {providerDisplayLabel(provider, tp("customName"))}
                                       </span>
                                     </div>
                                     <span className="text-xs text-gray-600 leading-relaxed">
@@ -643,7 +644,7 @@ const TextProvider = ({ onInputChange, llmConfig }: OpenAIConfigProps) => {
                   />
                 ) : (
                   <>
-                    <label className="block text-sm font-medium capitalize text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       {providerApiKeyLabel}
                     </label>
                     <div className="grid">
@@ -737,7 +738,7 @@ const TextProvider = ({ onInputChange, llmConfig }: OpenAIConfigProps) => {
                         onInputChange(e.target.value, "LITELLM_BASE_URL")
                       }
                       className="w-full px-2 py-3 outline-none border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
-                      placeholder="e.g. http://host.docker.internal:4000/v1"
+                      placeholder={t("egValue", { value: "http://host.docker.internal:4000/v1" })}
                     />
                     <p className="mt-1.5 text-xs text-gray-500">
                       {t("litellmBaseUrlHint")}
@@ -889,9 +890,9 @@ const TextProvider = ({ onInputChange, llmConfig }: OpenAIConfigProps) => {
       {/* <div className="bg-white flex justify-between items-center p-10 rounded-[12px]">
                 <div className=' max-w-[290px]'>
 
-                    <h4 className="text-xl font-normal text-[#191919]">Advanced</h4>
+                    <h4 className="text-xl font-normal text-[#191919]">{t("advancedHeading")}</h4>
                     <p className="mt-2.5 text-sm  text-gray-500">
-                        Configure advanced AI features.
+                        {t("advancedDesc")}
                     </p>
                 </div>
                 <div className="flex items-center gap-4">
@@ -902,7 +903,7 @@ const TextProvider = ({ onInputChange, llmConfig }: OpenAIConfigProps) => {
                                 onCheckedChange={(checked) => onInputChange(checked, "WEB_GROUNDING")}
                             />
                             <label className="text-sm font-medium text-gray-700">
-                                Enable Web Grounding
+                                {t("enableWebGrounding")}
                             </label>
                         </div>
                     </div>

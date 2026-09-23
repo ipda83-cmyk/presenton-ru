@@ -6,6 +6,7 @@ import {
   normalizeChatGptAuthMessage,
   requestChatGptReauth,
 } from "@/utils/chatgptAuth";
+import { tr } from "@/utils/clientI18n";
 
 export interface ChatAttachment {
   type: "document";
@@ -118,13 +119,13 @@ async function streamChatMessage(
   if (!response.ok) {
     await ApiResponseHandler.handleResponse(
       response,
-      "Failed to stream chat message"
+      tr("apiErr.chatSendStreamFailed", "Failed to stream chat message")
     );
-    throw new Error("Failed to stream chat message");
+    throw new Error(tr("apiErr.chatSendStreamFailed", "Failed to stream chat message"));
   }
 
   if (!response.body) {
-    throw new Error("No response body received from chat stream");
+    throw new Error(tr("apiErr.chatNoBody", "No response body received from chat stream"));
   }
 
   const reader = response.body.getReader();
@@ -204,7 +205,7 @@ async function streamChatMessage(
       const message =
         typeof detail === "string" && detail.trim().length > 0
           ? detail
-          : "Chat stream failed";
+          : tr("apiErr.chatStreamFailed", "Chat stream failed");
       if (isChatGptAuthRequiredMessage(message)) {
         const authMessage = normalizeChatGptAuthMessage(message);
         requestChatGptReauth({
@@ -315,7 +316,7 @@ async function streamChatMessage(
     return finalResponse;
   }
 
-  throw new Error("Chat stream ended before completion");
+  throw new Error(tr("apiErr.chatStreamEnded", "Chat stream ended before completion"));
 }
 
 export class PresentationChatApi {
@@ -334,7 +335,7 @@ export class PresentationChatApi {
     });
     return await ApiResponseHandler.handleResponse(
       response,
-      "Failed to list chat conversations"
+      tr("apiErr.chatListFailed", "Failed to list chat conversations")
     );
   }
 
@@ -353,7 +354,7 @@ export class PresentationChatApi {
     });
     return await ApiResponseHandler.handleResponse(
       response,
-      "Failed to load chat history"
+      tr("apiErr.chatHistoryFailed", "Failed to load chat history")
     );
   }
 
@@ -375,7 +376,7 @@ export class PresentationChatApi {
     });
     await ApiResponseHandler.handleResponse(
       response,
-      "Failed to delete chat conversation"
+      tr("apiErr.chatDeleteFailed", "Failed to delete chat conversation")
     );
   }
 
@@ -391,7 +392,7 @@ export class PresentationChatApi {
 
     return await ApiResponseHandler.handleResponse(
       response,
-      "Failed to send chat message"
+      tr("apiErr.chatSendFailed", "Failed to send chat message")
     );
   }
 

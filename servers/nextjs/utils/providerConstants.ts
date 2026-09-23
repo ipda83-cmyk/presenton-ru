@@ -342,3 +342,15 @@ export const GPT_IMAGE_1_5_QUALITY_OPTIONS = [
     description: "Best quality with longer generation time",
   },
 ];
+
+// "Custom" is the only provider label that is a plain word rather than a brand
+// name, so display sites pass in the localized word for it.
+export function providerDisplayLabel(
+  provider: { value?: string; label?: string } | null | undefined,
+  customLabel: string
+): string | undefined {
+  if (!provider) return undefined;
+  return provider.value === "custom" || provider.value === "openai_compatible"
+    ? customLabel
+    : provider.label;
+}

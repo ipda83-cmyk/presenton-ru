@@ -1582,7 +1582,7 @@ const Chat = ({
           ];
         });
         if (nextImages.length === 0) {
-          throw new Error("Image upload did not return a URL.");
+          throw new Error(t("uploadNoUrl"));
         }
         setPastedImages((previous) => [...previous, ...nextImages]);
       }
@@ -1604,7 +1604,7 @@ const Chat = ({
           ];
         });
         if (documents.length === 0) {
-          throw new Error("Document upload did not return a file path.");
+          throw new Error(t("uploadNoPath"));
         }
         setAttachedDocuments((previous) => [...previous, ...documents]);
       }
@@ -2193,7 +2193,7 @@ const Chat = ({
         }))
         .filter((image) => image.url);
       if (nextImages.length === 0) {
-        throw new Error("Image upload did not return a URL.");
+        throw new Error(t("uploadNoUrl"));
       }
       setPastedImages((previous) => [...previous, ...nextImages]);
       trackEvent(MixpanelEvent.AI_Assistant_Attachment_Added, {

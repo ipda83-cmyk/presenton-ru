@@ -11,7 +11,10 @@
     "continue": "Continue",
     "loading": "Loading...",
     "createTemplate": "Create Template",
-    "templates": "Templates"
+    "templates": "Templates",
+    "noPresentationId": "No presentation id found",
+    "pleaseTryAgain": "Please try again",
+    "goHome": "Go to home"
   },
   "upload": {
     "prompt": {
@@ -63,7 +66,8 @@
     "languagePicker": {
       "placeholder": "Select language",
       "search": "Search language...",
-      "empty": "No language found."
+      "empty": "No language found.",
+      "auto": "Auto (English)"
     },
     "loading": {
       "processingDocs": "Processing documents...",
@@ -100,7 +104,9 @@
       "verbosityPlaceholder": "Select verbosity",
       "includeToc": "Include Table of Content",
       "titleSlide": "Title Slide"
-    }
+    },
+    "heroTitle": "Generate",
+    "heroSubtitle": "Turn prompts or documents into presentations with AI"
   },
   "outline": {
     "goToDashboard": "Go to dashboard",
@@ -156,7 +162,12 @@
     "streamFailTitle": "Outline streaming failed",
     "connFailTitle": "Connection failed",
     "connBody": "Failed to connect to the server. Please try again.",
-    "newSlideTitle": "Outline title"
+    "newSlideTitle": "Outline title",
+    "status": {
+      "preparing": "Preparing your presentation outline",
+      "reconnecting": "Reconnecting to outline stream",
+      "ready": "Outline ready"
+    }
   },
   "editor": {
     "theme": "Theme",
@@ -355,7 +366,21 @@
       "aiEdit": "AI edit",
       "renderError": "Slide render error",
       "renderErrorLabel": "{label} render error"
-    }
+    },
+    "stream": {
+      "failedTitle": "Presentation streaming failed",
+      "parseFailed": "Failed to parse stream response.",
+      "imagesFailedTitle": "Some images could not be generated",
+      "completedLoadFailed": "Failed to load the completed presentation.",
+      "chatgptExpired": "Your ChatGPT session expired. Please sign in again from Settings.",
+      "connectFailed": "Failed to connect to the server. Please try again.",
+      "savedOfTotal": "{done} of {total} slides were saved and will be reused.",
+      "savedCount": "{done} slides were saved and will be reused."
+    },
+    "unsupportedTitle": "Unsupported presentation",
+    "unsupportedBody": "This deck was created in an older Presenton version. Downgrade to a compatible version to open it.",
+    "loadFailedTitle": "Failed to load presentation",
+    "loadFailedBody": "The presentation could not be loaded. Please try again."
   },
   "chat": {
     "assistant": "Assistant",
@@ -605,7 +630,9 @@
       },
       "blockN": "Block {n}",
       "block": "Block"
-    }
+    },
+    "uploadNoUrl": "Image upload did not return a URL.",
+    "uploadNoPath": "Document upload did not return a file path."
   },
   "insert": {
     "ai": "AI",
@@ -695,7 +722,9 @@
       "image": "Image",
       "image-text": "Image + Text",
       "image-grid": "Image Grid"
-    }
+    },
+    "componentUnavailableTitle": "Component unavailable",
+    "componentUnavailableBody": "This template component cannot be inserted yet."
   },
   "dash": {
     "back": "BACK",
@@ -780,7 +809,8 @@
       "cancel": "Cancel",
       "deleting": "Deleting...",
       "delete": "Delete"
-    }
+    },
+    "themes": "Themes"
   },
   "settings": {
     "filterBy": "FILTER BY:",
@@ -912,7 +942,18 @@
     "codexSelectAModel": "Select a model",
     "codexSearchModels": "Search models…",
     "codexNoModel": "No model found.",
-    "codexSignInWith": "Sign in with ChatGPT"
+    "codexSignInWith": "Sign in with ChatGPT",
+    "chatgptReauthTitle": "ChatGPT sign-in required",
+    "chatgptReauthBody": "Your ChatGPT session expired. Please sign in again from Settings.",
+    "codexVerifying": "Verifying your ChatGPT connection…",
+    "codexCompleteInTab": "Complete sign-in in the browser tab we opened.",
+    "codexLogoAlt": "openai Logo",
+    "codexNoKeyNeeded": "Use your ChatGPT account — no API key required",
+    "customLlmBrand": "Custom LLM",
+    "egValue": "e.g. {value}",
+    "advancedHeading": "Advanced",
+    "advancedDesc": "Configure advanced AI features.",
+    "enableWebGrounding": "Enable Web Grounding"
   },
   "templates": {
     "title": "Templates",
@@ -943,7 +984,10 @@
     "tabCustom": "Custom",
     "tabBuiltIn": "Built-in",
     "loading": "Loading templates...",
-    "noneAvailable": "No templates available."
+    "noneAvailable": "No templates available.",
+    "serviceUnreachable": "The template service could not be reached. Please try again.",
+    "loadErrorTitle": "Could not load templates",
+    "loadOneFailed": "Failed to load template"
   },
   "docsPreview": {
     "readErrorTitle": "Could not read document",
@@ -1174,7 +1218,54 @@
     "saveAsTemplate": "Save as Template",
     "generatingTemplate": "Generating Template",
     "createModalSubtitle": "Name this template before generation starts.",
-    "create": "Create"
+    "create": "Create",
+    "gen": {
+      "checkFontsFailed": "Failed to check fonts in the presentation",
+      "fontCheckFailed": "Font check failed",
+      "fontAlreadyAddedTitle": "Font already added",
+      "fontAlreadyAddedBody": "Font \"{name}\" is already in your upload list.",
+      "invalidFontTitle": "Invalid font file",
+      "invalidFontBody": "Please upload .ttf, .otf, .woff, .woff2, or .eot files.",
+      "fileTooLargeTitle": "File too large",
+      "fontTooLargeBody": "Font file size must be less than 10MB.",
+      "fontAddedTitle": "Font added",
+      "fontAddedBody": "Font \"{name}\" was added successfully.",
+      "fontRemovedTitle": "Font removed",
+      "fontRemovedBody": "The font was removed from your upload list.",
+      "uploadFontsFailed": "Failed to upload fonts and preview slides",
+      "documentPreparedTitle": "Document prepared",
+      "documentPreparedBody": "Template generation is starting now.",
+      "documentPrepFailed": "Document preparation failed",
+      "saveLayoutsFailed": "Failed to save generated template layouts",
+      "layoutForSlideFailed": "Failed to generate template layout for slide {n}",
+      "noLayoutReturned": "No generated layout was returned for this slide.",
+      "layoutGenFailed": "Template layout generation failed",
+      "blocksFailed": "Failed to generate template blocks",
+      "initFailed": "Failed to initialize template",
+      "initNoId": "Template initialization did not return a template id",
+      "someSlidesFailedTitle": "Some slides could not be generated",
+      "someSlidesFailedBody": "{done} of {total} slides were generated.",
+      "generatedTitle": "Template generated",
+      "generatedNoBlocks": "Slides were saved, but template blocks were not generated. {error}",
+      "generatedBody": "The template was generated and saved successfully.",
+      "templateGenFailed": "Template generation failed",
+      "generationFailedTitle": "Generation failed",
+      "noPreviewTitle": "No preview data",
+      "noPreviewBody": "Prepare the document before continuing.",
+      "templateUnavailableTitle": "Template unavailable",
+      "templateUnavailableBody": "Initialize the template before trying again.",
+      "slideRegeneratedTitle": "Slide regenerated",
+      "slideRegeneratedBody": "Slide {n} was regenerated successfully.",
+      "slideFailedTitle": "Slide {n} failed",
+      "invalidFileTitle": "Invalid file",
+      "invalidPptxBody": "Please select a valid PPTX file.",
+      "pptxTooLargeBody": "File size must be less than 100MB.",
+      "modelWarningTitle": "Template model warning",
+      "modelWarningBody": "Template V2 works best with vision-capable models. Use a recent OpenAI vision model or Claude Opus/Sonnet for reliable template generation.",
+      "dontShowAgain": "Don't show again",
+      "unknownFont": "Unknown font",
+      "untitledTemplate": "Untitled Template"
+    }
   },
   "community": {
     "title": "Community",
@@ -1201,8 +1292,8 @@
     "useDesign": "Use design",
     "usePrompt": "Use prompt",
     "byAuthor": "by {author}",
-    "viewsAria": "{count} views",
-    "likesAria": "{count} likes",
+    "viewsAria": "{count, plural, one {# view} other {# views}}",
+    "likesAria": "{count, plural, one {# like} other {# likes}}",
     "couldNotLoadPreview": "Could not load the complete preview",
     "promptUnavailableTitle": "Prompt unavailable",
     "promptUnavailableBody": "This community presentation does not include a shared prompt.",
@@ -1228,7 +1319,47 @@
     "noPromptShared": "No prompt was shared with this presentation.",
     "creator": "Creator",
     "closePreview": "Close preview",
-    "slideTitle": "{title} slide {n}"
+    "slideTitle": "{title} slide {n}",
+    "pickerTitle": "Community",
+    "pickerSub": "Choose an optional design reference for Smart mode.",
+    "searchDesigns": "Search designs",
+    "loadDesignsError": "Could not load community designs. Please try again.",
+    "clearSelection": "Clear selection",
+    "couldNotLoadDesigns": "Could not load community designs",
+    "noMatchingDesigns": "No matching designs",
+    "useDesignAria": "Use {title}",
+    "designFallback": "community design",
+    "untitled": "Untitled presentation",
+    "selected": "Selected",
+    "sort": {
+      "default": "Default",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "mostViewed": "Most viewed",
+      "leastViewed": "Least viewed",
+      "mostLiked": "Most liked",
+      "leastLiked": "Least liked",
+      "featuredFirst": "Featured first",
+      "featuredLast": "Featured last"
+    },
+    "sortAria": "Sort community presentations",
+    "filters": "Filters",
+    "filtersTitle": "Community filters",
+    "filtersSub": "Narrow presentations by date and engagement.",
+    "closeFilters": "Close filters",
+    "createdAfter": "Created after",
+    "createdBefore": "Created before",
+    "views": "Views",
+    "likes": "Likes",
+    "clearFilters": "Clear filters",
+    "apply": "Apply",
+    "cmp": {
+      "any": "Any",
+      "exact": "Exactly",
+      "gt": "More than",
+      "lt": "Fewer than"
+    },
+    "countPh": "Count"
   },
   "admin": {
     "requestFailed": "Request failed ({status})",
@@ -1309,7 +1440,12 @@
   },
   "pdf": {
     "loadFailedTitle": "Failed to load presentation",
-    "loadFailedBody": "The presentation could not be loaded. Please try again."
+    "loadFailedBody": "The presentation could not be loaded. Please try again.",
+    "oops": "Oops!",
+    "loadIssue": "We encountered an issue loading your presentation.",
+    "checkConnection": "Please check your internet connection or try again later.",
+    "retry": "Retry",
+    "notFound": "Presentation not found"
   },
   "onb": {
     "logoAlt": "Presenton logo",
@@ -1536,7 +1672,8 @@
     "unverifiedSuffix": " (unverified)",
     "moveUp": "Move provider up",
     "moveDown": "Move provider down",
-    "removeProvider": "Remove provider"
+    "removeProvider": "Remove provider",
+    "egValue": "e.g. {value}"
   },
   "providers": {
     "llmDesc": {
@@ -1606,7 +1743,9 @@
     "searchForImage": "Search {provider} for an image.",
     "searchAria": "Search {provider}",
     "generateWithAria": "Generate with {provider}",
-    "generateVariationsAria": "Generate {count} image variations with {provider}"
+    "generateVariationsAria": "Generate {count} image variations with {provider}",
+    "customName": "Custom",
+    "customImageName": "Custom"
   },
   "imgPicker": {
     "title": "Change Image",
@@ -1964,7 +2103,18 @@
       "width": "Width",
       "radius": "Radius",
       "blur": "Blur",
-      "alignment": "Alignment"
+      "alignment": "Alignment",
+      "point": {
+        "top-left": "Left Top",
+        "top-center": "Center Top",
+        "top-right": "Right Top",
+        "middle-left": "Left Middle",
+        "middle-center": "Center Middle",
+        "middle-right": "Right Middle",
+        "bottom-left": "Left Bottom",
+        "bottom-center": "Center Bottom",
+        "bottom-right": "Right Bottom"
+      }
     },
     "image": {
       "invalidFileTitle": "Invalid file",
@@ -2007,7 +2157,8 @@
       "uploadNoUrl": "Upload did not return an image URL.",
       "uploadedTitle": "Image uploaded",
       "couldNotUpload": "Could not upload image.",
-      "uploading": "Uploading image..."
+      "uploading": "Uploading image...",
+      "loadingLayout": "Loading slide layout..."
     },
     "shape": {
       "fillTitle": "Shape fill",
@@ -2283,5 +2434,153 @@
     "ollamaBody": "Check the Ollama URL and try again.",
     "instanceNotConfiguredTitle": "Instance not configured",
     "instanceNotConfiguredBody": "Ask the administrator to configure the AI providers in Settings."
+  },
+  "meta": {
+    "appTitle": "Presenton - Open Source AI presentation generator",
+    "appDescription": "Open-source AI presentation generator with custom layouts, multi-model support (OpenAI, Gemini, Ollama), and PDF/PPTX export. A free Gamma alternative.",
+    "logoAlt": "Presenton Logo",
+    "uploadTitle": "Presenton | Open Source AI presentation generator",
+    "uploadOgTitle": "Create Data Presentation | PresentOn",
+    "outlineTitle": "Outline Presentation",
+    "outlineDescription": "Customize and organize your presentation outline. Drag and drop slides, add charts, and generate your presentation with ease.",
+    "communityTitle": "Community | Presenton",
+    "communityDescription": "Explore community presentation designs and prompts.",
+    "adminTitle": "Admin | Presenton",
+    "settingsTitle": "Settings | Presenton",
+    "settingsDescription": "Settings page",
+    "notFoundTitle": "Page not found | Presenton"
+  },
+  "notFound": {
+    "imageAlt": "Page not found",
+    "heading": "Oops! Page Not Found",
+    "body": "It seems you've found a page that doesn't exist. But don't worry, every great presentation starts with a blank slide!",
+    "home": "Go to Homepage",
+    "start": "Back to start"
+  },
+  "apiErr": {
+    "backendConnection": "Check that the FastAPI backend is running and that the frontend can reach it.",
+    "blankNoId": "Blank presentation response did not include an id",
+    "chatDeleteFailed": "Failed to delete chat conversation",
+    "chatHistoryFailed": "Failed to load chat history",
+    "chatListFailed": "Failed to list chat conversations",
+    "chatNoBody": "No response body received from chat stream",
+    "chatSendFailed": "Failed to send chat message",
+    "chatSendStreamFailed": "Failed to stream chat message",
+    "chatStreamEnded": "Chat stream ended before completion",
+    "chatStreamFailed": "Chat stream failed",
+    "clipboardUnavailable": "Clipboard access is not available in this browser.",
+    "cloneLayoutFailed": "Failed to clone layout",
+    "cloneTemplateFailed": "Failed to clone template",
+    "communityListFailed": "Failed to load community references",
+    "communityOneFailed": "Failed to load the community reference",
+    "communityUnreachable": "Could not reach the Presenton server while loading Community. Check your connection and try again.",
+    "createBlankFailed": "Failed to create blank presentation",
+    "createLayoutForSlideFailed": "Failed to create layout for slide {n}",
+    "createPresentationFailed": "Failed to create presentation",
+    "createTemplateFailed": "Failed to create template",
+    "createThemeFailed": "Failed to create theme",
+    "decomposeDocumentsFailed": "Failed to decompose documents",
+    "deleteCustomTemplateFailed": "Failed to delete custom template",
+    "deleteImageFailed": "Failed to delete image",
+    "deletePresentationFailed": "Failed to delete presentation",
+    "deleteTemplateFailed": "Failed to delete template",
+    "deleteThemeFailed": "Failed to delete theme",
+    "duplicatePresentationFailed": "Failed to duplicate presentation",
+    "fetchOutlinesFailed": "Failed to fetch outlines",
+    "fetchPresentationsFailed": "Failed to fetch presentations",
+    "generateImageFailed": "Failed to generate image",
+    "generateLayoutFailed": "Failed to generate template layout",
+    "generateThemeFailed": "Failed to generate theme",
+    "getCustomTemplateFailed": "Failed to get custom template details",
+    "getCustomTemplatesFailed": "Failed to get custom template summaries",
+    "getFontsFailed": "Failed to get user fonts",
+    "getGeneratedImagesFailed": "Failed to get generated images",
+    "getPreviousImagesFailed": "Failed to get previous generated images",
+    "getTemplateFailed": "Failed to get template details",
+    "getTemplateTasksFailed": "Failed to get recent template tasks",
+    "getTemplatesFailed": "Failed to get Templates summaries",
+    "getThemesFailed": "Failed to get themes",
+    "getUploadedImagesFailed": "Failed to get uploaded images",
+    "invalidApiKey": "Invalid API key. Please verify your API key and try again.",
+    "noResponseStream": "No response stream",
+    "ollamaInvalidLibrary": "Invalid library model list",
+    "ollamaInvalidList": "Ollama returned an invalid model list",
+    "ollamaLibraryFailed": "Could not fetch Ollama library models",
+    "ollamaListFailed": "Could not list Ollama models",
+    "preparePresentationFailed": "Failed to prepare presentation",
+    "presentationNotFound": "Presentation not found",
+    "pullFailed": "Pull failed",
+    "pullModelFailed": "Failed to pull model",
+    "readDocumentFailed": "Failed to read document.",
+    "retryTemplateFailed": "Failed to retry template generation",
+    "safetyBlocked": "The request was blocked by the provider's safety system. Please revise it and try again.",
+    "searchIconsFailed": "Failed to search icons",
+    "searchStockFailed": "Failed to search stock images",
+    "status400": "Bad request. Please check your input and try again.",
+    "status401": "Unauthorized. Please log in and try again.",
+    "status403": "Access forbidden. You don't have permission to perform this action.",
+    "status404": "Resource not found. The requested item may have been deleted or moved.",
+    "status409": "Conflict. The resource already exists or there's a conflict with the current state.",
+    "status422": "Validation error. Please check your input and try again.",
+    "status429": "Too many requests. Please wait a moment and try again.",
+    "status500": "Internal server error. Please try again later.",
+    "status502": "Bad gateway. The server is temporarily unavailable.",
+    "status503": "Service unavailable. Please try again later.",
+    "status504": "Gateway timeout. The request took too long to process.",
+    "templateThemeFailed": "Template theme request failed ({status})",
+    "untitledPresentation": "Untitled presentation",
+    "updateContentFailed": "Failed to update presentation content",
+    "updateLayoutsFailed": "Failed to update template layouts",
+    "updateOutlinesFailed": "Failed to update outlines",
+    "updateSlideFailed": "Failed to update slide",
+    "updateTemplateFailed": "Failed to update template",
+    "updateThemeFailed": "Failed to update theme",
+    "uploadDocumentsFailed": "Failed to upload documents",
+    "uploadFontFailed": "Failed to upload font",
+    "uploadImageFailed": "Failed to upload image"
+  },
+  "cfgErr": {
+    "anthropicModel": "Enter or select an Anthropic model ID.",
+    "apiKeyRequired": "{provider} API key is required.",
+    "azureApiVersion": "Azure OpenAI API version is required.",
+    "azureEndpoint": "Azure endpoint is required.",
+    "azureModel": "Azure model name is required.",
+    "bedrockCredentials": "Provide Bedrock API key, or AWS access key ID + secret key.",
+    "bedrockModel": "Bedrock model is required.",
+    "cerebrasModel": "Select or enter a Cerebras model id.",
+    "codexModel": "Select a Codex model.",
+    "codexSupported": "Select a supported Codex model.",
+    "comfyUrl": "ComfyUI server URL is required.",
+    "customModel": "Enter a model ID or alias for your custom endpoint.",
+    "customUrl": "Enter your custom LLM endpoint URL (OpenAI-compatible).",
+    "dalleKey": "OpenAI API key is required for DALL·E 3.",
+    "deepseekModel": "Enter or select a DeepSeek model ID.",
+    "fireworksModel": "Select or enter a Fireworks model id.",
+    "geminiFlashKey": "Google API key is required for Gemini Flash image generation.",
+    "googleModel": "Enter or select a Google model ID.",
+    "gptImageKey": "OpenAI API key is required for GPT Image 1.5.",
+    "litellmModel": "Enter or select a LiteLLM model ID or alias.",
+    "litellmUrl": "LiteLLM base URL is required.",
+    "lmstudioModel": "Enter or select an LM Studio model ID.",
+    "maxTokensInvalid": "Max output tokens must be a whole number greater than zero.",
+    "nanoBananaKey": "Google API key is required for NanoBanana Pro.",
+    "ollamaModel": "Select an Ollama model. If none appear, confirm Ollama is running and reachable.",
+    "ollamaUrl": "Ollama URL is required. Enter your Ollama server URL, or click \"Check models\" to fill the reachable default.",
+    "openWebuiUrl": "Open WebUI URL is required.",
+    "openaiCompatImage": "OpenAI-compatible image API requires base URL, API key, and model.",
+    "openaiModel": "Enter or select an OpenAI chat model ID on the Text Provider tab.",
+    "openrouterModel": "Select or enter an OpenRouter model id.",
+    "saveFailed": "Unable to save user configuration ({status})",
+    "searxngUrl": "SearXNG base URL is required.",
+    "selectImageProvider": "Select an image provider, or turn off image generation.",
+    "selectTextProvider": "Select a text provider.",
+    "selectWebProvider": "Select a web search provider, or turn off web search.",
+    "togetherModel": "Select or enter a Together model id.",
+    "unknownTextProvider": "Unsupported or unknown text provider.",
+    "validImageProvider": "Select a valid image provider.",
+    "validWebProvider": "Select a valid web search provider.",
+    "vertexKeyOrProject": "Vertex AI requires either a Vertex API key or a GCP project.",
+    "vertexModeConflict": "Use either Vertex API key mode or project/location mode, not both.",
+    "vertexModel": "Vertex model is required."
   }
 }

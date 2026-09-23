@@ -1,4 +1,5 @@
 import { notify } from "@/components/ui/sonner";
+import { tr } from "@/utils/clientI18n";
 import type { LLMConfig } from "@/types/llm_config";
 
 const NON_SOTA_TEMPLATE_TOAST_KEY = "presenton.nonSotaTemplateToastDismissed";
@@ -74,14 +75,17 @@ export function showTemplateV2ModelWarningIfNeeded(config: LLMConfig) {
     if (isSotaTemplateModel(config) || hasDismissedNonSotaToast()) return;
 
     notify.warning(
-        "Template model warning",
-        "Template V2 works best with vision-capable models. Use a recent OpenAI vision model or Claude Opus/Sonnet for reliable template generation.",
+        tr("custom.gen.modelWarningTitle", "Template model warning"),
+        tr(
+            "custom.gen.modelWarningBody",
+            "Template V2 works best with vision-capable models. Use a recent OpenAI vision model or Claude Opus/Sonnet for reliable template generation."
+        ),
         {
             id: NON_SOTA_TEMPLATE_TOAST_ID,
             duration: Infinity,
             className: "template-v2-model-warning-toast",
             action: {
-                label: "Don't show again",
+                label: tr("custom.gen.dontShowAgain", "Don't show again"),
                 onClick: () => {
                     rememberNonSotaToastDismissed();
                     dismissTemplateV2ModelWarning();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   extractTemplateV2Layouts,
   normalizeTemplateV2Fonts,
@@ -20,6 +21,7 @@ function getRenderableLayouts(template: TemplateDetailsResponse): TemplateV2Layo
 }
 
 export function useTemplateDetails(templateId: string) {
+  const t = useTranslations("templates");
   const [template, setTemplate] = useState<TemplateDetailsResponse | null>(null);
   const [loading, setLoading] = useState(Boolean(templateId));
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +51,7 @@ export function useTemplateDetails(templateId: string) {
           setError(
             loadError instanceof Error
               ? loadError.message
-              : "Failed to load template"
+              : t("loadOneFailed")
           );
         }
       } finally {

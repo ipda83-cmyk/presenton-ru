@@ -5,6 +5,7 @@ import type {
   ChatLayoutPreview,
   ChatLink,
 } from "./chat-types";
+import { tr } from "@/utils/clientI18n";
 
 export const createMessageId = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -133,7 +134,7 @@ export async function readDecomposedFile(filePath: string) {
   });
   const result = await response.json();
   if (!response.ok) {
-    throw new Error(result?.error || "Failed to read document.");
+    throw new Error(result?.error || tr("apiErr.readDocumentFailed", "Failed to read document."));
   }
   return result?.content || "";
 }

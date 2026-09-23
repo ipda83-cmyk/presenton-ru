@@ -6,7 +6,7 @@ import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { LLMConfig } from '@/types/llm_config'
 import OpenAICompatibleImageFields from '@/components/OpenAICompatibleImageFields'
-import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS, providerKey } from '@/utils/providerConstants'
+import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS, providerKey, providerDisplayLabel } from '@/utils/providerConstants'
 import { Check, ChevronUp, Eye, EyeOff } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { MixpanelEvent, trackEvent } from '@/utils/mixpanel'
@@ -172,7 +172,7 @@ const ImageProvider = ({ llmConfig, setLlmConfig }: { llmConfig: LLMConfig, setL
                                                         <div className="flex gap-3 items-center">
                                                             <span className="text-sm font-medium text-gray-900">
                                                                 {llmConfig.IMAGE_PROVIDER
-                                                                    ? IMAGE_PROVIDERS[llmConfig.IMAGE_PROVIDER]?.label || llmConfig.IMAGE_PROVIDER
+                                                                    ? providerDisplayLabel(IMAGE_PROVIDERS[llmConfig.IMAGE_PROVIDER], tp("customImageName")) || llmConfig.IMAGE_PROVIDER
                                                                     : t("selectImageProviderPlaceholder")}
                                                             </span>
                                                         </div>
@@ -209,7 +209,7 @@ const ImageProvider = ({ llmConfig, setLlmConfig }: { llmConfig: LLMConfig, setL
                                                                             <div className="flex flex-col space-y-1 flex-1">
                                                                                 <div className="flex items-center justify-between gap-2">
                                                                                     <span className="text-sm font-medium text-gray-900 capitalize">
-                                                                                        {provider.label}
+                                                                                        {providerDisplayLabel(provider, tp("customImageName"))}
                                                                                     </span>
                                                                                 </div>
                                                                                 <span className="text-xs text-gray-600 leading-relaxed">
@@ -421,7 +421,7 @@ const ImageProvider = ({ llmConfig, setLlmConfig }: { llmConfig: LLMConfig, setL
                                 <label className="mb-2 block text-sm font-medium text-gray-700">{t("imageModelId")}</label>
                                 <input
                                     type="text"
-                                    placeholder="e.g. dall-e-3, gpt-image-1"
+                                    placeholder={t("egValue", { value: "dall-e-3, gpt-image-1" })}
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2.5 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                                     value={llmConfig.OPENAI_COMPAT_IMAGE_MODEL || ""}
                                     onChange={(e) => {
@@ -441,9 +441,9 @@ const ImageProvider = ({ llmConfig, setLlmConfig }: { llmConfig: LLMConfig, setL
             {/* <div className="bg-white flex justify-between items-center p-10 rounded-[12px]">
                 <div className=' max-w-[290px]'>
 
-                    <h4 className="text-xl font-normal text-[#191919]">Advanced</h4>
+                    <h4 className="text-xl font-normal text-[#191919]">{t("advancedHeading")}</h4>
                     <p className="mt-2.5 text-sm  text-gray-500">
-                        Configure advanced AI features.
+                        {t("advancedDesc")}
                     </p>
                 </div>
                 <div className="flex items-center gap-4">

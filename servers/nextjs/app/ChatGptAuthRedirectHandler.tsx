@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { notify } from "@/components/ui/sonner";
 import {
   CHATGPT_AUTH_REQUIRED_EVENT,
@@ -10,6 +11,7 @@ import {
 } from "@/utils/chatgptAuth";
 
 export default function ChatGptAuthRedirectHandler() {
+  const t = useTranslations("settings");
   const router = useRouter();
   const pathname = usePathname();
   const handlingRef = useRef(false);
@@ -22,10 +24,12 @@ export default function ChatGptAuthRedirectHandler() {
       if (handlingRef.current) return;
       handlingRef.current = true;
 
+      // The backend detail is English; the condition itself is known, so the
+      // toast always uses the UI-language wording.
+      void detail;
       notify.error(
-        "ChatGPT sign-in required",
-        detail?.message ||
-          "Your ChatGPT session expired. Please sign in again from Settings.",
+        t("chatgptReauthTitle"),
+        t("chatgptReauthBody"),
         { id: "chatgpt-auth-required", duration: 8000 }
       );
 

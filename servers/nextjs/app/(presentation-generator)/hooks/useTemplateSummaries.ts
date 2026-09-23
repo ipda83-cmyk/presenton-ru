@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import TemplateService, {
   TemplateCreateTaskResponse,
@@ -77,6 +78,7 @@ export function useTemplateSummaries({
   includeProcessingTemplateTasks?: boolean;
   presentonCloudOnly?: boolean;
 } = {}) {
+  const t = useTranslations("templates");
   const [templates, setTemplates] = useState<TemplateListItem[]>([]);
   const [processingTemplateTasks, setProcessingTemplateTasks] = useState<
     TemplateCreateTaskResponse[]
@@ -138,9 +140,9 @@ export function useTemplateSummaries({
           const message =
             error instanceof Error
               ? error.message
-              : "The template service could not be reached. Please try again.";
+              : t("serviceUnreachable");
           setError(message);
-          toast.error("Could not load templates", { description: message });
+          toast.error(t("loadErrorTitle"), { description: message });
         }
       } finally {
         if (!cancelled) {

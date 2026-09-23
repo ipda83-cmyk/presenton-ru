@@ -6,6 +6,7 @@ import {
 } from "@/lib/template-theme";
 import { ApiResponseHandler } from "./api-error-handler";
 import { getHeader } from "./header";
+import { tr } from "@/utils/clientI18n";
 
 const TEMPLATE_THEME_CACHE_TTL_MS = 5 * 60 * 1000;
 
@@ -141,7 +142,7 @@ class TemplateService {
     static async getCustomTemplateSummaries() {
         try {
             const response = await fetch(getApiUrl(`/api/v1/ppt/template/all?page_size=100&default=false`),);
-            return await ApiResponseHandler.handleResponse(response, "Failed to get custom template summaries");
+            return await ApiResponseHandler.handleResponse(response, tr("apiErr.getCustomTemplatesFailed", "Failed to get custom template summaries"));
         } catch (error) {
             console.error("Failed to get custom template summaries", error);
             throw error;
@@ -151,7 +152,7 @@ class TemplateService {
     static async getCustomTemplateDetails(templateId: string) {
         try {
             const response = await fetch(getApiUrl(`/api/v1/ppt/template/${templateId}/layouts`),);
-            return await ApiResponseHandler.handleResponse(response, "Failed to get custom template details");
+            return await ApiResponseHandler.handleResponse(response, tr("apiErr.getCustomTemplateFailed", "Failed to get custom template details"));
         } catch (error) {
             console.error("Failed to get custom template details", error);
             throw error;
@@ -171,7 +172,7 @@ class TemplateService {
                 params.set("presenton_cloud_only", "true");
             }
             const response = await fetch(getApiUrl(`/api/v1/ppt/template/all?${params.toString()}`));
-            return await ApiResponseHandler.handleResponse(response, "Failed to get Templates summaries");
+            return await ApiResponseHandler.handleResponse(response, tr("apiErr.getTemplatesFailed", "Failed to get Templates summaries"));
         } catch (error) {
             console.error("Failed to get Templates summaries", error);
             throw error;
@@ -182,7 +183,7 @@ class TemplateService {
         try {
             const apiTemplateId = this.normalizeTemplateId(templateId);
             const response = await fetch(getApiUrl(`/api/v1/ppt/template/${encodeURIComponent(apiTemplateId)}`));
-            return await ApiResponseHandler.handleResponse(response, "Failed to get template details");
+            return await ApiResponseHandler.handleResponse(response, tr("apiErr.getTemplateFailed", "Failed to get template details"));
         } catch (error) {
             console.error("Failed to get Templates v1 details", error);
             throw error;
@@ -208,7 +209,11 @@ class TemplateService {
                     { headers: getHeader() },
                 );
                 if (!response.ok) {
-                    throw new Error(`Template theme request failed (${response.status})`);
+                    throw new Error(
+                        tr("apiErr.templateThemeFailed", "Template theme request failed ({status})", {
+                            status: response.status,
+                        })
+                    );
                 }
 
                 const theme = normalizeTemplateTheme(await response.json());
@@ -238,7 +243,7 @@ class TemplateService {
                 headers: getHeader(),
                 body: JSON.stringify(payload),
             });
-            return await ApiResponseHandler.handleResponse(response, "Failed to create template");
+            return await ApiResponseHandler.handleResponse(response, tr("apiErr.createTemplateFailed", "Failed to create template"));
         } catch (error) {
             console.error("Failed to create template", error);
             throw error;
@@ -256,7 +261,7 @@ class TemplateService {
                 created_at: createdAtFrom.toISOString(),
             });
             const response = await fetch(getApiUrl(`/api/v1/async-tasks?${params.toString()}`));
-            return await ApiResponseHandler.handleResponse(response, "Failed to get recent template tasks");
+            return await ApiResponseHandler.handleResponse(response, tr("apiErr.getTemplateTasksFailed", "Failed to get recent template tasks"));
         } catch (error) {
             console.error("Failed to get recent template tasks", error);
             throw error;
@@ -274,7 +279,7 @@ class TemplateService {
             );
             return await ApiResponseHandler.handleResponse(
                 response,
-                "Failed to retry template generation",
+                tr("apiErr.retryTemplateFailed", "Failed to retry template generation"),
             );
         } catch (error) {
             console.error("Failed to retry template generation", error);
@@ -288,7 +293,7 @@ class TemplateService {
                 method: "DELETE",
                 headers: getHeader(),
             });
-            const result = await ApiResponseHandler.handleResponseWithResult(response, "Failed to delete template");
+            const result = await ApiResponseHandler.handleResponseWithResult(response, tr("apiErr.deleteTemplateFailed", "Failed to delete template"));
             this.invalidateTemplateTheme(templateId);
             return result;
         } catch (error) {
@@ -317,7 +322,7 @@ class TemplateService {
                 headers: getHeader(),
                 body: JSON.stringify(payload),
             });
-            const result = await ApiResponseHandler.handleResponse(response, "Failed to update template");
+            const result = await ApiResponseHandler.handleResponse(response, tr("apiErr.updateTemplateFailed", "Failed to update template"));
             this.invalidateTemplateTheme(templateId);
             return result;
         } catch (error) {
@@ -341,7 +346,7 @@ class TemplateService {
             );
             const result = await ApiResponseHandler.handleResponse(
                 response,
-                "Failed to update template layouts",
+                tr("apiErr.updateLayoutsFailed", "Failed to update template layouts"),
             );
             this.invalidateTemplateTheme(templateId);
             return result;
@@ -363,7 +368,9 @@ class TemplateService {
             );
             const result = await ApiResponseHandler.handleResponse(
                 response,
-                `Failed to create layout for slide ${payload.index + 1}`,
+                tr("apiErr.createLayoutForSlideFailed", "Failed to create layout for slide {n}", {
+                    n: payload.index + 1,
+                }),
             );
             this.invalidateTemplateTheme(payload.template_id);
             return result;
@@ -387,7 +394,7 @@ class TemplateService {
             );
             const result = await ApiResponseHandler.handleResponse(
                 response,
-                "Failed to generate template layout",
+                tr("apiErr.generateLayoutFailed", "Failed to generate template layout"),
             );
             this.invalidateTemplateTheme(payload.template_id);
             return result;
@@ -400,7 +407,7 @@ class TemplateService {
     static async deleteCustomTemplate(presentationId: string) {
         try {
             const response = await fetch(getApiUrl(`/api/v1/ppt/template-management/delete-templates/${presentationId}`), { method: "DELETE", headers: getHeader() });
-            return await ApiResponseHandler.handleResponseWithResult(response, "Failed to delete custom template");
+            return await ApiResponseHandler.handleResponseWithResult(response, tr("apiErr.deleteCustomTemplateFailed", "Failed to delete custom template"));
         } catch (error) {
             console.error("Failed to delete custom template", error);
             throw error;
@@ -414,7 +421,7 @@ class TemplateService {
                 headers: getHeader(),
                 body: JSON.stringify(payload),
             });
-            return await ApiResponseHandler.handleResponse(response, "Failed to clone template");
+            return await ApiResponseHandler.handleResponse(response, tr("apiErr.cloneTemplateFailed", "Failed to clone template"));
         } catch (error) {
             console.error("Failed to clone template", error);
             throw error;
@@ -428,7 +435,7 @@ class TemplateService {
                 headers: getHeader(),
                 body: JSON.stringify(payload),
             });
-            return await ApiResponseHandler.handleResponse(response, "Failed to clone layout");
+            return await ApiResponseHandler.handleResponse(response, tr("apiErr.cloneLayoutFailed", "Failed to clone layout"));
         } catch (error) {
             console.error("Failed to clone layout", error);
             throw error;

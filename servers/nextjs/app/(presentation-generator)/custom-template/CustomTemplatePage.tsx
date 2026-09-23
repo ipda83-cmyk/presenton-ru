@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useTranslations } from "next-intl";
+import { tr } from "@/utils/clientI18n";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -395,7 +396,12 @@ function UploadPanel({
 }
 
 function chipLabel(font: FontItem): string {
-  return font.name || font.family_name || font.original_name || "Unknown font";
+  return (
+    font.name ||
+    font.family_name ||
+    font.original_name ||
+    tr("custom.gen.unknownFont", "Unknown font")
+  );
 }
 
 function uniqueFontChips(fontsData: FontData): FontItem[] {
@@ -1553,7 +1559,7 @@ const CustomTemplatePage = () => {
     retrySlide,
   } = useTemplateCreation();
 
-  const defaultTemplateName = getDefaultTemplateName(selectedFile) || "Untitled Template";
+  const defaultTemplateName = getDefaultTemplateName(selectedFile) || t("gen.untitledTemplate");
   const activeStep = activeStudioStep(state.step);
   const showUpload = state.step === "file-upload";
   const showAnalyze = state.step === "font-check" || state.step === "font-upload";

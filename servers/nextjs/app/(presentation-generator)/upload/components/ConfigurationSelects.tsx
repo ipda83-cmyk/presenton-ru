@@ -326,7 +326,7 @@ const LanguageSelect: React.FC<{
                 : "text-xs font-medium min-[1800px]:text-sm min-[2200px]:text-base",
             )}
           >
-            {value || t("placeholder")}
+            {value === LanguageType.Auto ? t("auto") : value || t("placeholder")}
           </span>
           {compact && (
             <ChevronUp
@@ -371,7 +371,7 @@ const LanguageSelect: React.FC<{
                     value === language ? "opacity-100" : "opacity-0",
                   )}
                 />
-                {language}
+                {language === LanguageType.Auto ? t("auto") : language}
               </CommandItem>
             ))}
           </CommandGroup>

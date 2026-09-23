@@ -1,16 +1,17 @@
 import { RootState } from '@/store/store';
-import { IMAGE_PROVIDERS, LLM_PROVIDERS, WEB_SEARCH_PROVIDERS } from '@/utils/providerConstants';
+import { IMAGE_PROVIDERS, LLM_PROVIDERS, WEB_SEARCH_PROVIDERS, providerDisplayLabel } from '@/utils/providerConstants';
 import React from 'react'
 import { useSelector } from 'react-redux';
 import { useTranslations } from 'next-intl';
 
 const CurrentConfig = ({ webSearchEnabled }: { webSearchEnabled: boolean }) => {
     const t = useTranslations("upload.config");
+    const tp = useTranslations("providers");
     const userConfigState = useSelector((state: RootState) => state.userConfig);
     const llmConfig = userConfigState.llm_config;
     const textProviderKey = llmConfig.LLM || "openai";
     const textProviderLabel =
-        LLM_PROVIDERS[textProviderKey]?.label || textProviderKey;
+        providerDisplayLabel(LLM_PROVIDERS[textProviderKey], tp("customName")) || textProviderKey;
     const selectedTextModel =
         textProviderKey === "openai"
             ? llmConfig.OPENAI_MODEL
@@ -52,11 +53,13 @@ const CurrentConfig = ({ webSearchEnabled }: { webSearchEnabled: boolean }) => {
     const imageSummary = llmConfig.DISABLE_IMAGE_GENERATION
         ? t("imageDisabled")
         : llmConfig.IMAGE_PROVIDER
-            ? IMAGE_PROVIDERS[llmConfig.IMAGE_PROVIDER]?.label || llmConfig.IMAGE_PROVIDER
+            ? providerDisplayLabel(IMAGE_PROVIDERS[llmConfig.IMAGE_PROVIDER], tp("customImageName")) || llmConfig.IMAGE_PROVIDER
             : t("noImageProvider");
     const webSearchProviderKey = (llmConfig.WEB_SEARCH_PROVIDER || "auto").toLowerCase();
     const webSearchProvider =
-        WEB_SEARCH_PROVIDERS[webSearchProviderKey]?.label || webSearchProviderKey;
+        webSearchProviderKey === "auto"
+            ? tp("webLabelAuto")
+            : WEB_SEARCH_PROVIDERS[webSearchProviderKey]?.label || webSearchProviderKey;
     const webSearchSummary = t("web", { provider: webSearchProvider, state: webSearchEnabled ? t("on") : t("off") });
 
     return (

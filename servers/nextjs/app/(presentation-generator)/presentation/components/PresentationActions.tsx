@@ -1685,8 +1685,8 @@ const PresentationActions = (props: PresentationActionsProps) => {
     const element = adaptTemplateV2ComponentToElement(block.raw, block.index);
     if (!element) {
       notify.warning(
-        "Component unavailable",
-        "This template component cannot be inserted yet.",
+        t("componentUnavailableTitle"),
+        t("componentUnavailableBody"),
       );
       return;
     }

@@ -100,7 +100,7 @@ export function KeyboardShortcutsDialog({
             >
               <PlatformButton
                 active={!applePlatform}
-                label="Windows / Linux"
+                label={t("platformWinLinux")}
                 onClick={() => setPlatformOverride(false)}
               />
               <PlatformButton

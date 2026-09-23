@@ -1,3 +1,5 @@
+import { tr } from "@/utils/clientI18n";
+
 export async function copyTextToClipboard(text: string): Promise<void> {
   if (
     typeof navigator !== "undefined" &&
@@ -16,7 +18,7 @@ export async function copyTextToClipboard(text: string): Promise<void> {
     typeof document === "undefined" ||
     typeof document.execCommand !== "function"
   ) {
-    throw new Error("Clipboard access is not available in this browser.");
+    throw new Error(tr("apiErr.clipboardUnavailable", "Clipboard access is not available in this browser."));
   }
 
   const textArea = document.createElement("textarea");
@@ -41,6 +43,6 @@ export async function copyTextToClipboard(text: string): Promise<void> {
   }
 
   if (!copied) {
-    throw new Error("Clipboard access is not available in this browser.");
+    throw new Error(tr("apiErr.clipboardUnavailable", "Clipboard access is not available in this browser."));
   }
 }

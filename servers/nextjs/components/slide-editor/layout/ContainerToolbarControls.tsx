@@ -53,12 +53,6 @@ function readColor(value: unknown, fallback: string) {
   return color.startsWith("#") ? color : `#${color}`;
 }
 
-function capitalize(value: string) {
-  return value
-    .replace("flex-", "")
-    .replace(/(^|[-_])\w/g, (part) => part.replace(/[-_]/, "").toUpperCase());
-}
-
 function clampNumber(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
@@ -447,7 +441,7 @@ export function TemplateV2ContainerToolbarControls({
                     <button
                       key={`${point.horizontal}-${point.vertical}`}
                       type="button"
-                      aria-label={`${capitalize(point.horizontal)} ${capitalize(point.vertical)}`}
+                      aria-label={t(`container.point.${point.vertical}-${point.horizontal}`)}
                       aria-pressed={selected}
                       onClick={() =>
                         onChange({
