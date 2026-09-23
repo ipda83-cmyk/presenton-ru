@@ -42,6 +42,7 @@ from utils.get_env import (
     get_together_model_env,
     get_vertex_model_env,
 )
+from utils.i18n import t
 
 
 def get_llm_provider():
@@ -51,10 +52,7 @@ def get_llm_provider():
         raise HTTPException(
             status_code=500,
             detail=(
-                "Invalid LLM provider. Please select one of: "
-                "openai, deepseek, google, vertex, azure, bedrock, openrouter, "
-                "fireworks, together, cerebras, anthropic, litellm, "
-                "lmstudio, ollama, custom, codex"
+                t("err.llmProvider.invalidLlmProviderPleaseSelectOne")
             ),
         )
 
@@ -166,10 +164,7 @@ def get_model():
         raise HTTPException(
             status_code=500,
             detail=(
-                "Invalid LLM provider. Please select one of: "
-                "openai, deepseek, google, vertex, azure, bedrock, openrouter, "
-                "fireworks, together, cerebras, anthropic, litellm, "
-                "lmstudio, ollama, custom, codex"
+                t("err.llmProvider.invalidLlmProviderPleaseSelectOne")
             ),
         )
 
@@ -177,14 +172,14 @@ def get_model():
 def get_google_llm_client() -> genai.Client:
     """Google GenAI client for tests and direct API use (uses GOOGLE_API_KEY from env)."""
     if not get_google_api_key_env():
-        raise HTTPException(status_code=400, detail="Google API Key is not set")
+        raise HTTPException(status_code=400, detail=t("err.llmProvider.googleApiKeyIsNotSet"))
     return genai.Client()
 
 
 def get_llm_client() -> OpenAI:
     """OpenAI client for tests and direct API use (uses OPENAI_API_KEY from env)."""
     if not get_openai_api_key_env():
-        raise HTTPException(status_code=400, detail="OpenAI API Key is not set")
+        raise HTTPException(status_code=400, detail=t("err.llmProvider.openaiApiKeyIsNotSet"))
     return OpenAI()
 
 

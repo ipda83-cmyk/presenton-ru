@@ -36,6 +36,7 @@ from utils.llm_calls.generate_presentation_outlines import (
 )
 from utils.sse import safe_sse_stream
 from utils.web_search import get_selected_web_search_provider, get_web_search_route
+from utils.i18n import t
 
 OUTLINES_ROUTER = APIRouter(prefix="/outlines", tags=["Outlines"])
 LOGGER = logging.getLogger(__name__)
@@ -48,7 +49,7 @@ async def get_outline(
 ):
     presentation = await sql_session.get(PresentationModel, id)
     if not presentation:
-        raise HTTPException(status_code=404, detail="Presentation not found")
+        raise HTTPException(status_code=404, detail=t("err.outlines.presentationNotFound"))
 
     if not presentation.outlines:
         return PresentationOutlineModel(slides=[])
@@ -64,7 +65,7 @@ async def update_outline(
 ):
     presentation = await sql_session.get(PresentationModel, id)
     if not presentation:
-        raise HTTPException(status_code=404, detail="Presentation not found")
+        raise HTTPException(status_code=404, detail=t("err.outlines.presentationNotFound"))
 
     presentation.outlines = outline.model_dump(mode="json")
     presentation.n_slides = len(outline.slides)
@@ -90,7 +91,7 @@ async def stream_outlines(
     presentation = await sql_session.get(PresentationModel, id)
 
     if not presentation:
-        raise HTTPException(status_code=404, detail="Presentation not found")
+        raise HTTPException(status_code=404, detail=t("err.outlines.presentationNotFound"))
 
     search_route, actual_search_provider = get_web_search_route()
     LOGGER.info(
@@ -114,7 +115,7 @@ async def stream_outlines(
             return
 
         yield SSEStatusResponse(
-            status="Preparing your presentation outline"
+            status=t("stream.outlinePreparing")
         ).to_string()
 
         additional_context = ""
@@ -211,7 +212,10 @@ async def stream_outlines(
         except Exception as e:
             traceback.print_exc()
             yield SSEErrorResponse(
-                detail=f"Failed to generate presentation outlines. Please try again. {str(e)}",
+                detail=(
+                    t("err.presentation.failedToGeneratePresentationOutlinesPlease")
+                    + f" {e}"
+                ),
             ).to_string()
             return
 
@@ -230,10 +234,7 @@ async def stream_outlines(
             and len(presentation_outlines.slides) < n_slides_to_generate
         ):
             yield SSEErrorResponse(
-                detail=(
-                    "Failed to generate presentation outlines with requested "
-                    "number of slides. Please try again."
-                )
+                detail=t("err.presentation.failedToGeneratePresentationOutlinesWith")
             ).to_string()
             return
 

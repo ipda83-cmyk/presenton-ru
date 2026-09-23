@@ -22,6 +22,7 @@ from llmai.shared import (
 
 from utils.llm_config import get_extra_body
 from utils.schema_utils import get_schema_validation_errors
+from utils.i18n import t
 
 LOGGER = logging.getLogger(__name__)
 CLIENT_DISCONNECT_POLL_SECONDS = 0.1
@@ -353,7 +354,7 @@ async def generate_structured_with_schema_retries(
         if content is None:
             raise HTTPException(
                 status_code=400,
-                detail="LLM did not return any content",
+                detail=t("err.llmUtils.llmDidNotReturnAnyContent"),
             )
 
         if not validate_schema:
@@ -386,7 +387,7 @@ async def generate_structured_with_schema_retries(
             structured_validation_feedback_user_message(content, validation_errors)
         )
 
-    raise HTTPException(status_code=400, detail="LLM did not return any content")
+    raise HTTPException(status_code=400, detail=t("err.llmUtils.llmDidNotReturnAnyContent"))
 
 
 def extract_text(content: Any) -> Optional[str]:

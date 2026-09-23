@@ -41,3 +41,9 @@ MESSAGES: dict[str, str] = {
 
 # Request validation (422): English keeps pydantic's own wording.
 VALIDATION_MESSAGES: dict[str, str] = {}
+
+
+# Backend HTTP error texts (see errors_en.py).
+from utils.i18n.errors_en import ERRORS as _ERRORS  # noqa: E402
+
+MESSAGES.update(_ERRORS)

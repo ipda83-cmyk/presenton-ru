@@ -40,6 +40,7 @@ from utils.llm_utils import (
     get_generate_kwargs,
     stream_generate_events,
 )
+from utils.i18n import t
 
 LOGGER = logging.getLogger(__name__)
 MAX_TOOL_ROUNDS = 40
@@ -278,16 +279,16 @@ class PresentationChatService:
         attachments: list[ChatAttachment] | None = None,
     ) -> tuple[uuid.UUID, list[Message], str]:
         if not (user_message or "").strip():
-            raise HTTPException(status_code=400, detail="Message is required")
+            raise HTTPException(status_code=400, detail=t("err.service.messageIsRequired"))
 
         presentation = await self._sql_session.get(PresentationModel, self._presentation_id)
         if not presentation:
-            raise HTTPException(status_code=404, detail="Presentation not found")
+            raise HTTPException(status_code=404, detail=t("err.service.presentationNotFound"))
         if presentation.generation_mode != self._presentation_type:
             raise HTTPException(
                 status_code=400,
                 detail=(
-                    "Presentation type does not match the stored generation mode."
+                    t("err.service.presentationTypeDoesNotMatchThe")
                 ),
             )
 

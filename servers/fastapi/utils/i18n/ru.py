@@ -77,3 +77,9 @@ VALIDATION_MESSAGES: dict[str, str] = {
     "date_parsing": "Некорректная дата",
     "datetime_parsing": "Некорректные дата и время",
 }
+
+
+# Backend HTTP error texts (see errors_ru.py).
+from utils.i18n.errors_ru import ERRORS as _ERRORS  # noqa: E402
+
+MESSAGES.update(_ERRORS)

@@ -125,6 +125,7 @@ from utils.llm_calls.generate_smart_presentation import (
 )
 from utils.get_env import is_community_enabled
 import uuid
+from utils.i18n import t
 
 logger = logging.getLogger(__name__)
 
@@ -221,7 +222,7 @@ async def _resolve_requested_template(
 
     raise HTTPException(
         status_code=400,
-        detail="Template not found. Please use a valid template.",
+        detail=t("err.presentation.templateNotFoundPleaseUseA"),
     )
 
 
@@ -232,7 +233,7 @@ def _copy_template_layout_payload(
     if not isinstance(layout_payload, dict):
         raise HTTPException(
             status_code=400,
-            detail="Template layout JSON must be an object",
+            detail=t("err.presentation.templateLayoutJsonMustBeAn"),
         )
 
     icon_type = _template_icon_type(template, layout_payload)
@@ -270,15 +271,14 @@ async def _resolve_generation_layout(
         if not bundled_template_id:
             raise HTTPException(
                 status_code=400,
-                detail="Template not found. Please use a valid template.",
+                detail=t("err.presentation.templateNotFoundPleaseUseA"),
             )
         template = await sql_session.get(TemplateV2, bundled_template_id)
         if not template:
             raise HTTPException(
                 status_code=503,
                 detail=(
-                    f"Bundled template '{template_name}' is not available. "
-                    "Restart the service to import bundled templates."
+                    t("err.presentation.bundledTemplateIsNotAvailableRestart", template_name=template_name)
                 ),
             )
         logger.info(
@@ -403,7 +403,7 @@ def _build_template_layout_model(
     except ValueError as exc:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid template layout JSON: {exc}",
+            detail=t("err.presentation.invalidTemplateLayoutJson", error=exc),
         ) from exc
 
     source_layouts = layout_payload.get("layouts")
@@ -445,7 +445,7 @@ def _build_template_layout_model(
     if not slides:
         raise HTTPException(
             status_code=400,
-            detail="Template layout JSON must contain at least one layout",
+            detail=t("err.presentation.templateLayoutJsonMustContainAt"),
         )
 
     return PresentationLayoutModel(
@@ -1425,12 +1425,12 @@ async def _resolve_prepare_layout(
     if not template_id:
         raise HTTPException(
             status_code=400,
-            detail="Template id is required",
+            detail=t("err.presentation.templateIdIsRequired"),
         )
 
     template = await sql_session.get(TemplateV2, template_id)
     if not template:
-        raise HTTPException(status_code=404, detail="Template layout not found")
+        raise HTTPException(status_code=404, detail=t("err.presentation.templateLayoutNotFound"))
 
     layout_payload = _copy_template_layout_payload(template)
 
@@ -1520,7 +1520,7 @@ async def get_presentation(
 ):
     presentation = await sql_session.get(PresentationModel, id)
     if not presentation:
-        raise HTTPException(404, "Presentation not found")
+        raise HTTPException(404, t("err.slide.presentationNotFound"))
     slides_result = await sql_session.scalars(
         select(SlideModel)
         .where(SlideModel.presentation == id)
@@ -1539,7 +1539,7 @@ async def delete_presentation(
 ):
     presentation = await sql_session.get(PresentationModel, id)
     if not presentation:
-        raise HTTPException(404, "Presentation not found")
+        raise HTTPException(404, t("err.slide.presentationNotFound"))
 
     await sql_session.delete(presentation)
     await sql_session.commit()
@@ -1551,7 +1551,7 @@ async def duplicate_presentation(
 ):
     presentation = await sql_session.get(PresentationModel, id)
     if not presentation:
-        raise HTTPException(404, "Presentation not found")
+        raise HTTPException(404, t("err.slide.presentationNotFound"))
 
     slides = list(
         await sql_session.scalars(
@@ -1600,7 +1600,7 @@ async def export_existing_presentation(
     """
     presentation = await sql_session.get(PresentationModel, id)
     if not presentation:
-        raise HTTPException(404, "Presentation not found")
+        raise HTTPException(404, t("err.slide.presentationNotFound"))
 
     presentation_and_path = await export_presentation(
         presentation.id,
@@ -1635,38 +1635,38 @@ async def create_presentation(
     if n_slides is not None and n_slides < 1:
         raise HTTPException(
             status_code=400,
-            detail="Number of slides must be greater than 0",
+            detail=t("err.presentation.numberOfSlidesMustBeGreater"),
         )
 
     if n_slides is not None and n_slides > MAX_NUMBER_OF_SLIDES:
         raise HTTPException(
             status_code=400,
-            detail=f"Number of slides cannot be greater than {MAX_NUMBER_OF_SLIDES}",
+            detail=t("err.presentation.numberOfSlidesCannotBeGreater", max_number_of_slides=MAX_NUMBER_OF_SLIDES),
         )
 
     if include_table_of_contents and n_slides is not None and n_slides < 3:
         raise HTTPException(
             status_code=400,
-            detail="Number of slides cannot be less than 3 if table of contents is included",
+            detail=t("err.presentation.numberOfSlidesCannotBeLess"),
     )
 
     normalized_community_ids = normalize_community_ids(community_design_ids)
     if normalized_community_ids and not is_community_enabled():
         raise HTTPException(
             status_code=422,
-            detail="Community references are disabled",
+            detail=t("err.presentation.communityReferencesAreDisabled"),
         )
     if generation_mode != "smart" and normalized_community_ids:
         raise HTTPException(
             status_code=400,
-            detail="Community references are available only in Smart mode",
+            detail=t("err.presentation.communityReferencesAreAvailableOnlyIn"),
         )
     if generation_mode == "smart" and not (
         content.strip() or file_paths or normalized_community_ids
     ):
         raise HTTPException(
             status_code=400,
-            detail="A prompt, document, or community reference is required",
+            detail=t("err.presentation.aPromptDocumentOrCommunityReference"),
         )
 
     presentation_id = uuid.uuid4()
@@ -1773,16 +1773,16 @@ async def prepare_presentation(
     sql_session: AsyncSession = Depends(get_async_session),
 ):
     if not outlines:
-        raise HTTPException(status_code=400, detail="Outlines are required")
+        raise HTTPException(status_code=400, detail=t("err.presentation.outlinesAreRequired"))
     if len(outlines) > MAX_NUMBER_OF_SLIDES:
         raise HTTPException(
             status_code=400,
-            detail=f"Number of outlines cannot be greater than {MAX_NUMBER_OF_SLIDES}",
+            detail=t("err.presentation.numberOfOutlinesCannotBeGreater", max_number_of_slides=MAX_NUMBER_OF_SLIDES),
         )
 
     presentation = await sql_session.get(PresentationModel, presentation_id)
     if not presentation:
-        raise HTTPException(status_code=404, detail="Presentation not found")
+        raise HTTPException(status_code=404, detail=t("err.presentation.presentationNotFound"))
 
     presentation_outline_model = PresentationOutlineModel(slides=outlines)
 
@@ -1793,7 +1793,7 @@ async def prepare_presentation(
     if total_slide_layouts < 1:
         raise HTTPException(
             status_code=400,
-            detail="Layout must contain at least one slide layout",
+            detail=t("err.presentation.layoutMustContainAtLeastOne"),
         )
     total_outlines = len(outlines)
 
@@ -2127,7 +2127,7 @@ async def stream_smart_presentation(
         await sql_session.rollback()
         final_presentation = await sql_session.get(PresentationModel, presentation_id)
         if final_presentation is None:
-            raise HTTPException(status_code=404, detail="Presentation not found")
+            raise HTTPException(status_code=404, detail=t("err.presentation.presentationNotFound"))
         slides = list(
             await sql_session.scalars(
                 select(SlideModel)
@@ -2211,18 +2211,18 @@ async def stream_presentation(
 ):
     presentation = await sql_session.get(PresentationModel, id)
     if not presentation:
-        raise HTTPException(status_code=404, detail="Presentation not found")
+        raise HTTPException(status_code=404, detail=t("err.presentation.presentationNotFound"))
     if presentation.generation_mode == "smart":
         return await stream_smart_presentation(presentation, sql_session)
     if not presentation.structure:
         raise HTTPException(
             status_code=400,
-            detail="Presentation not prepared for stream",
+            detail=t("err.presentation.presentationNotPreparedForStream"),
         )
     if not presentation.outlines:
         raise HTTPException(
             status_code=400,
-            detail="Outlines can not be empty",
+            detail=t("err.presentation.outlinesCanNotBeEmpty"),
         )
 
     try:
@@ -2232,11 +2232,11 @@ async def stream_presentation(
     except Exception as exc:
         raise HTTPException(
             status_code=400,
-            detail="Presentation has invalid generated data",
+            detail=t("err.presentation.presentationHasInvalidGeneratedData"),
         ) from exc
 
     if not layout.slides:
-        raise HTTPException(status_code=400, detail="Presentation layout has no slides")
+        raise HTTPException(status_code=400, detail=t("err.presentation.presentationLayoutHasNoSlides"))
     original_structure = list(structure.slides)
     structure = _normalize_presentation_structure(
         structure,
@@ -2458,19 +2458,19 @@ async def update_presentation(
 ):
     presentation = await sql_session.get(PresentationModel, id)
     if not presentation:
-        raise HTTPException(status_code=404, detail="Presentation not found")
+        raise HTTPException(status_code=404, detail=t("err.presentation.presentationNotFound"))
 
     presentation_update_dict = {}
     if n_slides is not None:
         if n_slides < 1:
             raise HTTPException(
                 status_code=400,
-                detail="Number of slides must be greater than 0",
+                detail=t("err.presentation.numberOfSlidesMustBeGreater"),
             )
         if n_slides > MAX_NUMBER_OF_SLIDES:
             raise HTTPException(
                 status_code=400,
-                detail=f"Number of slides cannot be greater than {MAX_NUMBER_OF_SLIDES}",
+                detail=t("err.presentation.numberOfSlidesCannotBeGreater", max_number_of_slides=MAX_NUMBER_OF_SLIDES),
             )
         presentation_update_dict["n_slides"] = n_slides
     if title:
@@ -2484,7 +2484,7 @@ async def update_presentation(
         if len(slides) > MAX_NUMBER_OF_SLIDES:
             raise HTTPException(
                 status_code=400,
-                detail=f"Number of slides cannot be greater than {MAX_NUMBER_OF_SLIDES}",
+                detail=t("err.presentation.numberOfSlidesCannotBeGreater", max_number_of_slides=MAX_NUMBER_OF_SLIDES),
             )
         # Just to make sure id is UUID
         for slide in slides:
@@ -2519,17 +2519,17 @@ async def update_presentation_slide(
     except (AttributeError, TypeError, ValueError) as exc:
         raise HTTPException(
             status_code=422,
-            detail="Slide and presentation IDs must be valid UUIDs",
+            detail=t("err.presentation.slideAndPresentationIdsMustBe"),
         ) from exc
 
     stored_slide = await sql_session.get(SlideModel, slide_id)
     if not stored_slide:
-        raise HTTPException(status_code=404, detail="Slide not found")
+        raise HTTPException(status_code=404, detail=t("err.presentation.slideNotFound"))
 
     if stored_slide.presentation != presentation_id:
         raise HTTPException(
             status_code=400,
-            detail="Slide does not belong to the supplied presentation",
+            detail=t("err.presentation.slideDoesNotBelongToThe"),
         )
 
     stored_slide.sqlmodel_update(
@@ -2554,19 +2554,19 @@ async def check_if_api_request_is_valid(
     if not (request.content or request.slides_markdown or request.files):
         raise HTTPException(
             status_code=400,
-            detail="Either content or slides markdown or files is required to generate presentation",
+            detail=t("err.presentation.eitherContentOrSlidesMarkdownOr"),
         )
 
     if request.n_slides is not None and request.n_slides <= 0:
         raise HTTPException(
             status_code=400,
-            detail="Number of slides must be greater than 0",
+            detail=t("err.presentation.numberOfSlidesMustBeGreater"),
         )
 
     if request.n_slides is not None and request.n_slides > MAX_NUMBER_OF_SLIDES:
         raise HTTPException(
             status_code=400,
-            detail=f"Number of slides cannot be greater than {MAX_NUMBER_OF_SLIDES}",
+            detail=t("err.presentation.numberOfSlidesCannotBeGreater", max_number_of_slides=MAX_NUMBER_OF_SLIDES),
         )
 
     if (
@@ -2575,7 +2575,7 @@ async def check_if_api_request_is_valid(
     ):
         raise HTTPException(
             status_code=400,
-            detail=f"Number of slides cannot be greater than {MAX_NUMBER_OF_SLIDES}",
+            detail=t("err.presentation.numberOfSlidesCannotBeGreater", max_number_of_slides=MAX_NUMBER_OF_SLIDES),
         )
 
     if (
@@ -2585,7 +2585,7 @@ async def check_if_api_request_is_valid(
     ):
         raise HTTPException(
             status_code=400,
-            detail="Number of slides cannot be less than 3 if table of contents is included",
+            detail=t("err.presentation.numberOfSlidesCannotBeLess"),
         )
 
     # Checking if template is valid. Generation supports TemplateV2 rows and
@@ -2603,7 +2603,7 @@ async def check_if_api_request_is_valid(
 
     raise HTTPException(
         status_code=400,
-        detail="Template not found. Please use a valid template.",
+        detail=t("err.presentation.templateNotFoundPleaseUseA"),
     )
 
 
@@ -2638,7 +2638,7 @@ async def generate_presentation_handler(
             if len(request.slides_markdown) > MAX_NUMBER_OF_SLIDES:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Number of slides cannot be greater than {MAX_NUMBER_OF_SLIDES}",
+                    detail=t("err.presentation.numberOfSlidesCannotBeGreater", max_number_of_slides=MAX_NUMBER_OF_SLIDES),
                 )
             request.n_slides = len(request.slides_markdown)
 
@@ -2732,7 +2732,7 @@ async def generate_presentation_handler(
                 traceback.print_exc()
                 raise HTTPException(
                     status_code=400,
-                    detail="Failed to generate presentation outlines. Please try again.",
+                    detail=t("err.presentation.failedToGeneratePresentationOutlinesPlease"),
                 )
             presentation_outlines = PresentationOutlineModel(
                 **normalize_outline_payload(
@@ -2746,8 +2746,7 @@ async def generate_presentation_handler(
                     raise HTTPException(
                         status_code=400,
                         detail=(
-                            "Failed to generate presentation outlines with requested "
-                            "number of slides. Please try again."
+                            t("err.presentation.failedToGeneratePresentationOutlinesWith")
                         ),
                     )
                 # Overshooting by a slide or two is common and recoverable:
@@ -3065,7 +3064,7 @@ async def generate_presentation_handler(
     except Exception as e:
         if not isinstance(e, HTTPException):
             traceback.print_exc()
-            e = HTTPException(status_code=500, detail="Presentation generation failed")
+            e = HTTPException(status_code=500, detail=t("err.presentation.presentationGenerationFailed"))
 
         api_error_model = APIErrorModel.from_exception(e)
 
@@ -3115,7 +3114,7 @@ async def generate_presentation_sync(
         raise
     except Exception:
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail="Presentation generation failed")
+        raise HTTPException(status_code=500, detail=t("err.presentation.presentationGenerationFailed"))
 
 
 async def _run_generate_presentation_task(
@@ -3197,7 +3196,7 @@ async def generate_presentation_async(
     except Exception as e:
         if not isinstance(e, HTTPException):
             print(e)
-            e = HTTPException(status_code=500, detail="Presentation generation failed")
+            e = HTTPException(status_code=500, detail=t("err.presentation.presentationGenerationFailed"))
 
         raise e
 
@@ -3211,7 +3210,7 @@ async def check_async_presentation_generation_status(
     status = await sql_session.get(AsyncTaskModel, id)
     if not status:
         raise HTTPException(
-            status_code=404, detail="No presentation generation task found"
+            status_code=404, detail=t("err.presentation.noPresentationGenerationTaskFound")
         )
     response = status.model_copy(deep=True)
     if response.data:
@@ -3227,7 +3226,7 @@ async def edit_presentation_with_new_content(
 ):
     presentation = await sql_session.get(PresentationModel, data.presentation_id)
     if not presentation:
-        raise HTTPException(status_code=404, detail="Presentation not found")
+        raise HTTPException(status_code=404, detail=t("err.presentation.presentationNotFound"))
 
     slides = await sql_session.scalars(
         select(SlideModel).where(SlideModel.presentation == data.presentation_id)
@@ -3278,7 +3277,7 @@ async def derive_presentation_from_existing_one(
 ):
     presentation = await sql_session.get(PresentationModel, data.presentation_id)
     if not presentation:
-        raise HTTPException(status_code=404, detail="Presentation not found")
+        raise HTTPException(status_code=404, detail=t("err.presentation.presentationNotFound"))
 
     slides = await sql_session.scalars(
         select(SlideModel).where(SlideModel.presentation == data.presentation_id)

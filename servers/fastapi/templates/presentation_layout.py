@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, model_validator
 
 from models.presentation_structure_model import PresentationStructureModel
 from utils.icon_weights import DEFAULT_ICON_TYPE, extract_icon_type_from_settings
+from utils.i18n import t
 
 
 class SlideLayoutModel(BaseModel):
@@ -38,7 +39,7 @@ class PresentationLayoutModel(BaseModel):
             if slide.id == slide_layout_id:
                 return index
         raise HTTPException(
-            status_code=404, detail=f"Slide layout {slide_layout_id} not found"
+            status_code=404, detail=t("err.presentationLayout.slideLayoutNotFound", slide_layout_id=slide_layout_id)
         )
 
     def to_presentation_structure(self) -> PresentationStructureModel:

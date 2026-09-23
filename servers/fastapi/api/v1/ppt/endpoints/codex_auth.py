@@ -44,6 +44,7 @@ from utils.set_env import (
     set_codex_username_env,
 )
 from utils.user_config import save_codex_tokens_to_user_config
+from utils.i18n import t
 
 CODEX_AUTH_ROUTER = APIRouter(prefix="/codex/auth", tags=["Codex OAuth"])
 CHATGPT_AUTH_REQUIRED_HEADERS = {"X-Presenton-Auth-Action": "codex-reauth"}
@@ -178,7 +179,7 @@ async def poll_codex_auth_status(session_id: str):
     """
     session = _sessions.get(session_id)
     if not session:
-        raise HTTPException(status_code=404, detail="Session not found or already consumed")
+        raise HTTPException(status_code=404, detail=t("err.codexAuth.sessionNotFoundOrAlreadyConsumed"))
 
     server: OAuthCallbackServer = session["server"]
 
@@ -223,17 +224,17 @@ async def exchange_codex_code(body: ExchangeRequest):
     """
     session = _sessions.get(body.session_id)
     if not session:
-        raise HTTPException(status_code=404, detail="Session not found or already consumed")
+        raise HTTPException(status_code=404, detail=t("err.codexAuth.sessionNotFoundOrAlreadyConsumed"))
 
     parsed = parse_authorization_input(body.code)
     code = parsed.get("code")
     incoming_state = parsed.get("state")
 
     if not code:
-        raise HTTPException(status_code=400, detail="Could not extract authorization code from input")
+        raise HTTPException(status_code=400, detail=t("err.codexAuth.couldNotExtractAuthorizationCodeFrom"))
 
     if incoming_state and incoming_state != session["state"]:
-        raise HTTPException(status_code=400, detail="State mismatch — possible CSRF")
+        raise HTTPException(status_code=400, detail=t("err.codexAuth.stateMismatchPossibleCsrf"))
 
     verifier: str = session["verifier"]
     server: OAuthCallbackServer = session["server"]
@@ -244,11 +245,11 @@ async def exchange_codex_code(body: ExchangeRequest):
     _sessions.pop(body.session_id, None)
 
     if not isinstance(result, TokenSuccess):
-        raise HTTPException(status_code=502, detail=f"Token exchange failed: {result.reason}")
+        raise HTTPException(status_code=502, detail=t("err.codexAuth.tokenExchangeFailed", reason=result.reason))
 
     profile = _store_token(result)
     if not profile.account_id:
-        raise HTTPException(status_code=502, detail="Token exchanged but could not extract account ID")
+        raise HTTPException(status_code=502, detail=t("err.codexAuth.tokenExchangedButCouldNotExtract"))
 
     return ExchangeResponse(
         account_id=profile.account_id,
@@ -270,8 +271,7 @@ async def refresh_codex_token():
         raise HTTPException(
             status_code=401,
             detail=(
-                f"{CHATGPT_AUTH_REQUIRED_PREFIX} ChatGPT authentication is required. "
-                "Please sign in again from Settings."
+                t("err.codexAuth.chatgptAuthenticationIsRequiredPleaseSign", chatgpt_auth_required_prefix=CHATGPT_AUTH_REQUIRED_PREFIX)
             ),
             headers=CHATGPT_AUTH_REQUIRED_HEADERS,
         )
@@ -281,8 +281,7 @@ async def refresh_codex_token():
         raise HTTPException(
             status_code=401,
             detail=(
-                f"{CHATGPT_AUTH_REQUIRED_PREFIX} Your ChatGPT session expired. "
-                "Please sign in again from Settings."
+                t("err.codexAuth.yourChatgptSessionExpiredPleaseSign", chatgpt_auth_required_prefix=CHATGPT_AUTH_REQUIRED_PREFIX)
             ),
             headers=CHATGPT_AUTH_REQUIRED_HEADERS,
         )

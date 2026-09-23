@@ -22,6 +22,7 @@ from api.v1.auth.config import (
     get_or_create_auth_secret,
     verify_legacy_password_hash,
 )
+from utils.i18n import t
 
 
 class LegacyAwarePasswordHelper(PasswordHelperProtocol):
@@ -212,7 +213,7 @@ async def get_current_user(
     user: User | None = Depends(read_user_from_cookie),
 ) -> User:
     if user is None:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail=t("auth.unauthorized"))
     return user
 
 
@@ -220,7 +221,7 @@ async def get_current_admin(
     user: User = Depends(get_current_user),
 ) -> User:
     if not user.is_superuser:
-        raise HTTPException(status_code=403, detail="Admin access required")
+        raise HTTPException(status_code=403, detail=t("admin.adminAccessRequired"))
     return user
 
 

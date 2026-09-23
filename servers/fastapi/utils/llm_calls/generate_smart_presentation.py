@@ -41,6 +41,7 @@ from utils.llm_utils import (
     stream_generate_events,
 )
 from utils.smart_slide_layout import inspect_smart_slide_layout
+from utils.i18n import t
 
 DEFAULT_SMART_SLIDE_COUNT = 8
 # Smart generation shares the same product-wide limit as every other deck path.
@@ -925,12 +926,13 @@ async def generate_smart_presentation(
 
     if last_exception is not None and not isinstance(last_exception, HTTPException):
         raise handle_llm_client_exceptions(last_exception)
+    # Messages raised inside the attempts stay English: they are fed back to
+    # the model as retry feedback. Only what reaches the user is localized.
     if isinstance(last_exception, HTTPException) and last_exception.status_code == 422:
-        raise last_exception
+        raise HTTPException(
+            status_code=422, detail=t("err.smart.outputTokenLimit")
+        ) from last_exception
     raise HTTPException(
         status_code=500,
-        detail=(
-            "Failed to generate the complete Smart presentation after retries; "
-            f"{len(accepted_slides)} valid slides were retained"
-        ),
+        detail=t("err.smart.incomplete", count=len(accepted_slides)),
     ) from last_exception

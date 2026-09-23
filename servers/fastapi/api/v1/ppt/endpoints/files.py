@@ -12,6 +12,7 @@ from services.temp_file_service import TEMP_FILE_SERVICE
 from services.documents_loader import DocumentsLoader
 import uuid
 from utils.validators import validate_files
+from utils.i18n import t
 
 FILES_ROUTER = APIRouter(prefix="/files", tags=["Files"])
 
@@ -66,12 +67,12 @@ def _decode_mcp_file(upload: McpEncodedFileUpload) -> bytes:
     except (binascii.Error, ValueError) as exc:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid base64 content for '{upload.filename}'",
+            detail=t("err.files.invalidBase64ContentFor", filename=upload.filename),
         ) from exc
     if len(content) > MCP_FILES_UPLOAD_MAX_TOTAL_BYTES:
         raise HTTPException(
             status_code=413,
-            detail=f"'{upload.filename}' exceeds the allowed upload size",
+            detail=t("err.files.exceedsTheAllowedUploadSize", filename=upload.filename),
         )
     return content
 
@@ -79,7 +80,7 @@ def _decode_mcp_file(upload: McpEncodedFileUpload) -> bytes:
 @FILES_ROUTER.post("/upload", response_model=List[str])
 async def upload_files(files: Optional[List[UploadFile]]):
     if not files:
-        raise HTTPException(400, "Documents are required")
+        raise HTTPException(400, t("err.files.documentsAreRequired"))
 
     temp_dir = TEMP_FILE_SERVICE.create_temp_dir(str(uuid.uuid4()))
 
@@ -115,7 +116,7 @@ async def upload_files_for_mcp(request: McpFilesUploadRequest):
         if total_bytes > MCP_FILES_UPLOAD_MAX_TOTAL_BYTES:
             raise HTTPException(
                 status_code=413,
-                detail="Combined file upload exceeds 100 MiB",
+                detail=t("err.files.combinedFileUploadExceeds100Mib"),
             )
         decoded_files.append((encoded_file, content))
 

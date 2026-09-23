@@ -9,6 +9,7 @@ from enums.async_task_status import AsyncTaskStatus
 from models.sql.async_task import AsyncTaskModel
 from services.database import get_async_session
 from utils.mcp_public_urls import absolute_mcp_result_links
+from utils.i18n import t
 
 
 API_V1_ASYNC_TASKS_ROUTER = APIRouter(
@@ -77,7 +78,7 @@ async def check_async_task_status(
 ):
     task = await sql_session.get(AsyncTaskModel, id)
     if not task:
-        raise HTTPException(status_code=404, detail="No async task found")
+        raise HTTPException(status_code=404, detail=t("err.router.noAsyncTaskFound"))
     response = task.model_dump(mode="python")
     if task.data:
         response["data"] = absolute_mcp_result_links(request, task.data)

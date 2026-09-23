@@ -341,3 +341,51 @@ def test_unknown_validation_types_keep_original_message():
     # ctx that is not a dict (or missing) must not break formatting.
     weird = [{"type": "string_too_short", "loc": ("body",), "msg": "x", "ctx": "nope"}]
     assert "{min_length}" in localize_validation_errors(weird, "ru")[0]["msg"]
+
+
+def _backend_translation_keys():
+    """Every literal key passed to t(...) / http_error(status, ...) in app code."""
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[2]
+    call = re.compile(
+        r"""(?<![\w.])(?:t\(\s*|http_error\(\s*[^,()]+,\s*)["']([A-Za-z][\w.]*)["']"""
+    )
+    found = {}
+    for path in root.rglob("*.py"):
+        rel = path.relative_to(root).as_posix()
+        if rel.startswith(("tests/", ".venv/", "alembic/")):
+            continue
+        for match in call.finditer(path.read_text(encoding="utf-8")):
+            found.setdefault(match.group(1), rel)
+    return found
+
+
+def test_every_backend_translation_key_exists_in_both_catalogs():
+    keys = _backend_translation_keys()
+    # The migration touched dozens of modules; make sure the scan sees them.
+    assert len(keys) > 200
+    missing = {
+        key: where
+        for key, where in keys.items()
+        if key not in en.MESSAGES or key not in ru.MESSAGES
+    }
+    assert missing == {}
+
+
+def test_migrated_http_errors_follow_request_locale(client):
+    app = FastAPI()
+    app.add_middleware(LocaleMiddleware)
+
+    @app.get("/missing")
+    async def missing():
+        raise HTTPException(
+            status_code=404, detail=t("err.presentation.presentationNotFound")
+        )
+
+    local = TestClient(app)
+    assert local.get("/missing").json()["detail"] == "Презентация не найдена"
+    assert (
+        local.get("/missing", headers={"X-Locale": "en"}).json()["detail"]
+        == "Presentation not found"
+    )

@@ -10,6 +10,7 @@ from fastapi import HTTPException
 from constants.supported_ollama_models import SUPPORTED_OLLAMA_MODELS
 from models.ollama_model_status import OllamaModelStatus
 from utils.get_env import get_ollama_url_env
+from utils.i18n import t
 
 LOGGER = logging.getLogger(__name__)
 
@@ -49,13 +50,13 @@ def _get_ollama_url(ollama_url: str | None = None) -> str:
     if not resolved_url:
         resolved_url = "http://localhost:11434"
     if any(ord(ch) < 32 for ch in resolved_url):
-        raise HTTPException(status_code=400, detail="Invalid Ollama URL")
+        raise HTTPException(status_code=400, detail=t("err.ollama.invalidOllamaUrl"))
     parsed_url = urlparse(resolved_url)
     if not parsed_url.scheme:
         resolved_url = f"http://{resolved_url}"
         parsed_url = urlparse(resolved_url)
     if parsed_url.scheme not in {"http", "https"} or not parsed_url.netloc:
-        raise HTTPException(status_code=400, detail="Invalid Ollama URL")
+        raise HTTPException(status_code=400, detail=t("err.ollama.invalidOllamaUrl"))
     return resolved_url.rstrip("/")
 
 
@@ -64,9 +65,7 @@ def _ollama_unreachable_error(ollama_url: str | None = None) -> HTTPException:
     return HTTPException(
         status_code=503,
         detail=(
-            f"Could not connect to Ollama at {resolved_ollama_url}. "
-            "Make sure Ollama is running and reachable from Presenton. "
-            "When Presenton runs in Docker, use host.docker.internal instead of localhost."
+            t("err.ollama.couldNotConnectToOllamaAt", resolved_ollama_url=resolved_ollama_url)
         ),
     )
 
@@ -108,7 +107,7 @@ async def list_available_ollama_models(
                     if not isinstance(models, list):
                         raise HTTPException(
                             status_code=502,
-                            detail="Ollama returned an invalid models response",
+                            detail=t("err.ollama.ollamaReturnedAnInvalidModelsResponse"),
                         )
                     return [
                         OllamaModelStatus(
@@ -129,12 +128,12 @@ async def list_available_ollama_models(
                 elif response.status == 403:
                     raise HTTPException(
                         status_code=403,
-                        detail="Forbidden: Please check your Ollama Configuration",
+                        detail=t("err.ollama.forbiddenPleaseCheckYourOllamaConfiguration"),
                     )
                 else:
                     raise HTTPException(
                         status_code=response.status,
-                        detail=f"Failed to list Ollama models: {response.status}",
+                        detail=t("err.ollama.failedToListOllamaModels", status=response.status),
                     )
     except HTTPException:
         raise

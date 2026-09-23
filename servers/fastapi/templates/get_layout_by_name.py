@@ -10,6 +10,7 @@ from api.v1.auth.internal import authenticated_internal_request_headers
 from templates.custom_layout_from_db import load_custom_presentation_layout
 from templates.presentation_layout import PresentationLayoutModel
 from utils.icon_weights import extract_icon_type_from_settings
+from utils.i18n import t
 
 LOGGER = logging.getLogger(__name__)
 
@@ -144,7 +145,7 @@ async def get_layout_by_name(layout_name: str) -> PresentationLayoutModel:
         )
         raise HTTPException(
             status_code=404,
-            detail=f"Template '{layout_name}' not found: {error_detail}",
+            detail=t("err.getLayoutByName.templateNotFound", layout_name=layout_name, error_detail=error_detail),
         )
 
     local_settings = _read_builtin_template_settings(layout_name)
@@ -167,7 +168,7 @@ async def get_layout_by_name(layout_name: str) -> PresentationLayoutModel:
         )
         raise HTTPException(
             status_code=404,
-            detail=f"Template '{layout_name}' not found",
+            detail=t("err.getLayoutByName.templateNotFound2", layout_name=layout_name),
         )
 
     LOGGER.info(

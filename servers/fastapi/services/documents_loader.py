@@ -27,6 +27,7 @@ from services.office_document_service import (
 )
 from services.temp_file_service import TEMP_FILE_SERVICE
 from utils.ocr_language import presentation_language_to_ocr_code
+from utils.i18n import t
 
 # Optional fallback converter (primarily useful on Windows)
 try:
@@ -203,7 +204,7 @@ class DocumentsLoader:
         for file_path in self._file_paths:
             if not os.path.exists(file_path):
                 raise HTTPException(
-                    status_code=404, detail=f"File {file_path} not found"
+                    status_code=404, detail=t("err.documentsLoader.fileNotFound", file_path=file_path)
                 )
 
             document = ""
@@ -262,7 +263,7 @@ class DocumentsLoader:
             if temp_dir is None:
                 raise HTTPException(
                     status_code=400,
-                    detail="temp_dir is required when load_images is true",
+                    detail=t("err.documentsLoader.tempDirIsRequiredWhenLoad"),
                 )
             image_paths = await self.get_page_images_from_pdf_async(file_path, temp_dir)
 
@@ -336,7 +337,7 @@ class DocumentsLoader:
                     pass
             raise HTTPException(
                 status_code=500,
-                detail=f"Failed to parse document {os.path.basename(file_path)}: {exc}",
+                detail=t("err.documentsLoader.failedToParseDocument", basename=os.path.basename(file_path), error=exc),
             ) from exc
 
     @classmethod

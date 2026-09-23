@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from enums.webhook_event import WebhookEvent
 from models.sql.webhook_subscription import WebhookSubscription
 from services.database import get_async_session
+from utils.i18n import t
 
 API_V1_WEBHOOK_ROUTER = APIRouter(prefix="/api/v1/webhook", tags=["Webhook"])
 
@@ -47,7 +48,7 @@ async def unsubscribe_to_webhook(
 
     webhook_subscription = await sql_session.get(WebhookSubscription, id)
     if not webhook_subscription:
-        raise HTTPException(404, "Webhook subscription not found")
+        raise HTTPException(404, t("err.router.webhookSubscriptionNotFound"))
 
     await sql_session.delete(webhook_subscription)
     await sql_session.commit()

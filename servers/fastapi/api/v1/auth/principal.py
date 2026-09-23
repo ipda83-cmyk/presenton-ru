@@ -9,6 +9,7 @@ from api.v1.auth.users import UsernameUserDatabase, UserManager, get_jwt_strateg
 from models.sql.user import User
 from api.v1.auth.config import SESSION_COOKIE_NAME
 from services.api_keys import verify_api_key
+from utils.i18n import t
 
 
 @dataclass(frozen=True)
@@ -60,12 +61,12 @@ async def resolve_request_principal(
 def principal_from_request(request: Request) -> AuthPrincipal:
     principal = getattr(request.state, "auth_principal", None)
     if principal is None:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail=t("auth.unauthorized"))
     return principal
 
 
 def require_browser_admin_principal(request: Request) -> AuthPrincipal:
     principal = principal_from_request(request)
     if principal.method != "jwt" or not principal.is_admin:
-        raise HTTPException(status_code=403, detail="Admin browser session required")
+        raise HTTPException(status_code=403, detail=t("auth.adminSessionRequired"))
     return principal

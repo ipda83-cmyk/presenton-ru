@@ -9,6 +9,7 @@ import aiohttp
 from fastapi import HTTPException
 
 from utils.get_env import is_community_enabled
+from utils.i18n import t
 
 
 DEFAULT_COMMUNITY_API_URL = (
@@ -180,12 +181,12 @@ def normalize_community_ids(values: Sequence[int] | None) -> list[int]:
         except (TypeError, ValueError) as exc:
             raise HTTPException(
                 status_code=422,
-                detail="Community reference IDs must be positive integers",
+                detail=t("err.communityPresentations.communityReferenceIdsMustBePositive"),
             ) from exc
         if community_id <= 0:
             raise HTTPException(
                 status_code=422,
-                detail="Community reference IDs must be positive integers",
+                detail=t("err.communityPresentations.communityReferenceIdsMustBePositive"),
             )
         if community_id not in normalized:
             normalized.append(community_id)
@@ -194,8 +195,7 @@ def normalize_community_ids(values: Sequence[int] | None) -> list[int]:
         raise HTTPException(
             status_code=422,
             detail=(
-                f"A maximum of {MAX_COMMUNITY_REFERENCES} community references "
-                "can be used"
+                t("err.communityPresentations.aMaximumOfCommunityReferencesCan", max_community_references=MAX_COMMUNITY_REFERENCES)
             ),
         )
     return normalized

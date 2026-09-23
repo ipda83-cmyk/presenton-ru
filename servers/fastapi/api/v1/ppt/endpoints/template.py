@@ -89,6 +89,7 @@ from utils.icon_weights import (
 )
 from utils.datetime_utils import get_current_utc_datetime
 from utils.llm_client_error_handler import handle_llm_client_exceptions
+from utils.i18n import t
 
 
 TEMPLATE_ROUTER = APIRouter(prefix="/template", tags=["Templates"])
@@ -209,12 +210,12 @@ def _decode_mcp_upload(upload: McpEncodedUpload, *, max_bytes: int) -> bytes:
     except (binascii.Error, ValueError) as exc:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid base64 content for '{upload.filename}'",
+            detail=t("err.template.invalidBase64ContentFor", filename=upload.filename),
         ) from exc
     if len(content) > max_bytes:
         raise HTTPException(
             status_code=413,
-            detail=f"'{upload.filename}' exceeds the allowed upload size",
+            detail=t("err.template.exceedsTheAllowedUploadSize", filename=upload.filename),
         )
     return content
 
@@ -574,7 +575,7 @@ async def _generate_slide_layouts(
         )
         raise HTTPException(
             status_code=500,
-            detail="Slide layout generation produced invalid output",
+            detail=t("err.template.slideLayoutGenerationProducedInvalidOutput"),
         ) from exc
 
     LOGGER.info(
@@ -909,9 +910,7 @@ async def _prepare_template_source(
         raise HTTPException(
             status_code=400,
             detail=(
-                "PPTX file not found. MCP clients must call upload_template_assets "
-                "with the PPTX file contents and use the returned pptx_url; a host "
-                "application attachment ID cannot be used directly."
+                t("err.template.pptxFileNotFoundMcpClients")
             ),
         )
 
@@ -934,7 +933,7 @@ async def _prepare_template_source(
         )
         raise HTTPException(
             status_code=500,
-            detail="PPTX-to-JSON export produced invalid slide layout JSON",
+            detail=t("err.template.pptxToJsonExportProducedInvalid"),
         ) from exc
     LOGGER.info(
         "[template.%s] PPTX-to-JSON validation complete pptx_path=%s "
@@ -958,7 +957,7 @@ async def _prepare_template_source(
     elif len(request.slide_image_urls) > len(raw_layouts.layouts):
         raise HTTPException(
             status_code=400,
-            detail="Exactly one slide image is required for each slide layout",
+            detail=t("err.template.exactlyOneSlideImageIsRequired"),
         )
 
     return (
@@ -1011,7 +1010,7 @@ def _merge_template_layout_items(
 
     for item in items:
         if max_slide_count is not None and item.index >= max_slide_count:
-            raise HTTPException(status_code=400, detail="Invalid slide index")
+            raise HTTPException(status_code=400, detail=t("err.template.invalidSlideIndex"))
         layout_by_index[item.index] = item.layout
 
     ordered_indexes = sorted(layout_by_index)
@@ -1025,7 +1024,7 @@ def _merge_template_layout_items(
     except ValidationError as exc:
         raise HTTPException(
             status_code=400,
-            detail="Patched template layouts are invalid",
+            detail=t("err.template.patchedTemplateLayoutsAreInvalid"),
         ) from exc
 
 
@@ -1186,7 +1185,7 @@ async def upload_template_assets_for_mcp(request: McpTemplateUploadRequest):
         max_bytes=100 * 1024 * 1024,
     )
     if not request.pptx.filename.lower().endswith(".pptx"):
-        raise HTTPException(status_code=400, detail="The template file must be a PPTX")
+        raise HTTPException(status_code=400, detail=t("err.template.theTemplateFileMustBeA"))
 
     pptx_file = UploadFile(
         file=BytesIO(pptx_content),
@@ -1202,7 +1201,7 @@ async def upload_template_assets_for_mcp(request: McpTemplateUploadRequest):
         if total_bytes > MCP_TEMPLATE_UPLOAD_MAX_TOTAL_BYTES:
             raise HTTPException(
                 status_code=413,
-                detail="Combined template upload exceeds 100 MiB",
+                detail=t("err.template.combinedTemplateUploadExceeds100Mib"),
             )
         font_files.append(
             UploadFile(
@@ -1397,7 +1396,7 @@ async def _create_template_with_task_progress(
         )
         raise HTTPException(
             status_code=500,
-            detail="Slide layout generation produced invalid output",
+            detail=t("err.template.slideLayoutGenerationProducedInvalidOutput"),
         ) from exc
     merged_components, generated_theme = await asyncio.gather(
         _merge_generated_components(generated_layouts),
@@ -1454,7 +1453,7 @@ async def _run_create_template_task(
                 if not isinstance(task.payload, dict):
                     raise HTTPException(
                         status_code=409,
-                        detail="Template task does not contain retry data",
+                        detail=t("err.template.templateTaskDoesNotContainRetry"),
                     )
                 request = CreateTemplateRequest.model_validate(task.payload)
                 identity = _template_task_identity_data(task)
@@ -1462,7 +1461,7 @@ async def _run_create_template_task(
                 if not isinstance(template_id, str) or not template_id.strip():
                     raise HTTPException(
                         status_code=409,
-                        detail="Template task does not contain a template id",
+                        detail=t("err.template.templateTaskDoesNotContainA"),
                     )
 
                 task.status = AsyncTaskStatus.PENDING
@@ -1510,7 +1509,7 @@ async def _run_create_template_task(
                 api_error = APIErrorModel.from_exception(
                     exc
                     if isinstance(exc, HTTPException)
-                    else HTTPException(status_code=500, detail="Template creation failed")
+                    else HTTPException(status_code=500, detail=t("err.template.templateCreationFailed"))
                 )
                 task.error = api_error.model_dump(mode="json")
                 task.updated_at = datetime.now()
@@ -1538,9 +1537,7 @@ async def create_template(
         raise HTTPException(
             status_code=400,
             detail=(
-                "PPTX file not found. MCP clients must call upload_template_assets "
-                "with the PPTX file contents and use the returned pptx_url; a host "
-                "application attachment ID cannot be used directly."
+                t("err.template.pptxFileNotFoundMcpClients")
             ),
         )
     template_id = str(uuid.uuid4())
@@ -1582,21 +1579,21 @@ async def retry_create_template(
 ):
     original_task = await sql_session.get(AsyncTaskModel, task_id)
     if not original_task:
-        raise HTTPException(status_code=404, detail="No async task found")
+        raise HTTPException(status_code=404, detail=t("err.template.noAsyncTaskFound"))
     if original_task.type != ASYNC_TASK_TYPE_TEMPLATE_CREATE:
         raise HTTPException(
             status_code=400,
-            detail="Only template creation tasks can be retried",
+            detail=t("err.template.onlyTemplateCreationTasksCanBe"),
         )
     if original_task.status != AsyncTaskStatus.ERROR:
         raise HTTPException(
             status_code=409,
-            detail="Only failed template creation tasks can be retried",
+            detail=t("err.template.onlyFailedTemplateCreationTasksCan"),
         )
     if not isinstance(original_task.payload, dict):
         raise HTTPException(
             status_code=409,
-            detail="Template task does not contain retry data",
+            detail=t("err.template.templateTaskDoesNotContainRetry"),
         )
 
     original_identity = _template_task_identity_data(original_task)
@@ -1604,12 +1601,12 @@ async def retry_create_template(
     if not isinstance(template_id, str) or not template_id.strip():
         raise HTTPException(
             status_code=409,
-            detail="Template task does not contain a template id",
+            detail=t("err.template.templateTaskDoesNotContainA"),
         )
     if await sql_session.get(TemplateV2, template_id):
         raise HTTPException(
             status_code=409,
-            detail="Template has already been created",
+            detail=t("err.template.templateHasAlreadyBeenCreated"),
         )
 
     try:
@@ -1617,7 +1614,7 @@ async def retry_create_template(
     except ValidationError as exc:
         raise HTTPException(
             status_code=409,
-            detail="Template task contains invalid retry data",
+            detail=t("err.template.templateTaskContainsInvalidRetryData"),
         ) from exc
 
     original_task.status = AsyncTaskStatus.PENDING
@@ -1655,11 +1652,11 @@ async def generate_template_layout_from_prompt(
 ):
     template = await sql_session.get(TemplateV2, request.template_id)
     if not template:
-        raise HTTPException(status_code=404, detail="Template not found")
+        raise HTTPException(status_code=404, detail=t("err.template.templateNotFound"))
     if template.layouts is None:
         raise HTTPException(
             status_code=400,
-            detail="Template layouts are unavailable",
+            detail=t("err.template.templateLayoutsAreUnavailable"),
         )
 
     try:
@@ -1672,7 +1669,7 @@ async def generate_template_layout_from_prompt(
         )
         raise HTTPException(
             status_code=500,
-            detail="Template layouts are invalid",
+            detail=t("err.template.templateLayoutsAreInvalid"),
         ) from exc
 
     merged_components: MergedComponents | None = None
@@ -1744,13 +1741,13 @@ async def create_template_slide_layouts(
 ):
     template = await sql_session.get(TemplateV2, request.template_id)
     if not template:
-        raise HTTPException(status_code=404, detail="Template not found")
+        raise HTTPException(status_code=404, detail=t("err.template.templateNotFound"))
     _require_private_template(template)
 
     if not isinstance(template.raw_layouts, dict):
         raise HTTPException(
             status_code=400,
-            detail="Template raw layouts are unavailable",
+            detail=t("err.template.templateRawLayoutsAreUnavailable"),
         )
 
     try:
@@ -1763,12 +1760,12 @@ async def create_template_slide_layouts(
         )
         raise HTTPException(
             status_code=500,
-            detail="Template raw layouts are invalid",
+            detail=t("err.template.templateRawLayoutsAreInvalid"),
         ) from exc
 
     indices = request.layout_indices
     if any(index >= len(raw_layouts.layouts) for index in indices):
-        raise HTTPException(status_code=400, detail="Invalid slide index")
+        raise HTTPException(status_code=400, detail=t("err.template.invalidSlideIndex"))
 
     slide_image_urls = _get_template_slide_image_urls(template)
     missing_slide_image = any(
@@ -1778,7 +1775,7 @@ async def create_template_slide_layouts(
     if missing_slide_image:
         raise HTTPException(
             status_code=400,
-            detail="Slide image URL is unavailable for requested slide index",
+            detail=t("err.template.slideImageUrlIsUnavailableFor"),
         )
 
     LOGGER.info(
@@ -1805,7 +1802,7 @@ async def create_template_slide_layouts(
         )
         raise HTTPException(
             status_code=500,
-            detail="Slide layout creation produced invalid output",
+            detail=t("err.template.slideLayoutCreationProducedInvalidOutput"),
         ) from exc
 
     LOGGER.info(
@@ -1828,13 +1825,13 @@ async def generate_template_blocks(
 ):
     template = await sql_session.get(TemplateV2, request.template_id)
     if not template:
-        raise HTTPException(status_code=404, detail="Template not found")
+        raise HTTPException(status_code=404, detail=t("err.template.templateNotFound"))
     _require_private_template(template)
 
     if template.layouts is None:
         raise HTTPException(
             status_code=400,
-            detail="Template layouts are unavailable",
+            detail=t("err.template.templateLayoutsAreUnavailable"),
         )
 
     try:
@@ -1847,7 +1844,7 @@ async def generate_template_blocks(
         )
         raise HTTPException(
             status_code=500,
-            detail="Template layouts are invalid",
+            detail=t("err.template.templateLayoutsAreInvalid"),
         ) from exc
 
     merged_components, generated_theme = await asyncio.gather(
@@ -1886,7 +1883,7 @@ async def patch_template_slide_layout(
     async with lock:
         template = await sql_session.get(TemplateV2, template_id)
         if not template:
-            raise HTTPException(status_code=404, detail="Template not found")
+            raise HTTPException(status_code=404, detail=t("err.template.templateNotFound"))
         _require_private_template(template)
 
         try:
@@ -1902,7 +1899,7 @@ async def patch_template_slide_layout(
             )
             raise HTTPException(
                 status_code=500,
-                detail="Template layouts are invalid",
+                detail=t("err.template.templateLayoutsAreInvalid"),
             ) from exc
 
         assets = dict(template.assets) if isinstance(template.assets, dict) else {}
@@ -1932,12 +1929,12 @@ async def update_template_metadata(
     if request.id is not None and request.id != template_id:
         raise HTTPException(
             status_code=400,
-            detail="Template ID in path does not match request body ID",
+            detail=t("err.template.templateIdInPathDoesNot"),
         )
 
     template = await sql_session.get(TemplateV2, template_id)
     if not template:
-        raise HTTPException(status_code=404, detail="Template not found")
+        raise HTTPException(status_code=404, detail=t("err.template.templateNotFound"))
     _require_private_template(template)
 
     has_updates = False
@@ -1945,7 +1942,7 @@ async def update_template_metadata(
     if "name" in request.model_fields_set:
         name = (request.name or "").strip()
         if not name:
-            raise HTTPException(status_code=400, detail="Template name is required")
+            raise HTTPException(status_code=400, detail=t("err.template.templateNameIsRequired"))
         template.name = name
         has_updates = True
 
@@ -1965,7 +1962,7 @@ async def update_template_metadata(
             except ValidationError as exc:
                 raise HTTPException(
                     status_code=400,
-                    detail="Template merged components are invalid",
+                    detail=t("err.template.templateMergedComponentsAreInvalid"),
                 ) from exc
             template.merged_components = merged_components.model_dump(
                 mode="json",
@@ -1984,7 +1981,7 @@ async def update_template_metadata(
             except ValidationError as exc:
                 raise HTTPException(
                     status_code=400,
-                    detail="Template layouts are invalid",
+                    detail=t("err.template.templateLayoutsAreInvalid"),
                 ) from exc
             assets["layout_indexes"] = _layout_indexes_from_assets(
                 assets,
@@ -2047,7 +2044,7 @@ async def get_template_theme(
 ):
     template = await sql_session.get(TemplateV2, template_id)
     if not template:
-        raise HTTPException(status_code=404, detail="Template not found")
+        raise HTTPException(status_code=404, detail=t("err.template.templateNotFound"))
 
     theme: PresentationThemeData | None = None
     if template.theme is not None:
@@ -2082,7 +2079,7 @@ async def get_template(
 ):
     template = await sql_session.get(TemplateV2, template_id)
     if not template:
-        raise HTTPException(status_code=404, detail="Template not found")
+        raise HTTPException(status_code=404, detail=t("err.template.templateNotFound"))
 
     return TemplateResponse(
         id=template.id,
@@ -2112,7 +2109,7 @@ async def delete_template(
 ):
     template = await sql_session.get(TemplateV2, template_id)
     if not template:
-        raise HTTPException(status_code=404, detail="Template not found")
+        raise HTTPException(status_code=404, detail=t("err.template.templateNotFound"))
 
     _require_private_template(template)
     await sql_session.delete(template)
@@ -2122,5 +2119,5 @@ def _require_private_template(template: TemplateV2) -> None:
     if template.is_default:
         raise HTTPException(
             status_code=403,
-            detail="Built-in templates are read-only",
+            detail=t("err.template.builtInTemplatesAreReadOnly"),
         )

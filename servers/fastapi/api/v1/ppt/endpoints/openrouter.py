@@ -4,6 +4,7 @@ from urllib.parse import quote
 import aiohttp
 from fastapi import APIRouter, Body, HTTPException
 from pydantic import BaseModel, Field
+from utils.i18n import t
 
 
 OPENROUTER_ROUTER = APIRouter(prefix="/openrouter", tags=["OpenRouter"])
@@ -65,9 +66,9 @@ async def get_available_openrouter_providers(
     model = model.strip()
     api_key = api_key.strip()
     if not model:
-        raise HTTPException(status_code=400, detail="OpenRouter model is required")
+        raise HTTPException(status_code=400, detail=t("err.openrouter.openrouterModelIsRequired"))
     if not api_key:
-        raise HTTPException(status_code=400, detail="OpenRouter API key is required")
+        raise HTTPException(status_code=400, detail=t("err.openrouter.openrouterApiKeyIsRequired"))
 
     api_root = (base_url or DEFAULT_OPENROUTER_API_URL).strip().rstrip("/")
     headers = {"Authorization": f"Bearer {api_key}"}
@@ -92,7 +93,7 @@ async def get_available_openrouter_providers(
             if status >= 400:
                 raise HTTPException(
                     status_code=400 if status < 500 else 502,
-                    detail="OpenRouter could not list providers for this model",
+                    detail=t("err.openrouter.openrouterCouldNotListProvidersFor"),
                 )
             data = payload.get("data", []) if isinstance(payload, dict) else payload
             if isinstance(data, list):

@@ -30,6 +30,7 @@ from services.database import async_session_maker, get_async_session
 from utils.export_utils import export_presentation
 from utils.llm_calls.generate_smart_presentation import resolve_smart_slide_count
 from utils.mcp_public_urls import absolute_mcp_result_links
+from utils.i18n import t
 
 
 PRESENTATION_V2_ROUTER = APIRouter(
@@ -124,18 +125,18 @@ async def _generate_and_export_smart_presentation(
             elif event_type == "complete":
                 completed = True
             elif event_type == "error":
-                stream_error = str(event.get("detail") or "Smart generation failed")
+                stream_error = str(event.get("detail") or t("err.presentationV2.smartFailed"))
 
     if not completed:
         raise HTTPException(
             status_code=500,
-            detail=stream_error or "Smart generation did not complete",
+            detail=stream_error or t("err.presentationV2.smartDidNotComplete"),
         )
 
     await sql_session.rollback()
     presentation = await sql_session.get(PresentationModel, presentation.id)
     if presentation is None:
-        raise HTTPException(status_code=404, detail="Presentation not found")
+        raise HTTPException(status_code=404, detail=t("err.presentationV2.presentationNotFound"))
     exported = await export_presentation(
         presentation.id,
         presentation.title or str(presentation.id),
@@ -212,7 +213,7 @@ async def run_generate_smart_presentation_task(
                     if isinstance(exc, HTTPException)
                     else HTTPException(
                         status_code=500,
-                        detail="Smart presentation generation failed",
+                        detail=t("err.presentationV2.smartPresentationGenerationFailed"),
                     )
                 )
                 task.status = AsyncTaskStatus.ERROR
@@ -257,7 +258,7 @@ async def generate_smart_presentation_sync(
         LOGGER.exception("[presentation.generate.smart] generation failed")
         raise HTTPException(
             status_code=500,
-            detail="Smart presentation generation failed",
+            detail=t("err.presentationV2.smartPresentationGenerationFailed"),
         ) from exc
 
 

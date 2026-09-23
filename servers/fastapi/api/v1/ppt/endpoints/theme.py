@@ -12,6 +12,7 @@ from models.sql.key_value import KeyValueSqlModel
 from services.database import get_async_session
 from utils.asset_directory_utils import normalize_slide_asset_url
 from api.v1.auth.context import get_current_owner_id
+from utils.i18n import t
 
 THEMES_ROUTER = APIRouter(prefix="/themes", tags=["Themes"])
 THEMES_STORAGE_KEY = "presentation_custom_themes"
@@ -98,11 +99,11 @@ async def _resolve_logo_url(
     try:
         logo_uuid = uuid.UUID(str(logo))
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail="Invalid logo id") from exc
+        raise HTTPException(status_code=400, detail=t("err.theme.invalidLogoId")) from exc
 
     image_asset = await sql_session.get(ImageAsset, logo_uuid)
     if not image_asset:
-        raise HTTPException(status_code=404, detail="Logo not found")
+        raise HTTPException(status_code=404, detail=t("err.theme.logoNotFound"))
     return normalize_slide_asset_url(image_asset.path)
 
 
@@ -157,12 +158,12 @@ async def update_theme(
 ):
     row = await _get_themes_row(sql_session)
     if not row:
-        raise HTTPException(status_code=404, detail="Theme not found")
+        raise HTTPException(status_code=404, detail=t("err.theme.themeNotFound"))
 
     themes = _read_themes_from_row(row)
     theme = next((item for item in themes if item.get("id") == theme_id), None)
     if not theme:
-        raise HTTPException(status_code=404, detail="Theme not found")
+        raise HTTPException(status_code=404, detail=t("err.theme.themeNotFound"))
 
     if payload.name is not None:
         theme["name"] = payload.name

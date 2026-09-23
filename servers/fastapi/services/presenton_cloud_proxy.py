@@ -33,6 +33,7 @@ from services.presenton_cloud_persistence import (
 )
 from services.provider_settings import get_provider_settings
 from utils.get_env import get_presenton_oauth_issuer, is_community_enabled
+from utils.i18n import t
 
 
 logger = logging.getLogger(__name__)
@@ -454,7 +455,7 @@ async def maybe_proxy_presenton_cloud_request(
         return JSONResponse(
             status_code=503,
             content={
-                "detail": "Presenton is selected but the global provider is not connected"
+                "detail": t("err.presentonCloudProxy.providerNotConnected")
             },
         )
     assert provider is not None
@@ -525,7 +526,7 @@ async def maybe_proxy_presenton_cloud_request(
         if presentation_id is None or not isinstance(slide, dict):
             return JSONResponse(
                 status_code=400,
-                content={"detail": "A valid presentation slide is required"},
+                content={"detail": t("err.presentonCloudProxy.slideRequired")},
             )
         try:
             upstream_body = await _merge_single_slide_update(

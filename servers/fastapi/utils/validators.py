@@ -3,6 +3,7 @@ from typing import List
 from fastapi import HTTPException
 
 from fastapi import UploadFile
+from utils.i18n import t
 
 
 def _is_accepted_file_type(file: UploadFile, accepted_types: List[str]) -> bool:
@@ -36,13 +37,13 @@ def validate_files(
             if (max_size * 1024 * 1024) < file_size:
                 raise HTTPException(
                     400,
-                    detail=f"File '{each_file.filename}' exceeded max upload size of {max_size} MB",
+                    detail=t("err.validators.fileExceededMaxUploadSizeOf", filename=each_file.filename, max_size=max_size),
                 )
             elif not _is_accepted_file_type(each_file, accepted_types):
                 raise HTTPException(
                     400,
-                    detail=f"File '{each_file.filename}' not accepted. Accepted types: {accepted_types}",
+                    detail=t("err.validators.fileNotAcceptedAcceptedTypes", filename=each_file.filename, accepted_types=accepted_types),
                 )
 
     elif not (field or nullable):
-        raise HTTPException(400, detail="File must be provided.")
+        raise HTTPException(400, detail=t("err.validators.fileMustBeProvided"))

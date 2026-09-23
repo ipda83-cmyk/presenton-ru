@@ -7,6 +7,7 @@ from utils.llm_config import get_llm_config
 from utils.llm_client_error_handler import handle_llm_client_exceptions
 from utils.llm_utils import extract_text, get_generate_kwargs
 from utils.llm_provider import get_model
+from utils.i18n import t
 
 system_prompt = """
     You are an expert HTML slide editor. Your task is to modify slide HTML content based on user prompts while maintaining proper structure, styling, and functionality.
@@ -79,7 +80,7 @@ async def get_edited_slide_html(
         )
         response_text = extract_text(response.content)
         if response_text is None:
-            raise HTTPException(status_code=400, detail="LLM did not return any content")
+            raise HTTPException(status_code=400, detail=t("err.editSlideHtml.llmDidNotReturnAnyContent"))
         return extract_html_from_response(response_text) or html
     except Exception as e:
         raise handle_llm_client_exceptions(e)

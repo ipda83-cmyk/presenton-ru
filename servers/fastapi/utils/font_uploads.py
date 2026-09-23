@@ -19,6 +19,7 @@ from templates.pptx_font_utils import (
 )
 from utils.asset_directory_utils import absolute_fastapi_asset_url
 from utils.get_env import get_app_data_directory_env
+from utils.i18n import t
 
 
 ALLOWED_FONT_EXTENSIONS = {
@@ -114,7 +115,7 @@ def validate_font_filename(filename: str) -> str:
     if extension not in ALLOWED_FONT_EXTENSIONS:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid font file type for '{filename}'",
+            detail=t("err.fontUploads.invalidFontFileTypeFor", filename=filename),
         )
     return extension
 
@@ -133,7 +134,7 @@ def raise_if_font_upload_too_large(size: Optional[int]) -> None:
         limit_mb = MAX_FONT_UPLOAD_BYTES // (1024 * 1024)
         raise HTTPException(
             status_code=413,
-            detail=f"Font file exceeded max upload size of {limit_mb} MB",
+            detail=t("err.fontUploads.fontFileExceededMaxUploadSize", limit_mb=limit_mb),
         )
 
 
@@ -233,8 +234,7 @@ def _build_font_upload_from_path(
         raise HTTPException(
             status_code=400,
             detail=(
-                f"Failed to extract font info for '{filename or font_path}': "
-                f"{detail.error}"
+                t("err.fontUploads.failedToExtractFontInfoFor", value=filename or font_path, error=detail.error)
             ),
         )
 
@@ -243,7 +243,7 @@ def _build_font_upload_from_path(
     if not normalized_family_name:
         raise HTTPException(
             status_code=400,
-            detail=f"Could not determine font family for '{filename or font_path}'",
+            detail=t("err.fontUploads.couldNotDetermineFontFamilyFor", value=filename or font_path),
         )
 
     return FontUpload(
@@ -391,7 +391,7 @@ async def delete_font_upload(identifier: str) -> FontUploadInfo:
         result = await session.execute(select(FontUpload).where(or_(*filters)))
         font_upload = result.scalars().first()
         if font_upload is None:
-            raise HTTPException(status_code=404, detail="Font upload not found")
+            raise HTTPException(status_code=404, detail=t("err.fontUploads.fontUploadNotFound"))
 
         font_upload_info = await font_upload_to_info(font_upload)
         font_path = _font_upload_filesystem_path(font_upload)

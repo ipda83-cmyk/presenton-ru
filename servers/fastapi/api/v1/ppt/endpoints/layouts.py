@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 import aiohttp
 from utils.get_layout_by_name import get_layout_by_name
 from models.presentation_layout import PresentationLayoutModel
+from utils.i18n import t
 
 LAYOUTS_ROUTER = APIRouter(prefix="/layouts", tags=["Layouts"])
 
@@ -14,7 +15,7 @@ async def get_layouts():
                 error_text = await response.text()
                 raise HTTPException(
                     status_code=response.status,
-                    detail=f"Failed to fetch layouts: {error_text}"
+                    detail=t("err.layouts.failedToFetchLayouts", error_text=error_text)
                 )
             layouts_json = await response.json()
     # Optionally, parse into a Pydantic model if you have one matching the structure

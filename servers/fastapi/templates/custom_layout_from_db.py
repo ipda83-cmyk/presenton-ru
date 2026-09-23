@@ -11,6 +11,7 @@ from models.sql.presentation_layout_code import PresentationLayoutCodeModel
 from models.sql.template import TemplateModel
 from services.database import async_session_maker
 from templates.presentation_layout import PresentationLayoutModel
+from utils.i18n import t
 
 LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ async def load_custom_presentation_layout(layout_name: str) -> PresentationLayou
     if not layout_name.startswith("custom-"):
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid custom template id: {layout_name}",
+            detail=t("err.customLayoutFromDb.invalidCustomTemplateId", layout_name=layout_name),
         )
 
     try:
@@ -30,7 +31,7 @@ async def load_custom_presentation_layout(layout_name: str) -> PresentationLayou
     except ValueError as exc:
         raise HTTPException(
             status_code=400,
-            detail="Invalid custom template ID",
+            detail=t("err.customLayoutFromDb.invalidCustomTemplateId2"),
         ) from exc
 
     LOGGER.info(
@@ -50,13 +51,13 @@ async def load_custom_presentation_layout(layout_name: str) -> PresentationLayou
     if not template_meta:
         raise HTTPException(
             status_code=404,
-            detail=f"Template '{layout_name}' not found",
+            detail=t("err.customLayoutFromDb.templateNotFound", layout_name=layout_name),
         )
 
     if not layouts_db:
         raise HTTPException(
             status_code=404,
-            detail=f"No layouts found for template '{layout_name}'",
+            detail=t("err.customLayoutFromDb.noLayoutsFoundForTemplate", layout_name=layout_name),
         )
 
     payload = await _compile_custom_layouts_on_nextjs(
@@ -68,7 +69,7 @@ async def load_custom_presentation_layout(layout_name: str) -> PresentationLayou
     if not slides:
         raise HTTPException(
             status_code=404,
-            detail=f"Template '{layout_name}' not found",
+            detail=t("err.customLayoutFromDb.templateNotFound", layout_name=layout_name),
         )
 
     LOGGER.info(
@@ -109,7 +110,7 @@ async def _compile_custom_layouts_on_nextjs(
                         return payload
                     raise HTTPException(
                         status_code=500,
-                        detail="Custom template compile returned invalid payload",
+                        detail=t("err.customLayoutFromDb.customTemplateCompileReturnedInvalidPayload"),
                     )
 
                 error = await response.text()
@@ -122,11 +123,11 @@ async def _compile_custom_layouts_on_nextjs(
                 if response.status == 404:
                     raise HTTPException(
                         status_code=404,
-                        detail=f"Template '{layout_name}' not found",
+                        detail=t("err.customLayoutFromDb.templateNotFound", layout_name=layout_name),
                     )
                 raise HTTPException(
                     status_code=500,
-                    detail=f"Failed to compile custom template layouts: {error or response.status}",
+                    detail=t("err.customLayoutFromDb.failedToCompileCustomTemplateLayouts", value=error or response.status),
                 )
     except HTTPException:
         raise
@@ -137,5 +138,5 @@ async def _compile_custom_layouts_on_nextjs(
         )
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to reach template compile service: {exc}",
+            detail=t("err.customLayoutFromDb.failedToReachTemplateCompileService", error=exc),
         ) from exc

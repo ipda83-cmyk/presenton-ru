@@ -25,6 +25,7 @@ from utils.get_env import (
     is_disable_auth_enabled,
 )
 from utils.user_config import update_env_with_user_config
+from utils.i18n import t
 
 PRESENTON_OAUTH_ROUTER = APIRouter(
     prefix="/presenton",
@@ -68,9 +69,9 @@ async def require_presenton_manager(
     if is_disable_auth_enabled():
         return None
     if current_user is None:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail=t("auth.unauthorized"))
     if not current_user.is_superuser:
-        raise HTTPException(status_code=403, detail="Admin access required")
+        raise HTTPException(status_code=403, detail=t("admin.adminAccessRequired"))
     return current_user
 
 
@@ -179,14 +180,14 @@ async def start_presenton_provider_connection(
     except httpx.HTTPError as exc:
         raise HTTPException(
             status_code=502,
-            detail="Could not connect to the Presenton authorization service",
+            detail=t("err.presentonOauth.couldNotConnectToThePresenton"),
         ) from exc
 
     payload = _provider_json(response)
     if not response.is_success:
         raise HTTPException(
             status_code=502 if response.status_code >= 500 else response.status_code,
-            detail=_provider_error(payload, "Could not connect Presenton Cloud"),
+            detail=_provider_error(payload, t("err.presentonOauth.couldNotConnectCloud")),
         )
     required = {
         "device_code",
@@ -199,7 +200,7 @@ async def start_presenton_provider_connection(
     if not required.issubset(payload):
         raise HTTPException(
             status_code=502,
-            detail="Presenton returned an invalid device authorization response",
+            detail=t("err.presentonOauth.presentonReturnedAnInvalidDeviceAuthorization"),
         )
     # Always send the browser to the plain approval page. The user enters the
     # displayed code there, keeping it out of URLs, browser history, and logs.
@@ -234,7 +235,7 @@ async def poll_presenton_provider_connection(
     except httpx.HTTPError as exc:
         raise HTTPException(
             status_code=502,
-            detail="Could not connect to the Presenton authorization service",
+            detail=t("err.presentonOauth.couldNotConnectToThePresenton"),
         ) from exc
 
     token_payload = _provider_json(token_response)
@@ -248,14 +249,14 @@ async def poll_presenton_provider_connection(
             )
         raise HTTPException(
             status_code=400 if token_response.status_code < 500 else 502,
-            detail=_provider_error(token_payload, "Presenton connection failed"),
+            detail=_provider_error(token_payload, t("err.presentonOauth.connectionFailed")),
         )
 
     access_token = token_payload.get("access_token")
     expires_in = token_payload.get("expires_in")
     if not isinstance(access_token, str) or not access_token:
         raise HTTPException(
-            status_code=502, detail="Presenton did not return an access token"
+            status_code=502, detail=t("err.presentonOauth.presentonDidNotReturnAnAccess")
         )
 
     expires_in_value = expires_in if isinstance(expires_in, int) else 30 * 24 * 60 * 60
@@ -270,19 +271,19 @@ async def poll_presenton_provider_connection(
         except httpx.HTTPError as exc:
             raise HTTPException(
                 status_code=502,
-                detail="Could not verify the Presenton account",
+                detail=t("err.presentonOauth.couldNotVerifyThePresentonAccount"),
             ) from exc
         userinfo_payload = _provider_json(userinfo_response)
         if not userinfo_response.is_success:
             raise HTTPException(
-                status_code=502, detail="Could not verify the Presenton account"
+                status_code=502, detail=t("err.presentonOauth.couldNotVerifyThePresentonAccount")
             )
         try:
             profile = PresentonUserInfo.model_validate(userinfo_payload)
         except ValueError as exc:
             raise HTTPException(
                 status_code=502,
-                detail="Presenton returned an invalid user profile",
+                detail=t("err.presentonOauth.presentonReturnedAnInvalidUserProfile"),
             ) from exc
         try:
             await store_presenton_credentials(
