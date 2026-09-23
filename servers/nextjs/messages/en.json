@@ -2309,6 +2309,10 @@
       "clearData": "Clear data",
       "save": "Save",
       "chartsLabel": "Charts"
+    },
+    "designVar": {
+      "none": "None",
+      "values": "{count, plural, one {# value} other {# values}}"
     }
   },
   "auth": {

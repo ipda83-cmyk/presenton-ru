@@ -49,13 +49,30 @@ export function designVariableNameLabel(name: string) {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-export function designVariableOptionLabel(option: unknown) {
-  if (option == null) return "None";
+export type DesignVariableOptionLabels = {
+  none: string;
+  on: string;
+  off: string;
+  values: (count: number) => string;
+};
+
+const ENGLISH_OPTION_LABELS: DesignVariableOptionLabels = {
+  none: "None",
+  on: "On",
+  off: "Off",
+  values: (count) => `${count} values`,
+};
+
+export function designVariableOptionLabel(
+  option: unknown,
+  labels: DesignVariableOptionLabels = ENGLISH_OPTION_LABELS
+) {
+  if (option == null) return labels.none;
   if (typeof option === "string" || typeof option === "number") {
     return String(option);
   }
-  if (typeof option === "boolean") return option ? "On" : "Off";
-  if (Array.isArray(option)) return `${option.length} values`;
+  if (typeof option === "boolean") return option ? labels.on : labels.off;
+  if (Array.isArray(option)) return labels.values(option.length);
   if (isRecord(option)) {
     return Object.entries(option)
       .slice(0, 3)

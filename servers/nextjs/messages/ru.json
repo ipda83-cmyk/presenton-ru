@@ -2309,6 +2309,10 @@
       "clearData": "Очистить данные",
       "save": "Сохранить",
       "chartsLabel": "Графики"
+    },
+    "designVar": {
+      "none": "Нет",
+      "values": "{count, plural, one {# значение} few {# значения} many {# значений} other {# значения}}"
     }
   },
   "auth": {

@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 import type { SlideElement } from "@/components/slide-editor/types";
 import {
   applyDesignVariableOption,
@@ -24,8 +26,15 @@ export function DesignVariablesToolbar({
   scale: number;
   onChange: (index: number, element: SlideElement) => void;
 }) {
+  const t = useTranslations("slideEditor");
   const variables = element.design_variables ?? [];
   if (variables.length === 0) return null;
+  const optionLabels = {
+    none: t("designVar.none"),
+    on: t("common.on"),
+    off: t("common.off"),
+    values: (count: number) => t("designVar.values", { count }),
+  };
 
   return (
     <FloatingToolbar
@@ -64,7 +73,7 @@ export function DesignVariablesToolbar({
             </option>
             {variable.options.map((option, optionIndex) => (
               <option key={optionIndex} value={optionIndex}>
-                {designVariableOptionLabel(option)}
+                {designVariableOptionLabel(option, optionLabels)}
               </option>
             ))}
           </select>
