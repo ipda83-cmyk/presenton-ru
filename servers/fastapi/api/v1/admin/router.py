@@ -3,7 +3,7 @@ import os
 import shutil
 from typing import Any
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Request, Response, status
+from fastapi import APIRouter, Body, Depends, Request, Response, status
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,6 +30,7 @@ from services.provider_settings import get_provider_settings, save_provider_sett
 from services.presenton_cloud import get_presenton_provider, has_cloud_credentials
 from services.api_keys import issue_api_key, reveal_api_key
 from utils.datetime_utils import get_current_utc_datetime
+from utils.i18n import http_error
 from utils.get_env import (
     get_app_data_directory_env,
     get_can_change_keys_env,
@@ -71,7 +72,7 @@ async def create_api_key(
 ):
     target = await session.get(User, body.user_id)
     if target is None or not target.is_active:
-        raise HTTPException(status_code=404, detail="Active user not found")
+        raise http_error(404, "admin.activeUserNotFound")
     api_key, token = await issue_api_key(
         session,
         user_id=target.id,
@@ -96,15 +97,12 @@ async def get_api_key_token(
 ):
     api_key = await session.get(ApiKey, api_key_id)
     if api_key is None:
-        raise HTTPException(status_code=404, detail="API key not found")
+        raise http_error(404, "admin.apiKeyNotFound")
     if api_key.revoked_at is not None:
-        raise HTTPException(status_code=410, detail="API key has been revoked")
+        raise http_error(410, "admin.apiKeyRevoked")
     token = reveal_api_key(api_key)
     if token is None:
-        raise HTTPException(
-            status_code=409,
-            detail="This API key cannot be revealed",
-        )
+        raise http_error(409, "admin.apiKeyCannotReveal")
     response.headers["Cache-Control"] = "no-store"
     response.headers["Pragma"] = "no-cache"
     return ApiKeyToken(id=api_key.id, token=token)
@@ -121,7 +119,7 @@ async def revoke_api_key(
 ):
     api_key = await session.get(ApiKey, api_key_id)
     if api_key is None:
-        raise HTTPException(status_code=404, detail="API key not found")
+        raise http_error(404, "admin.apiKeyNotFound")
     if api_key.revoked_at is None:
         api_key.revoked_at = get_current_utc_datetime()
         session.add(api_key)
@@ -138,17 +136,14 @@ async def require_settings_admin(
     if is_disable_auth_enabled():
         return
     if user is None:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise http_error(401, "auth.unauthorized")
     if not user.is_superuser:
-        raise HTTPException(status_code=403, detail="Admin access required")
+        raise http_error(403, "admin.adminAccessRequired")
 
 
 def _ensure_settings_are_mutable() -> None:
     if get_can_change_keys_env() == "false":
-        raise HTTPException(
-            status_code=403,
-            detail="You are not allowed to access this resource",
-        )
+        raise http_error(403, "admin.forbidden")
 
 
 @API_V1_ADMIN_ROUTER.get("/provider-settings")
@@ -201,15 +196,12 @@ async def create_user(
 ):
     username = body.username.strip()
     if len(username) < 3:
-        raise HTTPException(
-            status_code=422,
-            detail="Username must be at least 3 characters",
-        )
+        raise http_error(422, "auth.usernameTooShort", min=3)
     exists = await session.scalar(
         select(User.id).where(func.lower(User.username) == username.casefold())
     )
     if exists:
-        raise HTTPException(status_code=409, detail="Username already exists")
+        raise http_error(409, "admin.usernameExists")
     user = User(
         username=username,
         hashed_password=PASSWORD_HELPER.hash(body.password),
@@ -233,12 +225,9 @@ async def reset_user_password(
 ):
     user = await session.get(User, user_id)
     if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise http_error(404, "admin.userNotFound")
     if user.id == admin.id or user.is_superuser:
-        raise HTTPException(
-            status_code=403,
-            detail="The primary administrator password is managed through deployment settings",
-        )
+        raise http_error(403, "admin.primaryPasswordManaged")
     user.hashed_password = PASSWORD_HELPER.hash(body.password)
     user.auth_version += 1
     await session.commit()
@@ -253,12 +242,9 @@ async def delete_user(
 ):
     user = await session.get(User, user_id)
     if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise http_error(404, "admin.userNotFound")
     if user.id == admin.id or user.is_superuser:
-        raise HTTPException(
-            status_code=403,
-            detail="The primary administrator account cannot be deleted",
-        )
+        raise http_error(403, "admin.primaryCannotDelete")
     await session.execute(
         delete(KeyValueSqlModel).where(
             KeyValueSqlModel.key == f"presentation_custom_themes:{user.id}"

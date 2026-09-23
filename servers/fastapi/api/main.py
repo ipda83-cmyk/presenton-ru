@@ -1,6 +1,7 @@
 import os
 
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.requests import Request
@@ -21,6 +22,8 @@ from utils.get_env import (
     get_sentry_send_default_pii_env,
     get_sentry_traces_sample_rate_env,
 )
+from utils.i18n.middleware import LocaleMiddleware
+from utils.i18n.validation import request_validation_exception_handler
 from utils.mime_types import init_sandbox_safe_mimetypes
 from utils.path_helpers import get_resource_path
 
@@ -62,6 +65,7 @@ def _maybe_init_sentry() -> None:
 _maybe_init_sentry()
 
 app = FastAPI(lifespan=app_lifespan)
+app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
 
 # Routers
 app.include_router(API_V1_PPT_ROUTER)
@@ -98,6 +102,8 @@ app.add_middleware(
 
 app.add_middleware(UserConfigEnvUpdateMiddleware)
 app.add_middleware(SessionAuthMiddleware)
+# Added after SessionAuthMiddleware so it wraps it: auth errors get localized too.
+app.add_middleware(LocaleMiddleware)
 
 
 @app.middleware("http")

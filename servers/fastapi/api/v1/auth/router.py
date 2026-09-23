@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,6 +16,7 @@ from api.v1.auth.users import (
 from models.sql.user import User
 from services.database import get_async_session
 from utils.get_env import is_disable_auth_enabled
+from utils.i18n import http_error
 from api.v1.auth.config import (
     SESSION_COOKIE_NAME,
     SESSION_TTL_SECONDS,
@@ -92,14 +93,14 @@ async def verify_session(
         }
     principal, user = await resolve_request_principal(request, session)
     if principal is None or user is None:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise http_error(401, "auth.unauthorized")
     original_uri = request.headers.get("x-original-uri")
     if original_uri and not is_app_data_path_authorized(
         original_uri,
         user_id=principal.user_id,
         is_admin=principal.is_admin,
     ):
-        raise HTTPException(status_code=403, detail="Asset access denied")
+        raise http_error(403, "auth.assetAccessDenied")
     return {
         "authenticated": True,
         **serialize_user(user),
@@ -114,14 +115,11 @@ async def setup_credentials(
     session: AsyncSession = Depends(get_async_session),
 ):
     if await _account_count(session):
-        raise HTTPException(status_code=409, detail="Credentials already configured")
+        raise http_error(409, "auth.credentialsConfigured")
 
     username = normalize_username(body.username)
     if len(username) < 3:
-        raise HTTPException(
-            status_code=422,
-            detail="Username must be at least 3 characters",
-        )
+        raise http_error(422, "auth.usernameTooShort", min=3)
     password_hash = PASSWORD_HELPER.hash(body.password)
     user = User(
         username=username,
@@ -137,10 +135,7 @@ async def setup_credentials(
         await session.flush()
     except IntegrityError:
         await session.rollback()
-        raise HTTPException(
-            status_code=409,
-            detail="Credentials already configured",
-        )
+        raise http_error(409, "auth.credentialsConfigured")
     await session.commit()
     await session.refresh(user)
     persist_admin_credentials(username, password_hash)
@@ -159,20 +154,20 @@ async def login(
     session: AsyncSession = Depends(get_async_session),
 ):
     if not await _account_count(session):
-        raise HTTPException(status_code=428, detail="Login setup is required")
+        raise http_error(428, "auth.setupRequired")
     username = normalize_username(body.username)
     user = await session.scalar(
         select(User).where(func.lower(User.username) == username.casefold())
     )
     if user is None or not user.is_active:
         PASSWORD_HELPER.hash(body.password)
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise http_error(401, "auth.unauthorized")
 
     verified, replacement_hash = PASSWORD_HELPER.verify_and_update(
         body.password, user.hashed_password
     )
     if not verified:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise http_error(401, "auth.unauthorized")
     if replacement_hash:
         user.hashed_password = replacement_hash
         await session.commit()

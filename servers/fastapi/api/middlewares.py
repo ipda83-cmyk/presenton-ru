@@ -16,6 +16,7 @@ from models.sql.user import User
 from services.database import async_session_maker
 from services.presenton_cloud_proxy import maybe_proxy_presenton_cloud_request
 from utils.get_env import get_can_change_keys_env, is_disable_auth_enabled
+from utils.i18n import t
 from utils.user_config import update_env_with_user_config
 
 
@@ -84,7 +85,7 @@ class SessionAuthMiddleware(BaseHTTPMiddleware):
                 return JSONResponse(
                     status_code=428,
                     content={
-                        "detail": "Login setup is required",
+                        "detail": t("auth.setupRequired"),
                         "setup_required": True,
                     },
                 )
@@ -92,7 +93,7 @@ class SessionAuthMiddleware(BaseHTTPMiddleware):
             if principal is None:
                 return JSONResponse(
                     status_code=401,
-                    content={"detail": "Unauthorized"},
+                    content={"detail": t("auth.unauthorized")},
                 )
             admin_only = (
                 path.startswith("/api/v1/admin/")
@@ -109,7 +110,7 @@ class SessionAuthMiddleware(BaseHTTPMiddleware):
             if admin_only and (principal.method != "jwt" or not principal.is_admin):
                 return JSONResponse(
                     status_code=403,
-                    content={"detail": "Admin browser session required"},
+                    content={"detail": t("auth.adminSessionRequired")},
                 )
             request.state.auth_principal = principal
             request.state.current_user = user
@@ -138,7 +139,7 @@ class SessionAuthMiddleware(BaseHTTPMiddleware):
                 ):
                     return JSONResponse(
                         status_code=404,
-                        content={"detail": "Asset not found"},
+                        content={"detail": t("auth.assetNotFound")},
                     )
                 return await call_next(request)
             finally:

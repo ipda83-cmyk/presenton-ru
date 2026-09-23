@@ -2,7 +2,10 @@ import json
 import re
 from typing import Any
 
+from utils.i18n import t
 
+# English source strings, kept for importers; user-facing output goes through
+# ``t()`` (see utils/i18n) so it follows the request's UI locale.
 INVALID_API_KEY_MESSAGE = "Invalid API key. Please verify your API key and try again."
 IMAGE_MODERATION_MESSAGE = (
     "An image request was blocked by the safety system. "
@@ -95,10 +98,33 @@ def _looks_like_model_access_error(
     )
 
 
+_OPERATION_KEYS = {
+    "request": "provider.op.request",
+    "api request": "provider.op.apiRequest",
+    "image generation": "provider.op.imageGeneration",
+    "model validation": "provider.op.modelValidation",
+}
+
+
+def _provider_label(provider: str) -> str:
+    label = (provider or "").strip()
+    if not label or label == "AI provider":
+        return t("provider.aiProvider")
+    return label
+
+
+def _operation_label(operation: str) -> str:
+    label = (operation or "").strip() or "request"
+    key = _OPERATION_KEYS.get(label.lower())
+    return t(key) if key else label
+
+
 def _provider_operation_prefix(provider: str, operation: str) -> str:
-    provider_label = (provider or "AI provider").strip()
-    operation_label = (operation or "request").strip()
-    return f"{provider_label} {operation_label}"
+    return t(
+        "provider.prefix",
+        provider=_provider_label(provider),
+        operation=_operation_label(operation),
+    )
 
 
 def safe_provider_error_detail(
@@ -116,7 +142,7 @@ def safe_provider_error_detail(
         error_type=error_type,
         message=message,
     ):
-        return INVALID_API_KEY_MESSAGE
+        return t("provider.invalidApiKey")
 
     if _looks_like_moderation_block(
         code=code,
@@ -124,36 +150,25 @@ def safe_provider_error_detail(
         message=message,
     ):
         if "image" in (operation or "").lower():
-            return IMAGE_MODERATION_MESSAGE
-        return (
-            "The request was blocked by the provider's safety system. "
-            "Please revise it and try again."
-        )
+            return t("provider.imageModeration")
+        return t("provider.safetyBlocked")
 
+    provider_label = _provider_label(provider)
     prefix = _provider_operation_prefix(provider, operation)
     normalized_code = _normalize_code(code)
     if normalized_code == "insufficient_quota":
-        return (
-            f"{prefix} failed because API quota is unavailable. "
-            f"Check {provider} API billing and the limits for the project that owns this API key."
-        )
+        return t("provider.quotaUnavailable", prefix=prefix, provider=provider_label)
 
     if status_code == 403:
-        return (
-            f"{provider} rejected the request because the configured API key does not "
-            "have access. Check the key permissions and selected model."
-        )
+        return t("provider.forbidden", provider=provider_label)
 
     if status_code == 429 or normalized_code in {"rate_limit_exceeded", "rate_limit"}:
-        return f"{prefix} is temporarily rate limited. Please wait and try again."
+        return t("provider.rateLimited", prefix=prefix)
 
     if _looks_like_model_access_error(code=code, message=message):
-        return (
-            f"The selected {provider} model is not available. "
-            "Choose another model or check model access."
-        )
+        return t("provider.modelUnavailable", provider=provider_label)
 
-    return f"{prefix} failed. Please try again."
+    return t("provider.failed", prefix=prefix)
 
 
 def safe_llm_provider_error_detail(
@@ -162,11 +177,11 @@ def safe_llm_provider_error_detail(
     message: Any = None,
 ) -> str:
     if looks_like_invalid_api_key_error(status_code=status_code, message=message):
-        return INVALID_API_KEY_MESSAGE
+        return t("provider.invalidApiKey")
 
     text = _stringify_for_detection(message).strip()
     if not text:
-        return GENERIC_PROVIDER_ERROR_MESSAGE
+        return t("provider.generic")
 
     looks_like_raw_provider_payload = (
         text.startswith("{")
