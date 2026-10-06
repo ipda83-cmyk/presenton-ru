@@ -326,6 +326,11 @@ export const getLLMConfigValidationError = (
           return tr("cfgErr.apiKeyRequired", "{provider} API key is required.", { provider: "Exa" });
         }
         break;
+      case "perplexity":
+        if (!isProvided(llmConfig.PERPLEXITY_API_KEY)) {
+          return tr("cfgErr.apiKeyRequired", "{provider} API key is required.", { provider: "Perplexity" });
+        }
+        break;
       case "brave":
         if (!isProvided(llmConfig.BRAVE_SEARCH_API_KEY)) {
           return tr("cfgErr.apiKeyRequired", "{provider} API key is required.", { provider: "Brave Search" });

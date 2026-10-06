@@ -31,10 +31,11 @@ from utils.web_search import (
     build_web_search_query,
     get_web_search_route,
     get_selected_web_search_provider,
-    get_web_search_context,
+    get_web_search_context_with_results,
     should_expose_external_web_search_tool,
     should_use_native_web_search,
 )
+from utils.presentation_language import resolve_outline_prompt_language
 
 LOGGER = logging.getLogger(__name__)
 
@@ -52,6 +53,21 @@ class OutlineGenerationStatus:
     message: str
 
 
+@dataclass(frozen=True)
+class OutlineWebSources:
+    """Which web pages the outline context came from (emitted with statuses).
+
+    status: "ok" (results found), "empty" (search found nothing), "failed"
+    (search errored), "native" (the model searched by itself; its sources are
+    not exposed), "unavailable" (search requested but no route), "disabled".
+    """
+
+    status: str
+    provider: Optional[str] = None
+    query: Optional[str] = None
+    results: tuple = ()
+
+
 def _web_search_provider_display_name(provider_name: str) -> str:
     return {
         "searxng": "SearXNG",
@@ -59,6 +75,7 @@ def _web_search_provider_display_name(provider_name: str) -> str:
         "exa": "Exa",
         "brave": "Brave",
         "serper": "Serper",
+        "perplexity": "Perplexity",
         "model-native": "model-native web search",
     }.get(provider_name, provider_name)
 
@@ -167,14 +184,7 @@ def get_system_prompt(
 
 
 def _resolve_prompt_language(language: Optional[str]) -> str:
-    if language is None:
-        return "auto-detect"
-    s = str(language).strip()
-    if not s:
-        return "auto-detect"
-    if s.lower() in {"auto", "auto-detect"}:
-        return "auto-detect"
-    return s
+    return resolve_outline_prompt_language(language)
 
 
 def _resolve_prompt_n_slides(n_slides: Optional[int]) -> str:
@@ -283,6 +293,14 @@ async def generate_ppt_outline(
     actual_provider_display_name = _web_search_provider_display_name(
         actual_provider_name
     )
+    if emit_statuses and not use_external_search:
+        if not web_search:
+            yield OutlineWebSources(status="disabled")
+        elif use_search_tool:
+            yield OutlineWebSources(status="native", provider="model-native")
+        else:
+            yield OutlineWebSources(status="unavailable")
+
     if not web_search:
         LOGGER.info(
             "Outline web search routing: enabled=false selected_provider=%s route=%s actual_provider=%s",
@@ -338,14 +356,28 @@ async def generate_ppt_outline(
             )
 
         search_context = ""
+        search_results = []
         if search_query:
             if emit_statuses:
                 yield OutlineGenerationStatus(
                     f"Searching with {actual_provider_display_name}: {search_query}"
                 )
-            search_context = await get_web_search_context(search_query)
+            search_context, search_results = await get_web_search_context_with_results(
+                search_query
+            )
             if emit_statuses:
                 yield OutlineGenerationStatus("Web research complete")
+        if emit_statuses:
+            yield OutlineWebSources(
+                status=(
+                    "failed"
+                    if search_results is None
+                    else ("ok" if search_results else "empty")
+                ),
+                provider=actual_provider_name,
+                query=search_query or None,
+                results=tuple(search_results or ()),
+            )
         if search_context:
             additional_context = "\n\n".join(
                 part for part in (additional_context, search_context) if part

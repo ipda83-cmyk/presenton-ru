@@ -398,6 +398,10 @@ def get_serper_api_key_env():
     return os.getenv("SERPER_API_KEY")
 
 
+def get_perplexity_api_key_env():
+    return os.getenv("PERPLEXITY_API_KEY")
+
+
 def get_comfyui_url_env():
     return os.getenv("COMFYUI_URL")
 

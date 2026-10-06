@@ -31,11 +31,17 @@ from utils.outline_utils import (
 from utils.outline_limits import normalize_outline_payload
 from utils.llm_calls.generate_presentation_outlines import (
     OutlineGenerationStatus,
+    OutlineWebSources,
     generate_ppt_outline,
     get_messages as get_outline_messages,
 )
 from utils.sse import safe_sse_stream
 from utils.web_search import get_selected_web_search_provider, get_web_search_route
+from utils.web_sources import (
+    build_web_sources_record,
+    get_web_sources,
+    save_web_sources,
+)
 from utils.i18n import t
 
 OUTLINES_ROUTER = APIRouter(prefix="/outlines", tags=["Outlines"])
@@ -80,6 +86,20 @@ async def update_outline(
     )
 
     return outline
+
+
+@OUTLINES_ROUTER.get("/{id}/sources")
+async def get_outline_web_sources(
+    id: uuid.UUID,
+    sql_session: AsyncSession = Depends(get_async_session),
+):
+    """Web pages the outline was researched from (see utils/web_sources.py)."""
+    presentation = await sql_session.get(PresentationModel, id)
+    if not presentation:
+        raise HTTPException(status_code=404, detail=t("err.outlines.presentationNotFound"))
+    record = await get_web_sources(sql_session, id)
+    # "none": the outline was made before sources were recorded.
+    return record or build_web_sources_record(status="none")
 
 
 @OUTLINES_ROUTER.get("/stream/{id}")
@@ -192,6 +212,27 @@ async def stream_outlines(
                     chunk.message,
                 )
                 yield SSEStatusResponse(status=chunk.message).to_string()
+                continue
+
+            if isinstance(chunk, OutlineWebSources):
+                record = build_web_sources_record(
+                    status=chunk.status,
+                    provider=chunk.provider,
+                    query=chunk.query,
+                    results=chunk.results,
+                )
+                LOGGER.info(
+                    "Outline web sources: presentation_id=%s status=%s provider=%s sources=%d",
+                    presentation.id,
+                    record["status"],
+                    record["provider"],
+                    len(record["sources"]),
+                )
+                await save_web_sources(sql_session, presentation.id, record)
+                yield SSEResponse(
+                    event="response",
+                    data=json.dumps({"type": "sources", **record}),
+                ).to_string()
                 continue
 
             if isinstance(chunk, HTTPException):

@@ -1,4 +1,4 @@
-import { LanguageType, PresentationConfig } from "../type";
+import { LanguageType, PresentationConfig, isAutoLanguage } from "../type";
 import { useEffect, useRef, useState } from "react";
 import {
   Check,
@@ -40,6 +40,9 @@ interface ConfigurationSelectsProps {
   compact?: boolean;
   mode?: GenerationMode;
   onModeChange?: (mode: GenerationMode) => void;
+  /** Class for the advanced-settings button, e.g. to hide it where the
+   * page shows the inline panel instead. */
+  advancedButtonClassName?: string;
 }
 
 type SlideOption =
@@ -326,7 +329,7 @@ const LanguageSelect: React.FC<{
                 : "text-xs font-medium min-[1800px]:text-sm min-[2200px]:text-base",
             )}
           >
-            {value === LanguageType.Auto ? t("auto") : value || t("placeholder")}
+            {isAutoLanguage(value) ? t("auto") : value || t("placeholder")}
           </span>
           {compact && (
             <ChevronUp
@@ -388,6 +391,7 @@ export function ConfigurationSelects({
   compact = false,
   mode,
   onModeChange,
+  advancedButtonClassName,
 }: ConfigurationSelectsProps) {
   const [openSlides, setOpenSlides] = useState(false);
   const [openLanguage, setOpenLanguage] = useState(false);
@@ -434,6 +438,7 @@ export function ConfigurationSelects({
         config={config}
         onConfigChange={onConfigChange}
         compact={compact}
+        className={advancedButtonClassName}
       />
       {showMode ? (
         <GenerationModeDialog

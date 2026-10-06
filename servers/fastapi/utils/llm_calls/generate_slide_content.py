@@ -16,6 +16,7 @@ from utils.schema_utils import (
     ensure_array_schemas_have_items,
     remove_fields_from_schema,
 )
+from utils.presentation_language import parse_auto_language
 
 SLIDE_CONTENT_SYSTEM_PROMPT = r"""
 You will be given slide content and response schema.
@@ -90,14 +91,11 @@ AUTO_DETECT_LANGUAGE_INSTRUCTION = (
 
 
 def _resolve_prompt_language(language: Optional[str]) -> str:
-    if language is None:
+    # The outline already fixed the language for "Auto (...)": follow it.
+    is_auto, _ = parse_auto_language(language)
+    if is_auto:
         return AUTO_DETECT_LANGUAGE_INSTRUCTION
-    s = str(language).strip()
-    if not s:
-        return AUTO_DETECT_LANGUAGE_INSTRUCTION
-    if s.lower() in {"auto", "auto-detect"}:
-        return AUTO_DETECT_LANGUAGE_INSTRUCTION
-    return s
+    return str(language).strip()
 
 
 def _get_schema_markdown(response_schema: Optional[dict]) -> str:

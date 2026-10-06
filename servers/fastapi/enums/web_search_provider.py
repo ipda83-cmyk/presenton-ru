@@ -9,3 +9,4 @@ class WebSearchProvider(Enum):
     EXA = "exa"
     BRAVE = "brave"
     SERPER = "serper"
+    PERPLEXITY = "perplexity"

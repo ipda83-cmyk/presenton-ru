@@ -11,6 +11,10 @@ import {
   isChatGptAuthRequiredMessage,
   requestChatGptReauth,
 } from "@/utils/chatgptAuth";
+import {
+  normalizeWebSourcesRecord,
+  type WebSourcesRecord,
+} from "../../services/api/web-sources";
 
 const MAX_STREAM_RETRIES = 3;
 const STREAM_RETRY_DELAY_MS = 1_000;
@@ -18,7 +22,9 @@ const DEFAULT_STATUS_MESSAGE = "Preparing your presentation outline";
 
 export const useOutlineStreaming = (
   presentationId: string | null,
-  enabled = true
+  enabled = true,
+  /** Web sources of this stream: null when a new search starts. */
+  onSources?: (record: WebSourcesRecord | null) => void
 ) => {
   const dispatch = useDispatch();
   const t = useTranslations("outline");
@@ -38,6 +44,11 @@ export const useOutlineStreaming = (
   useEffect(() => {
     outlinesRef.current = outlines;
   }, [outlines]);
+
+  const onSourcesRef = useRef(onSources);
+  useEffect(() => {
+    onSourcesRef.current = onSources;
+  }, [onSources]);
 
   useEffect(() => {
     const resetStreamingState = (message = DEFAULT_STATUS_MESSAGE) => {
@@ -106,6 +117,7 @@ export const useOutlineStreaming = (
 
     const openStream = () => {
       closeEventSource();
+      onSourcesRef.current?.(null);
       eventSource = new EventSource(
         getApiUrl(`/api/v1/ppt/outlines/stream/${presentationId}`)
       );
@@ -130,6 +142,10 @@ export const useOutlineStreaming = (
             if (data.status) {
               setStatusMessage(data.status);
             }
+            break;
+
+          case "sources":
+            onSourcesRef.current?.(normalizeWebSourcesRecord(data));
             break;
 
           case "chunk":

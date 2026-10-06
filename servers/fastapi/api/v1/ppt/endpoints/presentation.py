@@ -98,6 +98,7 @@ from utils.sse import safe_sse_stream
 from api.v1.auth.config import SESSION_COOKIE_NAME
 from utils.web_search import get_selected_web_search_provider, get_web_search_route
 from utils.web_search import build_web_search_query, get_web_search_context
+from utils.web_sources import delete_web_sources
 from api.v1.auth.context import (
     get_current_owner_id,
     reset_current_owner_id,
@@ -1543,6 +1544,7 @@ async def delete_presentation(
 
     await sql_session.delete(presentation)
     await sql_session.commit()
+    await delete_web_sources(sql_session, id)
 
 
 @PRESENTATION_ROUTER.post("/{id}/duplicate", response_model=PresentationWithSlides)

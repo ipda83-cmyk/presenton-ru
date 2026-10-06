@@ -164,6 +164,7 @@ export const updateLLMConfig = (
     exa_api_key: "EXA_API_KEY",
     brave_search_api_key: "BRAVE_SEARCH_API_KEY",
     serper_api_key: "SERPER_API_KEY",
+    perplexity_api_key: "PERPLEXITY_API_KEY",
     comfyui_url: "COMFYUI_URL",
     comfyui_workflow: "COMFYUI_WORKFLOW",
     dall_e_3_quality: "DALL_E_3_QUALITY",

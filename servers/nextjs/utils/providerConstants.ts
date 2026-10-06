@@ -48,6 +48,15 @@ export const providerKey = (value: string): string =>
   value.replace(/[^a-zA-Z0-9]/g, "_");
 
 export const WEB_SEARCH_PROVIDERS: Record<string, WebSearchProviderOption> = {
+  perplexity: {
+    value: "perplexity",
+    label: "Perplexity",
+    description:
+      "Perplexity Search API: up-to-date web results with page excerpts. Recommended.",
+    icon: "/providers/perplexity.svg",
+    apiKeyField: "PERPLEXITY_API_KEY",
+    apiKeyLabel: "Perplexity API key",
+  },
   auto: {
     value: "auto",
     label: "Default (Model)",

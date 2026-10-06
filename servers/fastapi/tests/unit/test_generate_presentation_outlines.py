@@ -12,6 +12,7 @@ from enums.web_search_provider import WebSearchProvider
 from models.presentation_outline_model import PresentationOutlineModel
 from tests.mocks.llm import content_event
 from utils.llm_calls import generate_presentation_outlines as outline_module
+from utils.web_search import WebSearchResult
 
 
 def _collect_async_chunks(generator) -> list[Any]:
@@ -239,8 +240,8 @@ def test_generate_ppt_outline_injects_external_search_context_without_hosted_too
         return_value="latest current market facts",
     ), patch.object(
         outline_module,
-        "get_web_search_context",
-        return_value="Web search results:\nSummary: Current market facts",
+        "get_web_search_context_with_results",
+        return_value=("Web search results:\nSummary: Current market facts", []),
     ), patch.object(
         outline_module,
         "get_generate_kwargs",
@@ -279,7 +280,12 @@ def test_generate_ppt_outline_emits_provider_aware_external_search_statuses():
     ), patch.object(
         outline_module, "generate_web_search_query", return_value="current Nepal PM"
     ), patch.object(
-        outline_module, "get_web_search_context", return_value="Current facts"
+        outline_module,
+        "get_web_search_context_with_results",
+        return_value=(
+            "Current facts",
+            [WebSearchResult("Nepal PM", "https://example.org/pm", "Current facts")],
+        ),
     ), patch.object(
         outline_module, "get_generate_kwargs", side_effect=lambda **kwargs: kwargs
     ), patch.object(
@@ -306,6 +312,14 @@ def test_generate_ppt_outline_emits_provider_aware_external_search_statuses():
         "Web research complete",
         "Drafting your presentation outline",
     ]
+    sources = [
+        chunk for chunk in chunks if isinstance(chunk, outline_module.OutlineWebSources)
+    ]
+    assert len(sources) == 1
+    assert sources[0].status == "ok"
+    assert sources[0].provider == "searxng"
+    assert sources[0].query == "current Nepal PM"
+    assert [result.url for result in sources[0].results] == ["https://example.org/pm"]
 
 
 def test_generate_ppt_outline_emits_model_native_search_status():
@@ -354,7 +368,7 @@ def test_generate_ppt_outline_uses_fallback_query_when_query_generation_fails():
 
     async def capture_search_context(query):
         searched_queries.append(query)
-        return ""
+        return "", []
 
     with patch.object(outline_module, "get_model", return_value="fake-model"), patch.object(
         outline_module, "get_client", return_value=object()
@@ -368,7 +382,7 @@ def test_generate_ppt_outline_uses_fallback_query_when_query_generation_fails():
         side_effect=fail_query_generation,
     ), patch.object(
         outline_module,
-        "get_web_search_context",
+        "get_web_search_context_with_results",
         side_effect=capture_search_context,
     ), patch.object(
         outline_module,
@@ -398,7 +412,7 @@ def test_generate_ppt_outline_uses_fallback_query_when_generated_query_is_null()
 
     async def capture_search_context(query):
         searched_queries.append(query)
-        return ""
+        return "", []
 
     with patch.object(outline_module, "get_model", return_value="fake-model"), patch.object(
         outline_module, "get_client", return_value=object()
@@ -412,7 +426,7 @@ def test_generate_ppt_outline_uses_fallback_query_when_generated_query_is_null()
         return_value=None,
     ), patch.object(
         outline_module,
-        "get_web_search_context",
+        "get_web_search_context_with_results",
         side_effect=capture_search_context,
     ), patch.object(
         outline_module,

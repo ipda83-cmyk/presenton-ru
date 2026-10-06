@@ -14,6 +14,7 @@ from enums.web_search_provider import WebSearchProvider
 from utils.get_env import (
     get_brave_search_api_key_env,
     get_exa_api_key_env,
+    get_perplexity_api_key_env,
     get_searxng_base_url_env,
     get_serper_api_key_env,
     get_tavily_api_key_env,
@@ -41,8 +42,19 @@ def supports_native_web_search(provider: LLMProvider | None = None) -> bool:
     return (provider or get_llm_provider()) in NATIVE_WEB_SEARCH_PROVIDERS
 
 
+def default_web_search_provider() -> WebSearchProvider:
+    """Perplexity is the primary search once its key is configured; until then
+    the previous default (model-native search when available) applies."""
+    if (get_perplexity_api_key_env() or "").strip():
+        return WebSearchProvider.PERPLEXITY
+    return WebSearchProvider.AUTO
+
+
 def get_selected_web_search_provider() -> WebSearchProvider:
-    value = (get_web_search_provider_env() or WebSearchProvider.AUTO.value).strip().lower()
+    value = (
+        (get_web_search_provider_env() or "").strip()
+        or default_web_search_provider().value
+    ).lower()
     try:
         return WebSearchProvider(value)
     except ValueError as exc:
@@ -131,6 +143,8 @@ async def search_web(query: str, max_results: int | None = None) -> list[WebSear
                 results = await _search_brave(session, query, limit)
             elif provider == WebSearchProvider.SERPER:
                 results = await _search_serper(session, query, limit)
+            elif provider == WebSearchProvider.PERPLEXITY:
+                results = await _search_perplexity(session, query, limit)
             else:
                 raise HTTPException(
                     status_code=400,
@@ -159,15 +173,28 @@ async def search_web(query: str, max_results: int | None = None) -> list[WebSear
 
 
 async def get_web_search_context(query: str) -> str:
+    context, _ = await get_web_search_context_with_results(query)
+    return context
+
+
+async def get_web_search_context_with_results(
+    query: str,
+) -> tuple[str, list[WebSearchResult] | None]:
+    """Context for the prompt plus the results it came from.
+
+    The results are None when the search itself failed (as opposed to an empty
+    list for a search that found nothing), so callers can tell the user why
+    there are no sources.
+    """
     try:
         results = await search_web(query)
     except Exception:
         LOGGER.warning("Continuing without external web search context")
-        return ""
+        return "", None
     context = format_web_search_context(results)
     if not context:
         LOGGER.warning("External web search returned no usable context")
-    return context
+    return context, results
 
 
 def format_web_search_context(results: list[WebSearchResult]) -> str:
@@ -312,6 +339,28 @@ async def _search_brave(session: aiohttp.ClientSession, query: str, limit: int) 
         WebSearchResult(_clean_text(item.get("title")), str(item.get("url") or ""), _clean_text(item.get("description")))
         for item in payload.get("web", {}).get("results", [])[:limit]
         if item.get("title") and item.get("url")
+    ]
+
+
+PERPLEXITY_SNIPPET_MAX_CHARS = 1500
+
+
+async def _search_perplexity(session: aiohttp.ClientSession, query: str, limit: int) -> list[WebSearchResult]:
+    api_key = _required(get_perplexity_api_key_env(), "PERPLEXITY_API_KEY")
+    async with session.post(
+        "https://api.perplexity.ai/search",
+        json={"query": query, "max_results": limit, "max_tokens_per_page": 512},
+        headers={"Authorization": f"Bearer {api_key}"},
+    ) as response:
+        payload = await _json_response(response)
+    return [
+        WebSearchResult(
+            _clean_text(item.get("title")),
+            str(item.get("url") or ""),
+            _clean_text(item.get("snippet"))[:PERPLEXITY_SNIPPET_MAX_CHARS],
+        )
+        for item in payload.get("results", [])[:limit]
+        if isinstance(item, dict) and item.get("title") and item.get("url")
     ]
 
 

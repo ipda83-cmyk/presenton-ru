@@ -26,7 +26,11 @@ const EXTERNAL_WEB_SEARCH_OPTIONS = [
   // "serper",
   "searxng",
 ] as const;
+// Perplexity is the primary (default) search; the backend also falls back to
+// it when no provider is chosen and its key is configured.
+const DEFAULT_WEB_SEARCH_PROVIDER = "perplexity";
 const WEB_SEARCH_PROVIDER_OPTIONS = [
+  WEB_SEARCH_PROVIDERS.perplexity,
   WEB_SEARCH_PROVIDERS.auto,
   ...EXTERNAL_WEB_SEARCH_OPTIONS.map((value) => WEB_SEARCH_PROVIDERS[value]),
 ];
@@ -51,7 +55,9 @@ const WebSearchProvider = ({
     [setLlmConfig]
   );
 
-  const selectedRaw = String(llmConfig.WEB_SEARCH_PROVIDER || "").toLowerCase();
+  const selectedRaw = String(
+    llmConfig.WEB_SEARCH_PROVIDER || DEFAULT_WEB_SEARCH_PROVIDER
+  ).toLowerCase();
   const selected = WEB_SEARCH_PROVIDER_OPTIONS.some(
     (option) => option.value === selectedRaw
   )
@@ -70,7 +76,7 @@ const WebSearchProvider = ({
         ...current,
         WEB_GROUNDING: checked,
         ...(checked && !hasValidProvider
-          ? { WEB_SEARCH_PROVIDER: "auto" }
+          ? { WEB_SEARCH_PROVIDER: DEFAULT_WEB_SEARCH_PROVIDER }
           : {}),
       };
     });
@@ -124,9 +130,11 @@ const WebSearchProvider = ({
                           className="h-12 w-[222px] justify-between rounded-lg border border-gray-300 px-4 py-4 outline-none transition-colors hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                         >
                           <span className="truncate text-sm font-medium text-gray-900">
-                            {selected
-                              ? WEB_SEARCH_PROVIDERS[selected]?.label || selected
-                              : t("selectWebProviderPlaceholder")}
+                            {selected === "auto"
+                              ? tp("webLabelAuto")
+                              : selected
+                                ? WEB_SEARCH_PROVIDERS[selected]?.label || selected
+                                : t("selectWebProviderPlaceholder")}
                           </span>
                           <ChevronUp className="h-4 w-4 text-gray-500" />
                         </Button>
@@ -161,6 +169,11 @@ const WebSearchProvider = ({
                                   <div className="flex flex-1 flex-col space-y-1">
                                     <span className="text-sm font-medium text-gray-900">
                                       {option.value === "auto" ? tp("webLabelAuto") : option.label}
+                                      {option.value === DEFAULT_WEB_SEARCH_PROVIDER ? (
+                                        <span className="ml-2 rounded-full bg-[#F4F3FF] px-2 py-0.5 text-[10px] font-medium text-[#5141E5]">
+                                          {tp("webRecommended")}
+                                        </span>
+                                      ) : null}
                                     </span>
                                     <span className="text-xs leading-relaxed text-gray-600">
                                       {tp(`webDesc.${providerKey(option.value)}`)}

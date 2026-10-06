@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +31,7 @@ import {
   PresentationConfig,
   ToneType,
   VerbosityType,
+  isAutoLanguage,
 } from "../../upload/type";
 import { PresentationGenerationApi } from "../../services/api/presentation-generation";
 import { useOutlineManagement } from "../hooks/useOutlineManagement";
@@ -39,6 +40,11 @@ import { usePresentationGeneration } from "../hooks/usePresentationGeneration";
 import EmptyStateView from "./EmptyStateView";
 import GenerateButton from "./GenerateButton";
 import OutlineContent from "./OutlineContent";
+import WebSourcesPanel from "./WebSourcesPanel";
+import {
+  fetchWebSources,
+  type WebSourcesRecord,
+} from "../../services/api/web-sources";
 import OutlinePromptBar from "./OutlinePromptBar";
 import OutlineStandardHeader from "./OutlineStandardHeader";
 import TemplateSelection from "./TemplateSelection";
@@ -138,10 +144,35 @@ const OutlinePage: React.FC = () => {
     useState(false);
 
   const hasSelectedTemplate = selectedTemplateId !== null;
+  const [webSources, setWebSources] = useState<WebSourcesRecord | null>(null);
+  const sourcesFromStreamRef = useRef(false);
+  const handleStreamSources = useCallback(
+    (record: WebSourcesRecord | null) => {
+      sourcesFromStreamRef.current = true;
+      setWebSources(record);
+    },
+    []
+  );
   const streamState = useOutlineStreaming(
     presentation_id,
-    !isTemplateStage && hasSelectedTemplate
+    !isTemplateStage && hasSelectedTemplate,
+    handleStreamSources
   );
+
+  // Sources saved with an existing outline (the stream reports fresh ones).
+  useEffect(() => {
+    if (!presentation_id) return;
+    let cancelled = false;
+    sourcesFromStreamRef.current = false;
+    fetchWebSources(presentation_id)
+      .then((record) => {
+        if (!cancelled && !sourcesFromStreamRef.current) setWebSources(record);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [presentation_id]);
   const { handleDragEnd, handleAddSlide } = useOutlineManagement(outlines);
   const { loadingState, handleSubmit } = usePresentationGeneration(
     presentation_id,
@@ -241,7 +272,7 @@ const OutlinePage: React.FC = () => {
       return;
     }
 
-    if (documentPaths.length > 0 && draftConfig.language === LanguageType.Auto) {
+    if (documentPaths.length > 0 && isAutoLanguage(draftConfig.language)) {
       toast.error(t("errLanguageForDocs"));
       return;
     }
@@ -409,7 +440,7 @@ const OutlinePage: React.FC = () => {
         </main>
       ) : (
         <>
-          <div className="lg:mr-[369px]">
+          <div className="lg:mr-[369px] xl:mr-[709px]">
             <main className="mx-auto w-[calc(100%-2.5rem)] max-w-[967px] pb-28 pt-10 sm:w-[calc(100%-5rem)]">
               <OutlinePromptBar
                 config={draftConfig}
@@ -433,8 +464,27 @@ const OutlinePage: React.FC = () => {
                   onUpdateOutline={handleUpdateOutline}
                 />
               </div>
+
+              {isOutlineAssistantVisible && (
+                <WebSourcesPanel
+                  className="mt-10 max-h-[520px] overflow-hidden rounded-[16px] border border-[#EDEEEF] xl:hidden"
+                  record={webSources}
+                  isSearching={streamState.isStreaming || streamState.isLoading}
+                />
+              )}
             </main>
           </div>
+
+          {/* Between the outline and the assistant: where the facts came from. */}
+          {isOutlineAssistantVisible && (
+            <aside className="hidden xl:fixed xl:bottom-0 xl:right-[369px] xl:top-[68px] xl:z-30 xl:flex xl:w-[340px] xl:border-x xl:border-[#EDEEEF]">
+              <WebSourcesPanel
+                className="w-full"
+                record={webSources}
+                isSearching={streamState.isStreaming || streamState.isLoading}
+              />
+            </aside>
+          )}
 
           {isOutlineAssistantVisible && (
             <aside className="mx-auto mb-28 mt-8 flex h-[600px] w-[calc(100%-2.5rem)] overflow-hidden border border-[#EDEEEF] bg-[#FEFEFF] sm:w-[calc(100%-5rem)] lg:fixed lg:bottom-0 lg:right-0 lg:top-[68px] lg:z-40 lg:mx-0 lg:mb-0 lg:mt-0 lg:h-auto lg:w-[369px] lg:border-0">
@@ -476,7 +526,7 @@ const OutlinePage: React.FC = () => {
             </aside>
           )}
 
-          <div className="pointer-events-none fixed bottom-6 left-5 right-5 z-50 flex justify-center sm:left-10 sm:right-10 lg:left-0 lg:right-[369px]">
+          <div className="pointer-events-none fixed bottom-6 left-5 right-5 z-50 flex justify-center sm:left-10 sm:right-10 lg:left-0 lg:right-[369px] xl:right-[709px]">
             <div className="pointer-events-auto">
               <GenerateButton
                 loadingState={loadingState}

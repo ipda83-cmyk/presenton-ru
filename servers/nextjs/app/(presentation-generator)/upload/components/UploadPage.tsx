@@ -15,7 +15,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { clearOutlines, setPresentationId } from "@/store/slices/presentationGeneration";
 import { PromptInput } from "./PromptInput";
-import { LanguageType, PresentationConfig, ToneType, VerbosityType } from "../type";
+import { LanguageType, PresentationConfig, ToneType, VerbosityType, isAutoLanguage } from "../type";
 import SupportingDoc from "./SupportingDoc";
 import { notify } from "@/components/ui/sonner";
 import { useTranslations } from "next-intl";
@@ -26,6 +26,7 @@ import { setPptGenUploadState } from "@/store/slices/presentationGenUpload";
 import { trackEvent, MixpanelEvent } from "@/utils/mixpanel";
 import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { ConfigurationSelects } from "./ConfigurationSelects";
+import { AdvancedSettingsPanel } from "./AdvanceSettings";
 import { RootState } from "@/store/store";
 import { ImagesApi } from "../../services/api/images";
 import CurrentConfig from "./CurrentConfig";
@@ -380,7 +381,7 @@ const UploadPage = ({
       return false;
     }
 
-    if (files.length > 0 && config.language === LanguageType.Auto) {
+    if (files.length > 0 && isAutoLanguage(config.language)) {
       trackUploadValidationFailure("language_auto_with_documents");
       notify.warning(t("errors.languageRequiredTitle"), t("errors.languageForDocsBody"));
       return false;
@@ -614,7 +615,7 @@ const UploadPage = ({
         duration={loadingState.duration}
         extra_info={loadingState.extra_info}
       />
-      <div className="mx-auto mb-8 max-w-[760px] space-y-[18px] px-4 lg:max-w-[780px] xl:max-w-[900px] min-[1600px]:max-w-[1050px] min-[1920px]:max-w-[1280px]">
+      <div className="mx-auto mb-8 max-w-[760px] space-y-[18px] px-4 lg:max-w-[780px] xl:max-w-[1200px] min-[1600px]:max-w-[1380px] min-[1920px]:max-w-[1600px]">
         <div className="flex min-h-[34px] w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-2">
             <CurrentConfig webSearchEnabled={config.webSearch} />
@@ -629,32 +630,42 @@ const UploadPage = ({
             }
             config={config}
             onConfigChange={handleConfigChange}
+            advancedButtonClassName="xl:hidden"
           />
         </div>
 
-        <PromptInput
-          value={config.prompt}
-          variant={generationMode}
-          references={
-            communityEnabled && generationMode === "smart" && communityReference
-              ? [{ id: String(communityReference.id), label: communityReference.title || t("communityDesignFallback") }]
-              : []
-          }
-          onRemoveReference={() =>
-            handleCommunityReferenceChange(null, "prompt_reference")
-          }
-          onChange={(value) => handleConfigChange("prompt", value)}
-          onSubmit={handleGeneratePresentation}
-          hasAttachments={files.length > 0}
-          footer={
-            <SupportingDoc
-              files={files}
-              onFilesChange={setFiles}
-              onSubmit={handleGeneratePresentation}
-              disabled={loadingState.isLoading}
-            />
-          }
-        />
+        {/* Wide screens: advanced settings sit beside the prompt instead of
+            behind the toolbar button (still used on narrow screens). */}
+        <div className="xl:grid xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start xl:gap-5 min-[1800px]:grid-cols-[minmax(0,1fr)_380px]">
+          <PromptInput
+            value={config.prompt}
+            variant={generationMode}
+            references={
+              communityEnabled && generationMode === "smart" && communityReference
+                ? [{ id: String(communityReference.id), label: communityReference.title || t("communityDesignFallback") }]
+                : []
+            }
+            onRemoveReference={() =>
+              handleCommunityReferenceChange(null, "prompt_reference")
+            }
+            onChange={(value) => handleConfigChange("prompt", value)}
+            onSubmit={handleGeneratePresentation}
+            hasAttachments={files.length > 0}
+            footer={
+              <SupportingDoc
+                files={files}
+                onFilesChange={setFiles}
+                onSubmit={handleGeneratePresentation}
+                disabled={loadingState.isLoading}
+              />
+            }
+          />
+          <AdvancedSettingsPanel
+            className="hidden xl:block"
+            config={config}
+            onConfigChange={handleConfigChange}
+          />
+        </div>
 
       </div>
 

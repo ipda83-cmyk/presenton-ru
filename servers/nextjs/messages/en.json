@@ -69,7 +69,7 @@
       "placeholder": "Select language",
       "search": "Search language...",
       "empty": "No language found.",
-      "auto": "Auto (English)"
+      "auto": "Auto (Russian)"
     },
     "loading": {
       "processingDocs": "Processing documents...",
@@ -105,7 +105,20 @@
       "verbosity": "Verbosity",
       "verbosityPlaceholder": "Select verbosity",
       "includeToc": "Include Table of Content",
-      "titleSlide": "Title Slide"
+      "titleSlide": "Title Slide",
+      "toneOptions": {
+        "default": "Default",
+        "casual": "Casual",
+        "professional": "Professional",
+        "funny": "Funny",
+        "educational": "Educational",
+        "sales_pitch": "Sales pitch"
+      },
+      "verbosityOptions": {
+        "concise": "Concise",
+        "standard": "Standard",
+        "text_heavy": "Text-heavy"
+      }
     },
     "heroTitle": "Generate",
     "heroSubtitle": "Turn prompts or documents into presentations with AI"
@@ -169,6 +182,21 @@
       "preparing": "Preparing your presentation outline",
       "reconnecting": "Reconnecting to outline stream",
       "ready": "Outline ready"
+    },
+    "sources": {
+      "title": "Sources",
+      "subtitle": "Where the outline information came from: the site and the start of the page text.",
+      "via": "Search: {provider}",
+      "query": "query “{query}”",
+      "searching": "Searching the web for sources…",
+      "empty": "The search found no matching pages.",
+      "failed": "Web search failed. An administrator can check the search provider key in settings.",
+      "native": "The model searched by itself and does not return a list of sites. To see sources, an administrator can choose Perplexity in the web search settings.",
+      "unavailable": "Web search is on, but no search provider is set up. An administrator can choose Perplexity in the web search settings.",
+      "disabled": "Web search is off for this presentation.",
+      "none": "No sources yet. They appear after generating an outline with web search on.",
+      "open": "Open {site} in a new tab",
+      "count": "{count, plural, one {# source} other {# sources}}"
     }
   },
   "editor": {
@@ -1723,6 +1751,7 @@
       "openai_compatible": "OpenAI-compatible /v1/images endpoint (LiteLLM, Azure, vLLM, etc.)"
     },
     "webDesc": {
+      "perplexity": "Perplexity Search API: up-to-date web results with page excerpts. Recommended default search.",
       "auto": "Use model-native web grounding when available. Otherwise web search stays off until you choose an external provider.",
       "searxng": "Use a self-hosted SearXNG instance.",
       "tavily": "Search API optimized for AI applications.",
@@ -1732,6 +1761,7 @@
     "webLabelAuto": "Default (Model)",
     "webUrlLabelSearxng": "SearXNG base URL",
     "webApiKeyLabel": {
+      "perplexity": "Perplexity API key",
       "tavily": "Tavily API key",
       "exa": "Exa API key",
       "brave": "Brave Search API key"
@@ -1761,7 +1791,8 @@
     "generateWithAria": "Generate with {provider}",
     "generateVariationsAria": "Generate {count} image variations with {provider}",
     "customName": "Custom",
-    "customImageName": "Custom"
+    "customImageName": "Custom",
+    "webRecommended": "Recommended"
   },
   "imgPicker": {
     "title": "Change Image",

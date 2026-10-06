@@ -14,17 +14,11 @@ from utils.schema_utils import (
     ensure_array_schemas_have_items,
     remove_fields_from_schema,
 )
+from utils.presentation_language import resolve_outline_prompt_language
 
 
 def _resolve_prompt_language(language: Optional[str]) -> str:
-    if language is None:
-        return "auto-detect"
-    s = str(language).strip()
-    if not s:
-        return "auto-detect"
-    if s.lower() in {"auto", "auto-detect"}:
-        return "auto-detect"
-    return s
+    return resolve_outline_prompt_language(language)
 
 
 def get_system_prompt(

@@ -15,7 +15,8 @@ export enum ThemeType {
 
 export enum LanguageType {
   // Major World Languages
-  Auto = "Auto (English)",
+  // Detect the language from the prompt; Russian when it is unclear.
+  Auto = "Auto (Russian)",
   English = "English",
   Spanish = "Spanish (Español)",
   French = "French (Français)",
@@ -130,6 +131,10 @@ export interface PresentationConfig {
   includeTitleSlide: boolean;
   webSearch: boolean;
 }
+
+// Any "Auto (...)" value (older presentations were saved as "Auto (English)").
+export const isAutoLanguage = (value?: string | null): boolean =>
+  typeof value === "string" && /^auto(\s|\(|$)/i.test(value.trim());
 
 export enum ToneType {
   Default = "default",

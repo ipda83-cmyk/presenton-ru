@@ -261,3 +261,118 @@ def test_exa_search_requests_highlights_and_maps_results(monkeypatch):
             snippet="Summary fallback.",
         ),
     ]
+
+
+def test_perplexity_is_the_default_once_its_key_is_configured(monkeypatch):
+    monkeypatch.delenv("WEB_SEARCH_PROVIDER", raising=False)
+    monkeypatch.delenv("PERPLEXITY_API_KEY", raising=False)
+    assert web_search.get_selected_web_search_provider() == WebSearchProvider.AUTO
+
+    monkeypatch.setenv("PERPLEXITY_API_KEY", "test-perplexity-key")
+    assert web_search.get_selected_web_search_provider() == WebSearchProvider.PERPLEXITY
+    assert web_search.get_web_search_route() == ("external", WebSearchProvider.PERPLEXITY)
+
+    # An empty setting (cleared in the UI) also falls back to the default.
+    monkeypatch.setenv("WEB_SEARCH_PROVIDER", "  ")
+    assert web_search.get_selected_web_search_provider() == WebSearchProvider.PERPLEXITY
+
+
+def test_explicit_provider_wins_over_the_perplexity_default(monkeypatch):
+    monkeypatch.setenv("PERPLEXITY_API_KEY", "test-perplexity-key")
+    monkeypatch.setenv("WEB_SEARCH_PROVIDER", WebSearchProvider.TAVILY.value)
+    assert web_search.get_selected_web_search_provider() == WebSearchProvider.TAVILY
+
+    monkeypatch.setenv("WEB_SEARCH_PROVIDER", WebSearchProvider.AUTO.value)
+    assert web_search.get_selected_web_search_provider() == WebSearchProvider.AUTO
+
+
+def test_perplexity_search_requests_search_api_and_maps_results(monkeypatch):
+    captured = {}
+    long_snippet = "x" * 5000
+
+    class FakeResponse:
+        status = 200
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_args):
+            return None
+
+        async def json(self, content_type=None):
+            return {
+                "results": [
+                    {
+                        "title": "Taipei Zoo",
+                        "url": "https://www.zoo.gov.taipei/",
+                        "snippet": "Taipei Zoo is the largest zoo in Taiwan.",
+                        "date": "2026-01-01",
+                    },
+                    {"title": "No URL", "snippet": "dropped"},
+                    "not an object",
+                    {"title": "Long", "url": "https://example.com/long", "snippet": long_snippet},
+                ]
+            }
+
+    class FakeSession:
+        def post(self, url, json, headers):
+            captured.update(url=url, json=json, headers=headers)
+            return FakeResponse()
+
+    monkeypatch.setenv("PERPLEXITY_API_KEY", "test-perplexity-key")
+
+    results = asyncio.run(
+        web_search._search_perplexity(FakeSession(), "taipei zoo", 5)
+    )
+
+    assert captured == {
+        "url": "https://api.perplexity.ai/search",
+        "json": {"query": "taipei zoo", "max_results": 5, "max_tokens_per_page": 512},
+        "headers": {"Authorization": "Bearer test-perplexity-key"},
+    }
+    assert [result.url for result in results] == [
+        "https://www.zoo.gov.taipei/",
+        "https://example.com/long",
+    ]
+    assert results[0].snippet == "Taipei Zoo is the largest zoo in Taiwan."
+    assert len(results[1].snippet) == web_search.PERPLEXITY_SNIPPET_MAX_CHARS
+
+
+def test_perplexity_search_requires_a_key(monkeypatch):
+    monkeypatch.delenv("PERPLEXITY_API_KEY", raising=False)
+
+    class FakeSession:
+        def post(self, *_args, **_kwargs):  # pragma: no cover - must not be called
+            raise AssertionError("request sent without a key")
+
+    try:
+        asyncio.run(web_search._search_perplexity(FakeSession(), "query", 3))
+    except web_search.HTTPException as error:
+        assert error.status_code == 400
+        assert "PERPLEXITY_API_KEY" in error.detail
+    else:  # pragma: no cover
+        raise AssertionError("missing key was accepted")
+
+
+def test_web_search_context_with_results_tells_failure_from_no_results(monkeypatch):
+    async def failing_search(_query, max_results=None):
+        raise RuntimeError("provider down")
+
+    monkeypatch.setattr(web_search, "search_web", failing_search)
+    assert asyncio.run(web_search.get_web_search_context_with_results("q")) == ("", None)
+
+    async def empty_search(_query, max_results=None):
+        return []
+
+    monkeypatch.setattr(web_search, "search_web", empty_search)
+    assert asyncio.run(web_search.get_web_search_context_with_results("q")) == ("", [])
+
+    found = [web_search.WebSearchResult("Zoo", "https://example.com/zoo", "Animals")]
+
+    async def found_search(_query, max_results=None):
+        return found
+
+    monkeypatch.setattr(web_search, "search_web", found_search)
+    context, results = asyncio.run(web_search.get_web_search_context_with_results("q"))
+    assert "Animals" in context
+    assert results == found
