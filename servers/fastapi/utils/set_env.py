@@ -312,6 +312,26 @@ def set_serper_api_key_env(value):
 def set_perplexity_api_key_env(value):
     os.environ["PERPLEXITY_API_KEY"] = value
 
+
+def set_gemini_search_api_key_env(value):
+    os.environ["GEMINI_SEARCH_API_KEY"] = value
+
+
+def set_gemini_search_base_url_env(value):
+    os.environ["GEMINI_SEARCH_BASE_URL"] = value
+
+
+def set_gemini_search_model_env(value):
+    os.environ["GEMINI_SEARCH_MODEL"] = value
+
+
+def set_perplexity_base_url_env(value):
+    os.environ["PERPLEXITY_BASE_URL"] = value
+
+
+def set_perplexity_search_model_env(value):
+    os.environ["PERPLEXITY_SEARCH_MODEL"] = value
+
 def set_comfyui_url_env(value):
     os.environ["COMFYUI_URL"] = value
 

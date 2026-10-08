@@ -14,9 +14,13 @@ from enums.web_search_provider import WebSearchProvider
 from utils.get_env import (
     get_brave_search_api_key_env,
     get_exa_api_key_env,
+    get_gemini_search_api_key_env,
+    get_gemini_search_base_url_env,
     get_gemini_search_model_env,
     get_google_api_key_env,
     get_perplexity_api_key_env,
+    get_perplexity_base_url_env,
+    get_perplexity_search_model_env,
     get_searxng_base_url_env,
     get_serper_api_key_env,
     get_tavily_api_key_env,
@@ -50,7 +54,7 @@ def default_web_search_provider() -> WebSearchProvider:
     """Gemini (Google Search grounding) is the default search, Perplexity the
     alternative; each needs its key. Without either, the previous default
     (model-native search when available) applies."""
-    if (get_google_api_key_env() or "").strip():
+    if _gemini_search_api_key():
         return WebSearchProvider.GEMINI
     if (get_perplexity_api_key_env() or "").strip():
         return WebSearchProvider.PERPLEXITY
@@ -354,10 +358,25 @@ async def _search_brave(session: aiohttp.ClientSession, query: str, limit: int) 
 PERPLEXITY_SNIPPET_MAX_CHARS = 1500
 
 
+PERPLEXITY_API_URL = "https://api.perplexity.ai"
+DEFAULT_PERPLEXITY_GATEWAY_MODEL = "perplexity/sonar"
+
+
 async def _search_perplexity(session: aiohttp.ClientSession, query: str, limit: int) -> list[WebSearchResult]:
     api_key = _required(get_perplexity_api_key_env(), "PERPLEXITY_API_KEY")
+    base_url = (get_perplexity_base_url_env() or "").strip()
+    if base_url and urlparse(base_url).hostname != urlparse(PERPLEXITY_API_URL).hostname:
+        # An aggregator (e.g. arckep.ru): OpenAI-compatible chat with search.
+        model = (get_perplexity_search_model_env() or "").strip()
+        return await _search_chat_gateway(
+            _http_base_url(base_url, "PERPLEXITY_BASE_URL"),
+            api_key,
+            model or DEFAULT_PERPLEXITY_GATEWAY_MODEL,
+            query,
+            limit,
+        )
     async with session.post(
-        "https://api.perplexity.ai/search",
+        f"{(base_url or PERPLEXITY_API_URL).rstrip('/')}/search",
         json={"query": query, "max_results": limit, "max_tokens_per_page": 512},
         headers={"Authorization": f"Bearer {api_key}"},
     ) as response:
@@ -374,6 +393,7 @@ async def _search_perplexity(session: aiohttp.ClientSession, query: str, limit: 
 
 
 DEFAULT_GEMINI_SEARCH_MODEL = "gemini-3.8-flash"
+DEFAULT_GEMINI_GATEWAY_MODEL = "google-ai-studio/gemini-3.8-flash"
 GEMINI_SEARCH_TIMEOUT_MS = 45_000
 GEMINI_SEARCH_PROMPT = (
     "Search the web and collect current, factual information for a presentation "
@@ -397,8 +417,19 @@ async def _search_gemini(query: str, limit: int) -> list[WebSearchResult]:
     lists the pages it used plus the answer passages each page supports."""
     from google.genai import types
 
-    api_key = _required(get_google_api_key_env(), "GOOGLE_API_KEY")
-    model = (get_gemini_search_model_env() or "").strip() or DEFAULT_GEMINI_SEARCH_MODEL
+    api_key = _required(_gemini_search_api_key(), "GEMINI_SEARCH_API_KEY")
+    model = (get_gemini_search_model_env() or "").strip()
+    base_url = (get_gemini_search_base_url_env() or "").strip()
+    if base_url:
+        # An aggregator (e.g. arckep.ru): OpenAI-compatible chat with search.
+        return await _search_chat_gateway(
+            _http_base_url(base_url, "GEMINI_SEARCH_BASE_URL"),
+            api_key,
+            model or DEFAULT_GEMINI_GATEWAY_MODEL,
+            query,
+            limit,
+        )
+    model = model or DEFAULT_GEMINI_SEARCH_MODEL
     response = await _gemini_client(api_key).aio.models.generate_content(
         model=model,
         contents=GEMINI_SEARCH_PROMPT.format(query=query),
@@ -445,6 +476,159 @@ async def _search_gemini(query: str, limit: int) -> list[WebSearchResult]:
     if not results and answer:
         LOGGER.info("Gemini search returned an answer without grounding sources")
     return results
+
+
+def _gemini_search_api_key() -> str:
+    """The search key, or the Gemini text-provider key when none is set."""
+    return (get_gemini_search_api_key_env() or "").strip() or (
+        get_google_api_key_env() or ""
+    ).strip()
+
+
+def _http_base_url(value: str, label: str) -> str:
+    parsed = urlparse(value.strip())
+    if parsed.scheme not in ("http", "https") or not parsed.hostname:
+        raise HTTPException(
+            status_code=400, detail=t("err.webSearch.invalidBaseUrl", label=label)
+        )
+    return value.strip().rstrip("/")
+
+
+GATEWAY_SEARCH_TIMEOUT_SECONDS = 90
+GATEWAY_SEARCH_PROMPT = (
+    "Search the web for current, factual information for a presentation about "
+    "the topic below.\n"
+    "Reply in two parts.\n"
+    "1. The key facts, figures and dates you found, as short plain sentences.\n"
+    "2. A line 'SOURCES:' followed by one line for every web page you used, "
+    "exactly in this form:\n"
+    "- [Page title](https://full.page.url): one or two sentences on what this "
+    "page says.\n\n"
+    "Topic: {query}"
+)
+_MARKDOWN_SOURCE = re.compile(
+    r"\[(?P<title>[^\]\n]{1,300})\]\((?P<url>https?://[^\s)]+)\)\s*(?:[:\-–—]\s*(?P<summary>[^\n]*))?"
+)
+
+
+def _chat_completions_url(base_url: str) -> str:
+    if base_url.endswith("/chat/completions"):
+        return base_url
+    return f"{base_url}/chat/completions"
+
+
+def _message_text(content: Any) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return "\n".join(
+            str(part.get("text") or "")
+            for part in content
+            if isinstance(part, dict) and part.get("type") in (None, "text", "output_text")
+        )
+    return ""
+
+
+async def _search_chat_gateway(
+    base_url: str, api_key: str, model: str, query: str, limit: int
+) -> list[WebSearchResult]:
+    """Search through an OpenAI-compatible aggregator that runs the provider's
+    built-in web search when asked with ``web_search: true``."""
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=GATEWAY_SEARCH_TIMEOUT_SECONDS),
+        headers={"User-Agent": "Presenton/1.0"},
+    ) as session:
+        async with session.post(
+            _chat_completions_url(base_url),
+            json={
+                "model": model,
+                "messages": [
+                    {"role": "user", "content": GATEWAY_SEARCH_PROMPT.format(query=query)}
+                ],
+                "web_search": True,
+                "stream": False,
+                "temperature": 0.2,
+            },
+            headers={"Authorization": f"Bearer {api_key}"},
+        ) as response:
+            payload = await _json_response(response)
+    return _parse_gateway_sources(payload, limit)
+
+
+def _parse_gateway_sources(payload: dict[str, Any], limit: int) -> list[WebSearchResult]:
+    """Pages from whichever citation format the gateway returns, merged by URL:
+    Perplexity ``search_results``/``citations``, OpenAI ``url_citation``
+    annotations, Gemini grounding metadata, and the Markdown source list the
+    prompt asks for."""
+    choices = payload.get("choices") or []
+    choice = choices[0] if choices and isinstance(choices[0], dict) else {}
+    message = choice.get("message") if isinstance(choice.get("message"), dict) else {}
+    text = _message_text(message.get("content"))
+
+    found: dict[str, dict[str, str]] = {}
+
+    def add(url: Any, title: Any = "", snippet: Any = "", domain: Any = "") -> None:
+        url = str(url or "").strip()
+        if urlparse(url).scheme not in ("http", "https"):
+            return
+        entry = found.setdefault(url, {"title": "", "snippet": "", "domain": ""})
+        for key, value in (("title", title), ("snippet", snippet), ("domain", domain)):
+            value = _clean_text(value)
+            if value and not entry[key]:
+                entry[key] = value
+
+    for source in (payload, message):
+        for item in source.get("search_results") or []:
+            if isinstance(item, dict):
+                add(item.get("url"), item.get("title"), item.get("snippet"))
+    for annotation in message.get("annotations") or []:
+        if not isinstance(annotation, dict) or annotation.get("type") != "url_citation":
+            continue
+        citation = annotation.get("url_citation") or annotation
+        snippet = citation.get("content")
+        start, end = citation.get("start_index"), citation.get("end_index")
+        if not snippet and isinstance(start, int) and isinstance(end, int):
+            snippet = text[start:end]
+        add(citation.get("url"), citation.get("title"), snippet)
+    for source in (payload, message):
+        for citation in source.get("citations") or []:
+            if isinstance(citation, str):
+                add(citation)
+            elif isinstance(citation, dict):
+                add(citation.get("url"), citation.get("title"), citation.get("snippet"))
+    for source in (choice, payload):
+        metadata = source.get("grounding_metadata") or source.get("groundingMetadata")
+        if not isinstance(metadata, dict):
+            continue
+        for chunk in metadata.get("grounding_chunks") or metadata.get("groundingChunks") or []:
+            web = chunk.get("web") if isinstance(chunk, dict) else None
+            if isinstance(web, dict):
+                add(web.get("uri"), web.get("title"), "", web.get("domain") or web.get("title"))
+    for match in _MARKDOWN_SOURCE.finditer(text):
+        add(match.group("url"), match.group("title"), match.group("summary"))
+
+    facts = _clean_text(text.split("SOURCES:", 1)[0])
+    if not found:
+        LOGGER.warning(
+            "Search gateway returned no sources: response_keys=%s message_keys=%s",
+            sorted(payload),
+            sorted(message),
+        )
+        # Keep the facts as context even without links (nothing to show as a source).
+        return (
+            [WebSearchResult("Web search", "", facts[:PERPLEXITY_SNIPPET_MAX_CHARS])]
+            if facts
+            else []
+        )
+    return [
+        WebSearchResult(
+            title=entry["title"] or entry["domain"] or urlparse(url).hostname or url,
+            url=url,
+            snippet=(entry["snippet"] or facts)[:PERPLEXITY_SNIPPET_MAX_CHARS],
+            domain=entry["domain"],
+        )
+        for url, entry in list(found.items())[:limit]
+    ]
 
 
 async def _search_serper(session: aiohttp.ClientSession, query: str, limit: int) -> list[WebSearchResult]:

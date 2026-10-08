@@ -1751,7 +1751,7 @@
       "openai_compatible": "OpenAI-compatible /v1/images endpoint (LiteLLM, Azure, vLLM, etc.)"
     },
     "webDesc": {
-      "gemini": "Google Search through Gemini: the model searches the web and returns the pages it used. Uses the same key as Gemini in Google AI Studio.",
+      "gemini": "Google Search through Gemini: the model searches the web and returns the pages it used. Key from Google AI Studio or from an aggregator service.",
       "perplexity": "Perplexity Search API: up-to-date web results with page excerpts.",
       "auto": "Use model-native web grounding when available. Otherwise web search stays off until you choose an external provider.",
       "searxng": "Use a self-hosted SearXNG instance.",
@@ -1794,7 +1794,14 @@
     "generateVariationsAria": "Generate {count} image variations with {provider}",
     "customName": "Custom",
     "customImageName": "Custom",
-    "webDefault": "Default"
+    "webDefault": "Default",
+    "webBaseUrlLabel": "Base URL (optional)",
+    "webBaseUrlHint": "Leave empty to call the service directly. If the key comes from an aggregator (e.g. arckep.ru), enter its API address, such as https://arckep.ru/api/v1.",
+    "webModelLabel": "Model (optional)",
+    "webModelHint": {
+      "gemini": "Empty uses gemini-3.8-flash directly or google-ai-studio/gemini-3.8-flash through an aggregator.",
+      "perplexity": "Only used through an aggregator. Empty uses perplexity/sonar."
+    }
   },
   "imgPicker": {
     "title": "Change Image",

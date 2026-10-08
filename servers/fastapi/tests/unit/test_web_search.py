@@ -378,6 +378,8 @@ def test_gemini_search_model_can_be_overridden_and_needs_a_key(monkeypatch):
             self.aio = type("Aio", (), {"models": FakeModels()})()
 
     monkeypatch.setattr(web_search, "_gemini_client", FakeClient)
+    monkeypatch.delenv("GEMINI_SEARCH_API_KEY", raising=False)
+    monkeypatch.delenv("GEMINI_SEARCH_BASE_URL", raising=False)
     monkeypatch.setenv("GOOGLE_API_KEY", "test-google-key")
     monkeypatch.setenv("GEMINI_SEARCH_MODEL", "gemini-3.5-flash-lite")
     assert asyncio.run(web_search._search_gemini("q", 3)) == []
@@ -388,9 +390,233 @@ def test_gemini_search_model_can_be_overridden_and_needs_a_key(monkeypatch):
         asyncio.run(web_search._search_gemini("q", 3))
     except web_search.HTTPException as error:
         assert error.status_code == 400
-        assert "GOOGLE_API_KEY" in error.detail
+        assert "GEMINI_SEARCH_API_KEY" in error.detail
     else:  # pragma: no cover
         raise AssertionError("missing key was accepted")
+
+
+def test_gemini_search_key_takes_priority_over_the_text_provider_key(monkeypatch):
+    monkeypatch.setenv("GOOGLE_API_KEY", "text-provider-key")
+    monkeypatch.setenv("GEMINI_SEARCH_API_KEY", "  ")
+    assert web_search._gemini_search_api_key() == "text-provider-key"
+    monkeypatch.setenv("GEMINI_SEARCH_API_KEY", "search-key")
+    assert web_search._gemini_search_api_key() == "search-key"
+    monkeypatch.delenv("GOOGLE_API_KEY")
+    monkeypatch.delenv("WEB_SEARCH_PROVIDER", raising=False)
+    assert web_search.get_selected_web_search_provider() == WebSearchProvider.GEMINI
+
+
+def _capture_gateway(monkeypatch):
+    calls = []
+
+    async def fake_gateway(base_url, api_key, model, query, limit):
+        calls.append(
+            {"base_url": base_url, "api_key": api_key, "model": model, "query": query, "limit": limit}
+        )
+        return []
+
+    monkeypatch.setattr(web_search, "_search_chat_gateway", fake_gateway)
+    return calls
+
+
+def test_gemini_with_a_base_url_searches_through_the_gateway(monkeypatch):
+    calls = _capture_gateway(monkeypatch)
+    monkeypatch.setenv("GEMINI_SEARCH_API_KEY", "ark-test-key")
+    monkeypatch.setenv("GEMINI_SEARCH_BASE_URL", " https://arckep.example/api/v1/ ")
+    monkeypatch.delenv("GEMINI_SEARCH_MODEL", raising=False)
+
+    asyncio.run(web_search._search_gemini("taipei zoo", 4))
+
+    assert calls == [
+        {
+            "base_url": "https://arckep.example/api/v1",
+            "api_key": "ark-test-key",
+            "model": web_search.DEFAULT_GEMINI_GATEWAY_MODEL,
+            "query": "taipei zoo",
+            "limit": 4,
+        }
+    ]
+
+    monkeypatch.setenv("GEMINI_SEARCH_MODEL", "google-ai-studio/custom")
+    asyncio.run(web_search._search_gemini("q", 2))
+    assert calls[-1]["model"] == "google-ai-studio/custom"
+
+
+def test_invalid_base_url_is_rejected(monkeypatch):
+    _capture_gateway(monkeypatch)
+    monkeypatch.setenv("GEMINI_SEARCH_API_KEY", "ark-test-key")
+    monkeypatch.setenv("GEMINI_SEARCH_BASE_URL", "arckep.example/api/v1")
+    try:
+        asyncio.run(web_search._search_gemini("q", 2))
+    except web_search.HTTPException as error:
+        assert error.status_code == 400
+        assert "GEMINI_SEARCH_BASE_URL" in error.detail
+    else:  # pragma: no cover
+        raise AssertionError("invalid base URL was accepted")
+
+
+def test_perplexity_routes_by_base_url(monkeypatch):
+    calls = _capture_gateway(monkeypatch)
+    captured = {}
+
+    class FakeResponse:
+        status = 200
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_args):
+            return None
+
+        async def json(self, content_type=None):
+            return {"results": []}
+
+    class FakeSession:
+        def post(self, url, json, headers):
+            captured["url"] = url
+            return FakeResponse()
+
+    monkeypatch.setenv("PERPLEXITY_API_KEY", "test-key")
+    monkeypatch.delenv("PERPLEXITY_SEARCH_MODEL", raising=False)
+
+    # The official API keeps using the Search API.
+    monkeypatch.setenv("PERPLEXITY_BASE_URL", "https://api.perplexity.ai/")
+    asyncio.run(web_search._search_perplexity(FakeSession(), "q", 3))
+    assert captured["url"] == "https://api.perplexity.ai/search"
+    assert calls == []
+
+    # Any other address is an aggregator.
+    monkeypatch.setenv("PERPLEXITY_BASE_URL", "https://arckep.example/api/v1")
+    asyncio.run(web_search._search_perplexity(FakeSession(), "q", 3))
+    assert calls[-1]["base_url"] == "https://arckep.example/api/v1"
+    assert calls[-1]["model"] == web_search.DEFAULT_PERPLEXITY_GATEWAY_MODEL
+
+
+def test_gateway_request_is_openai_compatible_with_web_search(monkeypatch):
+    captured = {}
+
+    class FakeResponse:
+        status = 200
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_args):
+            return None
+
+        async def json(self, content_type=None):
+            return {
+                "choices": [
+                    {
+                        "message": {
+                            "content": "Facts.\nSOURCES:\n- [Zoo](https://zoo.example/): About the zoo."
+                        }
+                    }
+                ]
+            }
+
+    class FakeSession:
+        def __init__(self, **kwargs):
+            captured["timeout"] = kwargs["timeout"].total
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_args):
+            return None
+
+        def post(self, url, json, headers):
+            captured.update(url=url, json=json, headers=headers)
+            return FakeResponse()
+
+    monkeypatch.setattr(web_search.aiohttp, "ClientSession", FakeSession)
+
+    results = asyncio.run(
+        web_search._search_chat_gateway(
+            "https://arckep.example/api/v1", "ark-test-key", "google-ai-studio/gemini-3.8-flash", "zoo", 5
+        )
+    )
+
+    assert captured["url"] == "https://arckep.example/api/v1/chat/completions"
+    assert captured["headers"] == {"Authorization": "Bearer ark-test-key"}
+    assert captured["json"]["model"] == "google-ai-studio/gemini-3.8-flash"
+    assert captured["json"]["web_search"] is True
+    assert captured["json"]["stream"] is False
+    assert "zoo" in captured["json"]["messages"][0]["content"]
+    assert captured["timeout"] == web_search.GATEWAY_SEARCH_TIMEOUT_SECONDS
+    assert results == [
+        web_search.WebSearchResult("Zoo", "https://zoo.example/", "About the zoo.")
+    ]
+
+
+def test_gateway_sources_are_merged_from_every_known_format():
+    text = (
+        "Taipei Zoo opened in 1914 and covers 165 hectares.\n"
+        "SOURCES:\n"
+        "- [Taipei Zoo](https://zoo.example/en): Official site with visitor information.\n"
+        "- [Not a web page](ftp://files.example/x): ignored\n"
+    )
+    payload = {
+        "search_results": [
+            {"title": "Wiki", "url": "https://wiki.example/zoo", "snippet": "Encyclopedia entry."}
+        ],
+        "citations": ["https://news.example/a", {"url": "https://wiki.example/zoo"}],
+        "choices": [
+            {
+                "message": {
+                    "content": text,
+                    "annotations": [
+                        {
+                            "type": "url_citation",
+                            "url_citation": {
+                                "url": "https://zoo.example/en",
+                                "title": "",
+                                "start_index": 0,
+                                "end_index": 22,
+                            },
+                        }
+                    ],
+                },
+                "grounding_metadata": {
+                    "grounding_chunks": [
+                        {
+                            "web": {
+                                "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/x",
+                                "title": "travel.example",
+                            }
+                        }
+                    ]
+                },
+            }
+        ],
+    }
+
+    results = web_search._parse_gateway_sources(payload, 10)
+    by_url = {result.url: result for result in results}
+
+    assert list(by_url) == [
+        "https://wiki.example/zoo",
+        "https://zoo.example/en",
+        "https://news.example/a",
+        "https://vertexaisearch.cloud.google.com/grounding-api-redirect/x",
+    ]
+    assert by_url["https://wiki.example/zoo"].snippet == "Encyclopedia entry."
+    # Annotation snippet first; the Markdown list fills in the missing title.
+    assert by_url["https://zoo.example/en"].title == "Taipei Zoo"
+    assert by_url["https://zoo.example/en"].snippet == "Taipei Zoo opened in 1"
+    # A bare citation gets the facts as its text.
+    assert by_url["https://news.example/a"].snippet.startswith("Taipei Zoo opened in 1914")
+    assert by_url["https://vertexaisearch.cloud.google.com/grounding-api-redirect/x"].domain == "travel.example"
+    assert len(web_search._parse_gateway_sources(payload, 2)) == 2
+
+
+def test_gateway_without_sources_keeps_the_facts_as_context(caplog):
+    payload = {"choices": [{"message": {"content": "Only facts, no links."}}], "id": "x"}
+    with caplog.at_level(logging.WARNING):
+        results = web_search._parse_gateway_sources(payload, 5)
+    assert results == [web_search.WebSearchResult("Web search", "", "Only facts, no links.")]
+    assert "response_keys=['choices', 'id']" in caplog.text
+    assert web_search._parse_gateway_sources({"choices": []}, 5) == []
 
 
 def test_perplexity_search_requests_search_api_and_maps_results(monkeypatch):

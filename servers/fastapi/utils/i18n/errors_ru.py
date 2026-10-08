@@ -217,6 +217,7 @@ ERRORS: dict[str, str] = {
     "err.validators.fileMustBeProvided": "Нужно передать файл.",
     "err.validators.fileNotAcceptedAcceptedTypes": "Файл «{filename}» не принят. Допустимые типы: {accepted_types}",
     "err.webSearch.isNotConfigured": "Не настроено: {label}",
+    "err.webSearch.invalidBaseUrl": "{label} должен быть полным адресом http(s)",
     "err.webSearch.unsupportedWebSearchProvider": "Неподдерживаемый провайдер веб-поиска: {value}",
     "err.webSearch.webSearchIsDisabledUnlessAn": "Веб-поиск отключён, пока не выбран внешний провайдер",
     "err.webSearch.webSearchRequestFailed": "Ошибка запроса веб-поиска: {detail}",

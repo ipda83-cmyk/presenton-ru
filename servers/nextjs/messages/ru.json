@@ -1751,7 +1751,7 @@
       "openai_compatible": "OpenAI-совместимый эндпойнт /v1/images (LiteLLM, Azure, vLLM и др.)"
     },
     "webDesc": {
-      "gemini": "Поиск Google через Gemini: модель ищет в интернете и возвращает страницы, по которым собрала ответ. Ключ — тот же, что для Gemini в Google AI Studio.",
+      "gemini": "Поиск Google через Gemini: модель ищет в интернете и возвращает страницы, по которым собрала ответ. Ключ — из Google AI Studio или от сервиса-посредника.",
       "perplexity": "Perplexity Search API: свежие результаты из интернета с фрагментами страниц.",
       "auto": "Использовать встроенный веб-поиск модели, когда он доступен. Иначе веб-поиск остаётся выключенным, пока вы не выберете внешнего провайдера.",
       "searxng": "Использовать собственный экземпляр SearXNG.",
@@ -1794,7 +1794,14 @@
     "generateVariationsAria": "Сгенерировать вариаций изображения ({count}) через {provider}",
     "customName": "Своя LLM",
     "customImageName": "Свой (OpenAI-совместимый)",
-    "webDefault": "По умолчанию"
+    "webDefault": "По умолчанию",
+    "webBaseUrlLabel": "Базовый URL (необязательно)",
+    "webBaseUrlHint": "Пусто — запросы идут напрямую в сервис. Если ключ выдан сервисом-посредником (например, arckep.ru), укажите его адрес API, например https://arckep.ru/api/v1.",
+    "webModelLabel": "Модель (необязательно)",
+    "webModelHint": {
+      "gemini": "Пусто — по умолчанию: gemini-3.8-flash напрямую или google-ai-studio/gemini-3.8-flash через посредника.",
+      "perplexity": "Нужна только через посредника. Пусто — perplexity/sonar."
+    }
   },
   "imgPicker": {
     "title": "Заменить изображение",

@@ -406,6 +406,22 @@ def get_gemini_search_model_env():
     return os.getenv("GEMINI_SEARCH_MODEL")
 
 
+def get_gemini_search_api_key_env():
+    return os.getenv("GEMINI_SEARCH_API_KEY")
+
+
+def get_gemini_search_base_url_env():
+    return os.getenv("GEMINI_SEARCH_BASE_URL")
+
+
+def get_perplexity_base_url_env():
+    return os.getenv("PERPLEXITY_BASE_URL")
+
+
+def get_perplexity_search_model_env():
+    return os.getenv("PERPLEXITY_SEARCH_MODEL")
+
+
 def get_comfyui_url_env():
     return os.getenv("COMFYUI_URL")
 

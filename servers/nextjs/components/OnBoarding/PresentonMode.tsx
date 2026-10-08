@@ -952,15 +952,18 @@ const PresentonMode = ({
                     {selectedWebProvider.urlField && (
                         <div>
                             <label className="mb-2 block text-sm font-medium text-gray-700">
-                                {tp("webUrlLabelSearxng")}
+                                {selectedWebProvider.value === "searxng" ? tp("webUrlLabelSearxng") : tp("webBaseUrlLabel")}
                             </label>
                             <input
                                 type="url"
                                 value={getFieldValue(selectedWebProvider.urlField)}
                                 onChange={(event) => setLlmConfig(prev => ({ ...prev, [selectedWebProvider.urlField!]: event.target.value }))}
                                 className="h-12 w-full rounded-lg border border-gray-300 px-4 outline-none transition-colors focus:border-[#7A5AF8] focus:ring-2 focus:ring-[#7A5AF8]/20"
-                                placeholder="https://search.example.com"
+                                placeholder={selectedWebProvider.urlPlaceholder || "https://search.example.com"}
                             />
+                            {selectedWebProvider.value !== "searxng" && (
+                                <p className="mt-1.5 text-xs leading-5 text-gray-500">{tp("webBaseUrlHint")}</p>
+                            )}
                         </div>
                     )}
 
@@ -985,6 +988,22 @@ const PresentonMode = ({
                                     {showApiKey ? <Eye className="h-4 w-4 text-gray-500" /> : <EyeOff className="h-4 w-4 text-gray-500" />}
                                 </button>
                             </div>
+                        </div>
+                    )}
+
+                    {selectedWebProvider.modelField && (
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-gray-700">
+                                {tp("webModelLabel")}
+                            </label>
+                            <input
+                                type="text"
+                                value={getFieldValue(selectedWebProvider.modelField)}
+                                onChange={(event) => setLlmConfig(prev => ({ ...prev, [selectedWebProvider.modelField!]: event.target.value }))}
+                                className="h-12 w-full rounded-lg border border-gray-300 px-4 outline-none transition-colors focus:border-[#7A5AF8] focus:ring-2 focus:ring-[#7A5AF8]/20"
+                                placeholder={selectedWebProvider.modelPlaceholder}
+                            />
+                            <p className="mt-1.5 text-xs leading-5 text-gray-500">{tp(`webModelHint.${providerKey(selectedWebProvider.value)}`)}</p>
                         </div>
                     )}
 

@@ -203,12 +203,14 @@ const WebSearchProvider = ({
                 {provider?.urlField && (
                   <div>
                     <label className="mb-2 block text-sm font-medium text-[#4C5554]">
-                      {tp("webUrlLabelSearxng")}
+                      {provider.value === "searxng"
+                        ? tp("webUrlLabelSearxng")
+                        : tp("webBaseUrlLabel")}
                     </label>
                     <input
                       type="url"
                       className="h-12 w-full rounded-lg border border-gray-300 px-4 text-sm text-[#191919] outline-none transition-colors focus:border-blue-500"
-                      placeholder="https://search.example.com"
+                      placeholder={provider.urlPlaceholder || "https://search.example.com"}
                       value={getValue(provider.urlField)}
                       onChange={(event) =>
                         update(
@@ -217,6 +219,11 @@ const WebSearchProvider = ({
                         )
                       }
                     />
+                    {provider.value !== "searxng" && (
+                      <p className="mt-1.5 text-xs leading-5 text-gray-500">
+                        {tp("webBaseUrlHint")}
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -251,6 +258,29 @@ const WebSearchProvider = ({
                         )}
                       </button>
                     </div>
+                  </div>
+                )}
+
+                {provider?.modelField && (
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-[#4C5554]">
+                      {tp("webModelLabel")}
+                    </label>
+                    <input
+                      type="text"
+                      className="h-12 w-full rounded-lg border border-gray-300 px-4 text-sm text-[#191919] outline-none transition-colors focus:border-blue-500"
+                      placeholder={provider.modelPlaceholder}
+                      value={getValue(provider.modelField)}
+                      onChange={(event) =>
+                        update(
+                          provider.modelField as keyof LLMConfig,
+                          event.target.value
+                        )
+                      }
+                    />
+                    <p className="mt-1.5 text-xs leading-5 text-gray-500">
+                      {tp(`webModelHint.${providerKey(provider.value)}`)}
+                    </p>
                   </div>
                 )}
 

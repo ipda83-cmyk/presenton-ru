@@ -327,7 +327,8 @@ export const getLLMConfigValidationError = (
         }
         break;
       case "gemini":
-        if (!isProvided(llmConfig.GOOGLE_API_KEY)) {
+        // The search key, or the Gemini text-provider key.
+        if (!isProvided(llmConfig.GEMINI_SEARCH_API_KEY) && !isProvided(llmConfig.GOOGLE_API_KEY)) {
           return tr("cfgErr.apiKeyRequired", "{provider} API key is required.", { provider: "Gemini" });
         }
         break;

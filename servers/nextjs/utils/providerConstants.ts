@@ -37,6 +37,9 @@ export interface WebSearchProviderOption {
   apiKeyLabel?: string;
   urlField?: string;
   urlLabel?: string;
+  urlPlaceholder?: string;
+  modelField?: string;
+  modelPlaceholder?: string;
 }
 
 /**
@@ -54,9 +57,14 @@ export const WEB_SEARCH_PROVIDERS: Record<string, WebSearchProviderOption> = {
     description:
       "Google Search through Gemini: the model searches the web and returns the pages it used.",
     icon: "/providers/gemini-color.svg",
-    // Same Google AI Studio key as the Gemini text provider.
-    apiKeyField: "GOOGLE_API_KEY",
+    // Empty key falls back to the Gemini text-provider key (GOOGLE_API_KEY).
+    apiKeyField: "GEMINI_SEARCH_API_KEY",
     apiKeyLabel: "Gemini API key",
+    // Optional aggregator (OpenAI-compatible, e.g. arckep.ru).
+    urlField: "GEMINI_SEARCH_BASE_URL",
+    urlPlaceholder: "https://arckep.ru/api/v1",
+    modelField: "GEMINI_SEARCH_MODEL",
+    modelPlaceholder: "gemini-3.8-flash",
   },
   perplexity: {
     value: "perplexity",
@@ -66,6 +74,10 @@ export const WEB_SEARCH_PROVIDERS: Record<string, WebSearchProviderOption> = {
     icon: "/providers/perplexity.svg",
     apiKeyField: "PERPLEXITY_API_KEY",
     apiKeyLabel: "Perplexity API key",
+    urlField: "PERPLEXITY_BASE_URL",
+    urlPlaceholder: "https://api.perplexity.ai",
+    modelField: "PERPLEXITY_SEARCH_MODEL",
+    modelPlaceholder: "perplexity/sonar",
   },
   auto: {
     value: "auto",

@@ -135,6 +135,11 @@ export interface LLMConfig {
   BRAVE_SEARCH_API_KEY?: string;
   SERPER_API_KEY?: string;
   PERPLEXITY_API_KEY?: string;
+  GEMINI_SEARCH_API_KEY?: string;
+  GEMINI_SEARCH_BASE_URL?: string;
+  GEMINI_SEARCH_MODEL?: string;
+  PERPLEXITY_BASE_URL?: string;
+  PERPLEXITY_SEARCH_MODEL?: string;
 
   // Codex OAuth (ChatGPT)
   CODEX_MODEL?: string;

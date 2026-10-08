@@ -217,6 +217,7 @@ ERRORS: dict[str, str] = {
     "err.validators.fileMustBeProvided": "File must be provided.",
     "err.validators.fileNotAcceptedAcceptedTypes": "File '{filename}' not accepted. Accepted types: {accepted_types}",
     "err.webSearch.isNotConfigured": "{label} is not configured",
+    "err.webSearch.invalidBaseUrl": "{label} must be a full http(s) address",
     "err.webSearch.unsupportedWebSearchProvider": "Unsupported web search provider: {value}",
     "err.webSearch.webSearchIsDisabledUnlessAn": "Web search is disabled unless an external provider is selected",
     "err.webSearch.webSearchRequestFailed": "Web search request failed: {detail}",
