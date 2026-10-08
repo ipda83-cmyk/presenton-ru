@@ -190,9 +190,9 @@
       "query": "query “{query}”",
       "searching": "Searching the web for sources…",
       "empty": "The search found no matching pages.",
-      "failed": "Web search failed. An administrator can check the search provider key in settings.",
-      "native": "The model searched by itself and does not return a list of sites. To see sources, an administrator can choose Perplexity in the web search settings.",
-      "unavailable": "Web search is on, but no search provider is set up. An administrator can choose Perplexity in the web search settings.",
+      "failed": "Web search failed. An administrator can check the search provider key (Gemini or Perplexity) in settings.",
+      "native": "The model searched by itself and does not return a list of sites. To see sources, an administrator can choose Gemini or Perplexity in the web search settings.",
+      "unavailable": "Web search is on, but no search provider is set up. An administrator can choose Gemini or Perplexity in the web search settings.",
       "disabled": "Web search is off for this presentation.",
       "none": "No sources yet. They appear after generating an outline with web search on.",
       "open": "Open {site} in a new tab",
@@ -1751,7 +1751,8 @@
       "openai_compatible": "OpenAI-compatible /v1/images endpoint (LiteLLM, Azure, vLLM, etc.)"
     },
     "webDesc": {
-      "perplexity": "Perplexity Search API: up-to-date web results with page excerpts. Recommended default search.",
+      "gemini": "Google Search through Gemini: the model searches the web and returns the pages it used. Uses the same key as Gemini in Google AI Studio.",
+      "perplexity": "Perplexity Search API: up-to-date web results with page excerpts.",
       "auto": "Use model-native web grounding when available. Otherwise web search stays off until you choose an external provider.",
       "searxng": "Use a self-hosted SearXNG instance.",
       "tavily": "Search API optimized for AI applications.",
@@ -1761,6 +1762,7 @@
     "webLabelAuto": "Default (Model)",
     "webUrlLabelSearxng": "SearXNG base URL",
     "webApiKeyLabel": {
+      "gemini": "Gemini API key",
       "perplexity": "Perplexity API key",
       "tavily": "Tavily API key",
       "exa": "Exa API key",
@@ -1792,7 +1794,7 @@
     "generateVariationsAria": "Generate {count} image variations with {provider}",
     "customName": "Custom",
     "customImageName": "Custom",
-    "webRecommended": "Recommended"
+    "webDefault": "Default"
   },
   "imgPicker": {
     "title": "Change Image",

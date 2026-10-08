@@ -402,6 +402,10 @@ def get_perplexity_api_key_env():
     return os.getenv("PERPLEXITY_API_KEY")
 
 
+def get_gemini_search_model_env():
+    return os.getenv("GEMINI_SEARCH_MODEL")
+
+
 def get_comfyui_url_env():
     return os.getenv("COMFYUI_URL")
 

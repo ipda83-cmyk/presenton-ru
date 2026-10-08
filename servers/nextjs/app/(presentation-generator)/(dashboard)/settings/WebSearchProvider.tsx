@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Check, ChevronUp, Eye, EyeOff, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,25 +15,20 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Switch } from "@/components/ui/switch";
 
 import { LLMConfig } from "@/types/llm_config";
-import { WEB_SEARCH_PROVIDERS, providerKey } from "@/utils/providerConstants";
+import {
+  DEFAULT_WEB_SEARCH_PROVIDER,
+  VISIBLE_WEB_SEARCH_PROVIDERS,
+  WEB_SEARCH_PROVIDERS,
+  providerKey,
+} from "@/utils/providerConstants";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
 import { useTranslations } from "next-intl";
 
-const EXTERNAL_WEB_SEARCH_OPTIONS = [
-  "exa",
-  "tavily",
-  "brave",
-  // "serper",
-  "searxng",
-] as const;
-// Perplexity is the primary (default) search; the backend also falls back to
-// it when no provider is chosen and its key is configured.
-const DEFAULT_WEB_SEARCH_PROVIDER = "perplexity";
-const WEB_SEARCH_PROVIDER_OPTIONS = [
-  WEB_SEARCH_PROVIDERS.perplexity,
-  WEB_SEARCH_PROVIDERS.auto,
-  ...EXTERNAL_WEB_SEARCH_OPTIONS.map((value) => WEB_SEARCH_PROVIDERS[value]),
-];
+// Only Gemini (default) and Perplexity are offered; the backend also falls
+// back to Gemini when no provider is chosen and the Google key is set.
+const WEB_SEARCH_PROVIDER_OPTIONS = VISIBLE_WEB_SEARCH_PROVIDERS.map(
+  (value) => WEB_SEARCH_PROVIDERS[value]
+);
 
 const WebSearchProvider = ({
   llmConfig,
@@ -81,6 +76,16 @@ const WebSearchProvider = ({
       };
     });
   };
+
+  // A hidden provider saved earlier (e.g. "auto") is replaced by the default
+  // in the form, so saving the settings stores a visible choice.
+  useEffect(() => {
+    if (!isWebSearchEnabled) return;
+    const current = String(llmConfig.WEB_SEARCH_PROVIDER || "").toLowerCase();
+    if (!WEB_SEARCH_PROVIDER_OPTIONS.some((option) => option.value === current)) {
+      update("WEB_SEARCH_PROVIDER", DEFAULT_WEB_SEARCH_PROVIDER);
+    }
+  }, [isWebSearchEnabled, llmConfig.WEB_SEARCH_PROVIDER, update]);
 
   const getValue = (field?: string) =>
     field ? String(llmConfig[field as keyof LLMConfig] || "") : "";
@@ -171,7 +176,7 @@ const WebSearchProvider = ({
                                       {option.value === "auto" ? tp("webLabelAuto") : option.label}
                                       {option.value === DEFAULT_WEB_SEARCH_PROVIDER ? (
                                         <span className="ml-2 rounded-full bg-[#F4F3FF] px-2 py-0.5 text-[10px] font-medium text-[#5141E5]">
-                                          {tp("webRecommended")}
+                                          {tp("webDefault")}
                                         </span>
                                       ) : null}
                                     </span>

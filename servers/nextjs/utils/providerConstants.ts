@@ -48,11 +48,21 @@ export const providerKey = (value: string): string =>
   value.replace(/[^a-zA-Z0-9]/g, "_");
 
 export const WEB_SEARCH_PROVIDERS: Record<string, WebSearchProviderOption> = {
+  gemini: {
+    value: "gemini",
+    label: "Gemini",
+    description:
+      "Google Search through Gemini: the model searches the web and returns the pages it used.",
+    icon: "/providers/gemini-color.svg",
+    // Same Google AI Studio key as the Gemini text provider.
+    apiKeyField: "GOOGLE_API_KEY",
+    apiKeyLabel: "Gemini API key",
+  },
   perplexity: {
     value: "perplexity",
     label: "Perplexity",
     description:
-      "Perplexity Search API: up-to-date web results with page excerpts. Recommended.",
+      "Perplexity Search API: up-to-date web results with page excerpts.",
     icon: "/providers/perplexity.svg",
     apiKeyField: "PERPLEXITY_API_KEY",
     apiKeyLabel: "Perplexity API key",
@@ -104,6 +114,11 @@ export const WEB_SEARCH_PROVIDERS: Record<string, WebSearchProviderOption> = {
   //   apiKeyLabel: "Serper API key",
   // },
 };
+
+// Web search providers offered in settings and onboarding (Gemini first, the
+// default). Others remain in WEB_SEARCH_PROVIDERS for existing configurations.
+export const DEFAULT_WEB_SEARCH_PROVIDER = "gemini";
+export const VISIBLE_WEB_SEARCH_PROVIDERS = ["gemini", "perplexity"] as const;
 
 export const IMAGE_PROVIDERS: Record<string, ImageProviderOption> = {
   pexels: {

@@ -326,6 +326,11 @@ export const getLLMConfigValidationError = (
           return tr("cfgErr.apiKeyRequired", "{provider} API key is required.", { provider: "Exa" });
         }
         break;
+      case "gemini":
+        if (!isProvided(llmConfig.GOOGLE_API_KEY)) {
+          return tr("cfgErr.apiKeyRequired", "{provider} API key is required.", { provider: "Gemini" });
+        }
+        break;
       case "perplexity":
         if (!isProvided(llmConfig.PERPLEXITY_API_KEY)) {
           return tr("cfgErr.apiKeyRequired", "{provider} API key is required.", { provider: "Perplexity" });

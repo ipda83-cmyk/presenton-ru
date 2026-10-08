@@ -42,6 +42,23 @@ def test_record_keeps_only_real_web_pages_once():
     assert record["sources"][1]["snippet"].endswith("…")
 
 
+def test_record_shows_the_real_site_for_redirect_links():
+    record = build_web_sources_record(
+        status="ok",
+        provider="gemini",
+        results=[
+            WebSearchResult(
+                "zoo.gov.taipei",
+                "https://vertexaisearch.cloud.google.com/grounding-api-redirect/a",
+                "Opened in 1914.",
+                domain="WWW.Zoo.Gov.Taipei",
+            )
+        ],
+    )
+    assert record["sources"][0]["domain"] == "zoo.gov.taipei"
+    assert record["sources"][0]["url"].startswith("https://vertexaisearch")
+
+
 def test_unknown_status_is_reported_as_failed():
     assert build_web_sources_record(status="weird")["status"] == "failed"
     assert build_web_sources_record(status="none")["sources"] == []

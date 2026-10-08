@@ -4,7 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/colla
 import { Button } from '../ui/button';
 import { ArrowUpRight, Blocks, Check, ChevronDown, ChevronLeft, ChevronUp, Eye, EyeOff, Info, Laptop, Loader2, Search } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command';
-import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS, LLM_PROVIDERS, WEB_SEARCH_PROVIDERS, providerDisplayLabel, providerKey } from '@/utils/providerConstants';
+import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS, LLM_PROVIDERS, WEB_SEARCH_PROVIDERS, VISIBLE_WEB_SEARCH_PROVIDERS, DEFAULT_WEB_SEARCH_PROVIDER, providerDisplayLabel, providerKey } from '@/utils/providerConstants';
 import { cn } from '@/lib/utils';
 import { LLMConfig } from '@/types/llm_config';
 import { RootState } from '@/store/store';
@@ -48,14 +48,9 @@ const getTextProviderTab = (provider?: string): TextProviderTab => {
     return "other";
 };
 
-const WEB_SEARCH_PROVIDER_OPTIONS = [
-    WEB_SEARCH_PROVIDERS.perplexity,
-    WEB_SEARCH_PROVIDERS.auto,
-    WEB_SEARCH_PROVIDERS.searxng,
-    WEB_SEARCH_PROVIDERS.tavily,
-    WEB_SEARCH_PROVIDERS.exa,
-    WEB_SEARCH_PROVIDERS.brave,
-];
+const WEB_SEARCH_PROVIDER_OPTIONS = VISIBLE_WEB_SEARCH_PROVIDERS.map(
+    (value) => WEB_SEARCH_PROVIDERS[value]
+);
 
 const PresentonMode = ({
     providerStep,
@@ -1687,6 +1682,9 @@ const PresentonMode = ({
                                     setLlmConfig(prev => ({
                                         ...prev,
                                         WEB_GROUNDING: checked,
+                                        ...(checked && !VISIBLE_WEB_SEARCH_PROVIDERS.some((value) => value === prev.WEB_SEARCH_PROVIDER)
+                                            ? { WEB_SEARCH_PROVIDER: DEFAULT_WEB_SEARCH_PROVIDER }
+                                            : {}),
                                     }));
                                 }}
                             />

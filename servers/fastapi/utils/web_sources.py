@@ -61,11 +61,14 @@ def build_web_sources_record(
         if url in seen_urls:
             continue
         seen_urls.add(url)
+        domain = str(getattr(result, "domain", "") or "").strip().lower()
+        if domain.startswith("www."):
+            domain = domain[4:]
         sources.append(
             {
                 "title": _truncate(getattr(result, "title", ""), TITLE_MAX_CHARS),
                 "url": url,
-                "domain": _domain(url),
+                "domain": domain or _domain(url),
                 "snippet": _truncate(getattr(result, "snippet", ""), SNIPPET_MAX_CHARS),
             }
         )

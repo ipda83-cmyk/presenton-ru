@@ -263,27 +263,134 @@ def test_exa_search_requests_highlights_and_maps_results(monkeypatch):
     ]
 
 
-def test_perplexity_is_the_default_once_its_key_is_configured(monkeypatch):
+def test_default_search_is_gemini_then_perplexity_by_configured_key(monkeypatch):
     monkeypatch.delenv("WEB_SEARCH_PROVIDER", raising=False)
     monkeypatch.delenv("PERPLEXITY_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
     assert web_search.get_selected_web_search_provider() == WebSearchProvider.AUTO
 
     monkeypatch.setenv("PERPLEXITY_API_KEY", "test-perplexity-key")
     assert web_search.get_selected_web_search_provider() == WebSearchProvider.PERPLEXITY
     assert web_search.get_web_search_route() == ("external", WebSearchProvider.PERPLEXITY)
 
+    monkeypatch.setenv("GOOGLE_API_KEY", "test-google-key")
+    assert web_search.get_selected_web_search_provider() == WebSearchProvider.GEMINI
+    assert web_search.get_web_search_route() == ("external", WebSearchProvider.GEMINI)
+
     # An empty setting (cleared in the UI) also falls back to the default.
     monkeypatch.setenv("WEB_SEARCH_PROVIDER", "  ")
-    assert web_search.get_selected_web_search_provider() == WebSearchProvider.PERPLEXITY
+    assert web_search.get_selected_web_search_provider() == WebSearchProvider.GEMINI
 
 
-def test_explicit_provider_wins_over_the_perplexity_default(monkeypatch):
+def test_explicit_provider_wins_over_the_default(monkeypatch):
+    monkeypatch.setenv("GOOGLE_API_KEY", "test-google-key")
     monkeypatch.setenv("PERPLEXITY_API_KEY", "test-perplexity-key")
-    monkeypatch.setenv("WEB_SEARCH_PROVIDER", WebSearchProvider.TAVILY.value)
-    assert web_search.get_selected_web_search_provider() == WebSearchProvider.TAVILY
+    monkeypatch.setenv("WEB_SEARCH_PROVIDER", WebSearchProvider.PERPLEXITY.value)
+    assert web_search.get_selected_web_search_provider() == WebSearchProvider.PERPLEXITY
 
     monkeypatch.setenv("WEB_SEARCH_PROVIDER", WebSearchProvider.AUTO.value)
     assert web_search.get_selected_web_search_provider() == WebSearchProvider.AUTO
+
+
+def _fake_gemini_response(chunks, supports, text="Answer text."):
+    from types import SimpleNamespace as NS
+
+    return NS(
+        text=text,
+        candidates=[
+            NS(
+                grounding_metadata=NS(
+                    grounding_chunks=[
+                        NS(web=NS(uri=uri, title=title, domain=domain))
+                        for uri, title, domain in chunks
+                    ],
+                    grounding_supports=[
+                        NS(segment=NS(text=segment), grounding_chunk_indices=indices)
+                        for segment, indices in supports
+                    ],
+                )
+            )
+        ],
+    )
+
+
+def test_gemini_search_uses_google_search_grounding_and_maps_sources(monkeypatch):
+    captured = {}
+    response = _fake_gemini_response(
+        chunks=[
+            ("https://vertexaisearch.cloud.google.com/grounding-api-redirect/a", "zoo.gov.taipei", "zoo.gov.taipei"),
+            ("https://vertexaisearch.cloud.google.com/grounding-api-redirect/b", "wikipedia.org", None),
+            ("https://vertexaisearch.cloud.google.com/grounding-api-redirect/a", "dup", "dup"),
+            ("https://vertexaisearch.cloud.google.com/grounding-api-redirect/c", "unused.org", "unused.org"),
+        ],
+        supports=[
+            ("Taipei Zoo opened in 1914.", [0]),
+            ("It covers 165 hectares.", [0, 1]),
+        ],
+    )
+
+    class FakeModels:
+        async def generate_content(self, model, contents, config):
+            captured.update(model=model, contents=contents, config=config)
+            return response
+
+    class FakeClient:
+        def __init__(self, api_key):
+            captured["api_key"] = api_key
+            self.aio = type("Aio", (), {"models": FakeModels()})()
+
+    monkeypatch.setenv("GOOGLE_API_KEY", "test-google-key")
+    monkeypatch.delenv("GEMINI_SEARCH_MODEL", raising=False)
+    monkeypatch.setattr(web_search, "_gemini_client", FakeClient)
+
+    results = asyncio.run(web_search._search_gemini("taipei zoo", 2))
+
+    assert captured["api_key"] == "test-google-key"
+    assert captured["model"] == web_search.DEFAULT_GEMINI_SEARCH_MODEL
+    assert "taipei zoo" in captured["contents"]
+    assert captured["config"].tools[0].google_search is not None
+    assert results == [
+        web_search.WebSearchResult(
+            title="zoo.gov.taipei",
+            url="https://vertexaisearch.cloud.google.com/grounding-api-redirect/a",
+            snippet="Taipei Zoo opened in 1914. It covers 165 hectares.",
+            domain="zoo.gov.taipei",
+        ),
+        web_search.WebSearchResult(
+            title="wikipedia.org",
+            url="https://vertexaisearch.cloud.google.com/grounding-api-redirect/b",
+            snippet="It covers 165 hectares.",
+            domain="wikipedia.org",
+        ),
+    ]
+
+
+def test_gemini_search_model_can_be_overridden_and_needs_a_key(monkeypatch):
+    captured = {}
+
+    class FakeModels:
+        async def generate_content(self, model, contents, config):
+            captured["model"] = model
+            return _fake_gemini_response(chunks=[], supports=[])
+
+    class FakeClient:
+        def __init__(self, api_key):
+            self.aio = type("Aio", (), {"models": FakeModels()})()
+
+    monkeypatch.setattr(web_search, "_gemini_client", FakeClient)
+    monkeypatch.setenv("GOOGLE_API_KEY", "test-google-key")
+    monkeypatch.setenv("GEMINI_SEARCH_MODEL", "gemini-3.5-flash-lite")
+    assert asyncio.run(web_search._search_gemini("q", 3)) == []
+    assert captured["model"] == "gemini-3.5-flash-lite"
+
+    monkeypatch.delenv("GOOGLE_API_KEY")
+    try:
+        asyncio.run(web_search._search_gemini("q", 3))
+    except web_search.HTTPException as error:
+        assert error.status_code == 400
+        assert "GOOGLE_API_KEY" in error.detail
+    else:  # pragma: no cover
+        raise AssertionError("missing key was accepted")
 
 
 def test_perplexity_search_requests_search_api_and_maps_results(monkeypatch):

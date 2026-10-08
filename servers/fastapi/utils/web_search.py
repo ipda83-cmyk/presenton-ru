@@ -14,6 +14,8 @@ from enums.web_search_provider import WebSearchProvider
 from utils.get_env import (
     get_brave_search_api_key_env,
     get_exa_api_key_env,
+    get_gemini_search_model_env,
+    get_google_api_key_env,
     get_perplexity_api_key_env,
     get_searxng_base_url_env,
     get_serper_api_key_env,
@@ -36,6 +38,8 @@ class WebSearchResult:
     title: str
     url: str
     snippet: str = ""
+    # Site to show when the URL is a redirect (Gemini grounding links).
+    domain: str = ""
 
 
 def supports_native_web_search(provider: LLMProvider | None = None) -> bool:
@@ -43,8 +47,11 @@ def supports_native_web_search(provider: LLMProvider | None = None) -> bool:
 
 
 def default_web_search_provider() -> WebSearchProvider:
-    """Perplexity is the primary search once its key is configured; until then
-    the previous default (model-native search when available) applies."""
+    """Gemini (Google Search grounding) is the default search, Perplexity the
+    alternative; each needs its key. Without either, the previous default
+    (model-native search when available) applies."""
+    if (get_google_api_key_env() or "").strip():
+        return WebSearchProvider.GEMINI
     if (get_perplexity_api_key_env() or "").strip():
         return WebSearchProvider.PERPLEXITY
     return WebSearchProvider.AUTO
@@ -145,6 +152,8 @@ async def search_web(query: str, max_results: int | None = None) -> list[WebSear
                 results = await _search_serper(session, query, limit)
             elif provider == WebSearchProvider.PERPLEXITY:
                 results = await _search_perplexity(session, query, limit)
+            elif provider == WebSearchProvider.GEMINI:
+                results = await _search_gemini(query, limit)
             else:
                 raise HTTPException(
                     status_code=400,
@@ -362,6 +371,80 @@ async def _search_perplexity(session: aiohttp.ClientSession, query: str, limit: 
         for item in payload.get("results", [])[:limit]
         if isinstance(item, dict) and item.get("title") and item.get("url")
     ]
+
+
+DEFAULT_GEMINI_SEARCH_MODEL = "gemini-3.8-flash"
+GEMINI_SEARCH_TIMEOUT_MS = 45_000
+GEMINI_SEARCH_PROMPT = (
+    "Search the web and collect current, factual information for a presentation "
+    "about the following topic. Answer with the key facts, figures and dates you "
+    "found, as plain sentences.\n\nTopic: {query}"
+)
+
+
+def _gemini_client(api_key: str):
+    from google import genai
+    from google.genai import types
+
+    return genai.Client(
+        api_key=api_key,
+        http_options=types.HttpOptions(timeout=GEMINI_SEARCH_TIMEOUT_MS),
+    )
+
+
+async def _search_gemini(query: str, limit: int) -> list[WebSearchResult]:
+    """Grounding with Google Search: Gemini searches, and its grounding metadata
+    lists the pages it used plus the answer passages each page supports."""
+    from google.genai import types
+
+    api_key = _required(get_google_api_key_env(), "GOOGLE_API_KEY")
+    model = (get_gemini_search_model_env() or "").strip() or DEFAULT_GEMINI_SEARCH_MODEL
+    response = await _gemini_client(api_key).aio.models.generate_content(
+        model=model,
+        contents=GEMINI_SEARCH_PROMPT.format(query=query),
+        config=types.GenerateContentConfig(
+            tools=[types.Tool(google_search=types.GoogleSearch())],
+            temperature=0.2,
+        ),
+    )
+    candidates = getattr(response, "candidates", None) or []
+    metadata = getattr(candidates[0], "grounding_metadata", None) if candidates else None
+    chunks = list(getattr(metadata, "grounding_chunks", None) or [])
+    supports = list(getattr(metadata, "grounding_supports", None) or [])
+
+    passages: dict[int, list[str]] = {}
+    for support in supports:
+        text = _clean_text(getattr(getattr(support, "segment", None), "text", ""))
+        if not text:
+            continue
+        for index in getattr(support, "grounding_chunk_indices", None) or []:
+            passages.setdefault(index, []).append(text)
+
+    answer = _clean_text(getattr(response, "text", "") or "")
+    results = []
+    seen_urls: set[str] = set()
+    for index, chunk in enumerate(chunks):
+        web = getattr(chunk, "web", None)
+        url = str(getattr(web, "uri", "") or "")
+        if not web or not url or url in seen_urls:
+            continue
+        seen_urls.add(url)
+        domain = _clean_text(getattr(web, "domain", "") or getattr(web, "title", ""))
+        title = _clean_text(getattr(web, "title", "") or domain)
+        snippet = " ".join(passages.get(index, [])) or answer
+        results.append(
+            WebSearchResult(
+                title=title,
+                url=url,
+                snippet=snippet[:PERPLEXITY_SNIPPET_MAX_CHARS],
+                domain=domain.lower(),
+            )
+        )
+        if len(results) >= limit:
+            break
+    if not results and answer:
+        LOGGER.info("Gemini search returned an answer without grounding sources")
+    return results
 
 
 async def _search_serper(session: aiohttp.ClientSession, query: str, limit: int) -> list[WebSearchResult]:
