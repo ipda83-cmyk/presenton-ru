@@ -531,6 +531,11 @@ def test_gateway_request_is_openai_compatible_with_web_search(monkeypatch):
 
     monkeypatch.setattr(web_search.aiohttp, "ClientSession", FakeSession)
 
+    async def keep_all_links(results):
+        return results
+
+    monkeypatch.setattr(web_search, "_drop_broken_links", keep_all_links)
+
     results = asyncio.run(
         web_search._search_chat_gateway(
             "https://arckep.example/api/v1", "ark-test-key", "google-ai-studio/gemini-3.8-flash", "zoo", 5
@@ -545,7 +550,8 @@ def test_gateway_request_is_openai_compatible_with_web_search(monkeypatch):
     assert "zoo" in captured["json"]["messages"][0]["content"]
     assert captured["timeout"] == web_search.GATEWAY_SEARCH_TIMEOUT_SECONDS
     assert results == [
-        web_search.WebSearchResult("Zoo", "https://zoo.example/", "About the zoo.")
+        web_search.WebSearchResult(web_search.GATEWAY_FACTS_TITLE, "", "Facts."),
+        web_search.WebSearchResult("Zoo", "https://zoo.example/", "About the zoo."),
     ]
 
 
@@ -592,7 +598,9 @@ def test_gateway_sources_are_merged_from_every_known_format():
     }
 
     results = web_search._parse_gateway_sources(payload, 10)
-    by_url = {result.url: result for result in results}
+    assert results[0].url == ""
+    assert results[0].snippet == "Taipei Zoo opened in 1914 and covers 165 hectares."
+    by_url = {result.url: result for result in results[1:]}
 
     assert list(by_url) == [
         "https://wiki.example/zoo",
@@ -607,14 +615,33 @@ def test_gateway_sources_are_merged_from_every_known_format():
     # A bare citation gets the facts as its text.
     assert by_url["https://news.example/a"].snippet.startswith("Taipei Zoo opened in 1914")
     assert by_url["https://vertexaisearch.cloud.google.com/grounding-api-redirect/x"].domain == "travel.example"
-    assert len(web_search._parse_gateway_sources(payload, 2)) == 2
+    # The facts summary plus at most `limit` pages.
+    assert len(web_search._parse_gateway_sources(payload, 2)) == 3
+
+
+def test_gateway_facts_stop_at_a_formatted_sources_heading():
+    payload = {
+        "choices": [
+            {
+                "message": {
+                    "content": "**1. Facts**\n* Opened in 1864.\n\n**2. SOURCES:**\n"
+                    "- [Zoo](https://zoo.example/): About."
+                }
+            }
+        ]
+    }
+    results = web_search._parse_gateway_sources(payload, 5)
+    assert results[0].snippet == "**1. Facts** * Opened in 1864."
+    assert [result.url for result in results[1:]] == ["https://zoo.example/"]
 
 
 def test_gateway_without_sources_keeps_the_facts_as_context(caplog):
     payload = {"choices": [{"message": {"content": "Only facts, no links."}}], "id": "x"}
     with caplog.at_level(logging.WARNING):
         results = web_search._parse_gateway_sources(payload, 5)
-    assert results == [web_search.WebSearchResult("Web search", "", "Only facts, no links.")]
+    assert results == [
+        web_search.WebSearchResult(web_search.GATEWAY_FACTS_TITLE, "", "Only facts, no links.")
+    ]
     assert "response_keys=['choices', 'id']" in caplog.text
     assert web_search._parse_gateway_sources({"choices": []}, 5) == []
 

@@ -1,10 +1,13 @@
+import asyncio
 import html
+import ipaddress
 import logging
 import re
+import socket
 import time
 from dataclasses import dataclass
 from typing import Any
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urljoin, urlparse, urlunparse
 
 import aiohttp
 from fastapi import HTTPException
@@ -506,6 +509,10 @@ GATEWAY_SEARCH_PROMPT = (
     "page says.\n\n"
     "Topic: {query}"
 )
+GATEWAY_FACTS_TITLE = "Web search summary"
+GATEWAY_FACTS_MAX_CHARS = 6000
+# "SOURCES:" with optional Markdown emphasis/numbering, e.g. "**2. SOURCES:**".
+_SOURCES_HEADING = re.compile(r"^[ \t#*\d.]*SOURCES\s*:", re.IGNORECASE | re.MULTILINE)
 _MARKDOWN_SOURCE = re.compile(
     r"\[(?P<title>[^\]\n]{1,300})\]\((?P<url>https?://[^\s)]+)\)\s*(?:[:\-–—]\s*(?P<summary>[^\n]*))?"
 )
@@ -552,7 +559,89 @@ async def _search_chat_gateway(
             headers={"Authorization": f"Bearer {api_key}"},
         ) as response:
             payload = await _json_response(response)
-    return _parse_gateway_sources(payload, limit)
+    # The gateway's links are written by the model and are sometimes wrong:
+    # parse a few spare ones and keep those that do not lead to "not found".
+    results = await _drop_broken_links(_parse_gateway_sources(payload, limit + 3))
+    facts = [result for result in results if not result.url]
+    pages = [result for result in results if result.url]
+    return facts + pages[:limit]
+
+
+LINK_CHECK_TIMEOUT_SECONDS = 8
+LINK_CHECK_MAX_REDIRECTS = 3
+BROKEN_LINK_STATUSES = frozenset({404, 410})
+_REDIRECT_STATUSES = frozenset({301, 302, 303, 307, 308})
+_BROWSER_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/140.0 Safari/537.36"
+)
+
+
+async def _resolves_to_public_addresses(host: str) -> bool | None:
+    """True/False for public/internal addresses, None when DNS is unavailable."""
+    try:
+        infos = await asyncio.get_running_loop().getaddrinfo(host, None)
+    except (socket.gaierror, UnicodeError, OSError):
+        return None
+    addresses = {info[4][0].split("%", 1)[0] for info in infos}
+    try:
+        return bool(addresses) and all(
+            ipaddress.ip_address(address).is_global for address in addresses
+        )
+    except ValueError:
+        return False
+
+
+async def _link_status(session: aiohttp.ClientSession, url: str) -> str:
+    """"ok", "broken" (not found, or points at an internal address) or
+    "unknown" (could not tell: slow site, blocked network, no DNS)."""
+    for _ in range(LINK_CHECK_MAX_REDIRECTS + 1):
+        parsed = urlparse(url)
+        if parsed.scheme not in ("http", "https") or not parsed.hostname:
+            return "broken"
+        public = await _resolves_to_public_addresses(parsed.hostname)
+        if public is None:
+            return "unknown"
+        if not public:
+            # Never request internal addresses (SSRF), and do not show them.
+            return "broken"
+        try:
+            async with session.get(url, allow_redirects=False) as response:
+                if response.status in _REDIRECT_STATUSES:
+                    location = response.headers.get("Location")
+                    if not location:
+                        return "ok"
+                    url = urljoin(url, location)
+                    continue
+                return "broken" if response.status in BROKEN_LINK_STATUSES else "ok"
+        except (asyncio.TimeoutError, aiohttp.ClientError):
+            return "unknown"
+    return "unknown"
+
+
+async def _drop_broken_links(results: list[WebSearchResult]) -> list[WebSearchResult]:
+    pages = [result for result in results if result.url]
+    if not pages:
+        return results
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=LINK_CHECK_TIMEOUT_SECONDS),
+        headers={"User-Agent": _BROWSER_USER_AGENT},
+    ) as session:
+        statuses = await asyncio.gather(
+            *(_link_status(session, result.url) for result in pages),
+            return_exceptions=True,
+        )
+    broken = {
+        result.url for result, status in zip(pages, statuses) if status == "broken"
+    }
+    if broken:
+        LOGGER.info(
+            "Dropped %d of %d source links that lead nowhere: %s",
+            len(broken),
+            len(pages),
+            sorted(broken),
+        )
+    return [result for result in results if result.url not in broken]
 
 
 def _parse_gateway_sources(payload: dict[str, Any], limit: int) -> list[WebSearchResult]:
@@ -607,20 +696,21 @@ def _parse_gateway_sources(payload: dict[str, Any], limit: int) -> list[WebSearc
     for match in _MARKDOWN_SOURCE.finditer(text):
         add(match.group("url"), match.group("title"), match.group("summary"))
 
-    facts = _clean_text(text.split("SOURCES:", 1)[0])
+    facts = _clean_text(_SOURCES_HEADING.split(text, 1)[0])
     if not found:
         LOGGER.warning(
             "Search gateway returned no sources: response_keys=%s message_keys=%s",
             sorted(payload),
             sorted(message),
         )
-        # Keep the facts as context even without links (nothing to show as a source).
-        return (
-            [WebSearchResult("Web search", "", facts[:PERPLEXITY_SNIPPET_MAX_CHARS])]
-            if facts
-            else []
-        )
-    return [
+    # The answer's facts go into the outline context first. Without a URL they
+    # are not listed as a source (utils/web_sources.py keeps http(s) pages only).
+    summary = (
+        [WebSearchResult(GATEWAY_FACTS_TITLE, "", facts[:GATEWAY_FACTS_MAX_CHARS])]
+        if facts
+        else []
+    )
+    return summary + [
         WebSearchResult(
             title=entry["title"] or entry["domain"] or urlparse(url).hostname or url,
             url=url,
