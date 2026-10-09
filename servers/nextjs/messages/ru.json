@@ -984,7 +984,17 @@
     "egValue": "например, {value}",
     "advancedHeading": "Дополнительно",
     "advancedDesc": "Настройка дополнительных возможностей ИИ.",
-    "enableWebGrounding": "Включить веб-обоснование (Web Grounding)"
+    "enableWebGrounding": "Включить веб-обоснование (Web Grounding)",
+    "studio": {
+      "title": "AI Image Studio",
+      "desc": "Генерация и правка изображений через arckep.ru. Ключу нужны права images:write и uploads:write.",
+      "baseUrl": "Базовый URL (необязательно)",
+      "baseUrlHint": "Пусто — https://arckep.ru/api/v1.",
+      "apiKey": "API-ключ arckep",
+      "apiKeyHint": "Пусто — используется ключ веб-поиска, если поиск тоже идёт через arckep.",
+      "showKey": "Показать ключ",
+      "hideKey": "Скрыть ключ"
+    }
   },
   "templates": {
     "title": "Шаблоны",

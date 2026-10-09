@@ -984,7 +984,17 @@
     "egValue": "e.g. {value}",
     "advancedHeading": "Advanced",
     "advancedDesc": "Configure advanced AI features.",
-    "enableWebGrounding": "Enable Web Grounding"
+    "enableWebGrounding": "Enable Web Grounding",
+    "studio": {
+      "title": "AI Image Studio",
+      "desc": "Image generation and editing through arckep.ru. The key needs the images:write and uploads:write permissions.",
+      "baseUrl": "Base URL (optional)",
+      "baseUrlHint": "Empty means https://arckep.ru/api/v1.",
+      "apiKey": "arckep API key",
+      "apiKeyHint": "Empty uses the web search key when search also goes through arckep.",
+      "showKey": "Show key",
+      "hideKey": "Hide key"
+    }
   },
   "templates": {
     "title": "Templates",

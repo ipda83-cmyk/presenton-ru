@@ -4,8 +4,9 @@ import { IMAGE_PROVIDERS, LLM_PROVIDERS } from '@/utils/providerConstants'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import { useTranslations } from 'next-intl'
+import StudioMark from '@/components/studio/StudioMark'
 
-export type SettingsSection = 'text-provider' | 'image-provider' | 'web-search-provider' | 'privacy' | 'admin' | 'session'
+export type SettingsSection = 'text-provider' | 'image-provider' | 'web-search-provider' | 'studio' | 'privacy' | 'admin' | 'session'
 
 const SettingSideBar = ({ selectedProvider, setSelectedProvider, presentonSelected = false }: { selectedProvider: SettingsSection, setSelectedProvider: (provider: SettingsSection) => void, presentonSelected?: boolean }) => {
     const { llm_config } = useSelector((state: RootState) => state.userConfig)
@@ -41,6 +42,10 @@ const SettingSideBar = ({ selectedProvider, setSelectedProvider, presentonSelect
                             </button>
                         </>
                     ) : null}
+                    <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'studio' ? 'bg-[#F4F3FF] border-[#D9D6FE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('studio')}>
+                        <StudioMark size={18} />
+                        <p className='text-[#191919] text-xs font-medium'>{t('studio.title')}</p>
+                    </button>
                 </div>
             </div>
 
