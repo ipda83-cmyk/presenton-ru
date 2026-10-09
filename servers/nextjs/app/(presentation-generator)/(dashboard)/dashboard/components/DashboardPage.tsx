@@ -220,7 +220,7 @@ function formatGitHubStars(stars: number) {
   return stars.toLocaleString();
 }
 
-function DashboardHeader() {
+function DashboardHeader({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
   const t = useTranslations("dash");
   const llmConfig = useSelector(
@@ -257,6 +257,8 @@ function DashboardHeader() {
 
       <div className="max-w-full overflow-x-auto hide-scrollbar lg:overflow-visible">
         <div className="flex h-[42.24px] w-max max-w-none items-center gap-3 rounded-full pl-3">
+          {/* Provider settings, Discord and GitHub: administrators only. */}
+          {isAdmin && (
           <div className="flex h-[42.24px] items-center gap-[18px] rounded-[32px] border border-[#EDEEEF] bg-white px-3 py-1">
             <Link
               href="/settings"
@@ -349,6 +351,7 @@ function DashboardHeader() {
               />
             </Link>
           </div>
+          )}
 
           <LanguageSwitcher size="md" />
 
@@ -393,7 +396,7 @@ function DashboardHeader() {
   );
 }
 
-const DashboardPage: React.FC = () => {
+const DashboardPage = ({ isAdmin }: { isAdmin: boolean }) => {
   const pathname = usePathname();
   const router = useRouter();
   const t = useTranslations("dash");
@@ -505,7 +508,7 @@ const DashboardPage: React.FC = () => {
 
   return (
     <div className="relative min-h-screen w-full pb-10">
-      <DashboardHeader />
+      <DashboardHeader isAdmin={isAdmin} />
       <section className="relative z-10 overflow-visible pb-0 pl-3 pr-3 pt-[17px] sm:pl-6 sm:pr-[9px]">
         <h2 className="w-full font-syne text-[16px] font-medium leading-[normal] text-[#191919]">
           {t("actions")}
