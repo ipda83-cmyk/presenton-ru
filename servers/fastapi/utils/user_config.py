@@ -88,6 +88,8 @@ from utils.get_env import (
     get_perplexity_base_url_env,
     get_perplexity_search_model_env,
     get_gemini_search_model_env,
+    get_studio_api_key_env,
+    get_studio_base_url_env,
     get_codex_access_token_env,
     get_codex_refresh_token_env,
     get_codex_token_expires_env,
@@ -190,6 +192,8 @@ from utils.set_env import (
     set_gemini_search_model_env,
     set_perplexity_base_url_env,
     set_perplexity_search_model_env,
+    set_studio_api_key_env,
+    set_studio_base_url_env,
     set_codex_access_token_env,
     set_codex_refresh_token_env,
     set_codex_token_expires_env,
@@ -392,6 +396,16 @@ def get_user_config():
             existing_config.PERPLEXITY_SEARCH_MODEL
             if existing_config.PERPLEXITY_SEARCH_MODEL is not None
             else get_perplexity_search_model_env()
+        ),
+        STUDIO_API_KEY=(
+            existing_config.STUDIO_API_KEY
+            if existing_config.STUDIO_API_KEY is not None
+            else get_studio_api_key_env()
+        ),
+        STUDIO_BASE_URL=(
+            existing_config.STUDIO_BASE_URL
+            if existing_config.STUDIO_BASE_URL is not None
+            else get_studio_base_url_env()
         ),
         CODEX_MODEL=existing_config.CODEX_MODEL or get_codex_model_env(),
         CODEX_ACCESS_TOKEN=existing_config.CODEX_ACCESS_TOKEN or get_codex_access_token_env(),
@@ -611,6 +625,10 @@ def update_env_with_user_config():
         set_perplexity_base_url_env(user_config.PERPLEXITY_BASE_URL)
     if user_config.PERPLEXITY_SEARCH_MODEL is not None:
         set_perplexity_search_model_env(user_config.PERPLEXITY_SEARCH_MODEL)
+    if user_config.STUDIO_API_KEY is not None:
+        set_studio_api_key_env(user_config.STUDIO_API_KEY)
+    if user_config.STUDIO_BASE_URL is not None:
+        set_studio_base_url_env(user_config.STUDIO_BASE_URL)
     if user_config.CODEX_MODEL:
         set_codex_model_env(user_config.CODEX_MODEL)
     if user_config.CODEX_ACCESS_TOKEN:

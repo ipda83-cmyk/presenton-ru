@@ -140,6 +140,8 @@ export interface LLMConfig {
   GEMINI_SEARCH_MODEL?: string;
   PERPLEXITY_BASE_URL?: string;
   PERPLEXITY_SEARCH_MODEL?: string;
+  STUDIO_API_KEY?: string;
+  STUDIO_BASE_URL?: string;
 
   // Codex OAuth (ChatGPT)
   CODEX_MODEL?: string;

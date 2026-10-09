@@ -170,6 +170,8 @@ export const updateLLMConfig = (
     gemini_search_model: "GEMINI_SEARCH_MODEL",
     perplexity_base_url: "PERPLEXITY_BASE_URL",
     perplexity_search_model: "PERPLEXITY_SEARCH_MODEL",
+    studio_api_key: "STUDIO_API_KEY",
+    studio_base_url: "STUDIO_BASE_URL",
     comfyui_url: "COMFYUI_URL",
     comfyui_workflow: "COMFYUI_WORKFLOW",
     dall_e_3_quality: "DALL_E_3_QUALITY",

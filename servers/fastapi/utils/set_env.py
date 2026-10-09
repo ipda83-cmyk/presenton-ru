@@ -332,6 +332,14 @@ def set_perplexity_base_url_env(value):
 def set_perplexity_search_model_env(value):
     os.environ["PERPLEXITY_SEARCH_MODEL"] = value
 
+
+def set_studio_api_key_env(value):
+    os.environ["STUDIO_API_KEY"] = value
+
+
+def set_studio_base_url_env(value):
+    os.environ["STUDIO_BASE_URL"] = value
+
 def set_comfyui_url_env(value):
     os.environ["COMFYUI_URL"] = value
 

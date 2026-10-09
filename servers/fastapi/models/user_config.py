@@ -146,6 +146,8 @@ class UserConfig(BaseModel):
     GEMINI_SEARCH_MODEL: Optional[str] = None
     PERPLEXITY_BASE_URL: Optional[str] = None
     PERPLEXITY_SEARCH_MODEL: Optional[str] = None
+    STUDIO_API_KEY: Optional[str] = None
+    STUDIO_BASE_URL: Optional[str] = None
 
     # Codex OAuth (ChatGPT)
     CODEX_MODEL: Optional[str] = None
