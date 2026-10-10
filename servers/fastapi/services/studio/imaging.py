@@ -2,7 +2,7 @@
 
 import io
 
-from PIL import Image, ImageFilter, ImageOps
+from PIL import Image, ImageFilter, ImageOps, ImageStat
 
 # arckep /uploads accepts about 10 MB; keep a margin.
 UPLOAD_LIMIT_BYTES = 9 * 1024 * 1024
@@ -108,8 +108,49 @@ def compose_masked(original: bytes, result: bytes, mask: bytes) -> bytes:
     selection = max(box[2] - box[0], box[3] - box[1])
     grow = round(min(max(selection * 1.2, 48), min(size) * 0.5))
     feather = round(max(grow * 0.4, 20))
-    soft = dilate(area, grow).filter(ImageFilter.BoxBlur(feather))
+    grown = dilate(area, grow)
+    soft = grown.filter(ImageFilter.BoxBlur(feather))
+    redrawn = match_tone(redrawn, base, grown)
     return to_png(Image.composite(redrawn, base, soft))
+
+
+TONE_SAMPLE_SIDE = 512
+TONE_MIN_SHARE = 0.02  # of the frame, outside the edit, to trust the estimate
+TONE_MAX_SHIFT = 24  # larger gaps are a different picture, not drift
+TONE_GAIN_RANGE = (0.9, 1.1)
+TONE_MIN_SPREAD = 12  # flat areas give no contrast information
+
+
+def match_tone(redrawn: Image.Image, base: Image.Image, edit: Image.Image) -> Image.Image:
+    """Undo a global colour drift of the redrawn frame.
+
+    Models re-render the whole frame and often shift its tone slightly; across
+    the wide blended edge that shows as a halo around the edit. Per channel,
+    the redrawn frame's mean (and, where there is contrast, its spread) is
+    fitted to the original outside the edit area, where both should match.
+    A large gap there means the model redrew the scene; that is left as is.
+    """
+    scale = TONE_SAMPLE_SIDE / max(base.size)
+    small = (max(1, round(base.width * scale)), max(1, round(base.height * scale)))
+    keep = edit.resize(small, Image.NEAREST).point(lambda value: 0 if value else 255)
+    if keep.histogram()[255] < TONE_MIN_SHARE * small[0] * small[1]:
+        return redrawn
+    want = ImageStat.Stat(base.resize(small, Image.BOX), keep)
+    have = ImageStat.Stat(redrawn.resize(small, Image.BOX), keep)
+    if any(abs(target - current) > TONE_MAX_SHIFT for target, current in zip(want.mean, have.mean)):
+        return redrawn
+    tables: list[int] = []
+    for target, target_spread, current, current_spread in zip(
+        want.mean, want.stddev, have.mean, have.stddev
+    ):
+        gain = 1.0
+        if min(target_spread, current_spread) >= TONE_MIN_SPREAD:
+            gain = min(max(target_spread / current_spread, TONE_GAIN_RANGE[0]), TONE_GAIN_RANGE[1])
+        tables.extend(
+            min(255, max(0, round((value - current) * gain + target)))
+            for value in range(256)
+        )
+    return redrawn.point(tables)
 
 
 def dilate(area: Image.Image, radius: int) -> Image.Image:

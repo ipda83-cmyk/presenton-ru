@@ -61,6 +61,21 @@ def test_compose_masked_without_a_selection_returns_the_original():
     assert _pixel(out, (30, 20)) == (10, 20, 30)
 
 
+def test_compose_masked_undoes_a_slight_tone_drift_of_the_redrawn_frame():
+    # The live arckep run darkened the whole sky by ~6 levels: a visible halo.
+    original = Image.new("RGB", (600, 400), (180, 220, 250))
+    ImageDraw.Draw(original).rectangle((0, 300, 599, 399), fill=(80, 150, 90))
+    redrawn = original.point([max(0, v - 6) for v in range(256)] * 3)
+    ImageDraw.Draw(redrawn).rectangle((280, 150, 320, 190), fill=(250, 220, 10))
+    as_png = lambda image: (lambda buffer: (image.save(buffer, "PNG"), buffer.getvalue())[1])(io.BytesIO())
+
+    out = imaging.compose_masked(as_png(original), as_png(redrawn), _mask((600, 400), (280, 150, 320, 190)))
+
+    assert _pixel(out, (300, 170)) == (255, 226, 16)  # the edit, in the original's tone
+    for xy in ((250, 170), (300, 120), (375, 170), (300, 245)):  # redrawn or blended, not brushed
+        assert all(abs(a - b) <= 1 for a, b in zip(_pixel(out, xy), original.getpixel(xy)))
+
+
 def test_dilate_grows_a_thin_stroke_even_with_a_large_radius():
     area = Image.new("L", (2000, 1000), 0)
     ImageDraw.Draw(area).line((1000, 500, 1010, 500), fill=255, width=1)
