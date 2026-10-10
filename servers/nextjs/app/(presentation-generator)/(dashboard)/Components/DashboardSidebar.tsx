@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { LayoutDashboard, Star, Brain, Settings, HelpCircle, UsersRound } from "lucide-react";
+import { LayoutDashboard, Star, Brain, Settings, HelpCircle, UsersRound, Sparkles, Brush, ImagePlus } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import StudioMark from "@/components/studio/StudioMark";
 
 
 
@@ -17,6 +18,13 @@ export const defaultNavItems = [
 
 
 ];
+// AI Image Studio tools, grouped under the presentation sections.
+const studioNavItems = [
+    { href: "/studio", key: "studioGenerate" as const, icon: Sparkles },
+    { href: "/studio/brush", key: "studioBrush" as const, icon: Brush },
+    { href: "/studio/reference", key: "studioReference" as const, icon: ImagePlus },
+];
+
 export const BelongingNavItems = [
     { key: "settings" as const, label: "Settings", icon: Settings },
     
@@ -88,6 +96,32 @@ const DashboardSidebar = ({
                             <UsersRound className={`h-4 w-4 ${pathname === "/community" ? "text-[#5146E5]" : "text-slate-600"}`} />
                             <span className="text-[11px] text-slate-800">{t("sidebar.community")}</span>
                         </Link> : null}
+                        <div className="border-t border-[#E1E1E5] pt-4" role="group" aria-labelledby="sidebar-studio-label">
+                            <p id="sidebar-studio-label" className="mb-4 flex items-center justify-center gap-1.5">
+                                <StudioMark size={18} />
+                                <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#7A5AF8]">{t("sidebar.studio")}</span>
+                            </p>
+                            <div className="space-y-4">
+                                {studioNavItems.map(({ href, key, icon: Icon }) => {
+                                    const active = pathname === href;
+                                    return (
+                                        <Link
+                                            key={href}
+                                            prefetch={false}
+                                            href={href}
+                                            aria-current={active ? "page" : undefined}
+                                            className={[
+                                                "-mx-2 flex flex-col items-center gap-1.5 rounded-[10px] px-0.5 py-1.5 text-center transition-colors",
+                                                active ? "bg-white shadow-[0_4px_10px_rgba(124,81,248,0.12)]" : "hover:bg-white/60",
+                                            ].join(" ")}
+                                        >
+                                            <Icon className={`h-4 w-4 ${active ? "text-[#5146E5]" : "text-slate-600"}`} aria-hidden="true" />
+                                            <span className="text-[11px] leading-[1.25] text-slate-800">{t(`sidebar.${key}`)}</span>
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        </div>
                         {/* <Link
                             prefetch={false}
                             href={`/theme`}

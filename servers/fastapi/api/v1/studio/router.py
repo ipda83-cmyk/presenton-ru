@@ -176,7 +176,8 @@ async def studio_generate(
 @API_V1_STUDIO_ROUTER.post("/edit")
 async def studio_edit(body: EditRequest, session: AsyncSession = Depends(get_async_session)):
     model = _model(body.model)
-    if not body.operation and not body.prompt.strip():
+    # Operations and reference inserts carry their own instructions.
+    if not body.operation and not body.reference and not body.prompt.strip():
         raise http_error(400, "err.studio.promptRequired")
     source = load_image_input(body.image)
     mask = load_image_input(body.mask) if body.mask else None
@@ -197,7 +198,7 @@ async def studio_edit(body: EditRequest, session: AsyncSession = Depends(get_asy
         raise _provider_error(error)
     except imaging.InvalidImageError:
         raise http_error(502, "err.studio.providerFailed", detail="invalid image")
-    mode = body.operation or ("brush" if mask else "reference" if reference else "edit")
+    mode = body.operation or ("reference" if reference else "brush" if mask else "edit")
     asset = await save_studio_image(
         session,
         result,

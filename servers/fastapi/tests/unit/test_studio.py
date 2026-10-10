@@ -345,6 +345,7 @@ def test_api_generate_edit_history_and_delete(studio_api, monkeypatch):
     config = client.get("/api/v1/studio/config").json()
     assert config["configured"] is True
     assert {model["key"] for model in config["models"]} == set(MODELS)
+    assert {model["family"] for model in config["models"]} == {"gemini", "gpt"}
 
     created = client.post("/api/v1/studio/generate", json={"prompt": "зоопарк", "aspect_ratio": "16:9"})
     assert created.status_code == 200
@@ -360,13 +361,21 @@ def test_api_generate_edit_history_and_delete(studio_api, monkeypatch):
     assert edited.status_code == 200
     assert edited.json()["image"]["extras"]["parent"] == image["file_url"]
 
+    # A reference insert needs no prompt: the object is the instruction.
+    inserted = client.post(
+        "/api/v1/studio/edit",
+        json={"image": image["file_url"], "reference": _data_url(_png()), "mask": _data_url(_mask((64, 64), (5, 5, 20, 20)))},
+    )
+    assert inserted.status_code == 200
+    assert inserted.json()["image"]["extras"]["mode"] == "reference"
+
     history = client.get("/api/v1/studio/history").json()["images"]
-    assert [item["extras"]["mode"] for item in history] == ["edit", "create"]
+    assert [item["extras"]["mode"] for item in history] == ["reference", "edit", "create"]
 
     deleted = client.delete(f"/api/v1/studio/history/{image['id']}")
     assert deleted.status_code == 204
     assert not os.path.exists(os.path.join(tmp_path, image["file_url"][len("/app_data/"):]))
-    assert len(client.get("/api/v1/studio/history").json()["images"]) == 1
+    assert len(client.get("/api/v1/studio/history").json()["images"]) == 2
 
 
 def test_api_validation_and_localized_errors(studio_api, monkeypatch):

@@ -53,6 +53,12 @@ const SettingsPage = () => {
   const t = useTranslations("settings");
   const tp = useTranslations("providers");
   const [selectedProvider, setSelectedProvider] = useState<SettingsSection>("text-provider");
+  // Deep link from the Studio: /settings?section=studio
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("section") === "studio") {
+      setSelectedProvider("studio");
+    }
+  }, []);
   const userConfigState = useSelector((state: RootState) => state.userConfig);
   const [llmConfig, setLlmConfig] = useState<LLMConfig>(
     userConfigState.llm_config

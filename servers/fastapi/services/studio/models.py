@@ -24,6 +24,7 @@ class StudioModel:
         return {
             "key": self.key,
             "title": self.title,
+            "family": self.family,
             "aspect_ratios": list(self.aspect_ratios),
             "resolutions": list(self.resolutions),
             "quality_levels": list(self.quality_levels),

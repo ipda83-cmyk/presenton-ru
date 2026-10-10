@@ -766,7 +766,11 @@
       "templates": "Templates",
       "community": "Community",
       "settings": "Settings",
-      "help": "Help"
+      "help": "Help",
+      "studio": "Studio",
+      "studioGenerate": "Image generation",
+      "studioBrush": "Magic brush",
+      "studioReference": "Reference"
     },
     "nav": {
       "dashboard": "Dashboard",
@@ -2791,6 +2795,154 @@
         "github": "Report a bug on GitHub",
         "discord": "Ask on Discord"
       }
+    }
+  },
+  "studio": {
+    "nav": {
+      "aria": "Studio sections",
+      "studio": "Studio",
+      "soon": "soon",
+      "soonHint": "Storyboard arrives in the next update",
+      "admin": "Admin"
+    },
+    "pages": {
+      "generate": "Image generation",
+      "brush": "Magic brush",
+      "reference": "Reference"
+    },
+    "loading": "Loading…",
+    "fields": {
+      "model": "Model",
+      "prompt": "Description",
+      "aspect": "Aspect ratio",
+      "resolution": "Resolution",
+      "quality": "Quality",
+      "count": "Variants",
+      "resultSize": "Result resolution",
+      "optional": "(optional)"
+    },
+    "models": {
+      "balanced": "Fast and affordable — fits most tasks",
+      "best": "Best quality and detail, takes longer",
+      "text": "Good at text in the image; up to 4 variants at once"
+    },
+    "quality": {
+      "draft": "Draft",
+      "standard": "Standard",
+      "high": "Maximum"
+    },
+    "generate": {
+      "title": "New image",
+      "subtitle": "Describe what to draw",
+      "placeholder": "For example: a bright office with large windows, morning light, photorealistic",
+      "submit": "Generate"
+    },
+    "result": {
+      "aria": "Result",
+      "alt": "Generated image",
+      "emptyTitle": "Your image will appear here",
+      "emptyHint": "Describe the image and press “Generate”",
+      "variants": "Variants",
+      "variant": "Variant {number}"
+    },
+    "actions": {
+      "download": "Download",
+      "toBrush": "Edit with brush",
+      "toReference": "Insert an object"
+    },
+    "busy": {
+      "generating": "Generating…",
+      "editing": "Changing the selection…",
+      "upscale": "Improving quality…",
+      "removeBg": "Removing the background…",
+      "inserting": "Inserting the object…",
+      "elapsed": "{seconds} s so far — usually under a minute"
+    },
+    "errors": {
+      "requestFailed": "The Studio request failed. Please try again.",
+      "promptRequired": "Describe the image.",
+      "maskRequired": "First paint over the area to change.",
+      "brushPromptRequired": "Describe what to change in the selected area.",
+      "referenceRequired": "Upload a photo of the object to insert.",
+      "placeRequired": "Paint over the place where the object should go."
+    },
+    "history": {
+      "title": "History",
+      "collapse": "Collapse",
+      "showAll": "Show all ({count})",
+      "confirmDelete": "Delete this image from history? It cannot be restored.",
+      "deleteFailed": "Could not delete the image.",
+      "loading": "Loading history…",
+      "empty": "Your Studio images will appear here.",
+      "delete": "Delete image",
+      "modes": {
+        "create": "Generated",
+        "edit": "Edit",
+        "brush": "Brush edit",
+        "reference": "Object insert",
+        "upscale": "Quality improved",
+        "remove_bg": "Background removed"
+      }
+    },
+    "notConfigured": {
+      "title": "The Studio is not set up yet",
+      "errorTitle": "The Studio is unavailable",
+      "admin": "Add the arckep API key in Settings → AI Image Studio.",
+      "user": "The administrator has not connected image generation yet. Please contact them.",
+      "openSettings": "Open settings"
+    },
+    "upload": {
+      "hint": "Drop a file, paste it (Ctrl+V) or choose one. PNG, JPG or WebP up to 20 MB.",
+      "choose": "Choose file",
+      "notImage": "This is not an image. Use PNG, JPG or WebP.",
+      "tooLarge": "The file is larger than {mb} MB. Make it smaller and try again.",
+      "readFailed": "Could not read the file."
+    },
+    "canvas": {
+      "toolbar": "Brush tools",
+      "brush": "Brush",
+      "eraser": "Eraser",
+      "size": "Size",
+      "clear": "Clear",
+      "hideMask": "Hide mask",
+      "showMask": "Show mask",
+      "compare": "Compare",
+      "before": "Before",
+      "after": "After",
+      "loadFailed": "Could not open the image. Upload another one.",
+      "canvasLabel": "Image: paint over the area to edit",
+      "download": "Download",
+      "replace": "Another photo",
+      "remove": "Remove photo"
+    },
+    "brush": {
+      "dropTitle": "Upload a photo to edit",
+      "title": "Edit image",
+      "subtitle": "Paint over an area and describe the change",
+      "promptLabel": "What to change in the selection",
+      "placeholder": "For example: replace the mug with a glass of juice",
+      "submit": "Apply to selection",
+      "needImage": "Upload a photo or pick one from history first.",
+      "wholeImage": "or the whole image",
+      "upscale": "Improve quality",
+      "removeBg": "Remove background",
+      "operationModel": "{model} improves quality and removes backgrounds."
+    },
+    "reference": {
+      "dropTitle": "Upload the main photo",
+      "title": "Insert an object",
+      "subtitle": "The reference object fits into the selected place",
+      "objectLabel": "Object photo (what to insert)",
+      "objectAlt": "Object to insert",
+      "objectReady": "Now paint over the place on the photo where it goes.",
+      "removeObject": "Remove object",
+      "objectDrop": "Upload the object",
+      "objectHint": "A logo, product or item",
+      "promptLabel": "Details",
+      "placeholder": "For example: the object lies on the table, soft shadow on the left",
+      "howTo": "The object fits into the painted area; light, shadows and scale adapt to the scene.",
+      "submit": "Insert object",
+      "needImage": "Upload the main photo first."
     }
   }
 }
