@@ -21,7 +21,7 @@ import {
   PromptField,
   errorMessage,
   imageSrc,
-} from "./controls";
+} from "@/components/studio/controls";
 
 export default function StudioReference({ isAdmin, initialImage }: { isAdmin: boolean; initialImage: string | null }) {
   const t = useTranslations("studio");

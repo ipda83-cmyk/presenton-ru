@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { resolveBackendAssetUrl } from "@/utils/api";
-import type { StudioModel } from "../../../services/api/studio";
+import type { StudioModel } from "@/app/(presentation-generator)/services/api/studio";
 
 export const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
 

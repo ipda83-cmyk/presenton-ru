@@ -51,7 +51,9 @@
       "remove": "Remove {name}",
       "attachMore": "Attach more ({count})",
       "attachFiles": "Attach files",
-      "generate": "Generate presentation"
+      "generate": "Generate presentation",
+      "openStudio": "Open {name} in AI Image Studio",
+      "addToPresentation": "Add to presentation"
     },
     "mode": {
       "a11yDescription": "Choose Standard mode for fixed layouts or Smart mode for adaptive layouts.",
@@ -2971,5 +2973,30 @@
     "slideNumber": "Slide {number}",
     "onSlide": "Photos on this slide",
     "removeFromSlide": "Remove photo {name} from the slide"
+  },
+  "studioPanel": {
+    "position": "Photo {number} of {total} · {name}",
+    "close": "Close the Studio",
+    "strip": "Photos",
+    "photo": "Photo {number}: {name}",
+    "modes": "Edit mode",
+    "mode": {
+      "describe": "Describe a change",
+      "brush": "Brush",
+      "upscale": "Enhance",
+      "remove_bg": "Remove background"
+    },
+    "promptLabel": "What to change",
+    "placeholder": "For example: make it brighter and remove the boxes on the floor",
+    "promptRequired": "Describe what to change in the photo.",
+    "brushHint": "Paint over an area of the photo — only it changes.",
+    "about": {
+      "upscale": "Sharpens the whole photo and adds detail.",
+      "remove_bg": "Removes the background and keeps the main subject."
+    },
+    "working": "Editing the photo…",
+    "apply": "Apply",
+    "added": "Done: the edited photo goes into the presentation.",
+    "addFailed": "Could not replace the photo. Please try again."
   }
 }

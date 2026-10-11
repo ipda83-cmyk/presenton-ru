@@ -5,6 +5,7 @@ import { ArrowUp, File, Paperclip, X } from "lucide-react";
 
 import { notify } from "@/components/ui/sonner";
 import { useTranslations } from "next-intl";
+import StudioMark from "@/components/studio/StudioMark";
 
 interface SupportingDocProps {
   files: File[];
@@ -12,6 +13,10 @@ interface SupportingDocProps {
   onSubmit: () => void;
   disabled?: boolean;
   multiple?: boolean;
+  /** Preview URL for attached photos (others show a file icon). */
+  photoPreview?: (file: File) => string | undefined;
+  /** Opens a photo in AI Image Studio; no button when omitted. */
+  onOpenStudio?: (file: File) => void;
 }
 
 const MAX_SUPPORTED_FILES = 8;
@@ -29,6 +34,8 @@ export default function SupportingDoc({
   onSubmit,
   disabled = false,
   multiple = true,
+  photoPreview,
+  onOpenStudio,
 }: SupportingDocProps) {
   const t = useTranslations("upload.attach");
   const addFiles = (candidates: File[]) => {
@@ -81,16 +88,36 @@ export default function SupportingDoc({
           data-testid="file-list"
           aria-label={t("listLabel")}
         >
-          {files.map((file, index) => (
+          {files.map((file, index) => {
+            const preview = photoPreview?.(file);
+            return (
             <li
               key={`${file.name}-${file.size}-${index}`}
-              className="inline-flex h-[30px] max-w-full items-center gap-2 rounded-md border border-[#EDEEEF] bg-[#F6F6F9] px-2 font-manrope text-[11px] text-[#333333]"
+              className={`inline-flex max-w-full items-center gap-2 rounded-md border border-[#EDEEEF] bg-[#F6F6F9] font-manrope text-[11px] text-[#333333] ${preview ? "min-h-[38px] py-1 pl-1 pr-2" : "h-[30px] px-2"}`}
               data-testid="attached-file-item"
             >
-              <File className="h-3.5 w-3.5 shrink-0 text-[#7A5AF8]" />
+              {preview ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={preview} alt="" className="h-[28px] w-[38px] shrink-0 rounded object-cover" />
+              ) : (
+                <File className="h-3.5 w-3.5 shrink-0 text-[#7A5AF8]" />
+              )}
               <span className="max-w-[180px] truncate" title={file.name}>
                 {file.name}
               </span>
+              {preview && onOpenStudio && (
+                <button
+                  type="button"
+                  onClick={() => onOpenStudio(file)}
+                  disabled={disabled}
+                  aria-label={t("openStudio", { name: file.name })}
+                  title={t("openStudio", { name: file.name })}
+                  className="inline-flex min-h-[28px] items-center gap-1.5 rounded-full border border-[#CEC6FF] bg-[#F4F3FF] py-0.5 pl-1 pr-2.5 font-syne text-[11px] font-semibold text-[#5141E5] transition-colors hover:bg-[#ECE9FF] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+                >
+                  <StudioMark size={20} />
+                  Studio
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() =>
@@ -103,7 +130,8 @@ export default function SupportingDoc({
                 <X className="h-3.5 w-3.5" />
               </button>
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
 

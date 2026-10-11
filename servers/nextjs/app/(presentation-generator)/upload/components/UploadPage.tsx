@@ -21,6 +21,8 @@ import { notify } from "@/components/ui/sonner";
 import { useTranslations } from "next-intl";
 import { PresentationGenerationApi } from "../../services/api/presentation-generation";
 import { SlidePhotosApi, isSlidePhotoFile } from "../../services/api/slide-photos";
+import StudioPanel from "@/components/studio/StudioPanel";
+import { useAttachmentStudio } from "../hooks/useAttachmentStudio";
 import { OverlayLoader } from "@/components/ui/overlay-loader";
 import Wrapper from "@/components/Wrapper";
 import { setPptGenUploadState } from "@/store/slices/presentationGenUpload";
@@ -160,6 +162,7 @@ const UploadPage = ({
   const t = useTranslations("upload");
 
   const [files, setFiles] = useState<File[]>([]);
+  const studio = useAttachmentStudio(files, setFiles);
   const [communityReference, setCommunityReference] =
     useState<CommunityPresentation | null>(null);
   const [generationMode, setGenerationMode] = useState<GenerationMode>(() =>
@@ -676,6 +679,8 @@ const UploadPage = ({
                 onFilesChange={setFiles}
                 onSubmit={handleGeneratePresentation}
                 disabled={loadingState.isLoading}
+                photoPreview={studio.previewOf}
+                onOpenStudio={studio.studioAvailable ? studio.openFor : undefined}
               />
             }
           />
@@ -687,6 +692,8 @@ const UploadPage = ({
         </div>
 
       </div>
+
+      <StudioPanel {...studio.panel} addLabel={t("attach.addToPresentation")} />
 
       {communityEnabled && generationMode === "smart" && (
         <div className="px-4 sm:px-6">

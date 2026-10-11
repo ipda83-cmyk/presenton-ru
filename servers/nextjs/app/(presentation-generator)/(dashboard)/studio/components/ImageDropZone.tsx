@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ImageUp } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { MAX_UPLOAD_BYTES, readImageFile } from "./controls";
+import { MAX_UPLOAD_BYTES, readImageFile } from "@/components/studio/controls";
 
 /** Validates and reads a picked/dropped/pasted file; reports problems as text. */
 export function useImageFile(onImage: (dataUrl: string) => void, onError: (message: string) => void) {

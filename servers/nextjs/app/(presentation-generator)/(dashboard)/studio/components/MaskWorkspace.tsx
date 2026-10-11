@@ -5,7 +5,7 @@ import { Brush, Download, Eraser, Eye, EyeOff, ImageUp, Trash2 } from "lucide-re
 import { useTranslations } from "next-intl";
 import { MaskCanvas, type BrushTool, type MaskCanvasHandle } from "@/components/studio/MaskCanvas";
 import ImageDropZone from "./ImageDropZone";
-import { BusyOverlay, imageSrc } from "./controls";
+import { BusyOverlay, imageSrc } from "@/components/studio/controls";
 
 const toolButton =
   "inline-flex min-h-[34px] items-center gap-1.5 rounded-full border px-3 font-syne text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] disabled:cursor-not-allowed disabled:opacity-50";

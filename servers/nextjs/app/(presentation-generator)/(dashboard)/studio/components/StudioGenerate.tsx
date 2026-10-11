@@ -19,7 +19,7 @@ import {
   PromptField,
   errorMessage,
   imageSrc,
-} from "./controls";
+} from "@/components/studio/controls";
 
 const COUNTS = [1, 2, 3, 4] as const;
 const PREFERRED_ASPECT = "16:9"; // slides are wide

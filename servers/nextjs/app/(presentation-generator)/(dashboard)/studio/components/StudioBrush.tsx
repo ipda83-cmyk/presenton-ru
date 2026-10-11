@@ -19,7 +19,7 @@ import {
   PromptField,
   SoftButton,
   errorMessage,
-} from "./controls";
+} from "@/components/studio/controls";
 
 type Busy = null | "brush" | StudioOperation;
 

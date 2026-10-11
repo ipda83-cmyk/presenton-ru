@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { StudioImage } from "../../../services/api/studio";
-import { imageSrc } from "./controls";
+import { imageSrc } from "@/components/studio/controls";
 
 const COLLAPSED_COUNT = 10;
 
