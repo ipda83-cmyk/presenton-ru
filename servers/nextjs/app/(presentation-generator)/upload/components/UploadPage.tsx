@@ -20,6 +20,7 @@ import SupportingDoc from "./SupportingDoc";
 import { notify } from "@/components/ui/sonner";
 import { useTranslations } from "next-intl";
 import { PresentationGenerationApi } from "../../services/api/presentation-generation";
+import { SlidePhotosApi, isSlidePhotoFile } from "../../services/api/slide-photos";
 import { OverlayLoader } from "@/components/ui/overlay-loader";
 import Wrapper from "@/components/Wrapper";
 import { setPptGenUploadState } from "@/store/slices/presentationGenUpload";
@@ -501,6 +502,24 @@ const UploadPage = ({
           ? [communityReference.id]
           : undefined,
     });
+
+    // Attached photos also go on the slides (Standard mode; placed on the outline page).
+    const photoFiles = generationMode === "smart" ? [] : files.filter(isSlidePhotoFile);
+    if (photoFiles.length > 0) {
+      setLoadingState({
+        isLoading: true,
+        message: t("loading.savingPhotos"),
+        showProgress: true,
+        duration: 15,
+        extra_info: "",
+      });
+      try {
+        await SlidePhotosApi.attach(createResponse.id, photoFiles);
+      } catch (error) {
+        console.error("Could not save attached photos", error);
+        notify.warning(t("errors.photosNotSavedTitle"), t("errors.photosNotSavedBody"));
+      }
+    }
 
     dispatch(setPptGenUploadState({
       config,

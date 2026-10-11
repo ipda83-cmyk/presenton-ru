@@ -34,6 +34,13 @@ class FakeAsyncSession:
     async def refresh(self, _obj: Any) -> None:
         return None
 
+    async def scalar(self, *_args: Any, **_kwargs: Any):
+        # Key/value lookups (web sources, slide photos): nothing stored.
+        return None
+
+    async def scalars(self, *_args: Any, **_kwargs: Any):
+        return []
+
     async def execute(self, *_args: Any, **_kwargs: Any):
         class _EmptyResult:
             def scalars(self):

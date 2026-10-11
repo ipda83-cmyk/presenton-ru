@@ -3,13 +3,16 @@ import json
 import logging
 import traceback
 import uuid
+from typing import List, Literal, Optional
+
 import dirtyjson
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from constants.presentation import MAX_NUMBER_OF_SLIDES
-from models.presentation_outline_model import PresentationOutlineModel
+from models.presentation_outline_model import PresentationOutlineModel, SlideOutlineModel
 from models.sql.presentation import PresentationModel
 from models.sse_response import (
     SSECompleteResponse,
@@ -41,6 +44,14 @@ from utils.web_sources import (
     build_web_sources_record,
     get_web_sources,
     save_web_sources,
+)
+from utils.slide_photos import (
+    MAX_PHOTOS,
+    build_record as build_slide_photos_record,
+    get_slide_photos,
+    match_photos_to_slides,
+    normalize_photos,
+    save_slide_photos,
 )
 from utils.i18n import t
 
@@ -100,6 +111,78 @@ async def get_outline_web_sources(
     record = await get_web_sources(sql_session, id)
     # "none": the outline was made before sources were recorded.
     return record or build_web_sources_record(status="none")
+
+
+class SlidePhotoIn(BaseModel):
+    url: str = Field(min_length=1, max_length=1024)
+    name: Optional[str] = Field(default=None, max_length=255)
+    slide: Optional[int] = Field(default=None, ge=0)
+
+
+class SlidePhotosUpdate(BaseModel):
+    photos: List[SlidePhotoIn] = Field(max_length=MAX_PHOTOS)
+    matched: Optional[Literal["vision", "order", "manual"]] = None
+
+
+class SlidePhotosMatchRequest(BaseModel):
+    # The outline as shown (it may have unsaved edits); stored outline otherwise.
+    slides: Optional[List[SlideOutlineModel]] = Field(default=None, max_length=MAX_NUMBER_OF_SLIDES)
+
+
+async def _presentation_or_404(sql_session: AsyncSession, id: uuid.UUID) -> PresentationModel:
+    presentation = await sql_session.get(PresentationModel, id)
+    if not presentation:
+        raise HTTPException(status_code=404, detail=t("err.outlines.presentationNotFound"))
+    return presentation
+
+
+@OUTLINES_ROUTER.get("/{id}/photos")
+async def get_outline_photos(
+    id: uuid.UUID,
+    sql_session: AsyncSession = Depends(get_async_session),
+):
+    """The user's photos and the slides they go on (see utils/slide_photos.py)."""
+    await _presentation_or_404(sql_session, id)
+    record = await get_slide_photos(sql_session, id)
+    return record or build_slide_photos_record([], None)
+
+
+@OUTLINES_ROUTER.put("/{id}/photos")
+async def put_outline_photos(
+    id: uuid.UUID,
+    body: SlidePhotosUpdate,
+    sql_session: AsyncSession = Depends(get_async_session),
+):
+    await _presentation_or_404(sql_session, id)
+    photos = normalize_photos(photo.model_dump() for photo in body.photos)
+    record = build_slide_photos_record(photos, body.matched)
+    await save_slide_photos(sql_session, id, record)
+    return record
+
+
+@OUTLINES_ROUTER.post("/{id}/photos/match")
+async def match_outline_photos(
+    id: uuid.UUID,
+    body: SlidePhotosMatchRequest,
+    sql_session: AsyncSession = Depends(get_async_session),
+):
+    """Place every photo on the slide it illustrates best (vision model, else in order)."""
+    presentation = await _presentation_or_404(sql_session, id)
+    record = await get_slide_photos(sql_session, id)
+    photos = normalize_photos((record or {}).get("photos") or [])
+    if not photos:
+        return build_slide_photos_record([], None)
+    slides = body.slides
+    if slides is None:
+        slides = PresentationOutlineModel(**(presentation.outlines or {"slides": []})).slides
+    # Release the read transaction while the model looks at the photos.
+    await sql_session.commit()
+    assignment, method = await match_photos_to_slides([photo["url"] for photo in photos], slides)
+    for photo, slide in zip(photos, assignment):
+        photo["slide"] = slide
+    record = build_slide_photos_record(photos, method)
+    await save_slide_photos(sql_session, id, record)
+    return record
 
 
 @OUTLINES_ROUTER.get("/stream/{id}")

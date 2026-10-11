@@ -37,6 +37,9 @@ import { PresentationGenerationApi } from "../../services/api/presentation-gener
 import { useOutlineManagement } from "../hooks/useOutlineManagement";
 import { useOutlineStreaming } from "../hooks/useOutlineStreaming";
 import { usePresentationGeneration } from "../hooks/usePresentationGeneration";
+import { useSlidePhotos } from "../hooks/useSlidePhotos";
+import SlidePhotosPanel from "./SlidePhotosPanel";
+import { SlidePhotosApi } from "../../services/api/slide-photos";
 import EmptyStateView from "./EmptyStateView";
 import GenerateButton from "./GenerateButton";
 import OutlineContent from "./OutlineContent";
@@ -186,6 +189,18 @@ const OutlinePage: React.FC = () => {
     hasSelectedTemplate && hasOutlineStreamFinished && !outlineControlsBusy;
   const isOutlineAssistantVisible = !isTemplateStage && hasSelectedTemplate;
   const isRegenerateDisabled = !isOutlineReady;
+  const slidePhotos = useSlidePhotos(presentation_id, isOutlineReady);
+  const handleOutlineDragEnd = useCallback(
+    (oldIndex: number, newIndex: number) => {
+      handleDragEnd(oldIndex, newIndex);
+      slidePhotos.moveSlide(oldIndex, newIndex);
+    },
+    [handleDragEnd, slidePhotos]
+  );
+  const handleGenerate = useCallback(async () => {
+    await slidePhotos.flush();
+    await handleSubmit();
+  }, [handleSubmit, slidePhotos]);
   const outlineStreamFinished =
     !isTemplateStage &&
     !outlineControlsBusy &&
@@ -312,6 +327,15 @@ const OutlinePage: React.FC = () => {
         web_search: !!draftConfig.webSearch,
       });
 
+      if (slidePhotos.photos.length > 0) {
+        // The new outline gets the same photos, placed again by meaning.
+        await SlidePhotosApi.save(
+          createResponse.id,
+          slidePhotos.photos.map((photo) => ({ ...photo, slide: null })),
+          null
+        ).catch((error) => console.error("Could not carry photos over", error));
+      }
+
       dispatch(setPptGenUploadState({ config: draftConfig, files }));
       dispatch(clearOutlines());
       dispatch(setPresentationId(createResponse.id));
@@ -350,6 +374,7 @@ const OutlinePage: React.FC = () => {
     outlineControlsBusy,
     presentation_id,
     selectedTemplateId,
+    slidePhotos.photos,
   ]);
 
   const handleUpdateOutline = (index: number, newContent: string) => {
@@ -451,6 +476,12 @@ const OutlinePage: React.FC = () => {
                 onRegenerate={handleRegenerateOutline}
               />
 
+              <SlidePhotosPanel
+                state={slidePhotos}
+                outlines={outlines ?? []}
+                disabled={outlineControlsBusy}
+              />
+
               <div className="mt-12">
                 <OutlineContent
                   outlines={outlines}
@@ -459,9 +490,11 @@ const OutlinePage: React.FC = () => {
                   activeSlideIndex={streamState.activeSlideIndex}
                   highestActiveIndex={streamState.highestActiveIndex}
                   statusMessage={streamState.statusMessage}
-                  onDragEnd={handleDragEnd}
+                  onDragEnd={handleOutlineDragEnd}
                   onAddSlide={handleAddSlide}
                   onUpdateOutline={handleUpdateOutline}
+                  slidePhotos={slidePhotos.photos}
+                  onPhotoAssign={outlineControlsBusy ? undefined : slidePhotos.assign}
                 />
               </div>
 
@@ -532,7 +565,7 @@ const OutlinePage: React.FC = () => {
                 loadingState={loadingState}
                 streamState={streamState}
                 selectedTemplateId={selectedTemplateId}
-                onSubmit={handleSubmit}
+                onSubmit={handleGenerate}
               />
             </div>
           </div>

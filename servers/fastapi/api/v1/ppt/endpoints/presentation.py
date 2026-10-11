@@ -99,6 +99,15 @@ from api.v1.auth.config import SESSION_COOKIE_NAME
 from utils.web_search import get_selected_web_search_provider, get_web_search_route
 from utils.web_search import build_web_search_query, get_web_search_context
 from utils.web_sources import delete_web_sources
+from utils.slide_photos import (
+    align_with_inserted_slides,
+    delete_slide_photos,
+    ensure_image_layouts,
+    get_slide_photos,
+    outline_with_photo_hints,
+    photos_by_slide,
+    save_slide_photos,
+)
 from api.v1.auth.context import (
     get_current_owner_id,
     reset_current_owner_id,
@@ -1545,6 +1554,7 @@ async def delete_presentation(
     await sql_session.delete(presentation)
     await sql_session.commit()
     await delete_web_sources(sql_session, id)
+    await delete_slide_photos(sql_session, id)
 
 
 @PRESENTATION_ROUTER.post("/{id}/duplicate", response_model=PresentationWithSlides)
@@ -1801,13 +1811,20 @@ async def prepare_presentation(
             detail=t("err.presentation.layoutMustContainAtLeastOne"),
         )
     total_outlines = len(outlines)
+    photo_record = await get_slide_photos(sql_session, presentation.id)
+    slide_photos = photos_by_slide(photo_record, total_outlines)
+    has_slide_photos = any(slide_photos)
 
     if structure_layout.ordered:
         presentation_structure = structure_layout.to_presentation_structure()
     else:
         presentation_structure: PresentationStructureModel = (
             await generate_presentation_structure(
-                presentation_outline=presentation_outline_model,
+                presentation_outline=(
+                    outline_with_photo_hints(presentation_outline_model, slide_photos)
+                    if has_slide_photos
+                    else presentation_outline_model
+                ),
                 presentation_layout=structure_layout,
                 instructions=presentation.instructions,
                 source_content=presentation.content,
@@ -1819,6 +1836,8 @@ async def prepare_presentation(
         outline_count=total_outlines,
         layout_count=total_slide_layouts,
     )
+    if has_slide_photos and not structure_layout.ordered:
+        ensure_image_layouts(presentation_structure, structure_layout, slide_photos)
 
     if presentation.include_table_of_contents:
         n_toc_slides = get_no_of_toc_required_for_n_outlines(
@@ -1851,6 +1870,15 @@ async def prepare_presentation(
     presentation.fonts = template_fonts
     presentation.set_structure(presentation_structure)
     await sql_session.commit()
+
+    if photo_record is not None:
+        # Final slide numbering (after table of contents slides) for generation.
+        photo_record["final"] = align_with_inserted_slides(
+            slide_photos,
+            insert_at=1 if presentation.include_title_slide else 0,
+            inserted=len(presentation_outline_model.slides) - total_outlines,
+        )
+        await save_slide_photos(sql_session, presentation.id, photo_record)
 
     await MEM0_PRESENTATION_MEMORY_SERVICE.store_generated_outlines(
         presentation.id,
@@ -2261,10 +2289,16 @@ async def stream_presentation(
         await sql_session.commit()
 
     image_generation_service = ImageGenerationService(get_images_directory())
+    photo_record = await get_slide_photos(sql_session, id)
+    final_slide_photos = (photo_record or {}).get("final") or []
 
     async def inner():
         icon_weight = layout.icon_weight
         image_urls_for_slides = get_images_for_slides_from_outline(outline.slides)
+        for slide_index, photo_urls in enumerate(final_slide_photos):
+            if slide_index < len(image_urls_for_slides) and isinstance(photo_urls, list):
+                user_photos = [url for url in photo_urls if isinstance(url, str) and url]
+                image_urls_for_slides[slide_index] = user_photos + image_urls_for_slides[slide_index]
 
         async_assets_generation_tasks: List[asyncio.Task] = []
         asset_events: asyncio.Queue = asyncio.Queue()

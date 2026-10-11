@@ -76,7 +76,8 @@
       "processingDocsInfo": "It might take a few minutes for large documents.",
       "startingSmart": "Starting Smart presentation...",
       "generatingOutline": "Generating presentation outline...",
-      "preparingOutline": "Preparing outline generation..."
+      "preparingOutline": "Preparing outline generation...",
+      "savingPhotos": "Saving photos for the slides…"
     },
     "errors": {
       "communitySelectTitle": "Could not select the community design",
@@ -89,7 +90,9 @@
       "inputRequiredBodyCommunity": "Provide a prompt, upload a document, or select a community reference.",
       "inputRequiredBody": "Provide a prompt or upload a document.",
       "generationFailedTitle": "Generation failed",
-      "generationFailedBody": "Something went wrong while starting your presentation."
+      "generationFailedBody": "Something went wrong while starting your presentation.",
+      "photosNotSavedTitle": "Photos not saved",
+      "photosNotSavedBody": "The presentation will be made without your photos. You can add them in the editor."
     },
     "communityDesignFallback": "Community design",
     "advanced": {
@@ -2945,5 +2948,28 @@
       "submit": "Insert object",
       "needImage": "Upload the main photo first."
     }
+  },
+  "slidePhotos": {
+    "title": "Your photos",
+    "placed": "{placed} of {total} on slides",
+    "matching": "Placing the photos on matching slides…",
+    "waiting": "Photos are placed on slides once the outline is ready.",
+    "matched": {
+      "vision": "AI placed the photos by meaning. Drag a photo to another slide or pick a slide in the list.",
+      "order": "The current model cannot look at photos, so they are placed in order. Move them as needed.",
+      "manual": "Photos placed by hand."
+    },
+    "errors": {
+      "requestFailed": "Could not update the photos. Please try again."
+    },
+    "rematch": "Place again",
+    "dragHint": "Drag onto a slide",
+    "photoAlt": "Photo {number}",
+    "slideFor": "Slide for photo {name}",
+    "unused": "Do not use",
+    "slideOption": "Slide {number} · {title}",
+    "slideNumber": "Slide {number}",
+    "onSlide": "Photos on this slide",
+    "removeFromSlide": "Remove photo {name} from the slide"
   }
 }

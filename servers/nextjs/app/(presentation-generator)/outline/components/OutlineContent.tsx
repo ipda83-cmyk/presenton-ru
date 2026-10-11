@@ -23,6 +23,7 @@ import { useTranslations } from "next-intl";
 import { MAX_NUMBER_OF_SLIDES } from "@/utils/presentationLimits";
 import { useStableOutlineIds } from "../../components/useStableOutlineIds";
 import { OutlineItem } from "./OutlineItem";
+import type { SlidePhoto } from "../../services/api/slide-photos";
 
 // useOutlineStreaming keeps these English strings as state (OutlinePage
 // compares against "Outline ready"), so they are translated at display time.
@@ -42,6 +43,8 @@ interface OutlineContentProps {
   onDragEnd: (oldIndex: number, newIndex: number) => void;
   onAddSlide: () => void;
   onUpdateOutline?: (index: number, newContent: string) => void;
+  slidePhotos?: SlidePhoto[];
+  onPhotoAssign?: (url: string, slide: number | null) => void;
 }
 
 const getOutlineContent = (outline: { content: string }) => outline.content;
@@ -56,6 +59,8 @@ const OutlineContent: React.FC<OutlineContentProps> = ({
   onDragEnd,
   onAddSlide,
   onUpdateOutline,
+  slidePhotos = [],
+  onPhotoAssign,
 }) => {
   const t = useTranslations("outline");
   const hasReachedSlideLimit =
@@ -160,6 +165,9 @@ const OutlineContent: React.FC<OutlineContentProps> = ({
                     onUpdate={(newContent) =>
                       onUpdateOutline?.(index + 1, newContent)
                     }
+                    photos={slidePhotos.filter((photo) => photo.slide === index)}
+                    onPhotoDrop={onPhotoAssign ? (url) => onPhotoAssign(url, index) : undefined}
+                    onPhotoRemove={onPhotoAssign ? (url) => onPhotoAssign(url, null) : undefined}
                   />
                 ))}
               </SortableContext>
