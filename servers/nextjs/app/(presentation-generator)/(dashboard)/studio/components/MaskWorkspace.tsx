@@ -49,7 +49,7 @@ export default function MaskWorkspace({
 
   if (!image) {
     return (
-      <div className="flex min-h-[420px] items-center justify-center rounded-2xl border border-[#EDEEEF] bg-[#F9F8FB] p-6 lg:min-h-[520px]">
+      <div className="flex min-h-[240px] items-center justify-center rounded-2xl border border-[#EDEEEF] bg-[#F9F8FB] p-3 sm:min-h-[420px] sm:p-6 lg:min-h-[520px]">
         <div className="w-full max-w-xl">
           <ImageDropZone title={dropTitle} hint={dropHint} onFile={onFile} />
         </div>
@@ -105,7 +105,7 @@ export default function MaskWorkspace({
         )}
       </div>
 
-      <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden rounded-2xl border border-[#EDEEEF] bg-[#F9F8FB] p-4 lg:min-h-[520px]">
+      <div className="relative flex min-h-[240px] items-center justify-center overflow-hidden rounded-2xl border border-[#EDEEEF] bg-[#F9F8FB] p-2 sm:min-h-[420px] sm:p-4 lg:min-h-[520px]">
         {broken ? (
           <p role="alert" className="text-sm text-red-700">
             {t("loadFailed")}

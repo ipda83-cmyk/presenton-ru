@@ -115,7 +115,7 @@ export default function StudioBrush({ isAdmin, initialImage }: { isAdmin: boolea
   return (
     <div className="min-h-screen">
       <StudioHeader title={title} isAdmin={isAdmin} />
-      <main className="ml-7 mr-[9px] flex flex-col gap-6 px-1 pb-10 pt-7 lg:flex-row lg:items-start">
+      <main className="mx-4 md:ml-7 md:mr-[9px] flex flex-col gap-6 px-1 pb-10 pt-7 lg:flex-row lg:items-start">
         <div className="flex min-w-0 flex-1 flex-col gap-6">
           <MaskWorkspace
             image={image}

@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
-import { LayoutDashboard, Star, Brain, Settings, HelpCircle, UsersRound, Sparkles, Brush, ImagePlus } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { LayoutDashboard, Star, Brain, Settings, HelpCircle, UsersRound, Sparkles, Brush, ImagePlus, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import StudioMark from "@/components/studio/StudioMark";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 
 
@@ -35,6 +36,89 @@ type DashboardSidebarProps = {
     showTemplates?: boolean;
 };
 
+const TemplatesIcon = ({ className, color = "currentColor" }: { className?: string; color?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true"><path d="M4 14h6" /><path d="M4 2h10" /><rect x="4" y="18" width="16" height="4" rx="1" /><rect x="4" y="6" width="16" height="4" rx="1" /></svg>
+);
+
+type MobileItem = { href: string; label: string; icon: React.ComponentType<{ className?: string }> };
+
+// Phones: the 114px rail would take a third of the screen, so the same
+// sections open from a menu button in a slim top bar instead.
+const MobileNav = ({ showCommunity, showTemplates }: Required<DashboardSidebarProps>) => {
+    const pathname = usePathname();
+    const t = useTranslations("dash");
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        setOpen(false);
+    }, [pathname]);
+
+    const sections: MobileItem[] = [
+        { href: "/dashboard", label: t("sidebar.dashboard"), icon: LayoutDashboard },
+        ...(showTemplates ? [{ href: "/templates", label: t("sidebar.templates"), icon: TemplatesIcon }] : []),
+        ...(showCommunity ? [{ href: "/community", label: t("sidebar.community"), icon: UsersRound }] : []),
+    ];
+    const studio: MobileItem[] = studioNavItems.map(({ href, key, icon }) => ({ href, label: t(`sidebar.${key}`), icon }));
+    const footer: MobileItem[] = [
+        { href: "/settings", label: t("sidebar.settings"), icon: Settings },
+        { href: "/help", label: t("sidebar.help"), icon: HelpCircle },
+    ];
+
+    const item = ({ href, label, icon: Icon }: MobileItem) => {
+        const active = pathname === href;
+        return (
+            <Link
+                key={href}
+                href={href}
+                prefetch={false}
+                aria-current={active ? "page" : undefined}
+                className={[
+                    "flex min-h-11 items-center gap-3 rounded-[10px] px-3 text-sm transition-colors",
+                    active ? "bg-white font-medium text-[#101323] shadow-[0_4px_10px_rgba(124,81,248,0.12)]" : "text-slate-800 hover:bg-white/70",
+                ].join(" ")}
+            >
+                <Icon className={`h-4 w-4 shrink-0 ${active ? "text-[#5146E5]" : "text-slate-600"}`} />
+                {label}
+            </Link>
+        );
+    };
+
+    return (
+        <div className="flex h-14 items-center gap-3 border-b border-[#E1E1E5] bg-[#F6F6F9] px-4 md:hidden">
+            <Link href="/dashboard" className="flex items-center gap-2" aria-label={t("sidebar.dashboard")}>
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7C51F8] p-0.5">
+                    <img src="/logo-with-bg.png" alt={t("logoAlt")} className="h-full w-full object-contain" />
+                </span>
+                <span className="font-syne text-base font-semibold text-[#101323]">Presenton</span>
+            </Link>
+            <Sheet open={open} onOpenChange={setOpen}>
+                <SheetTrigger asChild>
+                    <button
+                        type="button"
+                        aria-label={t("sidebar.menu")}
+                        className="ml-auto flex h-11 w-11 items-center justify-center rounded-full text-[#101323] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+                    >
+                        <Menu className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                </SheetTrigger>
+                <SheetContent side="left" aria-describedby={undefined} className="flex w-[280px] flex-col overflow-y-auto bg-[#F6F6F9] p-0 font-syne">
+                    <SheetTitle className="px-5 pb-1 pt-5 font-syne text-base font-semibold text-[#101323]">{t("sidebar.menu")}</SheetTitle>
+                    <nav aria-label={t("sectionsAria")} className="flex flex-1 flex-col gap-1 px-3 pb-6">
+                        {sections.map(item)}
+                        <p className="mb-1 mt-4 flex items-center gap-1.5 px-3">
+                            <StudioMark size={18} />
+                            <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#7A5AF8]">{t("sidebar.studio")}</span>
+                        </p>
+                        {studio.map(item)}
+                        <div className="my-3 border-t border-[#E1E1E5]" />
+                        {footer.map(item)}
+                    </nav>
+                </SheetContent>
+            </Sheet>
+        </div>
+    );
+};
+
 const DashboardSidebar = ({
     showCommunity = true,
     showTemplates = true,
@@ -43,8 +127,10 @@ const DashboardSidebar = ({
     const t = useTranslations("dash");
 
     return (
+        <>
+        <MobileNav showCommunity={showCommunity} showTemplates={showTemplates} />
         <aside
-            className="sticky top-0 flex h-screen w-[114px] shrink-0 flex-col justify-between border-r border-[#E1E1E5] bg-[#F6F6F9] px-4 py-8 backdrop-blur"
+            className="sticky top-0 hidden h-screen w-[114px] shrink-0 flex-col justify-between border-r border-[#E1E1E5] bg-[#F6F6F9] px-4 py-8 backdrop-blur md:flex"
             aria-label={t("sidebarAria")}
         >
             <div>
@@ -161,6 +247,7 @@ const DashboardSidebar = ({
             </div>
 
         </aside>
+        </>
     );
 };
 

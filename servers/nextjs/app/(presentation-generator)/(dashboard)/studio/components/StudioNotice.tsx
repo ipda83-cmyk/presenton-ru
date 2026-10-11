@@ -8,7 +8,7 @@ import StudioMark from "@/components/studio/StudioMark";
 export default function StudioNotice({ isAdmin, error }: { isAdmin: boolean; error?: string | null }) {
   const t = useTranslations("studio.notConfigured");
   return (
-    <div className="mx-auto mt-10 flex max-w-lg flex-col items-center gap-3 rounded-2xl border border-[#EDEEEF] bg-[#F9F8FB] px-8 py-10 text-center">
+    <div className="mx-4 mt-10 flex max-w-lg sm:mx-auto flex-col items-center gap-3 rounded-2xl border border-[#EDEEEF] bg-[#F9F8FB] px-8 py-10 text-center">
       <StudioMark size={48} />
       <h2 className="font-syne text-lg font-medium text-[#101323]">{error ? t("errorTitle") : t("title")}</h2>
       <p className="text-sm leading-6 text-[#475467]">{error ?? (isAdmin ? t("admin") : t("user"))}</p>

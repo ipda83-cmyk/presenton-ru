@@ -14,8 +14,8 @@ const SettingSideBar = ({ selectedProvider, setSelectedProvider, presentonSelect
     const textProviderIcon = LLM_PROVIDERS[llm_config.LLM as keyof typeof LLM_PROVIDERS]?.icon
     const imageProviderIcon = IMAGE_PROVIDERS[llm_config.IMAGE_PROVIDER as keyof typeof IMAGE_PROVIDERS]?.icon || '/providers/pexel.png'
     return (
-        <div className='w-full max-w-[230px] h-screen px-3 pt-[22px] bg-[#F9FAFB] flex flex-col'>
-            <p className='text-xs text-black  font-medium border-b mt-[3.15rem]  border-[#E1E1E5] pb-3.5'>{t('filterBy')}</p>
+        <div className='w-full px-3 pb-4 pt-[22px] bg-[#F9FAFB] flex flex-col md:h-screen md:max-w-[230px] md:pb-0'>
+            <p className='text-xs text-black  font-medium border-b md:mt-[3.15rem]  border-[#E1E1E5] pb-3.5'>{t('filterBy')}</p>
             <div className='mt-6 flex-1'>
                 <p className='text-[#3A3A3A] text-xs font-medium pb-2.5'>{t('selectProvider')}</p>
                 <div className='space-y-2.5'>

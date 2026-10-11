@@ -244,11 +244,11 @@ export default function CommunityPage() {
 
   return (
     <div className="min-h-screen font-manrope">
-      <header className="sticky right-0 top-0 z-40 ml-7 mr-[9px] flex min-h-[105px] items-center justify-between border-b border-[#EDEEEF] bg-white px-1">
+      <header className="sticky right-0 top-0 z-40 mx-4 flex min-h-[105px] flex-wrap items-center justify-between gap-3 border-b border-[#EDEEEF] bg-white px-1 py-4 md:ml-7 md:mr-[9px]">
         <h1 className="font-syne text-[22px] font-medium tracking-[-0.66px] text-[#101323]">
           {t("title")}
         </h1>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <Link
             href="/upload"
             className="inline-flex h-10 items-center gap-2 rounded-full bg-[linear-gradient(270deg,#D5CAFC_2.4%,#E3D2EB_27.88%,#F4DCD3_69.23%,#FDE4C2_100%)] px-4 font-syne text-sm font-medium text-[#191919] shadow-sm transition hover:shadow-md"

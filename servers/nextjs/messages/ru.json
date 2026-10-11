@@ -770,7 +770,8 @@
       "studio": "Студия",
       "studioGenerate": "Генерация изображений",
       "studioBrush": "Волшебная кисть",
-      "studioReference": "Работа с референсом"
+      "studioReference": "Работа с референсом",
+      "menu": "Меню"
     },
     "nav": {
       "dashboard": "Главная",

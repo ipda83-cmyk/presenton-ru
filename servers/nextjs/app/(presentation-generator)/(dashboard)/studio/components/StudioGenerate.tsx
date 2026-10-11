@@ -112,10 +112,10 @@ export default function StudioGenerate({ isAdmin }: { isAdmin: boolean }) {
   return (
     <div className="min-h-screen">
       <StudioHeader title={title} isAdmin={isAdmin} />
-      <main className="ml-7 mr-[9px] flex flex-col-reverse gap-6 px-1 pb-10 pt-7 lg:flex-row lg:items-start">
+      <main className="mx-4 md:ml-7 md:mr-[9px] flex flex-col-reverse gap-6 px-1 pb-10 pt-7 lg:flex-row lg:items-start">
         <div className="flex min-w-0 flex-1 flex-col gap-5">
           <section aria-label={t("result.aria")} className="flex flex-col gap-3">
-            <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden rounded-2xl border border-[#EDEEEF] bg-[#F9F8FB] p-4 lg:min-h-[520px]">
+            <div className="relative flex min-h-[240px] items-center justify-center overflow-hidden rounded-2xl border border-[#EDEEEF] bg-[#F9F8FB] p-2 sm:min-h-[420px] sm:p-4 lg:min-h-[520px]">
               {selected ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img

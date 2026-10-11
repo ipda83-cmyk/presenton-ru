@@ -12,7 +12,7 @@ export default function StudioHeader({ title, isAdmin }: { title: string; isAdmi
   const t = useTranslations("studio.nav");
 
   return (
-    <header className="sticky top-0 z-40 ml-7 mr-[9px] flex min-h-[105px] flex-wrap items-center justify-between gap-4 border-b border-[#EDEEEF] bg-white px-1 py-4 font-syne">
+    <header className="mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#EDEEEF] bg-white px-1 py-4 font-syne md:sticky md:top-0 md:z-40 md:ml-7 md:mr-[9px] md:min-h-[105px] md:gap-4">
       <h1 className="text-[22px] font-medium tracking-[-0.66px] text-[#101323]">{title}</h1>
       <div className="flex flex-wrap items-center gap-3">
         <nav

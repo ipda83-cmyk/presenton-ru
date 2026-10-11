@@ -460,12 +460,12 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
       className={
         embedded
           ? "h-[calc(100vh-104px)] overflow-y-auto pb-28 pr-6 font-syne"
-          : "min-h-screen bg-white px-8 py-10 font-syne"
+          : "min-h-screen bg-white px-4 py-10 font-syne sm:px-8"
       }
     >
       <div className={embedded ? "max-w-5xl" : "mx-auto max-w-5xl"}>
         {!embedded ? (
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <h1 className="font-syne font-medium text-[28px] tracking-[-0.84px] text-black">
               {t("title")}
             </h1>

@@ -168,7 +168,7 @@ export function ModelSelect({
           id={id}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="min-h-10 min-w-[190px] rounded-xl border border-[#DBDBE1] bg-white px-3 font-syne text-[13px] font-medium text-[#2C2B37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+          className="min-h-10 min-w-0 flex-1 rounded-xl sm:max-w-[240px] sm:min-w-[190px] border border-[#DBDBE1] bg-white px-3 font-syne text-[13px] font-medium text-[#2C2B37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
         >
           {models.map((model) => (
             <option key={model.key} value={model.key}>

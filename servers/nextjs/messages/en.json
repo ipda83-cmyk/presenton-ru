@@ -770,7 +770,8 @@
       "studio": "Studio",
       "studioGenerate": "Image generation",
       "studioBrush": "Magic brush",
-      "studioReference": "Reference"
+      "studioReference": "Reference",
+      "menu": "Menu"
     },
     "nav": {
       "dashboard": "Dashboard",

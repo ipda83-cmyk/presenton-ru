@@ -437,17 +437,17 @@ const SettingsPage = () => {
 
 
   return (
-    <div className="relative flex h-screen flex-col overflow-hidden font-syne">
-      <main className="mx-auto flex min-h-0 w-full flex-1 gap-6 overflow-hidden">
+    <div className="relative flex flex-col font-syne md:h-screen md:overflow-hidden">
+      <main className="mx-auto flex min-h-0 w-full flex-1 flex-col gap-6 md:flex-row md:overflow-hidden">
         <SettingSideBar
           selectedProvider={selectedProvider}
           setSelectedProvider={selectSettingsSection}
           presentonSelected={llmConfig.LLM === "presenton"}
         />
-        <div className="custom_scrollbar min-h-0 w-full flex-1 overflow-y-auto pb-36 pr-5">
+        <div className="custom_scrollbar min-h-0 w-full flex-1 px-4 pb-36 md:overflow-y-auto md:pl-0 md:pr-5">
           <div className="sticky right-0 top-0 z-40 mb-4 bg-white/90 py-[28px] backdrop-blur">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex  gap-3 items-center ">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap gap-3 items-center ">
                 <h3 className=" text-[28px] tracking-[-0.84px] font-syne font-normal text-black flex items-center gap-2">
                   {t("title")}
                 </h3>
