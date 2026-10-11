@@ -11,6 +11,8 @@ from __future__ import annotations
 import re
 from typing import Optional
 
+from utils.presentation_language import parse_auto_language
+
 # Values must match `LanguageType` string literals in the upload UI.
 PRESENTATION_LANGUAGE_TO_TESSERACT: dict[str, str] = {
     "English": "eng",
@@ -110,6 +112,15 @@ _LOWER_MAP = {k.lower(): v for k, v in PRESENTATION_LANGUAGE_TO_TESSERACT.items(
 _OCR_CODE_RE = re.compile(r"^[a-zA-Z0-9_,+]+$")
 
 
+def _language_by_name(name: str) -> Optional[str]:
+    """ "Russian" -> "rus": picker labels carry the native name in brackets."""
+    lowered = name.strip().lower()
+    for label, code in _LOWER_MAP.items():
+        if label == lowered or label.split(" (", 1)[0] == lowered:
+            return code
+    return None
+
+
 def presentation_language_to_ocr_code(language: Optional[str]) -> str:
     """Resolve UI language label to a Tesseract language code; default English."""
     if language is None:
@@ -117,6 +128,11 @@ def presentation_language_to_ocr_code(language: Optional[str]) -> str:
     s = str(language).strip()
     if not s:
         return "eng"
+    is_auto, fallback = parse_auto_language(s)
+    if is_auto:
+        # "Auto (Russian)": documents are most likely in the fallback language.
+        code = _language_by_name(fallback) if fallback else None
+        return code if code and _OCR_CODE_RE.fullmatch(code) else "eng"
     if s in PRESENTATION_LANGUAGE_TO_TESSERACT:
         code = PRESENTATION_LANGUAGE_TO_TESSERACT[s]
     else:

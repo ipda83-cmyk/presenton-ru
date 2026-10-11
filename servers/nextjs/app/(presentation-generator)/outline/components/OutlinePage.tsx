@@ -31,7 +31,6 @@ import {
   PresentationConfig,
   ToneType,
   VerbosityType,
-  isAutoLanguage,
 } from "../../upload/type";
 import { PresentationGenerationApi } from "../../services/api/presentation-generation";
 import { useOutlineManagement } from "../hooks/useOutlineManagement";
@@ -284,11 +283,6 @@ const OutlinePage: React.FC = () => {
 
     if (!draftConfig.language) {
       toast.error(t("errSelectLanguage"));
-      return;
-    }
-
-    if (documentPaths.length > 0 && isAutoLanguage(draftConfig.language)) {
-      toast.error(t("errLanguageForDocs"));
       return;
     }
 

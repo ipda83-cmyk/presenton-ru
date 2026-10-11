@@ -15,7 +15,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { clearOutlines, setPresentationId } from "@/store/slices/presentationGeneration";
 import { PromptInput } from "./PromptInput";
-import { LanguageType, PresentationConfig, ToneType, VerbosityType, isAutoLanguage } from "../type";
+import { LanguageType, PresentationConfig, ToneType, VerbosityType } from "../type";
 import SupportingDoc from "./SupportingDoc";
 import { notify } from "@/components/ui/sonner";
 import { useTranslations } from "next-intl";
@@ -385,11 +385,6 @@ const UploadPage = ({
       return false;
     }
 
-    if (files.length > 0 && isAutoLanguage(config.language)) {
-      trackUploadValidationFailure("language_auto_with_documents");
-      notify.warning(t("errors.languageRequiredTitle"), t("errors.languageForDocsBody"));
-      return false;
-    }
 
     if (
       !config.prompt.trim() &&

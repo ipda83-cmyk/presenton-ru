@@ -411,6 +411,11 @@ def test_dynamic_outline_and_structure_factories_validate():
         (None, "eng"),
         ("   ", "eng"),
         ("Hausa (Hausa)", "hau"),
+        # "Auto (<fallback>)": documents are read in the fallback language.
+        ("Auto (Russian)", "rus"),
+        ("Auto (English)", "eng"),
+        ("auto", "eng"),
+        ("Auto (Klingon)", "eng"),
     ],
 )
 def test_presentation_language_to_ocr_resolution(language: str | None, code: str):
