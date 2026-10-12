@@ -65,6 +65,8 @@ def test_normalize_photos_keeps_own_images_once():
             {"url": "/app_data/images/a.png", "name": "  море   и  горы ", "slide": 2},
             {"url": "/app_data/images/a.png", "slide": 0},
             {"url": "data:image/png;base64,AAAA"},
+            {"url": "/etc/hosts"},
+            {"url": "/app_data/images/../../etc/hosts"},
             {"url": "/app_data/images/b.jpg", "slide": -1},
             {"url": "/app_data/images/c.jpg", "slide": True},
             "junk",

@@ -23,6 +23,7 @@ import { ImageAssetResponse } from "../services/api/types";
 import { resolveBackendAssetSource } from "@/utils/api";
 import { ImageEditorToolbar } from "./ImageEditorToolbar";
 import { useTranslations } from "next-intl";
+import StudioPanel, { useStudioAvailable } from "@/components/studio/StudioPanel";
 
 const STOCK_IMAGE_PROVIDERS = new Set(["pexels", "pixabay"]);
 
@@ -62,6 +63,11 @@ const ImageEditor = ({
     const id = (llmConfig?.IMAGE_PROVIDER || "").trim().toLowerCase();
     return STOCK_IMAGE_PROVIDERS.has(id) ? id : null;
   }, [llmConfig?.DISABLE_IMAGE_GENERATION, llmConfig?.IMAGE_PROVIDER]);
+
+  const tStudio = useTranslations("studioPanel");
+  const studioAvailable = useStudioAvailable();
+  // The Studio replaces this sheet while it is open (a modal sheet would block it).
+  const [studioOpen, setStudioOpen] = useState(false);
 
   // State management
   const [previewImages, setPreviewImages] = useState(
@@ -366,7 +372,22 @@ const ImageEditor = ({
   };
   return (
     <div className="image-editor-container">
-      <Sheet open={isOpen} onOpenChange={() => handleClose()}>
+      {studioOpen && previewImages ? (
+        <StudioPanel
+          open
+          items={[{ id: "slide-image", name: tStudio("slideImage"), src: previewImages }]}
+          activeId="slide-image"
+          onActiveChange={() => undefined}
+          onClose={() => {
+            setStudioOpen(false);
+            handleClose();
+          }}
+          addLabel={tStudio("applyToSlide")}
+          addedNotice={tStudio("appliedToSlide")}
+          onAdd={(_item, image) => handleImageChange(image)}
+        />
+      ) : null}
+      <Sheet open={isOpen && !studioOpen} onOpenChange={() => handleClose()}>
         <SheetContent
           side="right"
           className="w-[600px]"
@@ -660,6 +681,7 @@ const ImageEditor = ({
                     onObjectFitChange={handleFitChange}
                     onToggleFocusPoint={toggleFocusPointMode}
                     onReplaceImage={() => setActiveTab("generate")}
+                    onOpenStudio={studioAvailable && previewImages ? () => setStudioOpen(true) : undefined}
                   />
                   <h3 className="text-sm font-medium mb-2">{t("currentImage")}</h3>
                   <div

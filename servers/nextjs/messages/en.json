@@ -2995,6 +2995,10 @@
     "working": "Editing the photo…",
     "apply": "Apply",
     "added": "Done: the edited photo goes into the presentation.",
-    "addFailed": "Could not replace the photo. Please try again."
+    "addFailed": "Could not replace the photo. Please try again.",
+    "editInStudio": "Edit in AI Image Studio",
+    "slideImage": "Slide picture",
+    "applyToSlide": "Apply to slide",
+    "appliedToSlide": "Done: the slide picture was replaced. Use Undo in the editor to revert."
   }
 }

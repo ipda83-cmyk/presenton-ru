@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ChevronDown, Focus, Maximize, Minimize } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import StudioMark from "@/components/studio/StudioMark";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,14 +43,18 @@ export function ImageEditorToolbar({
   onObjectFitChange,
   onToggleFocusPoint,
   onReplaceImage,
+  onOpenStudio,
 }: {
   objectFit: ObjectFitMode;
   isFocusPointMode: boolean;
   onObjectFitChange: (value: ObjectFitMode) => void;
   onToggleFocusPoint: () => void;
   onReplaceImage: () => void;
+  /** Opens AI Image Studio; no button when omitted. */
+  onOpenStudio?: () => void;
 }) {
   const t = useTranslations("imgEditor");
+  const tStudio = useTranslations("studioPanel");
   const fitLabel = t(`fit.${FIT_OPTIONS.includes(objectFit) ? objectFit : "cover"}`);
 
   return (
@@ -103,6 +108,19 @@ export function ImageEditorToolbar({
           className="size-4"
         />
       </button>
+
+      {onOpenStudio ? (
+        <button
+          type="button"
+          title={tStudio("editInStudio")}
+          aria-label={tStudio("editInStudio")}
+          onClick={onOpenStudio}
+          className="inline-flex items-center gap-1 rounded-[6px] border border-[#CEC6FF] bg-[#F4F3FF] py-0.5 pl-0.5 pr-1.5 font-syne text-[11px] font-semibold text-[#5141E5] hover:bg-[#ECE9FF]"
+        >
+          <StudioMark size={18} />
+          Studio
+        </button>
+      ) : null}
 
       <span aria-hidden className="h-[23px] w-px bg-[#EDEEEF]" />
 

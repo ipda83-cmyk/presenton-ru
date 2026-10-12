@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { resolveBackendAssetUrl } from "@/utils/api";
-import type { StudioPanelItem } from "@/components/studio/StudioPanel";
-import { StudioApi } from "../../services/api/studio";
+import { useStudioAvailable, type StudioPanelItem } from "@/components/studio/StudioPanel";
 import { isSlidePhotoFile } from "../../services/api/slide-photos";
 
 /** "office-before.jpg" -> "office-before-studio.png" (once, however often edited). */
@@ -21,7 +20,6 @@ export function useAttachmentStudio(files: File[], setFiles: Dispatch<SetStateAc
   const nextId = useRef(0);
   const previews = useRef(new Map<File, string>());
   const [previewVersion, setPreviewVersion] = useState(0);
-  const [available, setAvailable] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -64,17 +62,8 @@ export function useAttachmentStudio(files: File[], setFiles: Dispatch<SetStateAc
   );
 
   const hasPhotos = files.some(isSlidePhotoFile);
-  useEffect(() => {
-    if (!hasPhotos || available) return;
-    let alive = true;
-    // The button only shows once the Studio has an arckep key.
-    StudioApi.config()
-      .then((config) => alive && setAvailable(config.configured))
-      .catch(() => undefined);
-    return () => {
-      alive = false;
-    };
-  }, [hasPhotos, available]);
+  // The button only shows once the Studio has an arckep key.
+  const available = useStudioAvailable(hasPhotos);
 
   const items: StudioPanelItem[] = useMemo(
     () =>

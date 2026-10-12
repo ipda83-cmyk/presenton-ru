@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Brush, Eraser, Loader2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -48,6 +49,22 @@ const loadConfig = () => {
   return configCache;
 };
 
+/** Whether the Studio has an arckep key (buttons that open it stay hidden otherwise). */
+export function useStudioAvailable(enabled = true): boolean {
+  const [available, setAvailable] = useState(false);
+  useEffect(() => {
+    if (!enabled) return;
+    let alive = true;
+    loadConfig()
+      .then((config) => alive && setAvailable(config.configured))
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [enabled]);
+  return available;
+}
+
 /** /studio/edit takes app_data paths and data URLs; blob: URLs are read first. */
 async function sendable(src: string): Promise<string> {
   if (!src.startsWith("blob:")) return src;
@@ -72,6 +89,7 @@ export default function StudioPanel({
   onClose,
   onAdd,
   addLabel,
+  addedNotice,
   isAdmin = false,
 }: {
   open: boolean;
@@ -82,6 +100,8 @@ export default function StudioPanel({
   /** Hand the edited picture (an app_data path) back to the page. */
   onAdd: (item: StudioPanelItem, image: string) => Promise<void> | void;
   addLabel: string;
+  /** Shown after the page took the picture. */
+  addedNotice?: string;
   isAdmin?: boolean;
 }) {
   const t = useTranslations("studioPanel");
@@ -207,26 +227,29 @@ export default function StudioPanel({
     setError(null);
     try {
       await onAdd(item, current);
-      setNotice(t("added"));
+      setNotice(addedNotice ?? t("added"));
     } catch (reason) {
       setError(errorMessage(reason, t("addFailed")));
     } finally {
       setAdding(false);
     }
-  }, [current, edited, item, onAdd, t]);
+  }, [addedNotice, current, edited, item, onAdd, t]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
   const notConfigured = !!configError || (config !== null && !config.configured);
 
-  return (
+  // Portal: pages like the slide editor scale their content with transforms.
+  return createPortal(
     <aside
       ref={panelRef}
       tabIndex={-1}
       role="dialog"
       aria-modal="false"
       aria-labelledby="studio-panel-title"
-      className="fixed inset-y-0 right-0 z-[60] flex w-full flex-col border-l border-[#EDEEEF] bg-white font-syne shadow-[-18px_0_40px_rgba(16,24,40,0.08)] outline-none sm:w-[480px]"
+      // The slide editor keeps the picture selected while the panel is used.
+      data-inline-edit-ignore="true"
+      className="fixed inset-y-0 right-0 z-[10010] flex w-full flex-col border-l border-[#EDEEEF] bg-white font-syne shadow-[-18px_0_40px_rgba(16,24,40,0.08)] outline-none sm:w-[480px]"
     >
       <div className="flex items-center justify-between gap-3 border-b border-[#EDEEEF] px-5 py-4">
         <div className="flex min-w-0 items-center gap-2.5">
@@ -455,6 +478,7 @@ export default function StudioPanel({
           </div>
         </>
       )}
-    </aside>
+    </aside>,
+    document.body,
   );
 }

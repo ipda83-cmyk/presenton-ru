@@ -71,7 +71,8 @@ def normalize_photos(raw: Iterable[Any], *, check_files: bool = True) -> list[di
         if not isinstance(item, dict):
             continue
         url = str(item.get("url") or "").strip()
-        if not url or url in seen or url.startswith("data:"):
+        # Only the user's own images (owner-checked when resolved), never other server files.
+        if not url or url in seen or not url.startswith("/app_data/") or ".." in url:
             continue
         if check_files and not resolve_image_path_to_filesystem(url):
             continue

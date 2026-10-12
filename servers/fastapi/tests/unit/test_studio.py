@@ -419,3 +419,33 @@ def test_api_validation_and_localized_errors(studio_api, monkeypatch):
     not_set = client.post("/api/v1/studio/generate", json={"prompt": "x"}, headers=ru)
     assert not_set.status_code == 409
     assert "ключ arckep" in not_set.json()["detail"]
+
+
+def test_api_edit_accepts_only_app_pictures_and_public_urls(studio_api, monkeypatch):
+    client, tmp_path = studio_api
+
+    async def fake_edit(model, source, prompt="", **kwargs):
+        return _png((32, 32), (5, 5, 5, 255))
+
+    monkeypatch.setattr(studio_router, "edit_image", fake_edit)
+
+    # Other files on the server are not pictures of the user's.
+    for path in ("/etc/hosts", "/app/servers/fastapi/static/../../../etc/hosts", "relative/x.png"):
+        assert client.post("/api/v1/studio/edit", json={"image": path, "prompt": "x"}).status_code == 404
+
+    # Internal addresses are never requested (SSRF).
+    for url in ("http://127.0.0.1:9/x.png", "http://localhost/x.png", "http://10.0.0.1/x.png"):
+        assert client.post("/api/v1/studio/edit", json={"image": url, "prompt": "x"}).status_code == 404
+
+    # A stock photo on a public site is downloaded first.
+    fetched = []
+
+    async def fake_download(url):
+        fetched.append(url)
+        return _png((40, 30), (200, 100, 0, 255))
+
+    monkeypatch.setattr(studio_router, "_download_public_image", fake_download)
+    stock = client.post("/api/v1/studio/edit", json={"image": "https://images.example.com/p.jpg", "prompt": "x"})
+    assert stock.status_code == 200
+    assert fetched == ["https://images.example.com/p.jpg"]
+

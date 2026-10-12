@@ -44,6 +44,8 @@ import { ImagePickerModal } from "@/components/slide-editor/images/ImagePickerMo
 import { resolveBackendAssetSource } from "@/utils/api";
 import { ImagesApi } from "@/app/(presentation-generator)/services/api/images";
 import { notify } from "@/components/ui/sonner";
+import StudioMark from "@/components/studio/StudioMark";
+import StudioPanel, { useStudioAvailable } from "@/components/studio/StudioPanel";
 
 type ImagePanel = "fit" | "crop" | "radius" | "opacity" | null;
 type ImageFit = "contain" | "cover" | "fill";
@@ -291,8 +293,11 @@ export function ImageToolbar({
   onCropModeChange?: (active: boolean) => void;
 }) {
   const t = useTranslations("slideEditor");
+  const tStudio = useTranslations("studioPanel");
   const [openPanel, setOpenPanel] = useState<ImagePanel>(null);
   const [imagePickerOpen, setImagePickerOpen] = useState(false);
+  const [studioOpen, setStudioOpen] = useState(false);
+  const studioAvailable = useStudioAvailable();
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fit = element.fit ?? "contain";
   const maxRadius = Math.max(
@@ -644,6 +649,23 @@ export function ImageToolbar({
           />
         </button>
 
+        {studioAvailable && element.data ? (
+          <button
+            type="button"
+            title={tStudio("editInStudio")}
+            aria-label={tStudio("editInStudio")}
+            aria-pressed={studioOpen}
+            onClick={() => {
+              setOpenPanel(null);
+              setStudioOpen(true);
+            }}
+            className="inline-flex items-center gap-1 rounded-[6px] border border-[#CEC6FF] bg-[#F4F3FF] py-0.5 pl-0.5 pr-1.5 font-syne text-[11px] font-semibold text-[#5141E5] hover:bg-[#ECE9FF]"
+          >
+            <StudioMark size={18} />
+            Studio
+          </button>
+        ) : null}
+
         <Divider />
         <div className="flex items-center gap-3">
           <button
@@ -842,6 +864,20 @@ export function ImageToolbar({
             onClose={() => setOpenPanel(null)}
           />
         </>
+      ) : null}
+      {studioOpen && element.data ? (
+        <StudioPanel
+          open
+          items={[{ id: "slide-image", name: tStudio("slideImage"), src: element.data }]}
+          activeId="slide-image"
+          onActiveChange={() => undefined}
+          onClose={() => setStudioOpen(false)}
+          addLabel={tStudio("applyToSlide")}
+          addedNotice={tStudio("appliedToSlide")}
+          onAdd={(_item, image) => {
+            update({ data: image, focus_x: 50, focus_y: 50, crop_scale: null });
+          }}
+        />
       ) : null}
       <ImagePickerModal
         open={imagePickerOpen}

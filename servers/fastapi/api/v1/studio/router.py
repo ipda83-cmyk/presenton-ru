@@ -1,5 +1,6 @@
 """AI Image Studio API (signed-in users; see services/studio)."""
 
+import asyncio
 import base64
 import binascii
 import logging
@@ -7,6 +8,9 @@ import os
 import re
 import uuid
 from typing import Literal, Optional
+from urllib.parse import urljoin, urlparse
+
+import aiohttp
 
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import Response
@@ -32,11 +36,14 @@ from utils.asset_directory_utils import (
     resolve_image_path_to_filesystem,
 )
 from utils.i18n import http_error
+from utils.web_search import _resolves_to_public_addresses
 
 LOGGER = logging.getLogger(__name__)
 API_V1_STUDIO_ROUTER = APIRouter(prefix="/api/v1/studio", tags=["Studio"])
 
 MAX_INPUT_BYTES = 25 * 1024 * 1024
+REMOTE_IMAGE_TIMEOUT = aiohttp.ClientTimeout(total=30, connect=10)
+REMOTE_IMAGE_MAX_REDIRECTS = 3
 MAX_PROMPT_CHARS = 4000
 
 
@@ -95,13 +102,50 @@ def _decode_data_url(value: str) -> bytes:
         raise http_error(400, "err.studio.invalidImage")
 
 
-def load_image_input(value: str) -> bytes:
-    """Bytes of a data URL or of one of the user's own image files."""
+def _app_served(path: str) -> bool:
+    return path.startswith(("/app_data/", "/static/")) and ".." not in path
+
+
+async def _download_public_image(url: str) -> bytes:
+    """A slide picture hosted elsewhere (stock photos). Public addresses only:
+    every hop is resolved and checked before it is requested (SSRF)."""
+    async with aiohttp.ClientSession(timeout=REMOTE_IMAGE_TIMEOUT) as session:
+        for _ in range(REMOTE_IMAGE_MAX_REDIRECTS + 1):
+            parsed = urlparse(url)
+            if parsed.scheme not in ("http", "https") or not parsed.hostname:
+                raise http_error(404, "err.studio.imageNotFound")
+            if not await _resolves_to_public_addresses(parsed.hostname):
+                raise http_error(404, "err.studio.imageNotFound")
+            try:
+                async with session.get(url, allow_redirects=False) as response:
+                    if response.status in (301, 302, 303, 307, 308) and response.headers.get("Location"):
+                        url = urljoin(url, response.headers["Location"])
+                        continue
+                    if response.status != 200:
+                        raise http_error(404, "err.studio.imageNotFound")
+                    if (response.content_length or 0) > MAX_INPUT_BYTES:
+                        raise http_error(413, "err.studio.imageTooLarge")
+                    data = bytearray()
+                    async for chunk in response.content.iter_chunked(64 * 1024):
+                        data.extend(chunk)
+                        if len(data) > MAX_INPUT_BYTES:
+                            raise http_error(413, "err.studio.imageTooLarge")
+                    return bytes(data)
+            except (aiohttp.ClientError, asyncio.TimeoutError):
+                raise http_error(404, "err.studio.imageNotFound")
+    raise http_error(404, "err.studio.imageNotFound")
+
+
+async def load_image_input(value: str) -> bytes:
+    """Bytes of a data URL, one of the user's own image files, or a public picture URL."""
     value = value.strip()
     if value.startswith("data:"):
         data = _decode_data_url(value)
+    elif value.lower().startswith(("http://", "https://")) and not _app_served(urlparse(value).path):
+        data = await _download_public_image(value)
     else:
-        path = resolve_image_path_to_filesystem(value)
+        # Only app-served pictures (the user's own, or bundled ones), never other server files.
+        path = resolve_image_path_to_filesystem(value) if _app_served(urlparse(value).path) else None
         if not path:
             raise http_error(404, "err.studio.imageNotFound")
         if os.path.getsize(path) > MAX_INPUT_BYTES:
@@ -179,9 +223,9 @@ async def studio_edit(body: EditRequest, session: AsyncSession = Depends(get_asy
     # Operations and reference inserts carry their own instructions.
     if not body.operation and not body.reference and not body.prompt.strip():
         raise http_error(400, "err.studio.promptRequired")
-    source = load_image_input(body.image)
-    mask = load_image_input(body.mask) if body.mask else None
-    reference = load_image_input(body.reference) if body.reference else None
+    source = await load_image_input(body.image)
+    mask = await load_image_input(body.mask) if body.mask else None
+    reference = await load_image_input(body.reference) if body.reference else None
     _require_configured()
     try:
         result = await edit_image(
