@@ -99,6 +99,11 @@ from api.v1.auth.config import SESSION_COOKIE_NAME
 from utils.web_search import get_selected_web_search_provider, get_web_search_route
 from utils.web_search import build_web_search_query, get_web_search_context
 from utils.web_sources import delete_web_sources
+from utils.slide_generation_resume import (
+    SLIDE_RESUME_CACHE,
+    SlideResumeCache,
+    with_transient_retries,
+)
 from utils.slide_photos import (
     align_with_inserted_slides,
     delete_slide_photos,
@@ -2291,6 +2296,24 @@ async def stream_presentation(
     image_generation_service = ImageGenerationService(get_images_directory())
     photo_record = await get_slide_photos(sql_session, id)
     final_slide_photos = (photo_record or {}).get("final") or []
+    # Slides written by an earlier, interrupted run of this same generation.
+    resume = SLIDE_RESUME_CACHE.session(
+        f"{get_current_owner_id()}:{id}",
+        SlideResumeCache.signature(
+            structure=list(structure.slides),
+            outline=[slide.content for slide in outline.slides],
+            layout=layout.name,
+            layouts=[slide_layout.id for slide_layout in layout.slides],
+            language=presentation.language,
+            tone=presentation.tone,
+            verbosity=presentation.verbosity,
+            instructions=presentation.instructions,
+            photos=final_slide_photos,
+        ),
+    )
+
+    async def already_fetched(assets: list) -> list:
+        return assets
 
     async def inner():
         icon_weight = layout.icon_weight
@@ -2306,7 +2329,9 @@ async def stream_presentation(
 
         async def notify_slide_assets_ready(slide_index: int, asset_task: asyncio.Task):
             try:
-                await asset_task
+                fetched = await asset_task
+                if resume.assets(slide_index) is None:
+                    resume.remember_assets(slide_index, slides[slide_index].content, fetched)
             except Exception:
                 logger.exception(
                     "Slide asset generation failed: presentation_id=%s slide_index=%s",
@@ -2332,19 +2357,26 @@ async def stream_presentation(
         for i, slide_layout_index in enumerate(structure.slides):
             slide_layout = layout.slides[slide_layout_index]
 
-            try:
-                slide_content = await get_slide_content_from_type_and_outline(
-                    slide_layout,
-                    outline.slides[i],
-                    presentation.language,
-                    presentation.tone,
-                    presentation.verbosity,
-                    presentation.instructions,
-                    slide_number=i + 1,
-                )
-            except HTTPException as e:
-                yield SSEErrorResponse(detail=e.detail).to_string()
-                return
+            reused_assets = resume.assets(i)
+            slide_content = resume.content(i)
+            if slide_content is None:
+                try:
+                    slide_content = await with_transient_retries(
+                        lambda: get_slide_content_from_type_and_outline(
+                            slide_layout,
+                            outline.slides[i],
+                            presentation.language,
+                            presentation.tone,
+                            presentation.verbosity,
+                            presentation.instructions,
+                            slide_number=i + 1,
+                        ),
+                        label=f"presentation {id} slide {i + 1}",
+                    )
+                except HTTPException as e:
+                    yield SSEErrorResponse(detail=e.detail).to_string()
+                    return
+                resume.remember_content(i, slide_content)
 
             slide = SlideModel(
                 presentation=id,
@@ -2358,25 +2390,30 @@ async def stream_presentation(
             slides.append(slide)
 
             # This will mutate slide and add placeholder assets
-            process_slide_add_placeholder_assets(slide)
+            # (a replayed slide already has its pictures)
+            if reused_assets is None:
+                process_slide_add_placeholder_assets(slide)
             slide.ui = _apply_template_content_to_ui(slide.ui, slide.content)
 
             # This will mutate slide - start task immediately so it runs in parallel with next slide LLM generation
             asset_warnings_by_slide[i] = []
-            asset_task = asyncio.create_task(
-                process_slide_and_fetch_assets(
-                    image_generation_service,
-                    slide,
-                    outline_image_urls=(
-                        image_urls_for_slides[i]
-                        if i < len(image_urls_for_slides)
-                        else None
-                    ),
-                    icon_weight=icon_weight,
-                    allow_image_fallback=True,
-                    image_warnings=asset_warnings_by_slide[i],
+            if reused_assets is not None:
+                asset_task = asyncio.create_task(already_fetched(reused_assets))
+            else:
+                asset_task = asyncio.create_task(
+                    process_slide_and_fetch_assets(
+                        image_generation_service,
+                        slide,
+                        outline_image_urls=(
+                            image_urls_for_slides[i]
+                            if i < len(image_urls_for_slides)
+                            else None
+                        ),
+                        icon_weight=icon_weight,
+                        allow_image_fallback=True,
+                        image_warnings=asset_warnings_by_slide[i],
+                    )
                 )
-            )
             async_assets_generation_tasks.append(asset_task)
             asyncio.create_task(notify_slide_assets_ready(i, asset_task))
 
@@ -2461,6 +2498,7 @@ async def stream_presentation(
         sql_session.add_all(slides)
         sql_session.add_all(generated_assets)
         await sql_session.commit()
+        resume.finish()
 
         response = PresentationWithSlides(
             **_presentation_response_data(presentation),
