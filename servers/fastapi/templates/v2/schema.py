@@ -272,11 +272,42 @@ def get_template_schema(
         for index, layout in enumerate(layouts, start=1)
         if isinstance(layout, dict)
     ]
+    for generated in generated_layouts:
+        reconcile_schema_limits(generated)
     return {
         "source_file": source_file,
         "layout_count": len(generated_layouts),
         "layouts": generated_layouts,
     }
+
+
+# Imported templates sometimes carry limits that contradict each other (a
+# heading with min_length 27 and max_length 25). No text satisfies such a
+# schema, the model answers empty every time, and generation stops on that slide.
+_LIMIT_PAIRS = (("minLength", "maxLength"), ("minItems", "maxItems"), ("minimum", "maximum"))
+
+
+def reconcile_schema_limits(node: Any) -> Any:
+    """Make every min/max pair satisfiable, in place; returns the node."""
+    if isinstance(node, dict):
+        for low_key, high_key in _LIMIT_PAIRS:
+            low, high = node.get(low_key), node.get(high_key)
+            if (
+                isinstance(low, (int, float))
+                and isinstance(high, (int, float))
+                and not isinstance(low, bool)
+                and not isinstance(high, bool)
+                and low > high
+            ):
+                # Text keeps room to breathe (half the maximum); counts and
+                # numbers simply cannot exceed their maximum.
+                node[low_key] = max(1, (int(high) + 1) // 2) if low_key == "minLength" else high
+        for value in node.values():
+            reconcile_schema_limits(value)
+    elif isinstance(node, list):
+        for value in node:
+            reconcile_schema_limits(value)
+    return node
 
 
 def _properties_schema(elements: list[Any]) -> dict[str, Any]:
