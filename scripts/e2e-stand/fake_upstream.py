@@ -3,6 +3,9 @@
 Costs nothing; faults are switched on via POST /control {"llm": mode, "arckep": mode, ...}.
 LLM modes:  ok | http500 | fail_next:N (N x 504, then ok) | empty | garbage | hang
 arckep modes: ok | create500 | create429 | balance | scope | job_failed | garbage | bad_image | download404 | upload500 | hang_create
+YooKassa modes ("yookassa"): ok | create500 | saved_fail (saved-card charges are canceled)
+A payment page (GET /yookassa/pay/<id>) has "Pay" / "Cancel"; paying sends the webhook
+to Presenton like the real YooKassa (only the payment id matters: Presenton looks it up).
 """
 
 import asyncio
@@ -16,7 +19,9 @@ import uuid
 from aiohttp import web
 from PIL import Image, ImageDraw, ImageOps
 
-STATE = {"llm": "ok", "arckep": "ok", "llm_delay": 0.0, "fail_left": 0, "active_jobs": 0, "max_active_jobs": 0}
+STATE = {"llm": "ok", "arckep": "ok", "yookassa": "ok", "llm_delay": 0.0, "fail_left": 0, "active_jobs": 0, "max_active_jobs": 0}
+PAYMENTS: dict[str, dict] = {}
+WEBHOOK_URL = "http://presenton-e2e/api/v1/billing/yookassa/webhook"
 LOG: list[dict] = []
 UPLOADS: dict[str, bytes] = {}
 JOBS: dict[str, dict] = {}
@@ -261,11 +266,104 @@ async def files(request: web.Request):
     return web.Response(body=data, content_type="image/png")
 
 
+# ---------------------------------------------------------------- YooKassa
+def _kassa_auth(request) -> bool:
+    return request.headers.get("Authorization", "").startswith("Basic ")
+
+
+async def kassa_create(request: web.Request):
+    if not _kassa_auth(request):
+        return web.json_response({"type": "error", "code": "invalid_credentials", "description": "auth"}, status=401)
+    body = await request.json()
+    LOG.append({"t": time.time(), "kind": "yookassa", "body": body, "idempotence": request.headers.get("Idempotence-Key")})
+    if STATE["yookassa"] == "create500":
+        return web.json_response({"type": "error", "code": "internal_server_error"}, status=500)
+    receipt = body.get("receipt") or {}
+    if not (receipt.get("customer") or {}).get("email") or not receipt.get("items"):
+        return web.json_response({"type": "error", "code": "invalid_request", "description": "Receipt is missing or illegal"}, status=400)
+    payment_id = f"2f{uuid.uuid4().hex[:6]}-000f-5000-9000-{uuid.uuid4().hex[:12]}"
+    payment = {
+        "id": payment_id,
+        "status": "pending",
+        "paid": False,
+        "amount": body["amount"],
+        "description": body.get("description"),
+        "metadata": body.get("metadata") or {},
+        "created_at": time.strftime("%Y-%m-%dT%H:%M:%S.000Z", time.gmtime()),
+        "_save": bool(body.get("save_payment_method")),
+        "_return": (body.get("confirmation") or {}).get("return_url"),
+    }
+    if body.get("payment_method_id"):
+        ok = STATE["yookassa"] != "saved_fail"
+        payment.update(status="succeeded" if ok else "canceled", paid=ok,
+                       payment_method={"id": body["payment_method_id"], "saved": True, "type": "bank_card"})
+    else:
+        payment["confirmation"] = {"type": "redirect", "confirmation_url": f"http://presenton-e2e-fake:9000/yookassa/pay/{payment_id}"}
+    PAYMENTS[payment_id] = payment
+    return web.json_response({k: v for k, v in payment.items() if not k.startswith("_")})
+
+
+async def kassa_get(request: web.Request):
+    if not _kassa_auth(request):
+        return web.json_response({"type": "error", "code": "invalid_credentials"}, status=401)
+    payment = PAYMENTS.get(request.match_info["payment_id"])
+    if payment is None:
+        return web.json_response({"type": "error", "code": "not_found"}, status=404)
+    return web.json_response({k: v for k, v in payment.items() if not k.startswith("_")})
+
+
+async def kassa_page(request: web.Request):
+    payment = PAYMENTS.get(request.match_info["payment_id"])
+    if payment is None:
+        return web.Response(status=404, text="no such payment")
+    amount = payment["amount"]["value"]
+    html = f"""<!doctype html><meta charset="utf-8"><title>Fake YooKassa</title>
+<h1>Оплата {amount} ₽</h1><p>{payment.get("description") or ""}</p>
+<form method="post" action="/yookassa/pay/{payment["id"]}/succeed"><button id="pay">Оплатить</button></form>
+<form method="post" action="/yookassa/pay/{payment["id"]}/cancel"><button id="cancel">Отменить</button></form>"""
+    return web.Response(text=html, content_type="text/html")
+
+
+async def _notify(event: str, payment_id: str) -> None:
+    import aiohttp
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            # Deliberately a lie about the amount: Presenton must look the payment up itself.
+            await session.post(WEBHOOK_URL, json={"type": "notification", "event": event, "object": {"id": payment_id, "status": "succeeded", "amount": {"value": "99999.00", "currency": "RUB"}}})
+    except Exception as error:  # the stand may be down
+        LOG.append({"t": time.time(), "kind": "webhook_failed", "error": repr(error)})
+
+
+async def kassa_decide(request: web.Request):
+    payment = PAYMENTS.get(request.match_info["payment_id"])
+    if payment is None:
+        return web.Response(status=404)
+    if request.match_info["decision"] == "succeed":
+        payment.update(status="succeeded", paid=True)
+        if payment["_save"]:
+            payment["payment_method"] = {"id": f"pm-{uuid.uuid4().hex[:8]}", "saved": True, "type": "bank_card",
+                                         "card": {"last4": "4477", "card_type": "MasterCard"}}
+        await _notify("payment.succeeded", payment["id"])
+    else:
+        payment.update(status="canceled", paid=False)
+        await _notify("payment.canceled", payment["id"])
+    raise web.HTTPFound(payment["_return"] or "/")
+
+
+async def kassa_set(request: web.Request):
+    """Test helper: change a payment as YooKassa would (no webhook)."""
+    body = await request.json()
+    payment = PAYMENTS[request.match_info["payment_id"]]
+    payment.update({k: v for k, v in body.items() if k in ("status", "paid", "amount", "metadata")})
+    return web.json_response(payment)
+
+
 # ---------------------------------------------------------------- control
 async def control(request: web.Request):
     if request.method == "POST":
         body = await request.json()
-        for key in ("llm", "arckep", "llm_delay"):
+        for key in ("llm", "arckep", "yookassa", "llm_delay"):
             if key in body:
                 STATE[key] = body[key]
         if str(STATE["llm"]).startswith("fail_next:"):
@@ -285,6 +383,11 @@ app.add_routes([
     web.get("/api/v1/images/generations/{job_id}", job_status),
     web.get("/files/uploads/{name}", files),
     web.get("/files/out/{name}", files),
+    web.post("/yookassa/v3/payments", kassa_create),
+    web.get("/yookassa/v3/payments/{payment_id}", kassa_get),
+    web.get("/yookassa/pay/{payment_id}", kassa_page),
+    web.post("/yookassa/pay/{payment_id}/{decision:succeed|cancel}", kassa_decide),
+    web.post("/yookassa/test/{payment_id}", kassa_set),
     web.get("/control", control),
     web.post("/control", control),
 ])

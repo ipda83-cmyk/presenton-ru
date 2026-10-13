@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # E2E stand: Presenton on 127.0.0.1:5057 with sign-in on, talking to fake upstreams
-# (OpenAI-compatible LLM and the arckep image API, 127.0.0.1:9056). Nothing is paid for.
+# (OpenAI-compatible LLM, the arckep image API and YooKassa, 127.0.0.1:9056). Nothing is paid for.
 # Needs a built frontend (servers/nextjs/.next-build) and the presenton image.
 set -e
 HERE=$(cd "$(dirname "$0")" && (pwd -W 2>/dev/null || pwd))
@@ -22,10 +22,14 @@ docker run -d --name presenton-e2e --network presenton-e2e -p 127.0.0.1:5057:80 
   -v "$ROOT/servers/nextjs/.next-build/static:/app/servers/nextjs/.next-build/static" \
   -v "$ROOT/servers/nextjs/public:/app/servers/nextjs/public" \
   -v "$DATA:/app_data" \
+  -v "$ROOT/nginx.conf:/etc/nginx/nginx.conf:ro" \
   -e PYTHONDONTWRITEBYTECODE=1 \
   -e LLM=custom -e CUSTOM_LLM_URL=http://presenton-e2e-fake:9000/v1 -e CUSTOM_MODEL=fake-model -e CUSTOM_LLM_API_KEY=e2e-test \
   -e STUDIO_API_KEY=e2e-test -e STUDIO_BASE_URL=http://presenton-e2e-fake:9000/api/v1 \
   -e DISABLE_IMAGE_GENERATION=true -e WEB_GROUNDING=false \
+  -e YOOKASSA_SHOP_ID=e2e-shop -e YOOKASSA_SECRET_KEY=e2e-secret \
+  -e YOOKASSA_API_URL=http://presenton-e2e-fake:9000/yookassa/v3 \
+  -e BILLING_OFFER_URL=https://example.com/offer \
   "$IMAGE" >/dev/null
 
 printf "waiting for the stand"

@@ -43,10 +43,17 @@ def fake_log() -> list[dict]:
 def accounts() -> dict:
     if os.path.exists(ACCOUNTS):
         with open(ACCOUNTS, encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+        if "payer" in data:
+            return data
+        data["payer"] = {"username": "e2e-payer", "password": secrets.token_urlsafe(12)}
+        with open(ACCOUNTS, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+        return data
     data = {
         "admin": {"username": "e2e-admin", "password": secrets.token_urlsafe(12)},
         "user": {"username": "e2e-user", "password": secrets.token_urlsafe(12)},
+        "payer": {"username": "e2e-payer", "password": secrets.token_urlsafe(12)},
     }
     with open(ACCOUNTS, "w", encoding="utf-8") as f:
         json.dump(data, f)

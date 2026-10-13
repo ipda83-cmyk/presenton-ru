@@ -163,7 +163,7 @@ if ok:
     check("storyboard prompt carries view + details", "left side profile" in job["prompt"] and job["refs"] == 1, str(job)[:200])
 
 # ---------------------------------------------------------------- upstream faults
-for mode, expect in [("create500", 502), ("create429", 429), ("balance", 402), ("scope", 502), ("job_failed", 502),
+for mode, expect in [("create500", 502), ("create429", 429), ("balance", 503), ("scope", 502), ("job_failed", 502),
                      ("garbage", 502), ("bad_image", 502), ("download404", 502), ("upload500", 502)]:
     fake(arckep=mode)
     t0 = time.time()
