@@ -27,6 +27,7 @@ import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { IMAGE_PROVIDERS, LLM_PROVIDERS } from "@/utils/providerConstants";
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import StudioTopNav from "@/components/studio/StudioTopNav";
 
 const GITHUB_REPOSITORY_URL = "https://github.com/presenton/presenton";
 const DISCORD_INVITE_URL = "https://discord.com/invite/9ZsKKxudNE";
@@ -248,15 +249,16 @@ function DashboardHeader({ isAdmin }: { isAdmin: boolean }) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 ml-7 mr-[9px] flex h-[105px] items-center justify-between border-b border-[#EDEEEF] bg-white px-1 max-lg:h-auto max-lg:min-h-[105px] max-lg:flex-col max-lg:items-start max-lg:gap-4 max-lg:py-5">
-      <div className="flex w-[504.392px] max-w-full shrink-0 items-center gap-3.5 max-xl:w-auto">
+    <header className="sticky top-0 z-50 ml-7 mr-[9px] flex min-h-[105px] items-center justify-between gap-4 border-b border-[#EDEEEF] bg-white px-1 py-3 max-lg:flex-col max-lg:items-start max-lg:py-5">
+      <div className="flex shrink-0 items-center gap-3.5">
         <h1 className="whitespace-nowrap font-syne text-[22px] font-medium leading-normal tracking-[-0.66px] text-[#101323]">
           {t("title")}
         </h1>
       </div>
 
-      <div className="max-w-full overflow-x-auto hide-scrollbar lg:overflow-visible">
-        <div className="flex h-[42.24px] w-max max-w-none items-center gap-3 rounded-full pl-3">
+      {/* Wide screens: the pills wrap onto a second line instead of running off the edge. */}
+      <div className="max-w-full overflow-x-auto hide-scrollbar lg:min-w-0 lg:flex-1 lg:overflow-visible">
+        <div className="flex min-h-[42.24px] w-max max-w-none items-center gap-3 rounded-full pl-3 lg:w-auto lg:flex-wrap lg:justify-end">
           {/* Provider settings, Discord and GitHub: administrators only. */}
           {isAdmin && (
           <div className="flex h-[42.24px] items-center gap-[18px] rounded-[32px] border border-[#EDEEEF] bg-white px-3 py-1">
@@ -353,6 +355,7 @@ function DashboardHeader({ isAdmin }: { isAdmin: boolean }) {
           </div>
           )}
 
+          <StudioTopNav isAdmin={isAdmin} />
           <LanguageSwitcher size="md" />
 
           {isElectronApp && (
