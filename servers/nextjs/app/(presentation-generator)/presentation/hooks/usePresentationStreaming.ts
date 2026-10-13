@@ -1,3 +1,4 @@
+import { notifyPaymentRequired } from "@/utils/billingEvents";
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useDispatch } from "react-redux";
@@ -654,6 +655,10 @@ export const usePresentationStreaming = (
                 { showToast: false }
               );
               break;
+            }
+            if (Number((data as { status?: number }).status) === 402) {
+              // Not enough money for the slides: offer a top-up.
+              notifyPaymentRequired(data.detail || "");
             }
             const completedSlides = Number(data.completed_slides);
             const totalSlides = Number(data.total_slides);

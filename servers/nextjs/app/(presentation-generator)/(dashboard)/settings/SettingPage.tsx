@@ -34,6 +34,7 @@ import {
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import StudioSettings from "./StudioSettings";
+import BillingSettings from "./BillingSettings";
 
 const STOCK_IMAGE_PROVIDERS = new Set(["pexels", "pixabay"]);
 
@@ -53,10 +54,11 @@ const SettingsPage = () => {
   const t = useTranslations("settings");
   const tp = useTranslations("providers");
   const [selectedProvider, setSelectedProvider] = useState<SettingsSection>("text-provider");
-  // Deep link from the Studio: /settings?section=studio
+  // Deep links: /settings?section=studio, /settings?section=billing
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get("section") === "studio") {
-      setSelectedProvider("studio");
+    const section = new URLSearchParams(window.location.search).get("section");
+    if (section === "studio" || section === "billing") {
+      setSelectedProvider(section);
     }
   }, []);
   const userConfigState = useSelector((state: RootState) => state.userConfig);
@@ -478,6 +480,7 @@ const SettingsPage = () => {
           {selectedProvider === 'image-provider' && llmConfig.LLM !== "presenton" && <ImageProvider llmConfig={llmConfig} setLlmConfig={setLlmConfig} />}
           {selectedProvider === 'web-search-provider' && llmConfig.LLM !== "presenton" && <WebSearchProvider llmConfig={llmConfig} setLlmConfig={setLlmConfig} />}
           {selectedProvider === 'studio' && <StudioSettings llmConfig={llmConfig} setLlmConfig={setLlmConfig} />}
+          {selectedProvider === 'billing' && <BillingSettings llmConfig={llmConfig} setLlmConfig={setLlmConfig} />}
           {selectedProvider === 'privacy' && <PrivacySettings />}
           {selectedProvider === "admin" && <AdminPanel embedded />}
           {selectedProvider === "session" && (

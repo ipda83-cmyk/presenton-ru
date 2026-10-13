@@ -55,7 +55,14 @@ def price_table() -> dict:
     table = {}
     for model in MODELS.values():
         if model.family == "gpt":
-            table[model.key] = {"quality": {level: image_price(model, quality=level) for level in model.quality_levels}}
+            table[model.key] = {
+                "quality": {level: image_price(model, quality=level) for level in model.quality_levels},
+                # The total is rounded once, so 4 drafts are not 4 x one draft.
+                "by_count": {
+                    level: [image_price(model, quality=level, count=n) for n in range(1, model.max_count + 1)]
+                    for level in model.quality_levels
+                },
+            }
         else:
             table[model.key] = {"resolution": {res: image_price(model, resolution=res) for res in model.resolutions}}
     return {"studio": table, "per_slide": settings.price_per_slide()}

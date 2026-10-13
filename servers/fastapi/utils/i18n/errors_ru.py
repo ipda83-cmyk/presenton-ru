@@ -253,7 +253,7 @@ ERRORS: dict[str, str] = {
     "err.studio.unknownView": "Неизвестный ракурс: {view}",
     "err.studio.storyboardModel": "Раскадровку делают модели Gemini (Nano Banana): {model} плохо сохраняет внешний вид героя.",
     "err.studio.providerFailed": "Ошибка сервиса генерации изображений: {detail}",
-    "err.billing.insufficientFunds": "Недостаточно средств: нужно {price} ₽, на балансе {balance} ₽. Пополните баланс.",
+    "err.billing.insufficientFunds": "Недостаточно средств: нужно {price} ₽, на балансе {balance} ₽.",
     "err.billing.disabled": "Оплата отключена.",
     "err.billing.badAmount": "Выберите сумму пополнения из предложенных.",
     "err.billing.emailRequired": "Укажите email — на него придёт чек.",

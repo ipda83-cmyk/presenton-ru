@@ -774,7 +774,8 @@
       "studioGenerate": "Image generation",
       "studioBrush": "Magic brush",
       "studioReference": "Reference",
-      "menu": "Menu"
+      "menu": "Menu",
+      "balance": "Balance"
     },
     "nav": {
       "dashboard": "Dashboard",
@@ -1002,6 +1003,30 @@
       "apiKeyHint": "Empty uses the web search key when search also goes through arckep.",
       "showKey": "Show key",
       "hideKey": "Hide key"
+    },
+    "billing": {
+      "title": "Payments",
+      "desc": "Ruble balance: prices, the signup bonus and the YooKassa shop. Administrators use everything for free.",
+      "enabled": "Charge users",
+      "enabledHint": "When off, everything is free for everyone and the balance is hidden.",
+      "pricePerSlide": "Price per slide, ₽",
+      "pricePerSlideHint": "A presentation costs price × slides, slide pictures included. 10 ₽ by default.",
+      "bonus": "Signup bonus, ₽",
+      "bonusHint": "Credited once, the first time the balance is used. 100 ₽ by default.",
+      "yookassa": "YooKassa",
+      "yookassaHint": "Shop credentials are in the YooKassa account (Integration → API keys). Top-ups are unavailable without them.",
+      "shopId": "shopId",
+      "secretKey": "Secret key",
+      "showKey": "Show key",
+      "hideKey": "Hide key",
+      "vatCode": "Receipt VAT code",
+      "vatCodeHint": "1 = no VAT (as in the standalone Studio). Other codes are in the YooKassa docs.",
+      "offerUrl": "Terms (offer) link",
+      "offerUrlHint": "Shown next to the auto top-up consent.",
+      "webhook": "YooKassa notification URL",
+      "copy": "Copy",
+      "copied": "Copied",
+      "webhookHint": "Enter it in the YooKassa account: Integration → HTTP notifications, events payment.succeeded and payment.canceled. The server must be reachable from the internet."
     }
   },
   "templates": {
@@ -1498,7 +1523,8 @@
     "deleteUserBtn": "Delete user",
     "revokeKeyTitle": "Revoke API key?",
     "revokeKeyBody": "Clients using “{label}” will lose REST API and MCP access immediately. This action cannot be undone.",
-    "revokeKeyBtn": "Revoke key"
+    "revokeKeyBtn": "Revoke key",
+    "tabBilling": "Balances"
   },
   "pdf": {
     "loadFailedTitle": "Failed to load presentation",
@@ -3046,5 +3072,123 @@
     "slideImage": "Slide picture",
     "applyToSlide": "Apply to slide",
     "appliedToSlide": "Done: the slide picture was replaced. Use Undo in the editor to revert."
+  },
+  "billing": {
+    "title": "Balance",
+    "loading": "Loading…",
+    "disabled": "Billing is off: presentations and pictures are free.",
+    "balance": "Balance",
+    "freeForAdmins": "Everything is free for administrators",
+    "chip": {
+      "aria": "Balance: {amount}",
+      "topUp": "Top up"
+    },
+    "required": {
+      "title": "Top up the balance",
+      "fallback": "The balance is too low for this action.",
+      "hint": "The top-up page opens in a new tab, so your work here stays.",
+      "close": "Close",
+      "topUp": "Top up"
+    },
+    "return": {
+      "checking": "Checking the payment…",
+      "completed": "The balance is topped up by {amount}.",
+      "failed": "The payment did not go through; no money was taken.",
+      "pending": "The payment is still processing; the balance will update by itself."
+    },
+    "topup": {
+      "title": "Top up the balance",
+      "amount": "Top-up amount",
+      "slides": "≈ {count, plural, one {# slide} other {# slides}}",
+      "images": "≈ {count, plural, one {# picture} other {# pictures}} Nano Banana 2",
+      "email": "Email for the receipt",
+      "emailHint": "The electronic receipt (54-FZ) is sent to this address.",
+      "emailInvalid": "Enter a valid email address for the receipt.",
+      "saveCard": "Save the card for auto top-up",
+      "consent": "I agree to automatic charges of the saved card: only when the balance is below the chosen threshold and at most once an hour. It can be switched off at any time.",
+      "offer": "Terms",
+      "consentRequired": "To save the card, agree to automatic charges.",
+      "pay": "Pay {amount}",
+      "failed": "Could not create the payment.",
+      "unavailable": "Payments are not set up yet. Contact the administrator.",
+      "yookassaHint": "You pay on the YooKassa page: bank card, SBP and other methods."
+    },
+    "auto": {
+      "title": "Auto top-up",
+      "noCard": "To turn on auto top-up, top up with “Save the card” checked.",
+      "card": "{type} •••• {last4}",
+      "cardGeneric": "Card",
+      "forget": "Remove card",
+      "enable": "Top up automatically",
+      "threshold": "When the balance is below, ₽",
+      "amount": "Top up by, ₽",
+      "range": "from {min} to {max}",
+      "rules": "At most one charge an hour; after three failed attempts in a row auto top-up switches off.",
+      "outOfRange": "Threshold: {tMin}–{tMax} ₽, amount: {aMin}–{aMax} ₽.",
+      "failed": "Could not save the settings.",
+      "saved": "Saved.",
+      "save": "Save"
+    },
+    "history": {
+      "title": "Operations",
+      "loading": "Loading…",
+      "empty": "No operations yet.",
+      "paymentPending": "Awaiting payment: {amount}",
+      "pending": "awaiting the end of generation",
+      "refunded": "refunded",
+      "after": "balance {amount}",
+      "bonus": "Signup bonus",
+      "topup": "Top-up",
+      "autoTopup": "Auto top-up",
+      "admin": "Adjusted by an administrator",
+      "adminNote": "Administrator: {note}",
+      "refund": "Refund: {what}",
+      "presentation": "Presentation · {count, plural, one {# slide} other {# slides}}",
+      "studioGenerate": "Picture generation · {model}",
+      "studioEdit": "Picture edit · {model}",
+      "studioStoryboard": "Storyboard view · {model}"
+    },
+    "prices": {
+      "title": "Prices",
+      "freeNote": "Free for you (administrator).",
+      "presentation": "Creating a presentation",
+      "perSlide": "{amount} per slide, slide pictures included",
+      "note": "Picture prices are per image. If a generation fails, the money comes back."
+    },
+    "admin": {
+      "adjustTitle": "Credit or debit",
+      "adjustDesc": "A positive amount credits, a negative one debits. The balance never goes below zero.",
+      "user": "User",
+      "selectUser": "Select a user",
+      "mode": "Mode",
+      "modeAdd": "Add",
+      "modeSet": "Set to",
+      "amount": "Amount, ₽",
+      "note": "Comment",
+      "notePh": "Comment (optional)",
+      "apply": "Apply",
+      "adjustFailed": "Could not change the balance.",
+      "loadFailed": "Could not load the balances.",
+      "balances": "User balances",
+      "refresh": "Refresh",
+      "adminFree": "administrator — free",
+      "noAccount": "not used yet",
+      "autoOn": "auto top-up",
+      "cardSaved": "card saved",
+      "history": "History",
+      "historyOf": "History: {user}",
+      "historyEmpty": "No operations.",
+      "kinds": {
+        "bonus": "Bonus",
+        "topup": "Top-up",
+        "auto_topup": "Auto top-up",
+        "admin": "Administrator",
+        "charge": "Charge",
+        "refund": "Refund"
+      }
+    },
+    "errors": {
+      "requestFailed": "The billing request failed."
+    }
   }
 }

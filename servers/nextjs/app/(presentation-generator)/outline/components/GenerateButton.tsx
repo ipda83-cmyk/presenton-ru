@@ -5,12 +5,16 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { LoadingState } from "../types/index";
 import { ChevronRight } from "lucide-react";
+import { formatRub } from "../../services/api/billing";
+import { isPaying, useBilling } from "@/components/billing/useBilling";
 
 interface GenerateButtonProps {
   loadingState: LoadingState;
   streamState: { isStreaming: boolean; isLoading: boolean };
   selectedTemplateId: string | null;
   onSubmit: () => void;
+  /** Slides in the outline: paying users see the price (per slide) on the button. */
+  slideCount?: number;
 }
 
 const GenerateButton: React.FC<GenerateButtonProps> = ({
@@ -18,8 +22,11 @@ const GenerateButton: React.FC<GenerateButtonProps> = ({
   streamState,
   selectedTemplateId,
   onSubmit,
+  slideCount = 0,
 }) => {
   const t = useTranslations();
+  const { me } = useBilling();
+  const price = isPaying(me) && slideCount > 0 ? me.prices.per_slide * slideCount : 0;
   const isDisabled =
     loadingState.isLoading ||
     streamState.isLoading ||
@@ -30,7 +37,7 @@ const GenerateButton: React.FC<GenerateButtonProps> = ({
     if (loadingState.isLoading) return loadingState.message;
     if (streamState.isLoading || streamState.isStreaming) return t("common.loading");
     if (!selectedTemplateId) return t("outline.selectTemplate");
-    return t("common.continue");
+    return price > 0 ? `${t("common.continue")} · ${formatRub(price)}` : t("common.continue");
   };
 
   return (

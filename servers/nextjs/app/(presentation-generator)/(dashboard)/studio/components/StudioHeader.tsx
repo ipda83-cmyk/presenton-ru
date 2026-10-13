@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import BalanceChip from "@/components/billing/BalanceChip";
 
 const pill = "inline-flex min-h-[34px] items-center gap-1.5 rounded-full px-3.5 text-sm";
 
-// Studio top bar: page title, Studio sections, language. Balance and
-// "Top up" join it with payments (step 3.8).
+// Studio top bar: page title, Studio sections, balance with "Top up", language.
 export default function StudioHeader({
   title,
   isAdmin,
@@ -43,6 +43,7 @@ export default function StudioHeader({
             </Link>
           )}
         </nav>
+        <BalanceChip />
         <LanguageSwitcher size="md" />
       </div>
     </header>

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Brush, Clapperboard, Download, ImagePlus, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { withPrice } from "@/components/studio/price";
 import { StudioApi, type StudioImage, type StudioQuality } from "../../../services/api/studio";
 import StudioHeader from "./StudioHeader";
 import StudioHistory from "./StudioHistory";
@@ -234,7 +235,9 @@ export default function StudioGenerate({ isAdmin }: { isAdmin: boolean }) {
               )}
               <ErrorBox error={error} />
               <GradientButton busy={busy} onClick={generate}>
-                {busy ? t("busy.generating") : t("generate.submit")}
+                {busy
+                  ? t("busy.generating")
+                  : withPrice(t("generate.submit"), config, model, { resolution, quality, count: Math.min(count, model.max_count) })}
               </GradientButton>
             </div>
           ) : (

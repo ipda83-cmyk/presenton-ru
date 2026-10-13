@@ -87,7 +87,7 @@ async def create_topup(user_id: uuid.UUID, amount: int, *, email: str, save_card
         )
     except YooKassaError as error:
         await _set_status(invoice_id, "failed")
-        if error.status is None:
+        if error.status is None or error.status >= 500:
             raise PaymentsUnavailable() from error
         raise TopupRejected(error.detail) from error
     confirmation = (created.get("confirmation") or {}).get("confirmation_url")

@@ -1,12 +1,12 @@
 import React from 'react'
-import { LogOut, Search, Shield, ShieldCheck } from 'lucide-react'
+import { LogOut, Search, Shield, ShieldCheck, Wallet } from 'lucide-react'
 import { IMAGE_PROVIDERS, LLM_PROVIDERS } from '@/utils/providerConstants'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
 import { useTranslations } from 'next-intl'
 import StudioMark from '@/components/studio/StudioMark'
 
-export type SettingsSection = 'text-provider' | 'image-provider' | 'web-search-provider' | 'studio' | 'privacy' | 'admin' | 'session'
+export type SettingsSection = 'text-provider' | 'image-provider' | 'web-search-provider' | 'studio' | 'billing' | 'privacy' | 'admin' | 'session'
 
 const SettingSideBar = ({ selectedProvider, setSelectedProvider, presentonSelected = false }: { selectedProvider: SettingsSection, setSelectedProvider: (provider: SettingsSection) => void, presentonSelected?: boolean }) => {
     const { llm_config } = useSelector((state: RootState) => state.userConfig)
@@ -45,6 +45,10 @@ const SettingSideBar = ({ selectedProvider, setSelectedProvider, presentonSelect
                     <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'studio' ? 'bg-[#F4F3FF] border-[#D9D6FE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('studio')}>
                         <StudioMark size={18} />
                         <p className='text-[#191919] text-xs font-medium'>{t('studio.title')}</p>
+                    </button>
+                    <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'billing' ? 'bg-[#F4F3FF] border-[#D9D6FE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('billing')}>
+                        <Wallet className='w-[18px] h-[18px] text-[#5146E5]' aria-hidden='true' />
+                        <p className='text-[#191919] text-xs font-medium'>{t('billing.title')}</p>
                     </button>
                 </div>
             </div>

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { withPrice } from "@/components/studio/price";
 import type { MaskCanvasHandle } from "@/components/studio/MaskCanvas";
 import { StudioApi } from "../../../services/api/studio";
 import StudioHeader from "./StudioHeader";
@@ -187,7 +188,7 @@ export default function StudioReference({ isAdmin, initialImage }: { isAdmin: bo
               <p className="text-xs leading-5 text-[#667085]">{t("reference.howTo")}</p>
               <ErrorBox error={error} />
               <GradientButton busy={busy} disabled={!image} onClick={insert}>
-                {busy ? t("busy.inserting") : t("reference.submit")}
+                {busy ? t("busy.inserting") : withPrice(t("reference.submit"), config, model, { resolution })}
               </GradientButton>
               {!image && <p className="text-center text-xs text-[#667085]">{t("reference.needImage")}</p>}
             </div>

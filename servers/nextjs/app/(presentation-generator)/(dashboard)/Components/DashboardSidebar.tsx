@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { LayoutDashboard, Star, Brain, Settings, HelpCircle, UsersRound, Sparkles, Brush, ImagePlus, Menu } from "lucide-react";
+import { LayoutDashboard, Star, Brain, Settings, HelpCircle, UsersRound, Sparkles, Brush, ImagePlus, Menu, Wallet } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import StudioMark from "@/components/studio/StudioMark";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { formatRub } from "@/app/(presentation-generator)/services/api/billing";
+import { isPaying, useBilling } from "@/components/billing/useBilling";
 
 
 
@@ -59,7 +61,9 @@ const MobileNav = ({ showCommunity, showTemplates }: Required<DashboardSidebarPr
         ...(showCommunity ? [{ href: "/community", label: t("sidebar.community"), icon: UsersRound }] : []),
     ];
     const studio: MobileItem[] = studioNavItems.map(({ href, key, icon }) => ({ href, label: t(`sidebar.${key}`), icon }));
+    const { me } = useBilling();
     const footer: MobileItem[] = [
+        ...(isPaying(me) ? [{ href: "/billing", label: `${t("sidebar.balance")} · ${formatRub(me.balance)}`, icon: Wallet }] : []),
         { href: "/settings", label: t("sidebar.settings"), icon: Settings },
         { href: "/help", label: t("sidebar.help"), icon: HelpCircle },
     ];
@@ -125,6 +129,7 @@ const DashboardSidebar = ({
 }: DashboardSidebarProps) => {
     const pathname = usePathname();
     const t = useTranslations("dash");
+    const { me } = useBilling();
 
     return (
         <>
@@ -228,6 +233,21 @@ const DashboardSidebar = ({
             </div>
 
             <div className="border-t border-[#E1E1E5] pt-5 font-syne">
+                {isPaying(me) ? (
+                    <>
+                        <Link
+                            prefetch={false}
+                            href="/billing"
+                            aria-current={pathname === "/billing" ? "page" : undefined}
+                            aria-label={`${t("sidebar.balance")}: ${formatRub(me.balance)}`}
+                            className="flex flex-col items-center gap-1.5 text-center transition-colors"
+                        >
+                            <Wallet className={`h-4 w-4 ${pathname === "/billing" ? "text-[#5146E5]" : "text-slate-600"}`} aria-hidden="true" />
+                            <span className="text-[11px] font-semibold text-slate-900">{formatRub(me.balance)}</span>
+                        </Link>
+                        <div className="py-2" />
+                    </>
+                ) : null}
                   <Link
                     href="/settings"
                     className="flex flex-col items-center gap-2 transition-colors"

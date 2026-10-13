@@ -456,7 +456,7 @@ def test_studio_charges_refunds_and_402(api, monkeypatch):
         client.post("/api/v1/studio/generate", json={"prompt": "кот", "model": "nano_banana_pro"}, headers=headers["alice"])
     poor = client.post("/api/v1/studio/generate", json={"prompt": "кот", "model": "nano_banana_pro"}, headers=headers["alice"])
     assert poor.status_code == 402
-    assert poor.json()["detail"] == "Недостаточно средств: нужно 25 ₽, на балансе 0 ₽. Пополните баланс."
+    assert poor.json()["detail"] == "Недостаточно средств: нужно 25 ₽, на балансе 0 ₽."
 
     free = client.post("/api/v1/studio/generate", json={"prompt": "кот", "model": "nano_banana_pro"}, headers=headers["admin"])
     assert free.status_code == 200

@@ -30,6 +30,7 @@ import { copyTextToClipboard } from "@/utils/clipboard";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
 import { useLocale, useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import AdminBilling from "./AdminBilling";
 
 type AdminUser = {
   id: string;
@@ -499,6 +500,12 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
             >
               {t("tabKeys")}
             </TabsTrigger>
+            <TabsTrigger
+              value="billing"
+              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#5146E5] data-[state=active]:shadow-sm"
+            >
+              {t("tabBilling")}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users" className="mt-6 space-y-5">
@@ -769,6 +776,10 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
                 })}
               </div>
             </section>
+          </TabsContent>
+
+          <TabsContent value="billing" className="mt-6">
+            <AdminBilling />
           </TabsContent>
           </Tabs>
         </div>

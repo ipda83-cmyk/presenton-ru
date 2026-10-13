@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { withPrice } from "@/components/studio/price";
 import type { MaskCanvasHandle } from "@/components/studio/MaskCanvas";
 import { StudioApi, type StudioImage, type StudioOperation } from "../../../services/api/studio";
 import StudioHeader from "./StudioHeader";
@@ -164,7 +165,7 @@ export default function StudioBrush({ isAdmin, initialImage }: { isAdmin: boolea
               <ModelSelect id="studio-brush-model" models={models} value={model.key} onChange={setModelKey} />
               <ErrorBox error={error} />
               <GradientButton busy={busy === "brush"} disabled={!image || !!busy} onClick={applyBrush}>
-                {t("brush.submit")}
+                {withPrice(t("brush.submit"), config, model)}
               </GradientButton>
               {!image && <p className="text-center text-xs text-[#667085]">{t("brush.needImage")}</p>}
 
@@ -183,10 +184,10 @@ export default function StudioBrush({ isAdmin, initialImage }: { isAdmin: boolea
               )}
               <div className="grid grid-cols-2 gap-2.5">
                 <SoftButton busy={busy === "upscale"} disabled={!image || !!busy || !operationModel} onClick={() => runOperation("upscale")}>
-                  {t("brush.upscale")}
+                  {withPrice(t("brush.upscale"), config, operationModel, { resolution: opResolution })}
                 </SoftButton>
                 <SoftButton busy={busy === "remove_bg"} disabled={!image || !!busy || !operationModel} onClick={() => runOperation("remove_bg")}>
-                  {t("brush.removeBg")}
+                  {withPrice(t("brush.removeBg"), config, operationModel, { resolution: opResolution })}
                 </SoftButton>
               </div>
               {operationModel && operationModel.key !== model.key && (

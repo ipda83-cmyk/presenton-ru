@@ -560,6 +560,7 @@ const OutlinePage: React.FC = () => {
                 streamState={streamState}
                 selectedTemplateId={selectedTemplateId}
                 onSubmit={handleGenerate}
+                slideCount={outlines?.length ?? 0}
               />
             </div>
           </div>

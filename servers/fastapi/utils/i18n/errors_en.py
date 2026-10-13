@@ -253,7 +253,7 @@ ERRORS: dict[str, str] = {
     "err.studio.unknownView": "Unknown view: {view}",
     "err.studio.storyboardModel": "Storyboards use the Gemini models (Nano Banana): {model} does not keep the subject's look.",
     "err.studio.providerFailed": "The image service failed: {detail}",
-    "err.billing.insufficientFunds": "Not enough funds: {price} ₽ needed, {balance} ₽ on the balance. Top up the balance.",
+    "err.billing.insufficientFunds": "Not enough funds: {price} ₽ needed, {balance} ₽ on the balance.",
     "err.billing.disabled": "Billing is turned off.",
     "err.billing.badAmount": "Choose one of the offered top-up amounts.",
     "err.billing.emailRequired": "Enter an email address for the receipt.",

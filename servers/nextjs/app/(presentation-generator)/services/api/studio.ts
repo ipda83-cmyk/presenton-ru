@@ -2,6 +2,8 @@ import { getApiUrl } from "@/utils/api";
 import { tr } from "@/utils/clientI18n";
 import { ApiResponseHandler } from "./api-error-handler";
 import { getHeader } from "./header";
+import { notifyBillingChanged } from "@/utils/billingEvents";
+import type { BillingPrices } from "./billing";
 
 // AI Image Studio (servers/fastapi/api/v1/studio/router.py).
 export type StudioModelFamily = "gemini" | "gpt";
@@ -30,6 +32,10 @@ export interface StudioConfig {
   default_model: string;
   models: StudioModel[];
   storyboard_views?: StoryboardView[];
+  /** One request's price per model (see services/billing/pricing.py). */
+  prices?: BillingPrices["studio"];
+  /** False for administrators and when billing is off. */
+  charged?: boolean;
 }
 
 export interface StudioStoryboardRequest {
@@ -88,7 +94,9 @@ async function post<T>(path: string, body: unknown): Promise<T> {
     credentials: "include",
     body: JSON.stringify(body),
   });
-  return ApiResponseHandler.handleResponse(response, failed());
+  const result = await ApiResponseHandler.handleResponse(response, failed());
+  notifyBillingChanged(); // paid requests change the balance
+  return result;
 }
 
 export const StudioApi = {

@@ -142,6 +142,13 @@ export interface LLMConfig {
   PERPLEXITY_SEARCH_MODEL?: string;
   STUDIO_API_KEY?: string;
   STUDIO_BASE_URL?: string;
+  BILLING_ENABLED?: string;
+  BILLING_PRICE_PER_SLIDE?: string;
+  BILLING_SIGNUP_BONUS?: string;
+  BILLING_OFFER_URL?: string;
+  YOOKASSA_SHOP_ID?: string;
+  YOOKASSA_SECRET_KEY?: string;
+  YOOKASSA_VAT_CODE?: string;
 
   // Codex OAuth (ChatGPT)
   CODEX_MODEL?: string;

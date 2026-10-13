@@ -1,3 +1,4 @@
+import { notifyPaymentRequired } from "@/utils/billingEvents";
 import {
   isChatGptAuthRequiredResponse,
   normalizeChatGptAuthMessage,
@@ -81,6 +82,10 @@ export class ApiResponseHandler {
       }
     }
 
+    if (response.status === 402) {
+      // Not enough money on the balance: the top-up dialog opens wherever the user is.
+      notifyPaymentRequired(errorMessage);
+    }
     const metadata = extractApiErrorMetadata(errorData, response.status);
     throw new ApiResponseError(errorMessage, {
       status: response.status,

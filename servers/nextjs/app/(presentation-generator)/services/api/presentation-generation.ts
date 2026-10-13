@@ -1,3 +1,4 @@
+import { notifyBillingChanged } from "@/utils/billingEvents";
 import { getHeader, getHeaderForFormData } from "./header";
 import { IconSearch, ImageGenerate, PreviousGeneratedImagesResponse } from "./params";
 import { ApiResponseHandler } from "./api-error-handler";
@@ -255,7 +256,9 @@ export class PresentationGenerationApi {
         }
       );
 
-      return await ApiResponseHandler.handleResponse(response, tr("apiErr.preparePresentationFailed", "Failed to prepare presentation"));
+      const prepared = await ApiResponseHandler.handleResponse(response, tr("apiErr.preparePresentationFailed", "Failed to prepare presentation"));
+      notifyBillingChanged(); // the slides are paid here
+      return prepared;
     } catch (error) {
       console.error("error in data generation", error);
       throw error;

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Brush, Eraser, Loader2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { withPrice } from "@/components/studio/price";
 import StudioMark from "@/components/studio/StudioMark";
 import { MaskCanvas, type BrushTool, type MaskCanvasHandle } from "@/components/studio/MaskCanvas";
 import {
@@ -467,7 +468,9 @@ export default function StudioPanel({
           <div className="flex gap-2.5 border-t border-[#EDEEEF] px-5 pb-5 pt-4">
             <div className="flex-1 [&>button]:w-full [&>button]:rounded-[48px]">
               <SoftButton busy={busy} disabled={adding} onClick={apply}>
-                {t("apply")}
+                {withPrice(t("apply"), config, mode === "upscale" || mode === "remove_bg" ? operationModel : model, {
+                  resolution: mode === "upscale" || mode === "remove_bg" ? resolution : undefined,
+                })}
               </SoftButton>
             </div>
             <div className="flex-[1.4]">

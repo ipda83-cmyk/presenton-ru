@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Brush, Download, Loader2, RotateCcw, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { withPrice } from "@/components/studio/price";
 import { ImagesApi } from "../../../services/api/images";
 import { StudioApi, type StoryboardView, type StudioImage } from "../../../services/api/studio";
 import StudioHeader from "./StudioHeader";
@@ -352,7 +353,9 @@ export default function StudioStoryboard({ isAdmin, initialImage }: { isAdmin: b
               )}
               <ErrorBox error={error} />
               <GradientButton busy={running} disabled={!reference || !ordered.length} onClick={() => void runViews(ordered)}>
-                {running ? t("storyboard.generating") : t("storyboard.submit", { count: ordered.length })}
+                {running
+                  ? t("storyboard.generating")
+                  : withPrice(t("storyboard.submit", { count: ordered.length }), config, model, { resolution, times: ordered.length })}
               </GradientButton>
               <p className="text-center text-xs leading-5 text-[#667085]">
                 {!reference ? t("storyboard.needReference") : t("storyboard.oneRequestPerView")}
