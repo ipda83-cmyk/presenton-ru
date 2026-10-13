@@ -8,7 +8,15 @@ const pill = "inline-flex min-h-[34px] items-center gap-1.5 rounded-full px-3.5 
 
 // Studio top bar: page title, Studio sections, language. Balance and
 // "Top up" join it with payments (step 3.8).
-export default function StudioHeader({ title, isAdmin }: { title: string; isAdmin: boolean }) {
+export default function StudioHeader({
+  title,
+  isAdmin,
+  active = "studio",
+}: {
+  title: string;
+  isAdmin: boolean;
+  active?: "studio" | "storyboard";
+}) {
   const t = useTranslations("studio.nav");
 
   return (
@@ -19,15 +27,16 @@ export default function StudioHeader({ title, isAdmin }: { title: string; isAdmi
           aria-label={t("aria")}
           className="flex min-h-[42px] items-center gap-1 rounded-[32px] border border-[#EDEEEF] bg-white px-1.5 py-1"
         >
-          <Link href="/studio" aria-current="page" className={`${pill} bg-[#F4F3FF] font-medium text-[#5141E5]`}>
-            {t("studio")}
-          </Link>
-          <span aria-disabled="true" title={t("soonHint")} className={`${pill} cursor-default text-[#98A2B3]`}>
-            Storyboard
-            <span className="rounded-full bg-[#F2F4F7] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#667085]">
-              {t("soon")}
-            </span>
-          </span>
+          {(["studio", "storyboard"] as const).map((tab) => (
+            <Link
+              key={tab}
+              href={tab === "studio" ? "/studio" : "/studio/storyboard"}
+              aria-current={active === tab ? "page" : undefined}
+              className={`${pill} ${active === tab ? "bg-[#F4F3FF] font-medium text-[#5141E5]" : "text-[#191919] hover:bg-[#F6F6F9]"}`}
+            >
+              {tab === "studio" ? t("studio") : "Storyboard"}
+            </Link>
+          ))}
           {isAdmin && (
             <Link href="/admin" className={`${pill} font-semibold text-[#5141E5] hover:bg-[#F4F3FF]`}>
               {t("admin")}

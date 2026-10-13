@@ -7,7 +7,7 @@ import { getHeader } from "./header";
 export type StudioModelFamily = "gemini" | "gpt";
 export type StudioQuality = "draft" | "standard" | "high";
 export type StudioOperation = "upscale" | "remove_bg";
-export type StudioMode = "create" | "edit" | "brush" | "reference" | StudioOperation;
+export type StudioMode = "create" | "edit" | "brush" | "reference" | "storyboard" | StudioOperation;
 
 export interface StudioModel {
   key: string;
@@ -20,10 +20,25 @@ export interface StudioModel {
   tags: string[];
 }
 
+export interface StoryboardView {
+  id: string;
+  group: "portrait" | "full_body" | "special";
+}
+
 export interface StudioConfig {
   configured: boolean;
   default_model: string;
   models: StudioModel[];
+  storyboard_views?: StoryboardView[];
+}
+
+export interface StudioStoryboardRequest {
+  /** /app_data/... path of the reference picture (or a data URL). */
+  image: string;
+  view: string;
+  model: string;
+  resolution?: string;
+  details?: string;
 }
 
 export interface StudioImage {
@@ -38,6 +53,7 @@ export interface StudioImage {
     aspect_ratio?: string | null;
     resolution?: string | null;
     parent?: string | null;
+    view?: string;
   };
 }
 
@@ -91,6 +107,12 @@ export const StudioApi = {
 
   async edit(body: StudioEditRequest): Promise<StudioImage> {
     const result = await post<{ image: StudioImage }>("/api/v1/studio/edit", body);
+    return result.image;
+  },
+
+  /** One storyboard view; the page asks for several in parallel. */
+  async storyboard(body: StudioStoryboardRequest): Promise<StudioImage> {
+    const result = await post<{ image: StudioImage }>("/api/v1/studio/storyboard", body);
     return result.image;
   },
 

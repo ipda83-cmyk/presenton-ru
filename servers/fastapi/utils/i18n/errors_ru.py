@@ -249,5 +249,7 @@ ERRORS: dict[str, str] = {
     "err.studio.providerAuth": "Сервис генерации изображений не принял ключ. Администратору нужно проверить его в настройках.",
     "err.studio.keyScope": "У ключа arckep нет права на генерацию изображений ({scope}). Создайте ключ с этим правом в кабинете arckep (Settings → API) и укажите его в настройках.",
     "err.studio.rateLimited": "Слишком много запросов на изображения одновременно. Подождите немного и повторите.",
+    "err.studio.unknownView": "Неизвестный ракурс: {view}",
+    "err.studio.storyboardModel": "Раскадровку делают модели Gemini (Nano Banana): {model} плохо сохраняет внешний вид героя.",
     "err.studio.providerFailed": "Ошибка сервиса генерации изображений: {detail}",
 }

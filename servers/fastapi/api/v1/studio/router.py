@@ -22,6 +22,7 @@ from services.database import get_async_session
 from services.studio import imaging
 from services.studio.arckep import StudioProviderError, StudioTimeoutError
 from services.studio.models import DEFAULT_MODEL, MODELS, StudioModel, get_model
+from services.studio.storyboard import VIEWS_BY_ID, public_views, view_prompt
 from services.studio.service import (
     STUDIO_SOURCE,
     create_images,
@@ -54,6 +55,15 @@ class GenerateRequest(BaseModel):
     resolution: Optional[str] = None
     quality: Optional[str] = None
     count: int = Field(default=1, ge=1, le=4)
+
+
+class StoryboardRequest(BaseModel):
+    # The reference picture: one of the user's images or a data URL.
+    image: str = Field(min_length=1)
+    view: str = Field(min_length=1, max_length=64)
+    model: Optional[str] = None
+    resolution: Optional[str] = None
+    details: str = Field(default="", max_length=1000)
 
 
 class EditRequest(BaseModel):
@@ -184,6 +194,7 @@ async def studio_config():
         "configured": studio_configured(),
         "default_model": DEFAULT_MODEL,
         "models": [model.public() for model in MODELS.values()],
+        "storyboard_views": public_views(),
     }
 
 
@@ -249,6 +260,43 @@ async def studio_edit(body: EditRequest, session: AsyncSession = Depends(get_asy
         {
             "mode": mode,
             "prompt": body.prompt.strip(),
+            "model": model.key,
+            "parent": body.image if not body.image.startswith("data:") else None,
+        },
+    )
+    return {"image": asset_dict(asset)}
+
+
+@API_V1_STUDIO_ROUTER.post("/storyboard")
+async def studio_storyboard(body: StoryboardRequest, session: AsyncSession = Depends(get_async_session)):
+    """One storyboard view of the reference; the page asks for each view separately."""
+    view = VIEWS_BY_ID.get(body.view.strip())
+    if view is None:
+        raise http_error(400, "err.studio.unknownView", view=body.view)
+    model = _model(body.model)
+    if model.family != "gemini":
+        # Other models drift away from the reference's identity.
+        raise http_error(400, "err.studio.storyboardModel", model=model.title)
+    source = await load_image_input(body.image)
+    _require_configured()
+    try:
+        result = await edit_image(
+            model,
+            source,
+            view_prompt(view, body.details),
+            resolution=body.resolution,
+        )
+    except StudioProviderError as error:
+        raise _provider_error(error)
+    except imaging.InvalidImageError:
+        raise http_error(502, "err.studio.providerFailed", detail="invalid image")
+    asset = await save_studio_image(
+        session,
+        result,
+        {
+            "mode": "storyboard",
+            "view": view.id,
+            "prompt": body.details.strip(),
             "model": model.key,
             "parent": body.image if not body.image.startswith("data:") else None,
         },

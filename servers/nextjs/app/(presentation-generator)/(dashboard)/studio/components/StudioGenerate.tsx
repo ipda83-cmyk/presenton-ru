@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { Brush, Download, ImagePlus, Sparkles } from "lucide-react";
+import { Brush, Clapperboard, Download, ImagePlus, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { StudioApi, type StudioImage, type StudioQuality } from "../../../services/api/studio";
 import StudioHeader from "./StudioHeader";
@@ -169,6 +169,10 @@ export default function StudioGenerate({ isAdmin }: { isAdmin: boolean }) {
                 <Link href={`/studio/reference?image=${encoded}`} className={linkAction}>
                   <ImagePlus className="h-4 w-4" aria-hidden="true" />
                   {t("actions.toReference")}
+                </Link>
+                <Link href={`/studio/storyboard?image=${encoded}`} className={linkAction}>
+                  <Clapperboard className="h-4 w-4" aria-hidden="true" />
+                  {t("actions.toStoryboard")}
                 </Link>
               </div>
             )}

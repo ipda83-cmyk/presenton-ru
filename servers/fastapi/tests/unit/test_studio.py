@@ -449,3 +449,44 @@ def test_api_edit_accepts_only_app_pictures_and_public_urls(studio_api, monkeypa
     assert stock.status_code == 200
     assert fetched == ["https://images.example.com/p.jpg"]
 
+
+def test_api_storyboard_makes_one_view_of_the_reference(studio_api, monkeypatch):
+    client, tmp_path = studio_api
+    seen = {}
+
+    async def fake_edit(model, source, prompt="", **kwargs):
+        seen.update(model=model.key, prompt=prompt, kwargs=kwargs)
+        return _png((48, 64), (20, 40, 60, 255))
+
+    monkeypatch.setattr(studio_router, "edit_image", fake_edit)
+    config = client.get("/api/v1/studio/config").json()
+    assert [view["id"] for view in config["storyboard_views"]][:2] == ["front", "three_quarter_left"]
+
+    response = client.post(
+        "/api/v1/studio/storyboard",
+        json={"image": _data_url(_png()), "view": "profile_left", "model": "nano_banana_pro", "resolution": "2K", "details": "в шлеме"},
+    )
+    assert response.status_code == 200
+    image = response.json()["image"]
+    assert image["extras"]["mode"] == "storyboard"
+    assert image["extras"]["view"] == "profile_left"
+    assert seen["model"] == "nano_banana_pro"
+    assert "left side profile view" in seen["prompt"] and "SAME character" in seen["prompt"]
+    assert seen["prompt"].endswith("Additional details: в шлеме")
+    assert seen["kwargs"]["resolution"] == "2K"
+
+
+def test_api_storyboard_validation(studio_api):
+    client, _ = studio_api
+    ru = {"Cookie": "NEXT_LOCALE=ru"}
+    unknown = client.post("/api/v1/studio/storyboard", json={"image": _data_url(_png()), "view": "upside_down"}, headers=ru)
+    assert unknown.status_code == 400
+    assert "upside_down" in unknown.json()["detail"]
+    gpt = client.post(
+        "/api/v1/studio/storyboard",
+        json={"image": _data_url(_png()), "view": "front", "model": "chatgpt_images_2"},
+        headers=ru,
+    )
+    assert gpt.status_code == 400
+    assert "Gemini" in gpt.json()["detail"]
+

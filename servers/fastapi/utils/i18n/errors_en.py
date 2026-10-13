@@ -249,5 +249,7 @@ ERRORS: dict[str, str] = {
     "err.studio.providerAuth": "The image service rejected the key. An administrator needs to check it in settings.",
     "err.studio.keyScope": "The arckep key has no permission to generate images ({scope}). Create a key with this permission in the arckep account (Settings → API) and enter it in the settings.",
     "err.studio.rateLimited": "Too many image requests at once. Wait a moment and try again.",
+    "err.studio.unknownView": "Unknown view: {view}",
+    "err.studio.storyboardModel": "Storyboards use the Gemini models (Nano Banana): {model} does not keep the subject's look.",
     "err.studio.providerFailed": "The image service failed: {detail}",
 }

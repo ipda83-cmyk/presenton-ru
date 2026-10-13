@@ -2805,14 +2805,13 @@
     "nav": {
       "aria": "Studio sections",
       "studio": "Studio",
-      "soon": "soon",
-      "soonHint": "Storyboard arrives in the next update",
       "admin": "Admin"
     },
     "pages": {
       "generate": "Image generation",
       "brush": "Magic brush",
-      "reference": "Reference"
+      "reference": "Reference",
+      "storyboard": "Storyboard"
     },
     "loading": "Loading…",
     "fields": {
@@ -2852,7 +2851,8 @@
     "actions": {
       "download": "Download",
       "toBrush": "Edit with brush",
-      "toReference": "Insert an object"
+      "toReference": "Insert an object",
+      "toStoryboard": "Storyboard"
     },
     "busy": {
       "generating": "Generating…",
@@ -2868,7 +2868,8 @@
       "maskRequired": "First paint over the area to change.",
       "brushPromptRequired": "Describe what to change in the selected area.",
       "referenceRequired": "Upload a photo of the object to insert.",
-      "placeRequired": "Paint over the place where the object should go."
+      "placeRequired": "Paint over the place where the object should go.",
+      "storyboardReferenceRequired": "Upload a picture of the character or object."
     },
     "history": {
       "title": "History",
@@ -2885,7 +2886,8 @@
         "brush": "Brush edit",
         "reference": "Object insert",
         "upscale": "Quality improved",
-        "remove_bg": "Background removed"
+        "remove_bg": "Background removed",
+        "storyboard": "View"
       }
     },
     "notConfigured": {
@@ -2947,6 +2949,50 @@
       "howTo": "The object fits into the painted area; light, shadows and scale adapt to the scene.",
       "submit": "Insert object",
       "needImage": "Upload the main photo first."
+    },
+    "views": {
+      "front": "Front",
+      "three_quarter_left": "¾ left",
+      "three_quarter_right": "¾ right",
+      "profile_left": "Left profile",
+      "profile_right": "Right profile",
+      "back": "Back",
+      "full_front": "Full body, front",
+      "full_side": "Full body, side",
+      "full_back": "Full body, back",
+      "top": "From above",
+      "bottom": "From below",
+      "closeup": "Close-up"
+    },
+    "viewGroups": {
+      "portrait": "Portrait",
+      "full_body": "Full body",
+      "special": "Special views"
+    },
+    "storyboard": {
+      "referenceTitle": "Reference",
+      "referenceAlt": "Picture for the storyboard",
+      "referenceHint": "The Studio draws this character or object from other sides and keeps its look.",
+      "removeReference": "Another picture",
+      "dropTitle": "Upload a character, object or scene",
+      "dropHint": "Drop a file, paste it (Ctrl+V), choose one, or pick one from history below.",
+      "resultsTitle": "Views",
+      "running": "Drawing…",
+      "queued": "Queued",
+      "downloadView": "Download the “{view}” view",
+      "editView": "Edit the “{view}” view with the brush",
+      "retryView": "Retry the “{view}” view",
+      "retry": "Retry",
+      "title": "Views",
+      "subtitle": "Pick the sides to show",
+      "selectAll": "Select all",
+      "clearAll": "Clear all",
+      "detailsLabel": "Details",
+      "detailsPlaceholder": "For example: wearing a hard hat, on a white background",
+      "generating": "Drawing the views…",
+      "submit": "Generate {count, plural, one {# view} other {# views}}",
+      "needReference": "Upload a picture or pick one from history first.",
+      "oneRequestPerView": "Each view is a separate request; finished ones appear as they are ready."
     }
   },
   "slidePhotos": {
