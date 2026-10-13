@@ -20,7 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.sql.image_asset import ImageAsset
 from services.database import get_async_session
 from services.studio import imaging
-from services.studio.arckep import StudioProviderError, StudioTimeoutError
+from services.studio.arckep import StudioProviderError, StudioTimeoutError, StudioUnavailableError
 from services.studio.models import DEFAULT_MODEL, MODELS, StudioModel, get_model
 from services.studio.storyboard import VIEWS_BY_ID, public_views, view_prompt
 from services.studio.service import (
@@ -175,6 +175,8 @@ def _provider_error(error: StudioProviderError):
     LOGGER.warning("Studio provider error: status=%s code=%s detail=%s", error.status, error.code, error.detail)
     if isinstance(error, StudioTimeoutError):
         return http_error(504, "err.studio.timeout")
+    if isinstance(error, StudioUnavailableError):
+        return http_error(503, "err.studio.unavailable")
     if error.status == 402 or (error.code or "").upper() == "INSUFFICIENT_BALANCE":
         return http_error(402, "err.studio.insufficientBalance")
     if error.status in (401, 403):

@@ -4,6 +4,7 @@ import io
 import json
 import os
 
+import aiohttp
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -14,8 +15,13 @@ from api.v1.studio import router as studio_router
 from models.sql.image_asset import ImageAsset
 from models.sql.user import User
 from services.database import get_async_session
-from services.studio import imaging, service
-from services.studio.arckep import ArckepImages, StudioProviderError, StudioTimeoutError
+from services.studio import arckep, imaging, service
+from services.studio.arckep import (
+    ArckepImages,
+    StudioProviderError,
+    StudioTimeoutError,
+    StudioUnavailableError,
+)
 from services.studio.models import MODELS
 from utils.i18n.middleware import LocaleMiddleware
 
@@ -256,6 +262,100 @@ def test_arckep_http_errors_carry_status_and_message():
     assert error.value.status == 402 and error.value.code == "INSUFFICIENT_BALANCE"
 
 
+class _BusyArckep(_FakeArckep):
+    """Counts jobs running at once; a job completes on its second poll."""
+
+    def __init__(self, busy_answers=0):
+        super().__init__([])
+        self.busy_answers = busy_answers
+        self.polls: dict[int, int] = {}
+        self.active = 0
+        self.max_active = 0
+
+    def post(self, url, json=None, data=None, headers=None):
+        self.calls.append(("POST", url, json, headers))
+        if self.busy_answers:
+            self.busy_answers -= 1
+            return _Response(status=429, payload={"error": {"message": "too many active jobs"}})
+        job_id = len(self.calls)
+        self.polls[job_id] = 0
+        self.active += 1
+        self.max_active = max(self.max_active, self.active)
+        return _Response(payload={"id": job_id, "status": "queued"})
+
+    def get(self, url, headers=None):
+        self.calls.append(("GET", url, None, headers))
+        if "/images/generations/" not in url:
+            return _Response(body=self.image)
+        job_id = int(url.rsplit("/", 1)[-1])
+        self.polls[job_id] += 1
+        if self.polls[job_id] < 2:
+            return _Response(payload={"status": "processing"})
+        self.active -= 1
+        return _Response(payload={"status": "completed", "output": {"images": [{"url": "https://cdn.example/o.png"}]}})
+
+
+async def _yield(_seconds):
+    await asyncio.sleep(0)
+
+
+def test_arckep_jobs_wait_for_a_free_slot_instead_of_failing(monkeypatch):
+    # All users share one key and arckep runs at most 5 jobs per key.
+    monkeypatch.setattr(arckep, "MAX_ACTIVE_JOBS", 2)
+    monkeypatch.setattr(arckep, "_job_slots", None)
+    fake = _BusyArckep()
+    client = ArckepImages("https://arckep.example/api/v1", "k", session_factory=fake, sleep=_yield)
+
+    async def many():
+        return await asyncio.gather(*(client.generate({"model": "m", "prompt": str(i)}) for i in range(5)))
+
+    assert asyncio.run(many()) == [[b"PNGDATA"]] * 5
+    assert fake.max_active == 2
+
+
+def test_arckep_retries_a_busy_answer():
+    waits = []
+
+    async def record(seconds):
+        waits.append(seconds)
+
+    fake = _BusyArckep(busy_answers=2)
+    client = ArckepImages("https://arckep.example/api/v1", "k", session_factory=fake, sleep=record)
+    assert asyncio.run(client.generate({"model": "m", "prompt": "p"})) == [b"PNGDATA"]
+    assert waits[:2] == list(arckep.BUSY_RETRY_DELAYS[:2])
+    creates = [call for call in fake.calls if call[0] == "POST"]
+    assert len({call[3]["Idempotency-Key"] for call in creates}) == 3
+
+    always_busy = _BusyArckep(busy_answers=99)
+    client = ArckepImages("https://arckep.example/api/v1", "k", session_factory=always_busy, sleep=_no_sleep)
+    with pytest.raises(StudioProviderError) as error:
+        asyncio.run(client.generate({"model": "m", "prompt": "p"}))
+    assert error.value.status == 429
+
+
+def test_arckep_network_failures():
+    class Unreachable(_FakeArckep):
+        def post(self, url, json=None, data=None, headers=None):
+            raise aiohttp.ClientConnectionError("Temporary failure in name resolution")
+
+    client = ArckepImages("https://arckep.example/api/v1", "k", session_factory=Unreachable([]), sleep=_no_sleep)
+    with pytest.raises(StudioUnavailableError):
+        asyncio.run(client.generate({"model": "m", "prompt": "p"}, [b"ref"]))
+
+    class DroppedPoll(_FakeArckep):
+        dropped = False
+
+        def get(self, url, headers=None):
+            if "/images/generations/" in url and not self.dropped:
+                self.dropped = True
+                raise asyncio.TimeoutError()
+            return super().get(url, headers)
+
+    flaky = DroppedPoll([{"status": "completed", "output": {"images": [{"url": "https://cdn.example/o.png"}]}}])
+    client = ArckepImages("https://arckep.example/api/v1", "k", session_factory=flaky, sleep=_no_sleep)
+    assert asyncio.run(client.generate({"model": "m", "prompt": "p"})) == [b"PNGDATA"]
+
+
 class _ScriptedClient:
     def __init__(self, result: bytes):
         self.result = result
@@ -413,6 +513,14 @@ def test_api_validation_and_localized_errors(studio_api, monkeypatch):
     scope = client.post("/api/v1/studio/generate", json={"prompt": "x"}, headers=ru)
     assert scope.status_code == 502
     assert "images:write" in scope.json()["detail"] and "права" in scope.json()["detail"]
+
+    async def unreachable(model, prompt, **kwargs):
+        raise StudioUnavailableError("arckep is unreachable")
+
+    monkeypatch.setattr(studio_router, "create_images", unreachable)
+    down = client.post("/api/v1/studio/generate", json={"prompt": "x"}, headers=ru)
+    assert down.status_code == 503
+    assert "недоступен" in down.json()["detail"]
 
     monkeypatch.delenv("STUDIO_API_KEY")
     monkeypatch.delenv("GEMINI_SEARCH_API_KEY", raising=False)

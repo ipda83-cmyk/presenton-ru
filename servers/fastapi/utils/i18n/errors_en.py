@@ -245,6 +245,7 @@ ERRORS: dict[str, str] = {
     "err.studio.imageTooLarge": "The image is too large (25 MB at most).",
     "err.studio.imageNotFound": "Image not found.",
     "err.studio.timeout": "The image is taking too long to generate. Try again.",
+    "err.studio.unavailable": "The image generation service is unavailable right now. Try again in a minute.",
     "err.studio.insufficientBalance": "The image service balance has run out. An administrator needs to top it up.",
     "err.studio.providerAuth": "The image service rejected the key. An administrator needs to check it in settings.",
     "err.studio.keyScope": "The arckep key has no permission to generate images ({scope}). Create a key with this permission in the arckep account (Settings → API) and enter it in the settings.",

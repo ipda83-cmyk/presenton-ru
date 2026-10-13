@@ -4,7 +4,8 @@ Flow (checked live by the standalone Studio, 09.2026): `POST /uploads`
 (multipart, ~10 MB) returns a URL for `reference_image_urls`;
 `POST /images/generations` returns a job id; `GET /images/generations/{id}`
 reports queued|processing|completed|failed with `output.images[].url`.
-At most 5 jobs run at once per key.
+At most 5 jobs run at once per key, and every user shares the one key: jobs
+wait for a free slot here instead of failing with 429.
 """
 
 import asyncio
@@ -24,6 +25,9 @@ REQUEST_TIMEOUT_SECONDS = 60
 POLL_BUDGET_SECONDS = 150
 FIRST_POLL_DELAY = 1.0
 MAX_POLL_DELAY = 3.0
+MAX_ACTIVE_JOBS = 5
+# arckep can still answer 429 (another app on the same key): a short wait, then retry.
+BUSY_RETRY_DELAYS = (3.0, 6.0, 10.0)
 
 
 class StudioProviderError(Exception):
@@ -38,6 +42,22 @@ class StudioProviderError(Exception):
 
 class StudioTimeoutError(StudioProviderError):
     pass
+
+
+class StudioUnavailableError(StudioProviderError):
+    """arckep could not be reached: DNS, refused connection, no answer in time."""
+
+
+_job_slots: tuple[asyncio.AbstractEventLoop, asyncio.Semaphore] | None = None
+
+
+def _job_slots_for_loop() -> asyncio.Semaphore:
+    """One queue per process (re-created for a new event loop, as in tests)."""
+    global _job_slots
+    loop = asyncio.get_running_loop()
+    if _job_slots is None or _job_slots[0] is not loop:
+        _job_slots = (loop, asyncio.Semaphore(MAX_ACTIVE_JOBS))
+    return _job_slots[1]
 
 
 def _error_detail(payload: Any, fallback: str) -> tuple[str, str | None]:
@@ -112,45 +132,69 @@ class ArckepImages:
 
     async def generate(self, body: dict[str, Any], references: list[bytes] | None = None) -> list[bytes]:
         """Run one generation job; returns the images' bytes."""
-        async with self._session() as session:
-            if references:
-                body = {
-                    **body,
-                    "reference_image_urls": [
-                        await self.upload(session, image, f"image-{index}.png")
-                        for index, image in enumerate(references)
-                    ],
-                }
-            async with session.post(
-                f"{self.base_url}/images/generations",
-                json=body,
-                headers={**self._auth(), "Idempotency-Key": str(uuid.uuid4())},
-            ) as response:
-                job = await self._json(response)
-            job_id = job.get("id") if isinstance(job, dict) else None
-            if job_id is None:
-                raise StudioProviderError("no job id in the response")
+        try:
+            async with self._session() as session:
+                if references:
+                    body = {
+                        **body,
+                        "reference_image_urls": [
+                            await self.upload(session, image, f"image-{index}.png")
+                            for index, image in enumerate(references)
+                        ],
+                    }
+                async with _job_slots_for_loop():
+                    return await self._run_job(session, body)
+        except (aiohttp.ClientError, asyncio.TimeoutError) as error:
+            LOGGER.warning("arckep is unreachable: %r", error)
+            raise StudioUnavailableError("arckep is unreachable") from error
 
-            deadline = time.monotonic() + self._poll_budget
-            delay = FIRST_POLL_DELAY
-            while time.monotonic() < deadline:
+    async def _create_job(self, session, body: dict[str, Any]) -> Any:
+        for delay in (*BUSY_RETRY_DELAYS, None):
+            try:
+                async with session.post(
+                    f"{self.base_url}/images/generations",
+                    json=body,
+                    # A 429 created no job, so each attempt gets its own key.
+                    headers={**self._auth(), "Idempotency-Key": str(uuid.uuid4())},
+                ) as response:
+                    return await self._json(response)
+            except StudioProviderError as error:
+                if error.status != 429 or delay is None:
+                    raise
+                LOGGER.info("arckep is busy, retrying in %ss", delay)
                 await self._sleep(delay)
-                delay = min(MAX_POLL_DELAY, delay * 1.4)
+
+    async def _run_job(self, session, body: dict[str, Any]) -> list[bytes]:
+        job = await self._create_job(session, body)
+        job_id = job.get("id") if isinstance(job, dict) else None
+        if job_id is None:
+            raise StudioProviderError("no job id in the response")
+
+        deadline = time.monotonic() + self._poll_budget
+        delay = FIRST_POLL_DELAY
+        while time.monotonic() < deadline:
+            await self._sleep(delay)
+            delay = min(MAX_POLL_DELAY, delay * 1.4)
+            try:
                 async with session.get(
                     f"{self.base_url}/images/generations/{job_id}", headers=self._auth()
                 ) as response:
                     if response.status >= 500:
                         continue
                     status = await self._json(response)
-                state = status.get("status") if isinstance(status, dict) else None
-                if state == "completed":
-                    images = (status.get("output") or {}).get("images") or []
-                    urls = [image.get("url") for image in images if isinstance(image, dict) and image.get("url")]
-                    if not urls:
-                        raise StudioProviderError("the job finished without images")
-                    return [await self._download(session, url) for url in urls]
-                if state == "failed":
-                    detail, code = _error_detail(status, "the job failed")
-                    raise StudioProviderError(detail, code=code)
-            LOGGER.warning("Studio job %s did not finish in %ss", job_id, self._poll_budget)
-            raise StudioTimeoutError("the job did not finish in time")
+            except (aiohttp.ClientError, asyncio.TimeoutError) as error:
+                # The job keeps running on arckep; a dropped poll is not a failure.
+                LOGGER.info("Studio job %s poll failed: %r", job_id, error)
+                continue
+            state = status.get("status") if isinstance(status, dict) else None
+            if state == "completed":
+                images = (status.get("output") or {}).get("images") or []
+                urls = [image.get("url") for image in images if isinstance(image, dict) and image.get("url")]
+                if not urls:
+                    raise StudioProviderError("the job finished without images")
+                return [await self._download(session, url) for url in urls]
+            if state == "failed":
+                detail, code = _error_detail(status, "the job failed")
+                raise StudioProviderError(detail, code=code)
+        LOGGER.warning("Studio job %s did not finish in %ss", job_id, self._poll_budget)
+        raise StudioTimeoutError("the job did not finish in time")
