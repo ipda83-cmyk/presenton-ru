@@ -517,3 +517,37 @@ def get_openai_compat_image_api_key_env():
 
 def get_openai_compat_image_model_env():
     return os.getenv("OPENAI_COMPAT_IMAGE_MODEL")
+
+
+# Billing (balance in rubles) and YooKassa
+def get_billing_enabled_env():
+    return os.getenv("BILLING_ENABLED")
+
+
+def get_billing_price_per_slide_env():
+    return os.getenv("BILLING_PRICE_PER_SLIDE")
+
+
+def get_billing_signup_bonus_env():
+    return os.getenv("BILLING_SIGNUP_BONUS")
+
+
+def get_billing_offer_url_env():
+    return os.getenv("BILLING_OFFER_URL")
+
+
+def get_yookassa_shop_id_env():
+    return os.getenv("YOOKASSA_SHOP_ID")
+
+
+def get_yookassa_secret_key_env():
+    return os.getenv("YOOKASSA_SECRET_KEY")
+
+
+def get_yookassa_vat_code_env():
+    return os.getenv("YOOKASSA_VAT_CODE")
+
+
+def get_yookassa_api_url_env():
+    # Tests point this at a fake; production uses the default.
+    return os.getenv("YOOKASSA_API_URL")

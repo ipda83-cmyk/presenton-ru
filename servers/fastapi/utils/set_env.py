@@ -409,3 +409,32 @@ def set_openai_compat_image_api_key_env(value: str):
 
 def set_openai_compat_image_model_env(value: str):
     os.environ["OPENAI_COMPAT_IMAGE_MODEL"] = value
+
+
+# Billing (balance in rubles) and YooKassa
+def set_billing_enabled_env(value: str):
+    os.environ["BILLING_ENABLED"] = value
+
+
+def set_billing_price_per_slide_env(value: str):
+    os.environ["BILLING_PRICE_PER_SLIDE"] = value
+
+
+def set_billing_signup_bonus_env(value: str):
+    os.environ["BILLING_SIGNUP_BONUS"] = value
+
+
+def set_billing_offer_url_env(value: str):
+    os.environ["BILLING_OFFER_URL"] = value
+
+
+def set_yookassa_shop_id_env(value: str):
+    os.environ["YOOKASSA_SHOP_ID"] = value
+
+
+def set_yookassa_secret_key_env(value: str):
+    os.environ["YOOKASSA_SECRET_KEY"] = value
+
+
+def set_yookassa_vat_code_env(value: str):
+    os.environ["YOOKASSA_VAT_CODE"] = value

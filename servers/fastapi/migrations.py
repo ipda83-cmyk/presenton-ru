@@ -34,7 +34,8 @@ REVISION_PRESENTON_CLOUD_PROVIDER = "c6e8f1a3b5d7"
 REVISION_SMART_MODE_BACKFILL = "d2f4a6b8c0e1"
 REVISION_TEMPLATE_V2_THEME = "e4c7a9b2d6f1"
 REVISION_UNIFIED_API_KEYS = "026c0ba8b35c"
-REVISION_HEAD = REVISION_UNIFIED_API_KEYS
+REVISION_BILLING = "b2d4f6a8c0e3"
+REVISION_HEAD = REVISION_BILLING
 
 
 async def migrate_database_on_startup() -> None:
@@ -138,6 +139,10 @@ def _infer_revision_from_schema(
         for table in owned_tables
     )
     if "provider_settings" in tables and "user" in tables and ownership_ready:
+        if "billing_accounts" in tables:
+            return REVISION_BILLING
+        if "api_keys" in tables:
+            return REVISION_UNIFIED_API_KEYS
         if "template_v2" in tables and _has_column(
             inspector, "template_v2", "theme"
         ):

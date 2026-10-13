@@ -7,6 +7,7 @@ import logging
 import os
 import re
 import uuid
+from contextlib import asynccontextmanager
 from typing import Literal, Optional
 from urllib.parse import urljoin, urlparse
 
@@ -18,6 +19,8 @@ from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.sql.image_asset import ImageAsset
+from services.billing import ledger, payments
+from services.billing.pricing import image_price, price_table
 from services.database import get_async_session
 from services.studio import imaging
 from services.studio.arckep import StudioProviderError, StudioTimeoutError, StudioUnavailableError
@@ -178,7 +181,8 @@ def _provider_error(error: StudioProviderError):
     if isinstance(error, StudioUnavailableError):
         return http_error(503, "err.studio.unavailable")
     if error.status == 402 or (error.code or "").upper() == "INSUFFICIENT_BALANCE":
-        return http_error(402, "err.studio.insufficientBalance")
+        # The service's own arckep balance; 402 is kept for the user's balance.
+        return http_error(503, "err.studio.insufficientBalance")
     if error.status in (401, 403):
         # e.g. "API key is missing required scope 'images:write'"
         scope = re.search(r"scope '([\w:.-]+)'", error.detail or "")
@@ -190,6 +194,22 @@ def _provider_error(error: StudioProviderError):
     return http_error(502, "err.studio.providerFailed", detail=error.detail)
 
 
+@asynccontextmanager
+async def _paid(price: int, reason: str, details: dict):
+    """Charge the user (administrators are free); give it back if the work fails."""
+    try:
+        charged = await ledger.charge(ledger.payer(), price, reason=reason, details=details)
+    except ledger.InsufficientFunds as error:
+        raise http_error(402, "err.billing.insufficientFunds", price=error.needed, balance=error.balance)
+    try:
+        yield charged
+    except BaseException:
+        await ledger.refund(charged, note="studio request failed")
+        raise
+    if charged.amount:
+        payments.schedule_auto_topup(charged.user_id)
+
+
 @API_V1_STUDIO_ROUTER.get("/config")
 async def studio_config():
     return {
@@ -197,6 +217,8 @@ async def studio_config():
         "default_model": DEFAULT_MODEL,
         "models": [model.public() for model in MODELS.values()],
         "storyboard_views": public_views(),
+        "prices": price_table()["studio"],
+        "charged": ledger.payer() is not None,
     }
 
 
@@ -206,27 +228,30 @@ async def studio_generate(
 ):
     model = _model(body.model)
     _require_configured()
-    try:
-        images = await create_images(
-            model,
-            body.prompt,
-            aspect_ratio=body.aspect_ratio,
-            resolution=body.resolution,
-            quality=body.quality,
-            count=body.count,
-        )
-    except StudioProviderError as error:
-        raise _provider_error(error)
-    except imaging.InvalidImageError:
-        raise http_error(502, "err.studio.providerFailed", detail="invalid image")
-    extras = {
-        "mode": "create",
-        "prompt": body.prompt.strip(),
-        "model": model.key,
-        "aspect_ratio": body.aspect_ratio,
-        "resolution": body.resolution,
-    }
-    assets = [await save_studio_image(session, image, extras) for image in images]
+    price = image_price(model, resolution=body.resolution, quality=body.quality, count=body.count)
+    details = {"model": model.key, "resolution": body.resolution, "quality": body.quality, "count": body.count}
+    async with _paid(price, "studio.generate", details):
+        try:
+            images = await create_images(
+                model,
+                body.prompt,
+                aspect_ratio=body.aspect_ratio,
+                resolution=body.resolution,
+                quality=body.quality,
+                count=body.count,
+            )
+        except StudioProviderError as error:
+            raise _provider_error(error)
+        except imaging.InvalidImageError:
+            raise http_error(502, "err.studio.providerFailed", detail="invalid image")
+        extras = {
+            "mode": "create",
+            "prompt": body.prompt.strip(),
+            "model": model.key,
+            "aspect_ratio": body.aspect_ratio,
+            "resolution": body.resolution,
+        }
+        assets = [await save_studio_image(session, image, extras) for image in images]
     return {"images": [asset_dict(asset) for asset in assets]}
 
 
@@ -240,32 +265,35 @@ async def studio_edit(body: EditRequest, session: AsyncSession = Depends(get_asy
     mask = await load_image_input(body.mask) if body.mask else None
     reference = await load_image_input(body.reference) if body.reference else None
     _require_configured()
-    try:
-        result = await edit_image(
-            model,
-            source,
-            body.prompt,
-            mask=mask,
-            reference=reference,
-            operation=body.operation,
-            resolution=body.resolution,
-            quality=body.quality,
-        )
-    except StudioProviderError as error:
-        raise _provider_error(error)
-    except imaging.InvalidImageError:
-        raise http_error(502, "err.studio.providerFailed", detail="invalid image")
     mode = body.operation or ("reference" if reference else "brush" if mask else "edit")
-    asset = await save_studio_image(
-        session,
-        result,
-        {
-            "mode": mode,
-            "prompt": body.prompt.strip(),
-            "model": model.key,
-            "parent": body.image if not body.image.startswith("data:") else None,
-        },
-    )
+    price = image_price(model, resolution=body.resolution, quality=body.quality)
+    details = {"model": model.key, "resolution": body.resolution, "quality": body.quality, "mode": mode}
+    async with _paid(price, "studio.edit", details):
+        try:
+            result = await edit_image(
+                model,
+                source,
+                body.prompt,
+                mask=mask,
+                reference=reference,
+                operation=body.operation,
+                resolution=body.resolution,
+                quality=body.quality,
+            )
+        except StudioProviderError as error:
+            raise _provider_error(error)
+        except imaging.InvalidImageError:
+            raise http_error(502, "err.studio.providerFailed", detail="invalid image")
+        asset = await save_studio_image(
+            session,
+            result,
+            {
+                "mode": mode,
+                "prompt": body.prompt.strip(),
+                "model": model.key,
+                "parent": body.image if not body.image.startswith("data:") else None,
+            },
+        )
     return {"image": asset_dict(asset)}
 
 
@@ -281,28 +309,31 @@ async def studio_storyboard(body: StoryboardRequest, session: AsyncSession = Dep
         raise http_error(400, "err.studio.storyboardModel", model=model.title)
     source = await load_image_input(body.image)
     _require_configured()
-    try:
-        result = await edit_image(
-            model,
-            source,
-            view_prompt(view, body.details),
-            resolution=body.resolution,
+    price = image_price(model, resolution=body.resolution)
+    details = {"model": model.key, "resolution": body.resolution, "view": view.id}
+    async with _paid(price, "studio.storyboard", details):
+        try:
+            result = await edit_image(
+                model,
+                source,
+                view_prompt(view, body.details),
+                resolution=body.resolution,
+            )
+        except StudioProviderError as error:
+            raise _provider_error(error)
+        except imaging.InvalidImageError:
+            raise http_error(502, "err.studio.providerFailed", detail="invalid image")
+        asset = await save_studio_image(
+            session,
+            result,
+            {
+                "mode": "storyboard",
+                "view": view.id,
+                "prompt": body.details.strip(),
+                "model": model.key,
+                "parent": body.image if not body.image.startswith("data:") else None,
+            },
         )
-    except StudioProviderError as error:
-        raise _provider_error(error)
-    except imaging.InvalidImageError:
-        raise http_error(502, "err.studio.providerFailed", detail="invalid image")
-    asset = await save_studio_image(
-        session,
-        result,
-        {
-            "mode": "storyboard",
-            "view": view.id,
-            "prompt": body.details.strip(),
-            "model": model.key,
-            "parent": body.image if not body.image.startswith("data:") else None,
-        },
-    )
     return {"image": asset_dict(asset)}
 
 

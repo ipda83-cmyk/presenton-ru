@@ -148,6 +148,13 @@ class UserConfig(BaseModel):
     PERPLEXITY_SEARCH_MODEL: Optional[str] = None
     STUDIO_API_KEY: Optional[str] = None
     STUDIO_BASE_URL: Optional[str] = None
+    BILLING_ENABLED: Optional[str] = None
+    BILLING_PRICE_PER_SLIDE: Optional[str] = None
+    BILLING_SIGNUP_BONUS: Optional[str] = None
+    BILLING_OFFER_URL: Optional[str] = None
+    YOOKASSA_SHOP_ID: Optional[str] = None
+    YOOKASSA_SECRET_KEY: Optional[str] = None
+    YOOKASSA_VAT_CODE: Optional[str] = None
 
     # Codex OAuth (ChatGPT)
     CODEX_MODEL: Optional[str] = None

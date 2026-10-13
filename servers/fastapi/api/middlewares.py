@@ -34,6 +34,8 @@ class SessionAuthMiddleware(BaseHTTPMiddleware):
         "/api/v1/auth/setup",
         "/api/v1/auth/login",
         "/api/v1/auth/logout",
+        # YooKassa notifications: nothing in them is trusted (see api/v1/billing).
+        "/api/v1/billing/yookassa/webhook",
     }
     _PUBLIC_AUTH_PREFIXES: tuple[str, ...] = ()
     _PUBLIC_APP_DATA_PREFIXES = (

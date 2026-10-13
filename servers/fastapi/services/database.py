@@ -16,6 +16,7 @@ from models.sql.async_presentation_generation_status import (
 from models.sql.chat_history_message import ChatHistoryMessageModel
 from models.sql.font_upload import FontUpload
 from models.sql.api_key import ApiKey
+from models.sql.billing import BillingAccount, BillingEntry, BillingPayment
 from models.sql.image_asset import ImageAsset
 from models.sql.key_value import KeyValueSqlModel
 from models.sql.ollama_pull_status import OllamaPullStatus
@@ -146,6 +147,9 @@ async def create_db_and_tables():
                         ApiKey.__table__,
                         ProviderSettings.__table__,
                         PresentonCloudProvider.__table__,
+                        BillingAccount.__table__,
+                        BillingEntry.__table__,
+                        BillingPayment.__table__,
                     ],
                 )
             )

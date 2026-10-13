@@ -500,7 +500,7 @@ def test_api_validation_and_localized_errors(studio_api, monkeypatch):
 
     monkeypatch.setattr(studio_router, "create_images", broke)
     poor = client.post("/api/v1/studio/generate", json={"prompt": "x"}, headers=ru)
-    assert poor.status_code == 402
+    assert poor.status_code == 503  # the service balance; 402 is the user's own
     assert "баланс" in poor.json()["detail"]
 
     async def no_scope(model, prompt, **kwargs):

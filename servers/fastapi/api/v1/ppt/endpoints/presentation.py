@@ -20,7 +20,7 @@ from fastapi import (
 )
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from sqlalchemy import delete
+from sqlalchemy import delete, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 from constants.presentation import MAX_NUMBER_OF_SLIDES
@@ -140,7 +140,9 @@ from utils.llm_calls.generate_smart_presentation import (
 )
 from utils.get_env import is_community_enabled
 import uuid
-from utils.i18n import get_current_locale, t
+from utils.i18n import get_current_locale, http_error, t
+from services.billing import ledger, payments as billing_payments
+from services.billing.pricing import presentation_price
 
 logger = logging.getLogger(__name__)
 
@@ -1632,6 +1634,48 @@ async def export_existing_presentation(
     )
 
 
+async def _require_balance_for(slides: int) -> None:
+    """Fail before the outline is written when the balance cannot pay for the slides."""
+    payer = ledger.payer()
+    if payer is None:
+        return
+    price = presentation_price(slides)
+    balance = await ledger.balance_of(payer)
+    if balance < price:
+        raise http_error(402, "err.billing.insufficientFunds", price=price, balance=balance)
+
+
+async def _charge_slides(
+    presentation_id: uuid.UUID,
+    slides: int,
+    *,
+    payer_id: uuid.UUID | None | bool = True,
+    top_up: bool = True,
+) -> ledger.Charge:
+    """Pay for generating the slides (an unfinished earlier run is already paid).
+    payer_id True = the current user; top_up=False: any unfinished paid run will do."""
+    payer = ledger.payer() if payer_id is True else payer_id
+    try:
+        charged = await ledger.charge_presentation(payer, presentation_id, slides, top_up=top_up)
+    except ledger.InsufficientFunds as error:
+        raise http_error(402, "err.billing.insufficientFunds", price=error.needed, balance=error.balance)
+    if charged.amount:
+        billing_payments.schedule_auto_topup(charged.user_id)
+    return charged
+
+
+def _stream_refusal(error: HTTPException) -> StreamingResponse:
+    """EventSource cannot read an error status: say it as a final stream event."""
+
+    async def refusal():
+        yield SSEResponse(
+            event="response",
+            data=json.dumps({"type": "error", "detail": error.detail, "retryable": False, "status": error.status_code}),
+        ).to_string()
+
+    return StreamingResponse(refusal(), media_type="text/event-stream")
+
+
 @PRESENTATION_ROUTER.post("/create", response_model=PresentationModel)
 async def create_presentation(
     content: Annotated[str, Body()],
@@ -1685,6 +1729,10 @@ async def create_presentation(
             status_code=400,
             detail=t("err.presentation.aPromptDocumentOrCommunityReference"),
         )
+
+    await _require_balance_for(
+        resolve_smart_slide_count(n_slides) if generation_mode == "smart" else (n_slides or 1)
+    )
 
     presentation_id = uuid.uuid4()
     language_to_store = (language or "").strip()
@@ -1803,6 +1851,7 @@ async def prepare_presentation(
     presentation = await sql_session.get(PresentationModel, presentation_id)
     if not presentation:
         raise HTTPException(status_code=404, detail=t("err.presentation.presentationNotFound"))
+    await _charge_slides(presentation.id, len(outlines))
 
     presentation_outline_model = PresentationOutlineModel(slides=outlines)
 
@@ -2195,6 +2244,7 @@ async def stream_smart_presentation(
         final_presentation.fonts = final_fonts
         sql_session.add(final_presentation)
         await sql_session.commit()
+        await ledger.settle_presentation(ledger.payer(), presentation_id)
 
         response = PresentationWithSlides(
             **_presentation_response_data(final_presentation),
@@ -2251,6 +2301,15 @@ async def stream_presentation(
     if not presentation:
         raise HTTPException(status_code=404, detail=t("err.presentation.presentationNotFound"))
     if presentation.generation_mode == "smart":
+        slide_count = resolve_smart_slide_count(presentation.n_slides)
+        existing = await sql_session.scalar(
+            select(func.count()).select_from(SlideModel).where(SlideModel.presentation == id)
+        )
+        if (existing or 0) < slide_count:
+            try:
+                await _charge_slides(id, slide_count, top_up=False)
+            except HTTPException as error:
+                return _stream_refusal(error)
         return await stream_smart_presentation(presentation, sql_session)
     if not presentation.structure:
         raise HTTPException(
@@ -2275,6 +2334,12 @@ async def stream_presentation(
 
     if not layout.slides:
         raise HTTPException(status_code=400, detail=t("err.presentation.presentationLayoutHasNoSlides"))
+    # Paid at /prepare; calling the stream again after the slides were saved is a new generation.
+    payer_id = ledger.payer()
+    try:
+        await _charge_slides(id, len(outline.slides), top_up=False)
+    except HTTPException as error:
+        return _stream_refusal(error)
     original_structure = list(structure.slides)
     structure = _normalize_presentation_structure(
         structure,
@@ -2499,6 +2564,7 @@ async def stream_presentation(
         sql_session.add_all(generated_assets)
         await sql_session.commit()
         resume.finish()
+        await ledger.settle_presentation(payer_id, id)
 
         response = PresentationWithSlides(
             **_presentation_response_data(presentation),
@@ -2691,6 +2757,7 @@ async def generate_presentation_handler(
     export_cookie_header: Optional[str] = None,
     request_http: Optional[Request] = None,
     sql_session: AsyncSession = Depends(get_async_session),
+    payer_id: Optional[uuid.UUID] = None,
 ):
     try:
         disconnect_checker = (
@@ -2858,6 +2925,8 @@ async def generate_presentation_handler(
             presentation_id,
             presentation_outlines.model_dump(mode="json"),
         )
+        # The slide count is known now (the model may pick it): pay before the slides.
+        await _charge_slides(presentation_id, total_outlines, payer_id=payer_id)
 
         # Updating async status
         if async_status:
@@ -3173,14 +3242,22 @@ async def generate_presentation_sync(
 ):
     try:
         (presentation_id,) = await check_if_api_request_is_valid(request, sql_session)
-        response = await generate_presentation_handler(
-            request,
-            presentation_id,
-            None,
-            export_cookie_header=build_export_cookie_header(request_http),
-            request_http=request_http,
-            sql_session=sql_session,
-        )
+        payer_id = ledger.payer()
+        await _require_balance_for(_requested_slide_count(request) or 1)
+        try:
+            response = await generate_presentation_handler(
+                request,
+                presentation_id,
+                None,
+                export_cookie_header=build_export_cookie_header(request_http),
+                request_http=request_http,
+                sql_session=sql_session,
+                payer_id=payer_id,
+            )
+        except BaseException:
+            await ledger.refund_presentation(payer_id, presentation_id, note="generation failed")
+            raise
+        await ledger.settle_presentation(payer_id, presentation_id)
         return response.model_copy(
             update=absolute_mcp_result_links(
                 request_http,
@@ -3200,6 +3277,7 @@ async def _run_generate_presentation_task(
     task_id: str,
     export_cookie_header: Optional[str],
     owner_id: uuid.UUID | None = None,
+    payer_id: uuid.UUID | None = None,
 ) -> None:
     owner_token = set_current_owner_id(owner_id)
     admin_token = set_current_owner_is_admin(False)
@@ -3224,13 +3302,22 @@ async def _run_generate_presentation_task(
             sql_session.add(async_status)
             await sql_session.commit()
 
-            await generate_presentation_handler(
-                request,
-                presentation_id,
-                async_status=async_status,
-                export_cookie_header=export_cookie_header,
-                sql_session=sql_session,
-            )
+            try:
+                await generate_presentation_handler(
+                    request,
+                    presentation_id,
+                    async_status=async_status,
+                    export_cookie_header=export_cookie_header,
+                    sql_session=sql_session,
+                    payer_id=payer_id,
+                )
+            except BaseException:
+                await ledger.refund_presentation(payer_id, presentation_id, note="generation failed")
+                raise
+            if async_status.status == AsyncTaskStatus.ERROR:
+                await ledger.refund_presentation(payer_id, presentation_id, note="generation failed")
+            else:
+                await ledger.settle_presentation(payer_id, presentation_id)
     finally:
         reset_current_owner_is_admin(admin_token)
         reset_current_owner_id(owner_token)
@@ -3245,6 +3332,7 @@ async def generate_presentation_async(
 ):
     try:
         (presentation_id,) = await check_if_api_request_is_valid(request, sql_session)
+        await _require_balance_for(_requested_slide_count(request) or 1)
 
         async_status = AsyncTaskModel(
             type=ASYNC_TASK_TYPE_PRESENTATION_GENERATE,
@@ -3267,6 +3355,7 @@ async def generate_presentation_async(
             async_status.id,
             build_export_cookie_header(request_http),
             get_current_owner_id(),
+            ledger.payer(),
         )
         return async_status
 
