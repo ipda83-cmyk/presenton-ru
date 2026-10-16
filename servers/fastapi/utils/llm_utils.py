@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import math
+import os
 import threading
 import time
 from collections.abc import AsyncGenerator, Awaitable, Callable, Sequence
@@ -17,10 +18,13 @@ from llmai.shared import (
     ResponseFormat,
     ResponseStreamCompletionChunk,
     UserMessage,
+    get_response_schema,
     normalize_content_parts,
 )
 
+from enums.llm_provider import LLMProvider
 from utils.llm_config import get_extra_body
+from utils.llm_provider import get_llm_provider
 from utils.schema_utils import get_schema_validation_errors
 from utils.i18n import t
 
@@ -120,6 +124,37 @@ async def _generate_structured_content(
     return extract_structured_content("".join(streamed_text))
 
 
+def describe_schema_in_prompt() -> bool:
+    """Whether to repeat the answer's JSON Schema in the prompt.
+
+    OpenAI-compatible proxies may drop response_format (arckep with some
+    models answers in plain Markdown then). On by default for the custom
+    provider; STRUCTURED_OUTPUT_PROMPT=true/false forces it for any provider.
+    """
+    value = (os.getenv("STRUCTURED_OUTPUT_PROMPT") or "").strip().lower()
+    if value in {"1", "true", "yes", "on"}:
+        return True
+    if value in {"0", "false", "no", "off"}:
+        return False
+    try:
+        return get_llm_provider() == LLMProvider.CUSTOM
+    except Exception:
+        return False
+
+
+def json_answer_instruction(response_format: ResponseFormat) -> Optional[UserMessage]:
+    schema = get_response_schema(response_format)
+    if not schema:
+        return None
+    return UserMessage(
+        content=(
+            "Answer with one JSON object that matches this JSON Schema. Output only "
+            "the JSON: no Markdown, no code fences, no text before or after it.\n\n"
+            "JSON Schema:\n" + json.dumps(schema, ensure_ascii=False)
+        )
+    )
+
+
 def get_generate_kwargs(
     model: str,
     messages: Sequence[Message],
@@ -129,9 +164,14 @@ def get_generate_kwargs(
     reasoning: Optional[ReasoningConfig] = None,
     stream: bool = False,
 ) -> dict[str, Any]:
+    messages = list(messages)
+    if response_format is not None and describe_schema_in_prompt():
+        instruction = json_answer_instruction(response_format)
+        if instruction is not None:
+            messages.append(instruction)
     kwargs: dict[str, Any] = {
         "model": model,
-        "messages": list(messages),
+        "messages": messages,
         "stream": stream,
     }
     if max_tokens is not None:

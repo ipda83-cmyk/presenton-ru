@@ -122,3 +122,31 @@ def test_outline_stream_reports_real_provider_errors(monkeypatch):
 
     chunks = _collect_outline(monkeypatch, unavailable)
     assert len(chunks) == 1 and isinstance(chunks[0], HTTPException)
+
+
+def test_custom_provider_gets_the_schema_in_the_prompt(monkeypatch):
+    from llmai.shared import JSONSchemaResponse, UserMessage
+
+    schema = {"type": "object", "properties": {"slides": {"type": "array"}}, "required": ["slides"]}
+    response_format = JSONSchemaResponse(name="response", json_schema=schema, strict=False)
+    messages = [UserMessage(content="Сделай план")]
+    monkeypatch.setattr(llm_utils, "get_extra_body", lambda **_kwargs: None)
+
+    monkeypatch.delenv("STRUCTURED_OUTPUT_PROMPT", raising=False)
+    monkeypatch.setenv("LLM", "custom")
+    kwargs = llm_utils.get_generate_kwargs(model="m", messages=messages, response_format=response_format)
+    assert len(kwargs["messages"]) == 2 and len(messages) == 1
+    instruction = kwargs["messages"][-1].content
+    assert "JSON Schema" in instruction and '"slides"' in instruction and "no code fences" in instruction
+
+    # Not for providers that honour response_format, unless asked.
+    monkeypatch.setenv("LLM", "openai")
+    assert len(llm_utils.get_generate_kwargs(model="m", messages=messages, response_format=response_format)["messages"]) == 1
+    monkeypatch.setenv("STRUCTURED_OUTPUT_PROMPT", "true")
+    assert len(llm_utils.get_generate_kwargs(model="m", messages=messages, response_format=response_format)["messages"]) == 2
+    monkeypatch.setenv("LLM", "custom")
+    monkeypatch.setenv("STRUCTURED_OUTPUT_PROMPT", "false")
+    assert len(llm_utils.get_generate_kwargs(model="m", messages=messages, response_format=response_format)["messages"]) == 1
+    # Plain text requests are untouched.
+    monkeypatch.delenv("STRUCTURED_OUTPUT_PROMPT")
+    assert len(llm_utils.get_generate_kwargs(model="m", messages=messages)["messages"]) == 1
