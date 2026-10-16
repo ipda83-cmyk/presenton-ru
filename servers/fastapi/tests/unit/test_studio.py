@@ -598,3 +598,56 @@ def test_api_storyboard_validation(studio_api):
     assert gpt.status_code == 400
     assert "Gemini" in gpt.json()["detail"]
 
+
+
+def test_waiting_for_a_job_created_elsewhere():
+    """Slide images through the OpenAI SDK create the arckep job themselves;
+    ArckepImages only waits for it."""
+    from services.studio.arckep import ArckepImages
+
+    calls = []
+
+    class Response:
+        def __init__(self, status, payload=None, body=b""):
+            self.status = status
+            self._payload = payload
+            self._body = body
+
+        async def text(self):
+            import json as _json
+            return _json.dumps(self._payload) if self._payload is not None else ""
+
+        async def read(self):
+            return self._body
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+    class Session:
+        def __init__(self, *args, **kwargs):
+            self.polls = 0
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return False
+
+        def get(self, url, headers=None):
+            calls.append(url)
+            if url.endswith("/images/generations/gen_9"):
+                self.polls += 1
+                if self.polls < 2:
+                    return Response(200, {"status": "processing"})
+                return Response(200, {"status": "completed", "output": {"images": [{"url": "https://files.example/out.png"}]}})
+            return Response(200, body=b"png-bytes")
+
+    async def no_sleep(_seconds):
+        return None
+
+    client = ArckepImages("https://arckep.ru/api/v1", "k", session_factory=Session, sleep=no_sleep)
+    assert asyncio.run(client.wait_for_job("gen_9")) == [b"png-bytes"]
+    assert calls[-1] == "https://files.example/out.png"

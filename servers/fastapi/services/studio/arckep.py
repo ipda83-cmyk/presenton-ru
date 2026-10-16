@@ -169,7 +169,18 @@ class ArckepImages:
         job_id = job.get("id") if isinstance(job, dict) else None
         if job_id is None:
             raise StudioProviderError("no job id in the response")
+        return await self._wait_for_job(session, job_id)
 
+    async def wait_for_job(self, job_id: str) -> list[bytes]:
+        """Wait for a job created elsewhere (e.g. through the OpenAI SDK); returns the images' bytes."""
+        try:
+            async with self._session() as session:
+                return await self._wait_for_job(session, job_id)
+        except (aiohttp.ClientError, asyncio.TimeoutError) as error:
+            LOGGER.warning("arckep is unreachable: %r", error)
+            raise StudioUnavailableError("arckep is unreachable") from error
+
+    async def _wait_for_job(self, session, job_id: str) -> list[bytes]:
         deadline = time.monotonic() + self._poll_budget
         delay = FIRST_POLL_DELAY
         while time.monotonic() < deadline:

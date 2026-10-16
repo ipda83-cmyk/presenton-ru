@@ -320,3 +320,65 @@ class TestImageGenerationOpenAICompatible:
                         call_kwargs = mock_session.get.call_args.kwargs
                         assert call_kwargs["headers"] == {}
                         assert os.path.exists(image_path)
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("anyio_backend", ["asyncio"])
+async def test_async_job_providers_are_waited_for(tmp_path, anyio_backend):
+    """arckep answers 202 with a job instead of the image (the OpenAI SDK then
+    has no data); the image is awaited like in the Studio."""
+    from openai._models import construct_type
+    from openai.types import ImagesResponse
+
+    service = ImageGenerationService(str(tmp_path))
+    accepted = construct_type(
+        type_=ImagesResponse, value={"id": "gen_123", "status": "queued", "object": "image.generation"}
+    )
+    assert accepted.data is None  # what crashed with "'NoneType' object is not subscriptable"
+    waited = []
+
+    async def fake_wait(self, job_id):
+        waited.append((self.base_url, job_id))
+        return [b"\x89PNG job image"]
+
+    with patch(
+        "services.image_generation_service.get_openai_compat_image_base_url_env",
+        return_value="https://arckep.ru/api/v1",
+    ), patch(
+        "services.image_generation_service.get_openai_compat_image_api_key_env",
+        return_value="sk-test-key",
+    ), patch(
+        "services.image_generation_service.get_openai_compat_image_model_env",
+        return_value="gpt-image-2.5",
+    ), patch("services.image_generation_service.AsyncOpenAI") as MockClient, patch(
+        "services.studio.arckep.ArckepImages.wait_for_job", fake_wait
+    ):
+        MockClient.return_value.images.generate = AsyncMock(return_value=accepted)
+        image_path = await service.generate_image_openai_compatible("prompt", str(tmp_path))
+
+    assert waited == [("https://arckep.ru/api/v1", "gen_123")]
+    with open(image_path, "rb") as handle:
+        assert handle.read() == b"\x89PNG job image"
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("anyio_backend", ["asyncio"])
+async def test_no_data_and_no_job_is_an_error(tmp_path, anyio_backend):
+    from openai._models import construct_type
+    from openai.types import ImagesResponse
+
+    service = ImageGenerationService(str(tmp_path))
+    empty = construct_type(type_=ImagesResponse, value={"created": 1})
+    with patch(
+        "services.image_generation_service.get_openai_compat_image_base_url_env",
+        return_value="https://api.example.com/v1",
+    ), patch(
+        "services.image_generation_service.get_openai_compat_image_api_key_env",
+        return_value="k",
+    ), patch(
+        "services.image_generation_service.get_openai_compat_image_model_env",
+        return_value="m",
+    ), patch("services.image_generation_service.AsyncOpenAI") as MockClient:
+        MockClient.return_value.images.generate = AsyncMock(return_value=empty)
+        with pytest.raises(Exception, match="no image data"):
+            await service.generate_image_openai_compatible("prompt", str(tmp_path))

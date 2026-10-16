@@ -885,16 +885,38 @@ class ImageGenerationService:
         origin = f"{parsed.scheme}://{parsed.netloc}"
 
         client = AsyncOpenAI(base_url=base_url, api_key=api_key)
+        from services.studio.arckep import ArckepImages, _job_slots_for_loop
 
-        response = await client.images.generate(
-            model=model,
-            prompt=prompt,
-            n=1,
-            size="1024x1024",
-        )
+        # Shares the Studio's queue: arckep runs at most 5 jobs per key, and
+        # slide images are generated in parallel.
+        async with _job_slots_for_loop():
+            response = await client.images.generate(
+                model=model,
+                prompt=prompt,
+                n=1,
+                size="1024x1024",
+            )
+            if not response.data:
+                job_id = getattr(response, "id", None) or (
+                    getattr(response, "model_extra", None) or {}
+                ).get("id")
+                images = (
+                    await ArckepImages(base_url, api_key).wait_for_job(str(job_id))
+                    if job_id
+                    else None
+                )
+
+        image_path = os.path.join(output_directory, f"{uuid.uuid4()}.png")
+        if not response.data:
+            # Asynchronous providers (arckep) answer 202 with a job instead of
+            # the image; it was waited for above, like in the Studio.
+            if not images:
+                raise Exception("OpenAI-compatible provider returned no image data")
+            with open(image_path, "wb") as f:
+                f.write(images[0])
+            return image_path
 
         item = response.data[0]
-        image_path = os.path.join(output_directory, f"{uuid.uuid4()}.png")
 
         if item.b64_json:
             with open(image_path, "wb") as f:
