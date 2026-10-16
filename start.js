@@ -866,8 +866,11 @@ const startNginxWithFallbackConfig = () => {
   ];
   for (const [index, attempt] of attempts.entries()) {
     writeFileSync(nginxFallbackConfigPath, attempt);
+    // No pipes: the daemonized nginx keeps its stdout/stderr open, and a
+    // spawnSync waiting on a pipe would block this process — and with it the
+    // forwarding of the servers' output — forever.
     const result = spawnSync("nginx", ["-c", nginxFallbackConfigPath], {
-      encoding: "utf8",
+      stdio: ["ignore", "inherit", "inherit"],
     });
     if (result.status === 0) {
       console.log(
@@ -875,9 +878,7 @@ const startNginxWithFallbackConfig = () => {
       );
       return true;
     }
-    console.error(
-      `Nginx reduced config variant ${index + 1} failed: ${(result.stderr || "").trim()}`
-    );
+    console.error(`Nginx reduced config variant ${index + 1} failed`);
     reportNginxProblem(nginxFallbackConfigPath);
   }
   return false;
