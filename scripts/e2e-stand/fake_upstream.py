@@ -4,6 +4,7 @@ Costs nothing; faults are switched on via POST /control {"llm": mode, "arckep": 
 LLM modes:  ok | http500 | fail_next:N (N x 504, then ok) | empty | garbage | hang
 arckep modes: ok | create500 | create429 | balance | scope | job_failed | garbage | bad_image | download404 | upload500 | hang_create
 YooKassa modes ("yookassa"): ok | create500 | saved_fail (saved-card charges are canceled)
+RelaxNet Storage API ("storage"): ok | cdn_down (CDN 503, the fallback link works) | upload500 | down (everything 503)
 A payment page (GET /yookassa/pay/<id>) has "Pay" / "Cancel"; paying sends the webhook
 to Presenton like the real YooKassa (only the payment id matters: Presenton looks it up).
 """
@@ -19,13 +20,15 @@ import uuid
 from aiohttp import web
 from PIL import Image, ImageDraw, ImageOps
 
-STATE = {"llm": "ok", "arckep": "ok", "yookassa": "ok", "llm_delay": 0.0, "fail_left": 0, "active_jobs": 0, "max_active_jobs": 0}
+STATE = {"llm": "ok", "arckep": "ok", "yookassa": "ok", "storage": "ok", "llm_delay": 0.0, "fail_left": 0, "active_jobs": 0, "max_active_jobs": 0}
 PAYMENTS: dict[str, dict] = {}
 WEBHOOK_URL = "http://presenton-e2e/api/v1/billing/yookassa/webhook"
 LOG: list[dict] = []
 UPLOADS: dict[str, bytes] = {}
 JOBS: dict[str, dict] = {}
 FILES: dict[str, bytes] = {}
+STORAGE: dict[str, bytes] = {}  # "users/7/presenton/<folder>/<ms>-<name>" -> bytes
+STORAGE_PUBLIC = "http://presenton-e2e-fake:9000"
 WORDS = (
     "solar panels cut energy costs for small offices while batteries store the midday surplus "
     "teams measure savings every quarter and share results with customers partners and investors"
@@ -359,11 +362,78 @@ async def kassa_set(request: web.Request):
     return web.json_response(payment)
 
 
+# ---------------------------------------------------------------- RelaxNet Storage API
+def _storage_down(request: web.Request) -> web.Response | None:
+    if STATE["storage"] == "down":
+        return web.Response(status=503, text="storage is down")
+    if not request.headers.get("Authorization", "").startswith("Bearer "):
+        return web.json_response({"success": False, "error": "unauthorized"}, status=401)
+    return None
+
+
+def _storage_links(key: str) -> dict:
+    return {"url": f"{STORAGE_PUBLIC}/cdn/{key}", "fallbackUrl": f"{STORAGE_PUBLIC}/files-fallback/{key}"}
+
+
+async def storage_upload(request: web.Request):
+    if (error := _storage_down(request)) is not None:
+        return error
+    if STATE["storage"] == "upload500":
+        return web.Response(status=500, text="upload failed")
+    form = await request.post()
+    upload = form.get("file")
+    if upload is None or not hasattr(upload, "file"):
+        return web.json_response({"success": False, "error": "file is required"}, status=400)
+    folder = "/".join(part for part in str(form.get("path") or "").split("/") if part not in ("", ".", ".."))
+    name = upload.filename.replace("/", "_")
+    webp = str(form.get("webp", "true")).lower() != "false"
+    if webp and name.lower().endswith((".png", ".jpg", ".jpeg")):
+        name = name.rsplit(".", 1)[0] + ".webp"  # like the real API: raster images become WebP
+    key = "/".join(part for part in ("users/7/presenton", folder, f"{int(time.time() * 1000)}-{name}") if part)
+    STORAGE[key] = upload.file.read()
+    LOG.append({"t": time.time(), "kind": "storage_upload", "key": key, "size": len(STORAGE[key])})
+    return web.json_response({"success": True, "path": key, "webp": webp, **_storage_links(key)})
+
+
+async def storage_files(request: web.Request):
+    if (error := _storage_down(request)) is not None:
+        return error
+    path = request.query.get("path", "")
+    if request.method == "DELETE":
+        key = path.split("/cdn/", 1)[-1] if "/cdn/" in path else path
+        if key not in STORAGE:
+            return web.json_response({"success": False, "error": "not found"}, status=404)
+        del STORAGE[key]
+        LOG.append({"t": time.time(), "kind": "storage_delete", "key": key})
+        return web.json_response({"success": True, "deleted": key})
+    prefix = "users/7/presenton/" + path.strip("/")
+    files = [
+        {"path": key, "size": len(data), **_storage_links(key)}
+        for key, data in STORAGE.items()
+        if key.startswith(prefix)
+    ]
+    return web.json_response({"success": True, "files": files})
+
+
+async def storage_object(request: web.Request):
+    if STATE["storage"] == "down" or (STATE["storage"] == "cdn_down" and request.path.startswith("/cdn/")):
+        return web.Response(status=503)
+    data = STORAGE.get(request.match_info["key"])
+    if data is None:
+        return web.Response(status=404)
+    return web.Response(body=data, content_type="application/octet-stream")
+
+
+async def storage_dump(_: web.Request):
+    """Test helper: what the storage holds."""
+    return web.json_response({key: len(data) for key, data in STORAGE.items()})
+
+
 # ---------------------------------------------------------------- control
 async def control(request: web.Request):
     if request.method == "POST":
         body = await request.json()
-        for key in ("llm", "arckep", "yookassa", "llm_delay"):
+        for key in ("llm", "arckep", "yookassa", "storage", "llm_delay"):
             if key in body:
                 STATE[key] = body[key]
         if str(STATE["llm"]).startswith("fail_next:"):
@@ -388,6 +458,12 @@ app.add_routes([
     web.get("/yookassa/pay/{payment_id}", kassa_page),
     web.post("/yookassa/pay/{payment_id}/{decision:succeed|cancel}", kassa_decide),
     web.post("/yookassa/test/{payment_id}", kassa_set),
+    web.post("/storage/upload", storage_upload),
+    web.get("/storage/files", storage_files),
+    web.delete("/storage/files", storage_files),
+    web.get("/storage/test/dump", storage_dump),
+    web.get("/cdn/{key:.+}", storage_object),
+    web.get("/files-fallback/{key:.+}", storage_object),
     web.get("/control", control),
     web.post("/control", control),
 ])

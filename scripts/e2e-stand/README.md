@@ -38,6 +38,18 @@ sh scripts/e2e-stand/run_all.sh
 `attack_studio.py --slow` дополнительно ждёт «зависший» arckep (около минуты).
 `attack_studio.py` один раз останавливает поддельный сервис, чтобы проверить «arckep недоступен».
 
+## Редеплой как на RelaxNet
+
+```bash
+python scripts/e2e-stand/relaxnet_redeploy.py
+```
+
+Отдельный контейнер `presenton-relax` (http://127.0.0.1:5058, порт 8080 внутри) с PostgreSQL
+(`presenton-relax-pg`), без тома для `/app_data` и с копией файлов в поддельном Storage API.
+Контейнер несколько раз удаляется и поднимается заново: пользователи, балансы, вход и файлы
+должны сохраниться, в том числе при недоступном CDN и недоступном хранилище. Логи остановленных
+контейнеров — в `.relax-logs/`. Подробнее — [`DEPLOY_RELAXNET.md`](../../DEPLOY_RELAXNET.md).
+
 ## Сбои вручную
 
 ```bash
@@ -49,6 +61,7 @@ curl -X POST 127.0.0.1:9056/control -H 'Content-Type: application/json' -d '{"ll
 arckep: `ok`, `create500`, `create429`, `balance`, `scope`, `job_failed`, `garbage`,
 `bad_image`, `download404`, `upload500`, `hang_create`.
 ЮKassa (`"yookassa"`): `ok`, `create500`, `saved_fail` (списания с сохранённой карты отклоняются).
+Storage API RelaxNet (`"storage"`): `ok`, `cdn_down` (CDN отвечает 503, работает запасная ссылка), `upload500`, `down`.
 Страница оплаты — `http://presenton-e2e-fake:9000/yookassa/pay/<id>` (кнопки «Оплатить» / «Отменить»);
 после оплаты поддельная ЮKassa шлёт уведомление с неверной суммой — Презентон обязан перепроверить платёж.
 `GET /control` показывает журнал запросов (модели, промпты, число одновременных задач).
@@ -56,5 +69,5 @@ arckep: `ok`, `create500`, `create429`, `balance`, `scope`, `job_failed`, `garba
 ## Остановить
 
 ```bash
-docker rm -f presenton-e2e presenton-e2e-fake
+docker rm -f presenton-e2e presenton-e2e-fake presenton-relax presenton-relax-pg
 ```
