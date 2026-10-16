@@ -43,3 +43,25 @@ def test_upstreams_use_the_loopback_address_not_localhost():
     config = NGINX_CONFIG.read_text(encoding="utf-8")
     assert re.findall(r"proxy_pass http://localhost", config) == []
     assert "proxy_pass http://127.0.0.1:8000;" in _location_block(config, "/api/v1/")
+
+
+def test_listens_on_8080_for_hosts_that_route_only_there():
+    config = NGINX_CONFIG.read_text(encoding="utf-8")
+    assert "    listen 80;" in config and "    listen 8080;" in config
+
+
+def test_missing_app_data_files_are_asked_from_fastapi():
+    # After a redeploy the disk is empty and FastAPI restores files from the
+    # external storage; it checks access itself.
+    config = NGINX_CONFIG.read_text(encoding="utf-8")
+    for path in (
+        "/app_data/images/",
+        "/app_data/exports/",
+        "/app_data/uploads/",
+        "/app_data/fonts/",
+        "/app_data/templates/",
+        "/app_data/pptx-to-html/",
+        "/app_data/pptx-to-json/",
+    ):
+        assert "error_page 404 = @app_data_restore;" in _location_block(config, path)
+    assert "proxy_pass http://127.0.0.1:8000;" in _location_block(config, "@app_data_restore")

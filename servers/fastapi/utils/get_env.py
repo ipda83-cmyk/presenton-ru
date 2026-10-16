@@ -551,3 +551,48 @@ def get_yookassa_vat_code_env():
 def get_yookassa_api_url_env():
     # Tests point this at a fake; production uses the default.
     return os.getenv("YOOKASSA_API_URL")
+
+
+# External file storage (RelaxNet Storage API): APP_DATA_DIRECTORY is copied
+# there because the container disk does not survive a redeploy.
+DEFAULT_STORAGE_API_BASE_URL = "https://relaxdev.ru/api/v1/storage"
+
+
+def get_storage_api_key_env() -> str | None:
+    value = (os.getenv("STORAGE_API_KEY") or "").strip()
+    return value or None
+
+
+def get_storage_api_base_url_env() -> str:
+    value = (os.getenv("STORAGE_API_BASE_URL") or "").strip().rstrip("/")
+    return value if value.startswith(("http://", "https://")) else DEFAULT_STORAGE_API_BASE_URL
+
+
+def is_storage_sync_enabled() -> bool:
+    """On when a storage key is present, unless STORAGE_SYNC_ENABLED says otherwise."""
+    if not get_storage_api_key_env():
+        return False
+    value = (os.getenv("STORAGE_SYNC_ENABLED") or "").strip().lower()
+    return value not in {"0", "false", "no", "off"}
+
+
+def get_storage_sync_prefix_env() -> str:
+    """Folder inside the project storage that mirrors APP_DATA_DIRECTORY."""
+    value = (os.getenv("STORAGE_SYNC_PREFIX") or "").strip().strip("/")
+    parts = [part for part in value.split("/") if part and part not in {".", ".."}]
+    return "/".join(parts) or "app_data"
+
+
+def _float_env(name: str, default: float, minimum: float) -> float:
+    try:
+        return max(minimum, float(os.getenv(name) or default))
+    except ValueError:
+        return default
+
+
+def get_storage_sync_interval_env() -> float:
+    return _float_env("STORAGE_SYNC_INTERVAL", 3.0, 0.5)
+
+
+def get_storage_sync_shutdown_timeout_env() -> float:
+    return _float_env("STORAGE_SYNC_SHUTDOWN_TIMEOUT", 20.0, 1.0)

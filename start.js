@@ -26,6 +26,31 @@ const { buildUserConfigFromEnv, readUserConfigEnv } = userConfigEnv;
 
 process.umask(0o022);
 
+// Some hosts (RelaxNet) give every `process.env.NAME` found in the sources a
+// placeholder value when the project does not define NAME. Treat those as
+// unset; the paths baked into the image (Dockerfile ENV) come back as defaults.
+const HOST_ENV_PLACEHOLDER = "auto-generated-stub-for-build";
+const IMAGE_ENV_DEFAULTS = {
+  APP_DATA_DIRECTORY: "/app_data",
+  TEMP_DIRECTORY: "/tmp/presenton",
+  EXPORT_PACKAGE_ROOT: "/app/presentation-export",
+  PRESENTON_APP_ROOT: "/app",
+};
+const placeholderEnvNames = Object.keys(process.env).filter(
+  (name) => process.env[name] === HOST_ENV_PLACEHOLDER
+);
+for (const name of placeholderEnvNames) {
+  delete process.env[name];
+  if (IMAGE_ENV_DEFAULTS[name]) {
+    process.env[name] = IMAGE_ENV_DEFAULTS[name];
+  }
+}
+if (placeholderEnvNames.length > 0) {
+  console.warn(
+    `Ignoring placeholder values of: ${placeholderEnvNames.sort().join(", ")}`
+  );
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -516,6 +541,23 @@ if (!process.env.FAST_API_INTERNAL_URL) {
 }
 
 //? UserConfig is only setup if API Keys can be changed
+// When /app_data is kept in an external storage (the container disk does not
+// survive a redeploy), bring back userConfig.json before it is read: it holds
+// the secret that signs sign-in sessions.
+const restoreFilesFromStorage = () => {
+  if (!(process.env.STORAGE_API_KEY || "").trim()) {
+    return;
+  }
+  const result = spawnSync(
+    "python",
+    ["-m", "services.storage_sync.early_restore", "userConfig.json"],
+    { cwd: fastapiDir, stdio: "inherit", env: process.env, timeout: 90000 }
+  );
+  if (result.error) {
+    console.warn(`Storage restore before start skipped: ${result.error.message}`);
+  }
+};
+
 const setupUserConfigFromEnv = () => {
   const existingConfig = readUserConfig();
   const envConfig = readUserConfigEnv(process.env);
@@ -529,19 +571,32 @@ const startServers = async (nginxReadyPromise) => {
   const managedProcesses = new Set();
   let isShuttingDown = false;
 
+  // Children get SIGTERM and a moment to finish: FastAPI uploads files still
+  // pending for the external storage before it exits.
+  const shutdownGraceMs = 30000;
   const shutdown = (exitCode) => {
     if (isShuttingDown) {
       return;
     }
     isShuttingDown = true;
 
-    for (const childProcess of managedProcesses) {
-      if (!childProcess.killed) {
-        childProcess.kill();
-      }
+    const running = [...managedProcesses].filter(
+      (childProcess) => childProcess.exitCode === null && childProcess.signalCode === null
+    );
+    if (running.length === 0) {
+      process.exit(exitCode);
     }
-
-    process.exit(exitCode);
+    let remaining = running.length;
+    for (const childProcess of running) {
+      childProcess.once("exit", () => {
+        remaining -= 1;
+        if (remaining === 0) {
+          process.exit(exitCode);
+        }
+      });
+      childProcess.kill("SIGTERM");
+    }
+    setTimeout(() => process.exit(exitCode), shutdownGraceMs);
   };
 
   process.once("SIGINT", () => shutdown(0));
@@ -754,6 +809,8 @@ const main = async () => {
     await setupNodeModules();
     await ensurePresentationExportNodeDependencies();
   }
+
+  restoreFilesFromStorage();
 
   if (canChangeKeys) {
     setupUserConfigFromEnv();

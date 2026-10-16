@@ -8,6 +8,7 @@ from migrations import migrate_database_on_startup
 from services.database import async_session_maker, create_db_and_tables, dispose_engines
 from services.async_tasks import fail_interrupted_async_tasks
 from services.provider_settings import migrate_provider_settings_from_file
+from services.storage_sync import start_storage_sync, stop_storage_sync
 from templates.default_templates import import_default_templates_on_startup
 from utils.get_env import (
     get_app_data_directory_env,
@@ -61,6 +62,9 @@ async def app_lifespan(_: FastAPI):
     await migrate_database_on_startup()
     await create_db_and_tables()
     await bootstrap_database_admin()
+    # Before anything reads the data folder: known files missing after a
+    # redeploy are restored in the background, or on the spot when asked for.
+    await start_storage_sync()
     async with async_session_maker() as session:
         # BackgroundTasks are process-local and cannot resume after a restart.
         # Resolve their persisted rows before accepting polling requests.
@@ -71,5 +75,7 @@ async def app_lifespan(_: FastAPI):
         update_env_with_user_config()
     await check_llm_and_image_provider_api_or_model_availability()
     yield
+    # Upload what is still pending before the container goes away.
+    await stop_storage_sync()
     # Shutdown: release all database connections to prevent stale/leaked pools.
     await dispose_engines()

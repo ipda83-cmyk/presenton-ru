@@ -61,6 +61,10 @@ def get_database_url_and_connect_args() -> tuple[str, dict]:
 
     _ensure_sqlite_parent_dir(database_url)
 
+    if database_url.startswith("postgres://"):
+        # Heroku-style scheme that some hosts hand out; SQLAlchemy needs "postgresql".
+        database_url = "postgresql://" + database_url[len("postgres://") :]
+
     if database_url.startswith("sqlite://"):
         database_url = database_url.replace("sqlite://", "sqlite+aiosqlite://", 1)
     elif database_url.startswith("postgresql://"):

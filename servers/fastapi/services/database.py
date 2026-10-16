@@ -26,6 +26,7 @@ from models.sql.template import TemplateModel
 from models.sql.template_create_info import TemplateCreateInfoModel
 from models.sql.template_v2 import TemplateV2
 from models.sql.slide import SlideModel
+from models.sql.storage_object import StorageObject
 from models.sql.webhook_subscription import WebhookSubscription
 from models.sql.user import User
 from models.sql.provider_settings import ProviderSettings
@@ -150,6 +151,7 @@ async def create_db_and_tables():
                         BillingAccount.__table__,
                         BillingEntry.__table__,
                         BillingPayment.__table__,
+                        StorageObject.__table__,
                     ],
                 )
             )

@@ -54,6 +54,25 @@ async def import_default_templates_on_startup(
         await _remove_stale_default_templates(session, imported_template_ids)
 
 
+def default_template_ids(templates_root: Path | None = None) -> list[str]:
+    """Ids of the bundled templates (their assets are copied from the image on every start)."""
+    root = templates_root or _default_templates_root()
+    if not root.is_dir():
+        return []
+    ids = []
+    for path in sorted(root.iterdir()):
+        template_json_path = path / "template.json"
+        if not template_json_path.is_file():
+            continue
+        try:
+            raw = json.loads(template_json_path.read_text(encoding="utf-8"))
+            if isinstance(raw, dict):
+                ids.append(_read_template_id(raw, path))
+        except (OSError, ValueError):
+            continue
+    return ids
+
+
 def _default_templates_root() -> Path:
     return Path(__file__).resolve().parents[3] / "templates"
 

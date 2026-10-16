@@ -1,9 +1,11 @@
+import asyncio
 import os
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import FileResponse
 
@@ -18,6 +20,7 @@ from api.v1.studio.router import API_V1_STUDIO_ROUTER
 from api.v1.billing.router import API_V1_ADMIN_BILLING_ROUTER, API_V1_BILLING_ROUTER
 from api.v1.webhook.router import API_V1_WEBHOOK_ROUTER
 from api.v2.router import API_V2_ROUTER
+from services.storage_sync import get_storage_sync
 from utils.get_env import (
     get_app_data_directory_env,
     get_sentry_dsn_env,
@@ -66,6 +69,21 @@ def _maybe_init_sentry() -> None:
 
 _maybe_init_sentry()
 
+class AppDataStaticFiles(StaticFiles):
+    """/app_data files; one missing after a redeploy is brought back from the storage."""
+
+    async def get_response(self, path, scope):
+        try:
+            return await super().get_response(path, scope)
+        except HTTPException as error:
+            sync = get_storage_sync()
+            if error.status_code != 404 or sync is None:
+                raise
+            if not await asyncio.to_thread(sync.restore_file_sync, path):
+                raise
+            return await super().get_response(path, scope)
+
+
 app = FastAPI(lifespan=app_lifespan)
 app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
 
@@ -85,7 +103,7 @@ app.include_router(API_V2_ROUTER)
 app_data_dir = get_app_data_directory_env()
 if app_data_dir:
     os.makedirs(app_data_dir, exist_ok=True)
-    app.mount("/app_data", StaticFiles(directory=app_data_dir), name="app_data")
+    app.mount("/app_data", AppDataStaticFiles(directory=app_data_dir), name="app_data")
 
 static_dir = get_resource_path("static")
 if os.path.isdir(static_dir):

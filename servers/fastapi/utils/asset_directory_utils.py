@@ -16,6 +16,7 @@ from api.v1.auth.assets import (
     normalized_app_data_parts,
 )
 from api.v1.auth.context import get_current_owner_id, get_current_owner_is_admin
+from services.storage_sync import restore_missing_app_data_file
 
 
 def _owned_directory(root_name: str) -> str:
@@ -128,7 +129,9 @@ def resolve_app_path_to_filesystem(path_or_url: str) -> Optional[str]:
         if not app_data or not _app_data_url_allowed(path):
             return None
         relative = path[len("/app_data/"):]
-        return _existing_file_within(os.path.join(app_data, relative), app_data)
+        candidate = os.path.join(app_data, relative)
+        restore_missing_app_data_file(candidate)
+        return _existing_file_within(candidate, app_data)
 
     if path.startswith("/static/"):
         relative = path[len("/static/"):]
@@ -186,6 +189,7 @@ def _app_data_url_allowed(path: str) -> bool:
 def _resolve_allowed_absolute_file(path: str) -> Optional[str]:
     app_data = get_app_data_directory_env()
     if app_data:
+        restore_missing_app_data_file(path)
         candidate = _existing_file_within(path, app_data)
         if candidate:
             relative = os.path.relpath(candidate, os.path.realpath(app_data))
