@@ -834,8 +834,10 @@ const startNginxWithFallbackConfig = () => {
     config = readFileSync(nginxRuntimeConfigPath, "utf8")
       .replace(/^pid\s+[^;]+;/m, "pid /tmp/presenton-nginx.pid;")
       .replace(/^error_log\s+[^;]+;/m, "error_log stderr;")
-      .replace(/^\s*listen 80;\s*\n/m, "")
-      .replace(/^(\s*)listen 8080;/m, `$1listen ${port};`)
+      // One listen on PORT: the RelaxNet builder rewrites "listen 80" into
+      // "listen 8080" next to ours, and a duplicate stops nginx.
+      .replace(/^[ \t]*listen\s+[^;]+;[ \t]*\n/gm, "")
+      .replace(/^([ \t]*)server \{\n/m, `$1server {\n$1  listen ${port};\n`)
       // Files nginx owns under /var may be closed to a root without capabilities.
       .replace(
         /^http \{/m,
