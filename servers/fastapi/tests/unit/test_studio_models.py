@@ -202,3 +202,28 @@ def test_studio_config_shows_only_enabled_models(monkeypatch, tmp_path):
     assert config["default_model"] == "recraft-v4.1-vector"
     assert set(config["models"][0]["modes"]) == {"generate", "edit", "reference"}
     assert studio_models.MODES == ("generate", "edit", "reference", "storyboard")
+
+
+def test_estimates_asked_at_once_share_one_cache(monkeypatch):
+    """At start every price is asked together; none may be lost."""
+    monkeypatch.setenv("STUDIO_API_KEY", "arckep-key")
+    stored = {}
+
+    async def slow_read(key):
+        await asyncio.sleep(0.01)
+        return None
+
+    async def write(key, value):
+        stored[key] = value
+
+    async def fake(model, resolution, quality):
+        return 3.0, {"cost_rub": "3.0"}
+
+    monkeypatch.setattr(catalog, "_read", slow_read)
+    monkeypatch.setattr(catalog, "_write", write)
+    monkeypatch.setattr(estimates, "_request", fake)
+    from services.billing import pricing
+
+    asyncio.run(pricing.price_table())
+    expected = sum(len(pricing.options(model)) for model in enabled_models())
+    assert sum(len(options) for options in stored["studio:estimates"].values()) == expected

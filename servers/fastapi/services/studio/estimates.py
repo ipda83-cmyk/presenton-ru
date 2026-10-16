@@ -110,10 +110,14 @@ def estimate_body(model: StudioModel, resolution: str | None, quality: str | Non
 
 
 async def _load_cache() -> dict[str, dict[str, dict]]:
+    """One shared dict: estimates asked at once must not each load their own copy."""
     global _cache
     if _cache is None:
-        stored = await catalog._read(ESTIMATES_KEY)
-        _cache = stored if isinstance(stored, dict) else {}
+        lock, _ = _loop_primitives()
+        async with lock:
+            if _cache is None:
+                stored = await catalog._read(ESTIMATES_KEY)
+                _cache = stored if isinstance(stored, dict) else {}
     return _cache
 
 
