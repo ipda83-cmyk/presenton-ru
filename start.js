@@ -786,7 +786,7 @@ const startNginx = () => {
 
     nginxProcess.on("error", (err) => {
       console.error("Nginx process failed to start:", err);
-      resolve(false);
+      resolve(startNginxWithFallbackConfig());
     });
 
     nginxProcess.on("exit", (code) => {
@@ -795,10 +795,90 @@ const startNginx = () => {
         resolve(true);
       } else {
         console.error(`Nginx failed to start with exit code: ${code}`);
-        resolve(false);
+        resolve(startNginxWithFallbackConfig());
       }
     });
   });
+};
+
+// Some hosts (RelaxNet) run containers with fewer privileges than plain
+// Docker: binding a port below 1024 or switching worker users may be refused.
+// Then nginx runs with a reduced copy of the config: only the PORT the host
+// routes to, pid and errors outside system folders, and — if that still
+// fails — a single process that never changes its user.
+const nginxFallbackConfigPath = "/tmp/presenton-nginx.conf";
+
+const reportNginxProblem = (configPath) => {
+  const test = spawnSync("nginx", ["-t", "-c", configPath], { encoding: "utf8" });
+  const output = `${test.stdout || ""}${test.stderr || ""}`.trim();
+  if (output) {
+    console.error(`nginx -t (${configPath}):\n${output}`);
+  }
+  try {
+    const status = readFileSync("/proc/self/status", "utf8");
+    const ids = status
+      .split("\n")
+      .filter((line) => /^(Uid|Gid|CapEff):/.test(line))
+      .join("; ");
+    console.error(`Process: ${ids}`);
+  } catch {
+    // not Linux
+  }
+};
+
+const startNginxWithFallbackConfig = () => {
+  reportNginxProblem(nginxRuntimeConfigPath);
+  const port = /^\d+$/.test(process.env.PORT || "") ? process.env.PORT : "8080";
+  let config;
+  try {
+    config = readFileSync(nginxRuntimeConfigPath, "utf8")
+      .replace(/^pid\s+[^;]+;/m, "pid /tmp/presenton-nginx.pid;")
+      .replace(/^error_log\s+[^;]+;/m, "error_log stderr;")
+      .replace(/^\s*listen 80;\s*\n/m, "")
+      .replace(/^(\s*)listen 8080;/m, `$1listen ${port};`)
+      // Files nginx owns under /var may be closed to a root without capabilities.
+      .replace(
+        /^http \{/m,
+        [
+          "http {",
+          "  access_log off;",
+          "  client_body_temp_path /tmp/nginx/body;",
+          "  proxy_temp_path /tmp/nginx/proxy;",
+          "  fastcgi_temp_path /tmp/nginx/fastcgi;",
+          "  uwsgi_temp_path /tmp/nginx/uwsgi;",
+          "  scgi_temp_path /tmp/nginx/scgi;",
+        ].join("\n")
+      );
+    mkdirSync("/tmp/nginx", { recursive: true });
+  } catch (error) {
+    console.error("Cannot read the nginx config:", error);
+    return false;
+  }
+  const attempts = [
+    config,
+    config
+      // Same user as now (nothing to chown) and no worker processes (nothing
+      // to switch users for): works with no capabilities at all.
+      .replace(/^user\s+[^;]+;/m, "user root;")
+      .replace(/^worker_processes\s+[^;]+;/m, "worker_processes 1;\nmaster_process off;"),
+  ];
+  for (const [index, attempt] of attempts.entries()) {
+    writeFileSync(nginxFallbackConfigPath, attempt);
+    const result = spawnSync("nginx", ["-c", nginxFallbackConfigPath], {
+      encoding: "utf8",
+    });
+    if (result.status === 0) {
+      console.log(
+        `Nginx started with the reduced config (port ${port}, variant ${index + 1})`
+      );
+      return true;
+    }
+    console.error(
+      `Nginx reduced config variant ${index + 1} failed: ${(result.stderr || "").trim()}`
+    );
+    reportNginxProblem(nginxFallbackConfigPath);
+  }
+  return false;
 };
 
 const main = async () => {
