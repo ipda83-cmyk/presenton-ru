@@ -26,7 +26,7 @@ from services.documents_loader import DocumentsLoader
 from services.mem0_presentation_memory_service import (
     MEM0_PRESENTATION_MEMORY_SERVICE,
 )
-from utils.llm_utils import message_content_to_text
+from utils.llm_utils import loads_model_json, message_content_to_text
 from utils.outline_utils import (
     get_no_of_outlines_to_generate_for_n_slides,
     get_presentation_title_from_presentation_outline,
@@ -331,10 +331,13 @@ async def stream_outlines(
 
         try:
             presentation_outlines_json = dict(
-                dirtyjson.loads(presentation_outlines_text)
+                loads_model_json(presentation_outlines_text)
             )
         except Exception as e:
             traceback.print_exc()
+            LOGGER.warning(
+                "Outline answer is not JSON (start: %r)", presentation_outlines_text[:300]
+            )
             yield SSEErrorResponse(
                 detail=(
                     t("err.presentation.failedToGeneratePresentationOutlinesPlease")

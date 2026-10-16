@@ -22,6 +22,7 @@ from utils.llm_config import get_llm_config
 from utils.llm_provider import get_model
 from utils.llm_utils import (
     DisconnectChecker,
+    final_json_parse_error_text,
     get_generate_kwargs,
     serialize_structured_content,
     stream_generate_events,
@@ -384,6 +385,7 @@ async def generate_ppt_outline(
                 part for part in (additional_context, search_context) if part
             )
 
+    emitted_content = False
     try:
         if emit_statuses:
             yield OutlineGenerationStatus(
@@ -400,7 +402,6 @@ async def generate_ppt_outline(
             json_schema=outline_schema,
             strict=False,
         )
-        emitted_content = False
         async for event in stream_generate_events(
             client,
             disconnect_checker=disconnect_checker,
@@ -434,4 +435,12 @@ async def generate_ppt_outline(
                 if final_content:
                     yield final_content
     except Exception as e:
+        model_text = final_json_parse_error_text(e)
+        if model_text is not None:
+            # Only llmai's strict final json.loads failed; the outline endpoint
+            # parses the text leniently (it may be wrapped in ```json fences).
+            LOGGER.info("Outline answer is wrapped JSON; leaving it to the lenient parser")
+            if not emitted_content:
+                yield model_text
+            return
         yield handle_llm_client_exceptions(e)

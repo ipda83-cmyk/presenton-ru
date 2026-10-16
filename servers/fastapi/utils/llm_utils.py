@@ -84,19 +84,31 @@ async def _generate_structured_content(
     # the other providers, so it is the single path.
     completion_content: Any = None
     streamed_text: list[str] = []
-    async for event in stream_generate_events(
-        client,
-        disconnect_checker=disconnect_checker,
-        **{**kwargs, "stream": True},
-    ):
-        if isinstance(event, ResponseStreamCompletionChunk):
-            completion_content = event.content
-        elif getattr(event, "type", None) == "content":
-            chunk = getattr(event, "chunk", None)
-            if isinstance(chunk, str):
-                streamed_text.append(chunk)
-                if text_chunk_callback is not None:
-                    await text_chunk_callback(chunk)
+    try:
+        async for event in stream_generate_events(
+            client,
+            disconnect_checker=disconnect_checker,
+            **{**kwargs, "stream": True},
+        ):
+            if isinstance(event, ResponseStreamCompletionChunk):
+                completion_content = event.content
+            elif getattr(event, "type", None) == "content":
+                chunk = getattr(event, "chunk", None)
+                if isinstance(chunk, str):
+                    streamed_text.append(chunk)
+                    if text_chunk_callback is not None:
+                        await text_chunk_callback(chunk)
+    except Exception as error:
+        model_text = final_json_parse_error_text(error)
+        content = extract_structured_content(model_text) if model_text else None
+        if content is None:
+            if model_text is not None:
+                LOGGER.warning(
+                    "Model answer is not JSON (start: %r)", model_text[:300]
+                )
+            raise
+        LOGGER.info("Model wrapped its JSON answer; parsed it leniently")
+        return content
 
     content = extract_structured_content(completion_content)
     if content is not None:
@@ -412,6 +424,51 @@ def extract_text(content: Any) -> Optional[str]:
     return None
 
 
+def final_json_parse_error_text(error: BaseException) -> Optional[str]:
+    """The model text when llmai failed to json.loads a streamed structured answer.
+
+    llmai parses the whole answer strictly at the end of the stream and raises
+    if the model wrapped it (```json fences, a sentence before or after), even
+    though the text itself is fine for a lenient parser.
+    """
+    seen: set[int] = set()
+    current: Optional[BaseException] = error
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        if isinstance(current, json.JSONDecodeError):
+            return current.doc if isinstance(current.doc, str) else None
+        current = current.__cause__ or current.__context__
+    return None
+
+
+def unwrap_json_text(text: str) -> str:
+    """The JSON object inside a model answer: drops ```json fences and text around it."""
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        first_newline = stripped.find("\n")
+        stripped = stripped[first_newline + 1 :] if first_newline != -1 else ""
+        if stripped.rstrip().endswith("```"):
+            stripped = stripped.rstrip()[:-3]
+        stripped = stripped.strip()
+    if not stripped.startswith(("{", "[")):
+        start = stripped.find("{")
+        end = stripped.rfind("}")
+        if start != -1 and end > start:
+            stripped = stripped[start : end + 1]
+    return stripped
+
+
+def loads_model_json(text: str) -> Any:
+    """dirtyjson.loads, then again on the unwrapped text if the model wrapped its JSON."""
+    try:
+        return dirtyjson.loads(text)
+    except Exception:
+        unwrapped = unwrap_json_text(text)
+        if unwrapped == text.strip():
+            raise
+        return dirtyjson.loads(unwrapped)
+
+
 def extract_structured_content(content: Any) -> Optional[dict]:
     if content is None:
         return None
@@ -422,12 +479,12 @@ def extract_structured_content(content: Any) -> Optional[dict]:
         if isinstance(dumped, dict):
             return dumped
 
-    raw_text = extract_text(content)
+    raw_text = content if isinstance(content, str) else extract_text(content)
     if not raw_text:
         return None
 
     try:
-        parsed = dirtyjson.loads(raw_text)
+        parsed = loads_model_json(raw_text)
     except Exception:
         return None
 
