@@ -31,6 +31,7 @@ import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
 import { useLocale, useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AdminBilling from "./AdminBilling";
+import AdminModels from "./AdminModels";
 
 type AdminUser = {
   id: string;
@@ -506,6 +507,12 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
             >
               {t("tabBilling")}
             </TabsTrigger>
+            <TabsTrigger
+              value="models"
+              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#5146E5] data-[state=active]:shadow-sm"
+            >
+              {t("tabModels")}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users" className="mt-6 space-y-5">
@@ -780,6 +787,10 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
 
           <TabsContent value="billing" className="mt-6">
             <AdminBilling />
+          </TabsContent>
+
+          <TabsContent value="models" className="mt-6">
+            <AdminModels />
           </TabsContent>
           </Tabs>
         </div>

@@ -20,11 +20,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.sql.image_asset import ImageAsset
 from services.billing import ledger, payments
-from services.billing.pricing import image_price, price_table
+from services.billing.pricing import PriceUnknown, image_price, price_table
 from services.database import get_async_session
+from services.studio import catalog as studio_catalog
 from services.studio import imaging
 from services.studio.arckep import StudioProviderError, StudioTimeoutError, StudioUnavailableError
-from services.studio.models import DEFAULT_MODEL, MODELS, StudioModel, get_model
+from services.studio.models import StudioModel, default_model_key, enabled_models, get_model
 from services.studio.storyboard import VIEWS_BY_ID, public_views, view_prompt
 from services.studio.service import (
     STUDIO_SOURCE,
@@ -91,11 +92,25 @@ def asset_dict(asset: ImageAsset) -> dict:
     }
 
 
-def _model(key: Optional[str]) -> StudioModel:
+def _model(key: Optional[str], mode: str) -> StudioModel:
+    """An enabled model that the administrator allowed for this mode."""
     model = get_model(key)
     if model is None:
         raise http_error(400, "err.studio.unknownModel", model=key or "")
+    if mode not in model.modes:
+        raise http_error(400, "err.studio.modelMode", model=model.title)
     return model
+
+
+async def _price(model: StudioModel, *, resolution=None, quality=None, count: int = 1) -> int:
+    """What the user pays; administrators pay nothing, so they need no price."""
+    if ledger.payer() is None:
+        return 0
+    try:
+        return await image_price(model, resolution=resolution, quality=quality, count=count)
+    except PriceUnknown:
+        LOGGER.warning("No price for Studio model %s", model.key)
+        raise http_error(503, "err.studio.priceUnknown", model=model.title)
 
 
 def _require_configured() -> None:
@@ -212,13 +227,15 @@ async def _paid(price: int, reason: str, details: dict):
 
 @API_V1_STUDIO_ROUTER.get("/config")
 async def studio_config():
+    studio_catalog.ensure_fresh()
+    charged = ledger.payer() is not None
     return {
         "configured": studio_configured(),
-        "default_model": DEFAULT_MODEL,
-        "models": [model.public() for model in MODELS.values()],
+        "default_model": default_model_key(),
+        "models": [model.public() for model in enabled_models()],
         "storyboard_views": public_views(),
-        "prices": price_table()["studio"],
-        "charged": ledger.payer() is not None,
+        "prices": (await price_table())["studio"] if charged else {},
+        "charged": charged,
     }
 
 
@@ -226,9 +243,9 @@ async def studio_config():
 async def studio_generate(
     body: GenerateRequest, session: AsyncSession = Depends(get_async_session)
 ):
-    model = _model(body.model)
+    model = _model(body.model, "generate")
     _require_configured()
-    price = image_price(model, resolution=body.resolution, quality=body.quality, count=body.count)
+    price = await _price(model, resolution=body.resolution, quality=body.quality, count=body.count)
     details = {"model": model.key, "resolution": body.resolution, "quality": body.quality, "count": body.count}
     async with _paid(price, "studio.generate", details):
         try:
@@ -257,7 +274,7 @@ async def studio_generate(
 
 @API_V1_STUDIO_ROUTER.post("/edit")
 async def studio_edit(body: EditRequest, session: AsyncSession = Depends(get_async_session)):
-    model = _model(body.model)
+    model = _model(body.model, "reference" if body.reference else "edit")
     # Operations and reference inserts carry their own instructions.
     if not body.operation and not body.reference and not body.prompt.strip():
         raise http_error(400, "err.studio.promptRequired")
@@ -266,7 +283,7 @@ async def studio_edit(body: EditRequest, session: AsyncSession = Depends(get_asy
     reference = await load_image_input(body.reference) if body.reference else None
     _require_configured()
     mode = body.operation or ("reference" if reference else "brush" if mask else "edit")
-    price = image_price(model, resolution=body.resolution, quality=body.quality)
+    price = await _price(model, resolution=body.resolution, quality=body.quality)
     details = {"model": model.key, "resolution": body.resolution, "quality": body.quality, "mode": mode}
     async with _paid(price, "studio.edit", details):
         try:
@@ -303,13 +320,11 @@ async def studio_storyboard(body: StoryboardRequest, session: AsyncSession = Dep
     view = VIEWS_BY_ID.get(body.view.strip())
     if view is None:
         raise http_error(400, "err.studio.unknownView", view=body.view)
-    model = _model(body.model)
-    if model.family != "gemini":
-        # Other models drift away from the reference's identity.
-        raise http_error(400, "err.studio.storyboardModel", model=model.title)
+    # Allowed for Gemini models by default: others drift away from the reference's identity.
+    model = _model(body.model, "storyboard")
     source = await load_image_input(body.image)
     _require_configured()
-    price = image_price(model, resolution=body.resolution)
+    price = await _price(model, resolution=body.resolution)
     details = {"model": model.key, "resolution": body.resolution, "view": view.id}
     async with _paid(price, "studio.storyboard", details):
         try:

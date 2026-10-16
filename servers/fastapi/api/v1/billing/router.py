@@ -47,7 +47,7 @@ def public_base_url(request: Request) -> str:
 async def billing_me():
     owner = get_current_owner_id()
     base = {
-        "prices": price_table(),
+        "prices": await price_table(),
         "topup_amounts": list(settings.TOPUP_AMOUNTS),
         "payments_available": client() is not None,
         "offer_url": settings.offer_url(),

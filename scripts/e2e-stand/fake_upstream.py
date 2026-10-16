@@ -4,6 +4,8 @@ Costs nothing; faults are switched on via POST /control {"llm": mode, "arckep": 
 LLM modes:  ok | http500 | fail_next:N (N x 504, then ok) | empty | garbage | hang
 arckep modes: ok | create500 | create429 | balance | scope | job_failed | garbage | bad_image | download404 | upload500 | hang_create
 YooKassa modes ("yookassa"): ok | create500 | saved_fail (saved-card charges are canceled)
+arckep catalog and prices: GET /api/v1/models (the Studio's bundled snapshot), POST /api/v1/images/estimate
+  ("estimate": ok | fail | odd — the cost in another field, nested).
 RelaxNet Storage API ("storage"): ok | cdn_down (CDN 503, the fallback link works) | upload500 | down (everything 503)
 A payment page (GET /yookassa/pay/<id>) has "Pay" / "Cancel"; paying sends the webhook
 to Presenton like the real YooKassa (only the payment id matters: Presenton looks it up).
@@ -20,7 +22,7 @@ import uuid
 from aiohttp import web
 from PIL import Image, ImageDraw, ImageOps
 
-STATE = {"llm": "ok", "arckep": "ok", "yookassa": "ok", "storage": "ok", "llm_delay": 0.0, "fail_left": 0, "active_jobs": 0, "max_active_jobs": 0}
+STATE = {"llm": "ok", "arckep": "ok", "yookassa": "ok", "storage": "ok", "estimate": "ok", "llm_delay": 0.0, "fail_left": 0, "active_jobs": 0, "max_active_jobs": 0}
 PAYMENTS: dict[str, dict] = {}
 WEBHOOK_URL = "http://presenton-e2e/api/v1/billing/yookassa/webhook"
 LOG: list[dict] = []
@@ -362,6 +364,46 @@ async def kassa_set(request: web.Request):
     return web.json_response(payment)
 
 
+# ---------------------------------------------------------------- arckep catalog and prices
+CATALOG_PATH = "/app/servers/fastapi/services/studio/catalog_snapshot.json"
+FAKE_COSTS = {"1K": 6.0, "2K": 9.0, "4K": 14.0, "low": 1.0, "medium": 5.0, "high": 20.0, "xhigh": 30.0, "max": 40.0}
+# The measured costs of the first Studio models, so earlier checks keep their prices.
+MODEL_COSTS = {
+    "gemini-nano-banana-2.1": {"1K": 8.13, "2K": 12.26, "4K": 18.33},
+    "gemini-3-pro-image": {"1K": 17.0, "2K": 17.0, "4K": 26.56},
+}
+
+
+async def models_catalog(request: web.Request):
+    if not _auth_ok(request):
+        return web.json_response({"error": {"message": "missing key"}}, status=401)
+    try:
+        with open(CATALOG_PATH, encoding="utf-8") as handle:
+            images = json.load(handle)["models"]
+    except OSError:  # an older image without the snapshot
+        images = [{"id": "gemini-nano-banana-2.1", "provider": "gemini", "modes": ["generate", "edit_with_reference"],
+                   "aspect_ratios": ["1:1", "16:9"], "resolutions": ["1K", "2K"], "max_images": 1, "max_reference_images": 14}]
+    data = [{**model, "type": "image"} for model in images] + [{"id": "gpt-5-chat", "type": "chat"}]
+    return web.json_response({"object": "list", "data": data})
+
+
+async def estimate(request: web.Request):
+    if not _auth_ok(request):
+        return web.json_response({"error": {"message": "missing key"}}, status=401)
+    body = await request.json()
+    LOG.append({"t": time.time(), "kind": "estimate", "body": body})
+    if STATE["estimate"] == "fail":
+        return web.json_response({"error": {"message": "estimate unavailable"}}, status=503)
+    known = MODEL_COSTS.get(body.get("model") or "")
+    if known:
+        cost = known.get(body.get("resolution") or "1K", known["1K"])
+    else:
+        cost = FAKE_COSTS.get(body.get("resolution") or "", 6.0) + FAKE_COSTS.get(body.get("quality") or "", 0.0)
+    if STATE["estimate"] == "odd":
+        return web.json_response({"model": body.get("model"), "estimate": {"total": str(cost), "currency": "RUB"}})
+    return web.json_response({"model": body.get("model"), "cost_rub": cost, "currency": "RUB"})
+
+
 # ---------------------------------------------------------------- RelaxNet Storage API
 def _storage_down(request: web.Request) -> web.Response | None:
     if STATE["storage"] == "down":
@@ -433,7 +475,7 @@ async def storage_dump(_: web.Request):
 async def control(request: web.Request):
     if request.method == "POST":
         body = await request.json()
-        for key in ("llm", "arckep", "yookassa", "storage", "llm_delay"):
+        for key in ("llm", "arckep", "yookassa", "storage", "estimate", "llm_delay"):
             if key in body:
                 STATE[key] = body[key]
         if str(STATE["llm"]).startswith("fail_next:"):
@@ -450,6 +492,8 @@ app.add_routes([
     web.get("/v1/models", models),
     web.post("/api/v1/uploads", uploads),
     web.post("/api/v1/images/generations", create_job),
+    web.get("/api/v1/models", models_catalog),
+    web.post("/api/v1/images/estimate", estimate),
     web.get("/api/v1/images/generations/{job_id}", job_status),
     web.get("/files/uploads/{name}", files),
     web.get("/files/out/{name}", files),

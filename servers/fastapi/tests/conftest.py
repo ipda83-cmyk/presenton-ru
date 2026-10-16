@@ -75,3 +75,32 @@ def load_snapshot(snapshots_dir: Path):
         return json.loads(path.read_text(encoding="utf-8"))
 
     return _load
+
+
+@pytest.fixture(autouse=True)
+def _studio_models_offline(monkeypatch):
+    """Studio image models: the starting set, no calls to arckep for the catalog or prices."""
+    from services.studio import catalog, estimates
+    from services.studio import models as studio_models
+
+    async def no_estimate(model, resolution, quality):
+        return None, {"stub": "tests make no estimate requests"}
+
+    async def no_catalog():
+        raise RuntimeError("tests make no catalog requests")
+
+    async def no_db_read(key):
+        return None
+
+    async def no_db_write(key, value):
+        return None
+
+    monkeypatch.setattr(estimates, "_request", no_estimate)
+    monkeypatch.setattr(catalog, "fetch_catalog", no_catalog)
+    monkeypatch.setattr(catalog, "_read", no_db_read)
+    monkeypatch.setattr(catalog, "_write", no_db_write)
+    estimates.reset_cache_for_tests()
+    studio_models.REGISTRY.apply(studio_models.load_snapshot())
+    yield
+    estimates.reset_cache_for_tests()
+    studio_models.REGISTRY.apply(studio_models.load_snapshot())

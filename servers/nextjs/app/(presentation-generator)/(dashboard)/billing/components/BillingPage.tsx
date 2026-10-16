@@ -9,6 +9,7 @@ import { isPaying, useBilling } from "@/components/billing/useBilling";
 import {
   BillingApi,
   formatRub,
+  studioMinPrice,
   type BillingEntry,
   type BillingMe,
   type BillingPayment,
@@ -153,7 +154,10 @@ function TopupCard({ me }: { me: BillingMe }) {
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const perImage = me.prices.studio.nano_banana_2?.resolution?.["1K"];
+  // The cheapest image of the first model users see.
+  const perImage = Object.keys(me.prices.studio)
+    .map((key) => studioMinPrice(me.prices.studio, key))
+    .find((value) => value != null) ?? undefined;
 
   const pay = async () => {
     setError(null);
@@ -452,11 +456,14 @@ function PricesCard({ me, models }: { me: BillingMe; models: StudioModel[] }) {
           <dd className="mt-0.5 text-[#4C5554]">{t("perSlide", { amount: formatRub(me.prices.per_slide) })}</dd>
         </div>
         {models.map((model) => {
-          const row = me.prices.studio[model.key];
-          if (!row) return null;
-          const items = row.resolution
-            ? Object.entries(row.resolution).map(([key, value]) => `${key} — ${formatRub(value)}`)
-            : Object.entries(row.quality ?? {}).map(([key, value]) => `${tq(key as "draft")} — ${formatRub(value)}`);
+          const units = me.prices.studio[model.key]?.units;
+          if (!units || !Object.keys(units).length) return null;
+          const items = Object.entries(units).map(([option, unit]) => {
+            const [resolution, quality] = option.split("|");
+            const qualityLabel = quality ? (tq.has(quality) ? tq(quality) : quality) : "";
+            const label = [resolution, qualityLabel].filter(Boolean).join(", ") || t("perImage");
+            return `${label} — ${formatRub(Math.max(1, Math.ceil(unit)))}`;
+          });
           return (
             <div key={model.key} className="rounded-[12px] bg-[#F8F8FA] p-3">
               <dt className="font-medium text-[#191919]">{model.title}</dt>

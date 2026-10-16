@@ -6,8 +6,11 @@ import { notifyBillingChanged } from "@/utils/billingEvents";
 import type { BillingPrices } from "./billing";
 
 // AI Image Studio (servers/fastapi/api/v1/studio/router.py).
-export type StudioModelFamily = "gemini" | "gpt";
-export type StudioQuality = "draft" | "standard" | "high";
+// Families and quality levels come from arckep's catalog (Admin → Models).
+export type StudioModelFamily = string;
+export type StudioQuality = string;
+/** What the administrator allowed a model for. */
+export type StudioModelMode = "generate" | "edit" | "reference" | "storyboard";
 export type StudioOperation = "upscale" | "remove_bg";
 export type StudioMode = "create" | "edit" | "brush" | "reference" | "storyboard" | StudioOperation;
 
@@ -20,7 +23,16 @@ export interface StudioModel {
   quality_levels: StudioQuality[];
   max_count: number;
   tags: string[];
+  modes: StudioModelMode[];
 }
+
+/** Upscale / remove background: a Gemini model does it best, else the chosen editing model. */
+export function operationModelFor(models: StudioModel[], preferredKey?: string): StudioModel | undefined {
+  const preferred = models.find((item) => item.key === preferredKey);
+  if (preferred?.family === "gemini") return preferred;
+  return models.find((item) => item.family === "gemini") ?? preferred ?? models[0];
+}
+
 
 export interface StoryboardView {
   id: string;

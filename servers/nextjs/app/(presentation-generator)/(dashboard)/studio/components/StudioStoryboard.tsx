@@ -55,8 +55,8 @@ export default function StudioStoryboard({ isAdmin, initialImage }: { isAdmin: b
   const uploadedRef = useRef<{ dataUrl: string; path: string } | null>(null);
 
   const views = useMemo(() => config?.storyboard_views ?? [], [config]);
-  // As in the standalone Studio: Gemini keeps the subject's identity across views.
-  const models = useMemo(() => (config?.models ?? []).filter((item) => item.family === "gemini"), [config]);
+  // Models allowed for storyboards (Gemini by default: it keeps the subject's identity).
+  const models = useMemo(() => (config?.models ?? []).filter((item) => item.modes.includes("storyboard")), [config]);
   const model = models.find((item) => item.key === modelKey) ?? models[0];
 
   useEffect(() => {

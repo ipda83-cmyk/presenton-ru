@@ -9,11 +9,7 @@ export function withPrice(
   options: { resolution?: string; quality?: string; count?: number; times?: number } = {},
 ): string {
   if (!config?.charged || !model) return label;
-  const one = studioPrice(config.prices, model, {
-    resolution: model.resolutions.includes(options.resolution ?? "") ? options.resolution : undefined,
-    quality: model.quality_levels.includes((options.quality ?? "") as never) ? options.quality : undefined,
-    count: options.count,
-  });
+  const one = studioPrice(config.prices, model, options);
   if (one == null) return label;
   return `${label} · ${formatRub(one * Math.max(1, options.times ?? 1))}`;
 }

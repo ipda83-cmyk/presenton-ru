@@ -27,24 +27,62 @@ from models.sql.user import User
 from services.billing import ledger, payments, pricing, settings, yookassa
 from services.database import get_async_session
 from services.studio.arckep import StudioProviderError
-from services.studio.models import MODELS
+from services.studio import estimates
+from services.studio import models as studio_models
+from services.studio.models import get_model
 from utils.i18n.middleware import LocaleMiddleware
 
 
 # ---------------------------------------------------------------- prices
 
 
-def test_prices_match_the_standalone_studio():
-    table = pricing.price_table()
-    assert table["studio"]["nano_banana_2"]["resolution"] == {"1K": 12, "2K": 18, "4K": 27}
-    assert table["studio"]["nano_banana_pro"]["resolution"] == {"1K": 25, "2K": 25, "4K": 39}
-    assert table["studio"]["chatgpt_images_2"]["quality"] == {"draft": 2, "standard": 11, "high": 38}
+def test_prices_are_cost_times_markup():
+    table = asyncio.run(pricing.price_table())
+    # Measured costs of the first Studio models still price Nano Banana Pro.
+    assert table["studio"]["gemini-3-pro-image"]["units"] == {"1K|": 24.65, "2K|": 24.65, "4K|": 38.512}
     assert table["per_slide"] == 10
-    gpt = MODELS["chatgpt_images_2"]
-    assert pricing.image_price(gpt, quality="draft", count=4) == 6  # ceil(1.45 * 4), as the original
-    assert pricing.image_price(gpt, quality="nonsense") == 11
-    assert pricing.image_price(MODELS["nano_banana_2"], count=3) == 12  # one image per Gemini request
+    pro = get_model("gemini-3-pro-image")
+    assert asyncio.run(pricing.image_price(pro, resolution="1K")) == 25
+    assert asyncio.run(pricing.image_price(pro, resolution="4K")) == 39
+    assert asyncio.run(pricing.image_price(pro, resolution="8K")) == 25  # unknown -> 1K
+    gpt = get_model("gpt-image-2", include_disabled=True)
+    assert asyncio.run(pricing.image_price(gpt, quality="draft", count=4)) == 6  # ceil(1.45 * 4), rounded once
+    assert asyncio.run(pricing.image_price(gpt, quality="nonsense")) == 11  # -> medium
     assert pricing.presentation_price(5) == 50
+    # No estimate, no manual cost: no price, rather than a free generation.
+    with pytest.raises(pricing.PriceUnknown):
+        asyncio.run(pricing.image_price(get_model("flux-2-pro")))
+
+
+def test_manual_costs_estimates_and_markup(monkeypatch):
+    settings = studio_models.default_settings()
+    settings["markup"] = 2
+    settings["models"]["flux-2-pro"]["costs"] = {"1K|": 3.2}
+    settings["models"]["seedream-5.0-pro"]["markup"] = 1.1
+    studio_models.REGISTRY.apply(studio_models.load_snapshot(), settings)
+    assert asyncio.run(pricing.image_price(get_model("flux-2-pro"), resolution="1K")) == 7  # 3.2 x 2
+
+    asked = []
+
+    async def fake_estimate(model, resolution, quality):
+        asked.append((model.key, resolution, quality))
+        return estimates.parse_cost({"estimate": {"cost_rub": "4,5", "currency": "RUB"}}), {"cost_rub": "4,5"}
+
+    monkeypatch.setattr(estimates, "_request", fake_estimate)
+    monkeypatch.setenv("STUDIO_API_KEY", "arckep-key")  # estimates are asked only when the Studio is set up
+    seedream = get_model("seedream-5.0-pro")
+    assert asyncio.run(pricing.image_price(seedream, resolution="2K", count=2)) == 10  # 4.5 x 1.1 x 2 = 9.9
+    assert asyncio.run(pricing.image_price(seedream, resolution="2K")) == 5
+    assert asked == [("seedream-5.0-pro", "2K", None)]  # cached after the first answer
+
+
+def test_estimate_answers_are_read_leniently():
+    assert estimates.parse_cost({"cost_rub": 12.26}) == 12.26
+    assert estimates.parse_cost({"data": {"price": "8.13"}}) == 8.13
+    assert estimates.parse_cost({"estimate": {"total": 17}}) == 17.0
+    assert estimates.parse_cost([{"amount": "1,5 ₽"}]) == 1.5
+    assert estimates.parse_cost({"ok": True, "cost": 0}) is None
+    assert estimates.parse_cost("nothing") is None
 
 
 def test_settings_parse_and_clamp(monkeypatch):
@@ -435,7 +473,7 @@ def test_studio_charges_refunds_and_402(api, monkeypatch):
 
     monkeypatch.setattr(studio_router, "create_images", fake_create)
     config = client.get("/api/v1/studio/config", headers=headers["alice"]).json()
-    assert config["charged"] is True and config["prices"]["nano_banana_pro"]["resolution"]["1K"] == 25
+    assert config["charged"] is True and config["prices"]["gemini-3-pro-image"]["units"]["1K|"] == 24.65
     assert client.get("/api/v1/studio/config", headers=headers["admin"]).json()["charged"] is False
 
     ok = client.post("/api/v1/studio/generate", json={"prompt": "кот", "model": "nano_banana_pro"}, headers=headers["alice"])

@@ -20,6 +20,7 @@ import {
 } from "@/components/studio/controls";
 import {
   StudioApi,
+  operationModelFor,
   type StudioConfig,
   type StudioOperation,
 } from "@/app/(presentation-generator)/services/api/studio";
@@ -170,9 +171,9 @@ export default function StudioPanel({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, busy, onClose]);
 
-  const models = useMemo(() => config?.models ?? [], [config]);
+  const models = useMemo(() => (config?.models ?? []).filter((entry) => entry.modes.includes("edit")), [config]);
   const model = models.find((entry) => entry.key === modelKey) ?? models[0];
-  const operationModel = model?.family === "gemini" ? model : models.find((entry) => entry.family === "gemini");
+  const operationModel = operationModelFor(models, model?.key);
   const state = item ? states[item.id] : undefined;
   const current = state ? state.results.at(-1) ?? state.original : item?.src ?? "";
   const edited = !!state?.results.length;

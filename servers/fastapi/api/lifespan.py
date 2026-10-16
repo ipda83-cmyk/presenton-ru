@@ -9,6 +9,7 @@ from services.database import async_session_maker, create_db_and_tables, dispose
 from services.async_tasks import fail_interrupted_async_tasks
 from services.provider_settings import migrate_provider_settings_from_file
 from services.storage_sync import start_storage_sync, stop_storage_sync
+from services.studio import catalog as studio_catalog
 from templates.default_templates import import_default_templates_on_startup
 from utils.get_env import (
     get_app_data_directory_env,
@@ -73,6 +74,9 @@ async def app_lifespan(_: FastAPI):
     await import_default_templates_on_startup()
     if get_can_change_keys_env() != "false":
         update_env_with_user_config()
+    # Studio image models: arckep's catalog and the administrator's choice
+    # (after the provider settings: the Studio key is one of them).
+    await studio_catalog.startup()
     await check_llm_and_image_provider_api_or_model_availability()
     yield
     # Upload what is still pending before the container goes away.

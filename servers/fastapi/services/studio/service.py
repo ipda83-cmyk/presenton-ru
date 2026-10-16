@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.sql.image_asset import ImageAsset
 from services.studio import imaging
 from services.studio.arckep import DEFAULT_BASE_URL, ArckepImages
-from services.studio.models import GPT_QUALITY, GPT_SIZES, StudioModel
+from services.studio.models import GPT_SIZES, StudioModel
 from utils.asset_directory_utils import get_images_directory
 from utils.get_env import (
     get_gemini_search_api_key_env,
@@ -94,12 +94,13 @@ def generation_body(
     if model.family == "gpt":
         if aspect_ratio in GPT_SIZES:
             body["size"] = GPT_SIZES[aspect_ratio]
-        body["quality"] = GPT_QUALITY.get(quality or "standard", "medium")
-    else:
-        if aspect_ratio in model.aspect_ratios:
-            body["aspect_ratio"] = aspect_ratio
-        if resolution in model.resolutions:
-            body["resolution"] = resolution
+    elif aspect_ratio in model.aspect_ratios:
+        body["aspect_ratio"] = aspect_ratio
+    if resolution in model.resolutions:
+        body["resolution"] = resolution
+    quality = model.resolve_quality(quality)
+    if quality:
+        body["quality"] = quality
     return body
 
 
@@ -156,9 +157,11 @@ async def edit_image(
         size_name, size = imaging.pick_gpt_size(width, height)
         send = imaging.resize_png(original, size)
         body["size"] = size_name
-        body["quality"] = GPT_QUALITY.get(quality or "standard", "medium")
     elif resolution in model.resolutions:
         body["resolution"] = resolution
+    quality = model.resolve_quality(quality)
+    if quality:
+        body["quality"] = quality
 
     main = imaging.fit_for_upload(send)
     references = [main]

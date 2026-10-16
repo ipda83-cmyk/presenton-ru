@@ -22,7 +22,7 @@ from services.studio.arckep import (
     StudioTimeoutError,
     StudioUnavailableError,
 )
-from services.studio.models import MODELS
+from services.studio.models import enabled_models, get_model
 from utils.i18n.middleware import LocaleMiddleware
 
 
@@ -115,7 +115,7 @@ def test_pick_gpt_size_follows_the_aspect_ratio():
 
 def test_generation_body_per_model_family():
     gemini = service.generation_body(
-        MODELS["nano_banana_pro"], " zoo ", aspect_ratio="16:9", resolution="2K", count=4
+        get_model("gemini-3-pro-image"), " zoo ", aspect_ratio="16:9", resolution="2K", count=4
     )
     assert gemini == {
         "model": "gemini-3-pro-image",
@@ -125,10 +125,10 @@ def test_generation_body_per_model_family():
         "resolution": "2K",
     }
     gpt = service.generation_body(
-        MODELS["chatgpt_images_2"], "zoo", aspect_ratio="16:9", quality="high", count=9
+        get_model("gpt-image-2", include_disabled=True), "zoo", aspect_ratio="16:9", quality="high", count=9
     )
     assert gpt == {"model": "gpt-image-2", "prompt": "zoo", "n": 4, "quality": "high"}
-    gpt_square = service.generation_body(MODELS["chatgpt_images_2"], "zoo", aspect_ratio="1:1")
+    gpt_square = service.generation_body(get_model("gpt-image-2", include_disabled=True), "zoo", aspect_ratio="1:1")
     assert gpt_square["size"] == "1024x1024"
     assert gpt_square["quality"] == "medium"
 
@@ -372,12 +372,12 @@ def test_edit_image_with_a_mask_keeps_the_outside_and_sends_a_matching_mask():
 
     out = asyncio.run(
         service.edit_image(
-            MODELS["nano_banana_2"], original, "make it green", mask=_mask((200, 100), (20, 40, 30, 50)), client=client
+            get_model("gemini-nano-banana-2.1"), original, "make it green", mask=_mask((200, 100), (20, 40, 30, 50)), client=client
         )
     )
 
     body, references = client.calls[0]
-    assert body["model"] == "gemini-3.1-flash-image"
+    assert body["model"] == "gemini-nano-banana-2.1"
     assert "mask" in body["prompt"]
     assert len(references) == 2
     assert imaging.image_size(references[1]) == imaging.image_size(references[0])
@@ -388,7 +388,7 @@ def test_edit_image_with_a_mask_keeps_the_outside_and_sends_a_matching_mask():
 def test_edit_image_for_gpt_uses_a_supported_size():
     client = _ScriptedClient(_png((1536, 1024)))
     asyncio.run(
-        service.edit_image(MODELS["chatgpt_images_2"], _png((1920, 1080)), "", operation="upscale", client=client)
+        service.edit_image(get_model("gpt-image-2", include_disabled=True), _png((1920, 1080)), "", operation="upscale", client=client)
     )
     body, references = client.calls[0]
     assert body["size"] == "1536x1024"
@@ -444,8 +444,9 @@ def test_api_generate_edit_history_and_delete(studio_api, monkeypatch):
 
     config = client.get("/api/v1/studio/config").json()
     assert config["configured"] is True
-    assert {model["key"] for model in config["models"]} == set(MODELS)
-    assert {model["family"] for model in config["models"]} == {"gemini", "gpt"}
+    assert [model["key"] for model in config["models"]] == [model.key for model in enabled_models()]
+    assert config["default_model"] == "gemini-nano-banana-2.1"
+    assert {"gemini", "gpt"} <= {model["family"] for model in config["models"]}
 
     created = client.post("/api/v1/studio/generate", json={"prompt": "зоопарк", "aspect_ratio": "16:9"})
     assert created.status_code == 200
@@ -578,7 +579,7 @@ def test_api_storyboard_makes_one_view_of_the_reference(studio_api, monkeypatch)
     image = response.json()["image"]
     assert image["extras"]["mode"] == "storyboard"
     assert image["extras"]["view"] == "profile_left"
-    assert seen["model"] == "nano_banana_pro"
+    assert seen["model"] == "gemini-3-pro-image"  # the old key still works
     assert "left side profile view" in seen["prompt"] and "SAME character" in seen["prompt"]
     assert seen["prompt"].endswith("Additional details: в шлеме")
     assert seen["kwargs"]["resolution"] == "2K"
@@ -592,11 +593,17 @@ def test_api_storyboard_validation(studio_api):
     assert "upside_down" in unknown.json()["detail"]
     gpt = client.post(
         "/api/v1/studio/storyboard",
-        json={"image": _data_url(_png()), "view": "front", "model": "chatgpt_images_2"},
+        json={"image": _data_url(_png()), "view": "front", "model": "gpt-image-2.5-sunburst"},
         headers=ru,
     )
-    assert gpt.status_code == 400
-    assert "Gemini" in gpt.json()["detail"]
+    assert gpt.status_code == 400  # storyboards are on for the Gemini models only by default
+    assert "ChatGPT Images 2.5" in gpt.json()["detail"] and "режиме" in gpt.json()["detail"]
+    off = client.post(
+        "/api/v1/studio/storyboard",
+        json={"image": _data_url(_png()), "view": "front", "model": "gpt-image-2"},
+        headers=ru,
+    )
+    assert off.status_code == 400  # a model the administrator did not turn on
 
 
 

@@ -78,6 +78,15 @@ def _get_image_generation_lock() -> asyncio.Lock:
     return lock
 
 
+def _studio_slide_model():
+    """The Studio model for slide pictures, when one is chosen and the Studio is set up."""
+    from services.studio.models import REGISTRY
+    from services.studio.service import studio_configured
+
+    model = REGISTRY.slide_image_model()
+    return model if model is not None and studio_configured() else None
+
+
 class ImageGenerationService:
     def __init__(self, output_directory: str):
         self.output_directory = output_directory
@@ -88,6 +97,8 @@ class ImageGenerationService:
         if self.is_image_generation_disabled:
             return None
 
+        if _studio_slide_model() is not None:
+            return self.generate_image_studio
         if is_pixabay_selected():
             return self.get_image_from_pixabay
         elif is_pixels_selected():
@@ -109,7 +120,35 @@ class ImageGenerationService:
         return None
 
     def is_stock_provider_selected(self):
+        if self.image_gen_func == self.generate_image_studio:
+            return False
         return is_pixels_selected() or is_pixabay_selected()
+
+    async def generate_image_studio(self, prompt: str, output_directory: str) -> str:
+        """A slide picture by the Studio model chosen in Admin → Models (arckep)."""
+        from services.studio.service import create_images
+
+        model = _studio_slide_model()
+        if model is None:
+            raise ValueError("The Studio model for slide pictures is not available")
+        if model.family == "gpt":
+            aspect_ratio = "3:2"
+        else:
+            aspect_ratio = next(
+                (ratio for ratio in ("16:9", "3:2", "4:3", "1:1") if ratio in model.aspect_ratios),
+                None,
+            )
+        images = await create_images(
+            model,
+            prompt,
+            aspect_ratio=aspect_ratio,
+            resolution=model.resolve_resolution("1K"),
+            quality=model.resolve_quality("medium"),
+        )
+        image_path = os.path.join(output_directory, f"{uuid.uuid4()}.png")
+        with open(image_path, "wb") as f:
+            f.write(images[0])
+        return image_path
 
     async def generate_image(self, prompt: ImagePrompt) -> str | ImageAsset:
         """

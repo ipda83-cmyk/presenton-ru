@@ -1524,7 +1524,8 @@
     "revokeKeyTitle": "Revoke API key?",
     "revokeKeyBody": "Clients using “{label}” will lose REST API and MCP access immediately. This action cannot be undone.",
     "revokeKeyBtn": "Revoke key",
-    "tabBilling": "Balances"
+    "tabBilling": "Balances",
+    "tabModels": "Models"
   },
   "pdf": {
     "loadFailedTitle": "Failed to load presentation",
@@ -2853,12 +2854,20 @@
     "models": {
       "balanced": "Fast and affordable — fits most tasks",
       "best": "Best quality and detail, takes longer",
-      "text": "Good at text in the image; up to 4 variants at once"
+      "text": "Good at text in the image; up to 4 variants at once",
+      "vector": "Vector graphics: logos, icons, illustrations"
     },
     "quality": {
       "draft": "Draft",
       "standard": "Standard",
-      "high": "Maximum"
+      "high": "High",
+      "low": "Low",
+      "medium": "Medium",
+      "xhigh": "Extra high",
+      "max": "Max",
+      "fast": "Fast",
+      "turbo": "Turbo",
+      "relax": "Relax"
     },
     "generate": {
       "title": "New image",
@@ -3153,7 +3162,8 @@
       "freeNote": "Free for you (administrator).",
       "presentation": "Creating a presentation",
       "perSlide": "{amount} per slide, slide pictures included",
-      "note": "Picture prices are per image. If a generation fails, the money comes back."
+      "note": "Picture prices are per image. If a generation fails, the money comes back.",
+      "perImage": "per image"
     },
     "admin": {
       "adjustTitle": "Credit or debit",
@@ -3189,6 +3199,63 @@
     },
     "errors": {
       "requestFailed": "The billing request failed."
+    }
+  },
+  "adminModels": {
+    "title": "Image models",
+    "catalogFrom": "arckep catalog: {count} models, updated {date}",
+    "catalogSnapshot": "Bundled catalog: {count} models (arckep has not answered yet)",
+    "catalogError": "Could not refresh the catalog: {error}",
+    "catalogFailed": "Could not refresh the catalog",
+    "refreshCatalog": "Refresh catalog",
+    "defaultModel": "Default model",
+    "markup": "Markup",
+    "markupHint": "Price = arckep cost × markup. 1.45 means +45%.",
+    "markupInvalid": "The markup must be above zero",
+    "slideModel": "Slide pictures in presentations",
+    "slideModelProvider": "As in the image provider settings",
+    "slideModelHint": "The slide price does not change: it is set in Settings → Billing.",
+    "listTitle": "Models: users see {enabled} of {total}",
+    "listHint": "Tick the models users will see; set a name, the order and the modes.",
+    "search": "Find a model",
+    "showAll": "Show every catalog model",
+    "visible": "Users see: {model}",
+    "displayName": "Name shown to users",
+    "priceFrom": "from {price}",
+    "priceUnknown": "price unknown",
+    "details": "Prices and details",
+    "order": "Order",
+    "modeUnsupported": "The model cannot do this (arckep catalog)",
+    "modes": {
+      "generate": "Generation",
+      "edit": "Brush and edits",
+      "reference": "Reference",
+      "storyboard": "Storyboard"
+    },
+    "capabilities": "Formats: {aspects} · up to {count} images at once · references: {refs}",
+    "ownMarkup": "Own markup",
+    "askPrice": "Ask arckep for the price",
+    "option": "Option",
+    "anyOption": "Any",
+    "cost": "Cost",
+    "manualCost": "Own cost, ₽",
+    "price": "User price",
+    "sources": {
+      "manual": "manual",
+      "estimate": "arckep",
+      "known": "measured",
+      "none": "no data"
+    },
+    "pricesHint": "The cost comes from arckep and is refreshed daily. Your own cost wins. Without a price, paying users cannot use the model.",
+    "empty": "No models. Turn on “Show every catalog model”.",
+    "save": "Save",
+    "saved": "Saved",
+    "saveFailed": "Could not save",
+    "loadFailed": "Could not load the models",
+    "estimateFailed": "Could not get the price",
+    "loading": "Loading…",
+    "errors": {
+      "requestFailed": "The request failed"
     }
   }
 }

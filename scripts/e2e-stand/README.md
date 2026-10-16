@@ -50,6 +50,17 @@ python scripts/e2e-stand/relaxnet_redeploy.py
 должны сохраниться, в том числе при недоступном CDN и недоступном хранилище. Логи остановленных
 контейнеров — в `.relax-logs/`. Подробнее — [`DEPLOY_RELAXNET.md`](../../DEPLOY_RELAXNET.md).
 
+## Модели Студии
+
+```bash
+python scripts/e2e-stand/attack_models.py
+docker cp scripts/e2e-stand/models_ui.cjs presenton-models:/tmp/e2e/ && docker exec -w /tmp/e2e -e NODE_PATH=/app/presentation-export/node_modules presenton-models node models_ui.cjs
+```
+
+Отдельный контейнер `presenton-models` (http://127.0.0.1:5059): каталог и цены поддельного arckep,
+«Админка → Модели» (включение, названия, режимы, наценка, своя себестоимость, модель для слайдов),
+цены и отказ без цены, картинки слайдов через выбранную модель. `models_ui.cjs` — то же в браузере.
+
 ## Сбои вручную
 
 ```bash
@@ -61,7 +72,7 @@ curl -X POST 127.0.0.1:9056/control -H 'Content-Type: application/json' -d '{"ll
 arckep: `ok`, `create500`, `create429`, `balance`, `scope`, `job_failed`, `garbage`,
 `bad_image`, `download404`, `upload500`, `hang_create`.
 ЮKassa (`"yookassa"`): `ok`, `create500`, `saved_fail` (списания с сохранённой карты отклоняются).
-Storage API RelaxNet (`"storage"`): `ok`, `cdn_down` (CDN отвечает 503, работает запасная ссылка), `upload500`, `down`.
+Оценка цены arckep (`"estimate"`): `ok`, `fail`, `odd` (цена в другом поле). Storage API RelaxNet (`"storage"`): `ok`, `cdn_down` (CDN отвечает 503, работает запасная ссылка), `upload500`, `down`.
 Страница оплаты — `http://presenton-e2e-fake:9000/yookassa/pay/<id>` (кнопки «Оплатить» / «Отменить»);
 после оплаты поддельная ЮKassa шлёт уведомление с неверной суммой — Презентон обязан перепроверить платёж.
 `GET /control` показывает журнал запросов (модели, промпты, число одновременных задач).

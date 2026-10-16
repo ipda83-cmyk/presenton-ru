@@ -48,14 +48,14 @@ export default function StudioGenerate({ isAdmin }: { isAdmin: boolean }) {
   const [modelKey, setModelKey] = useState("");
   const [aspect, setAspect] = useState(PREFERRED_ASPECT);
   const [resolution, setResolution] = useState("1K");
-  const [quality, setQuality] = useState<StudioQuality>("standard");
+  const [quality, setQuality] = useState<StudioQuality>("medium");
   const [count, setCount] = useState<number>(1);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<StudioImage[]>([]);
   const [selected, setSelected] = useState<StudioImage | null>(null);
 
-  const models = useMemo(() => config?.models ?? [], [config]);
+  const models = useMemo(() => (config?.models ?? []).filter((item) => item.modes.includes("generate")), [config]);
   const model = models.find((item) => item.key === modelKey) ?? models[0];
 
   useEffect(() => {
@@ -66,7 +66,10 @@ export default function StudioGenerate({ isAdmin }: { isAdmin: boolean }) {
   useEffect(() => {
     if (!model) return;
     if (!model.aspect_ratios.includes(aspect)) setAspect(closestAspect(aspect, model.aspect_ratios));
-    if (model.resolutions.length && !model.resolutions.includes(resolution)) setResolution(model.resolutions[0]);
+    if (model.resolutions.length && !model.resolutions.includes(resolution))
+      setResolution(model.resolutions.includes("1K") ? "1K" : model.resolutions[0]);
+    if (model.quality_levels.length && !model.quality_levels.includes(quality))
+      setQuality(model.quality_levels.includes("medium") ? "medium" : model.quality_levels[0]);
     if (count > model.max_count) setCount(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [model?.key]);
@@ -222,7 +225,7 @@ export default function StudioGenerate({ isAdmin }: { isAdmin: boolean }) {
                   options={model.quality_levels}
                   value={quality}
                   onChange={setQuality}
-                  format={(level) => t(`quality.${level}`)}
+                  format={(level) => (t.has(`quality.${level}`) ? t(`quality.${level}`) : level)}
                 />
               )}
               {model.max_count > 1 && (

@@ -38,8 +38,8 @@ export default function StudioReference({ isAdmin, initialImage }: { isAdmin: bo
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // As in the standalone Studio: object insertion runs on the Gemini models only.
-  const models = useMemo(() => (config?.models ?? []).filter((item) => item.family === "gemini"), [config]);
+  // Models the administrator allowed for object insertion (Gemini by default).
+  const models = useMemo(() => (config?.models ?? []).filter((item) => item.modes.includes("reference")), [config]);
   const model = models.find((item) => item.key === modelKey) ?? models[0];
 
   useEffect(() => {

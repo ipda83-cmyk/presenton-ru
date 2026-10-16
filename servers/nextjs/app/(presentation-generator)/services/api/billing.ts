@@ -6,11 +6,8 @@ import { getHeader } from "./header";
 // Ruble balance and YooKassa top-ups (servers/fastapi/api/v1/billing/router.py).
 
 export interface BillingPrices {
-  /** Per Studio model: one image by resolution (Gemini) or by quality (GPT). */
-  studio: Record<
-    string,
-    { resolution?: Record<string, number>; quality?: Record<string, number>; by_count?: Record<string, number[]> }
-  >;
+  /** Per Studio model: one image (with the markup, not rounded) per "<resolution>|<quality>". */
+  studio: Record<string, { units: Record<string, number> }>;
   per_slide: number;
 }
 
@@ -116,19 +113,26 @@ export const BillingApi = {
 /** Price of one Studio request as the server computes it (pricing.image_price). */
 export function studioPrice(
   prices: BillingPrices["studio"] | undefined,
-  model: { key: string; family: string } | undefined,
+  model: { key: string; resolutions: string[]; quality_levels: string[]; max_count?: number } | undefined,
   options: { resolution?: string; quality?: string; count?: number } = {},
 ): number | null {
   if (!prices || !model) return null;
-  const table = prices[model.key];
-  if (!table) return null;
-  const count = Math.max(1, options.count ?? 1);
-  if (model.family === "gpt") {
-    const quality = options.quality && table.by_count?.[options.quality] ? options.quality : "standard";
-    const totals = table.by_count?.[quality];
-    return totals?.[Math.min(count, totals.length) - 1] ?? table.quality?.[quality] ?? null;
-  }
-  return table.resolution?.[options.resolution || "1K"] ?? table.resolution?.["1K"] ?? null;
+  const units = prices[model.key]?.units;
+  if (!units) return null;
+  const pick = (levels: string[], wanted: string | undefined, fallback: string) =>
+    !levels.length ? "" : wanted && levels.includes(wanted) ? wanted : levels.includes(fallback) ? fallback : levels[0];
+  const option = `${pick(model.resolutions, options.resolution, "1K")}|${pick(model.quality_levels, options.quality, "medium")}`;
+  const unit = units[option];
+  if (unit == null) return null;
+  const count = Math.max(1, Math.min(options.count ?? 1, model.max_count ?? 99));
+  // Rounded once, like the server: 8.13 * 1.45 * 2 is 24 ₽, not 2 x 12 ₽.
+  return Math.max(1, Math.ceil(Math.round(unit * count * 1e6) / 1e6));
+}
+
+/** The cheapest image of a model, for "from N ₽" hints. */
+export function studioMinPrice(prices: BillingPrices["studio"] | undefined, key: string): number | null {
+  const units = Object.values(prices?.[key]?.units ?? {});
+  return units.length ? Math.max(1, Math.ceil(Math.min(...units))) : null;
 }
 
 export function formatRub(value: number): string {
