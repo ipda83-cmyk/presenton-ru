@@ -23,7 +23,7 @@ from llmai.shared import (
 )
 
 from enums.llm_provider import LLMProvider
-from utils.llm_config import get_extra_body
+from utils.llm_config import get_extra_body, has_explicit_reasoning_settings
 from utils.llm_provider import get_llm_provider
 from utils.schema_utils import get_schema_validation_errors
 from utils.i18n import t
@@ -142,6 +142,22 @@ def describe_schema_in_prompt() -> bool:
         return False
 
 
+def reasoning_off_with_tools() -> bool:
+    """Send reasoning_effort "none" when a request has tools (chat, web search).
+
+    Reasoning models behind OpenAI-compatible proxies reject function tools
+    together with reasoning_effort in /v1/chat/completions (arckep with
+    gpt-6-luna: "use /v1/responses or set reasoning_effort to 'none'").
+    Only for the custom provider and unless LLM_REASONING_* is set.
+    """
+    if has_explicit_reasoning_settings():
+        return False
+    try:
+        return get_llm_provider() == LLMProvider.CUSTOM
+    except Exception:
+        return False
+
+
 def json_answer_instruction(response_format: ResponseFormat) -> Optional[UserMessage]:
     schema = get_response_schema(response_format)
     if not schema:
@@ -180,6 +196,8 @@ def get_generate_kwargs(
         kwargs["tools"] = tools
     if response_format is not None:
         kwargs["response_format"] = response_format
+    if reasoning is None and tools and reasoning_off_with_tools():
+        reasoning = ReasoningConfig(enabled=False)
     if reasoning is not None:
         kwargs["reasoning"] = reasoning
 

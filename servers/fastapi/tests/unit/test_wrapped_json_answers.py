@@ -150,3 +150,25 @@ def test_custom_provider_gets_the_schema_in_the_prompt(monkeypatch):
     # Plain text requests are untouched.
     monkeypatch.delenv("STRUCTURED_OUTPUT_PROMPT")
     assert len(llm_utils.get_generate_kwargs(model="m", messages=messages)["messages"]) == 1
+
+
+def test_custom_provider_turns_reasoning_off_when_tools_are_sent(monkeypatch):
+    from llmai.shared import UserMessage, WebSearchTool
+
+    messages = [UserMessage(content="Добавь таблицу")]
+    monkeypatch.setattr(llm_utils, "get_extra_body", lambda **_kwargs: None)
+    for name in ("LLM_REASONING_MODE", "LLM_REASONING_EFFORT", "LLM_REASONING_BUDGET_TOKENS"):
+        monkeypatch.delenv(name, raising=False)
+
+    monkeypatch.setenv("LLM", "custom")
+    kwargs = llm_utils.get_generate_kwargs(model="m", messages=messages, tools=[WebSearchTool()])
+    assert kwargs["reasoning"].enabled is False  # sent as reasoning_effort "none"
+    # No tools: the profile decides as before.
+    assert "reasoning" not in llm_utils.get_generate_kwargs(model="m", messages=messages)
+    # An explicit setting wins.
+    monkeypatch.setenv("LLM_REASONING_EFFORT", "high")
+    assert "reasoning" not in llm_utils.get_generate_kwargs(model="m", messages=messages, tools=[WebSearchTool()])
+    # Other providers are untouched.
+    monkeypatch.delenv("LLM_REASONING_EFFORT")
+    monkeypatch.setenv("LLM", "openai")
+    assert "reasoning" not in llm_utils.get_generate_kwargs(model="m", messages=messages, tools=[WebSearchTool()])
