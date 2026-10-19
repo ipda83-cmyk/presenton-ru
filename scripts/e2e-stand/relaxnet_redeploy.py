@@ -72,6 +72,16 @@ def start_infrastructure() -> None:
     sys.exit("postgres or the fake upstream did not start")
 
 
+def rewritten_nginx_conf() -> str:
+    """nginx.conf as the RelaxNet builder leaves it: "listen 80" rewritten into "listen 8080"."""
+    folder = os.path.join(HERE, ".relax-logs")
+    os.makedirs(folder, exist_ok=True)
+    path = os.path.join(folder, "nginx-rewritten.conf")
+    with open(mount("nginx.conf"), encoding="utf-8") as source, open(path, "w", encoding="utf-8", newline="\n") as target:
+        target.write(source.read().replace("    listen 80;", "    listen 8080;"))
+    return path
+
+
 def start_app() -> float:
     """A fresh container: no volume for /app_data. Returns the start time."""
     docker("rm", "-f", APP, check_result=False)
@@ -80,7 +90,7 @@ def start_app() -> float:
         "run", "-d", "--name", APP, "--network", NETWORK, "-p", "127.0.0.1:5058:8080",
         "-v", f"{mount('servers/fastapi')}:/app/servers/fastapi",
         "-v", f"{mount('start.js')}:/app/start.js:ro",
-        "-v", f"{mount('nginx.conf')}:/etc/nginx/nginx.conf:ro",
+        "-v", f"{rewritten_nginx_conf()}:/etc/nginx/nginx.conf:ro",
         "-e", "PYTHONDONTWRITEBYTECODE=1",
         # What the host sets for every container.
         "-e", "PORT=8080", "-e", "UVICORN_PORT=8080", "-e", "SERVER_PORT=8080",
@@ -126,6 +136,10 @@ def login(creds: dict) -> requests.Session:
     if response.status_code != 200:
         sys.exit(f"login {creds['username']}: {response.status_code} {response.text[:200]}")
     return session
+
+
+def admin_session() -> requests.Session:
+    return login(ADMIN)
 
 
 def storage() -> dict[str, int]:
@@ -193,6 +207,16 @@ def main() -> int:
     check("signed-in users stay signed in (session secret restored)", status.get("authenticated") is True, str(status))
     user = login(USER)
     check("users survive the redeploy (PostgreSQL)", True)
+    # Exports open the presentation at http://127.0.0.1 (port 80) inside the container.
+    exported = admin_session().post(
+        f"{BASE}/api/v1/ppt/presentation/generate",
+        json={"content": "Экспорт", "n_slides": 2, "language": "Russian", "export_as": "pptx"},
+        timeout=900,
+    )
+    path = exported.json().get("path", "") if exported.ok else ""
+    download = admin_session().get(BASE + path[path.find("/app_data/"):], timeout=60) if "/app_data/" in path else None
+    check("a presentation exports to PPTX", bool(download and download.ok and download.content[:2] == b"PK"),
+          f"{exported.status_code} {exported.text[:200]}")
     check("balance survives the redeploy",
           user.get(f"{BASE}/api/v1/billing/me", timeout=30).json().get("balance") == balance_before)
     check("first image is back", user.get(f"{BASE}{first}", timeout=30).content == first_png)
@@ -201,9 +225,9 @@ def main() -> int:
     check("another account does not get it after the restore either",
           other.get(f"{BASE}{first}", timeout=30).status_code != 200)
     check("signed out after the redeploy: still not served", requests.get(f"{BASE}{first}", timeout=30).status_code != 200)
-    uploads_before = len([e for e in fake_log() if e.get("kind") == "storage_upload"])
+    uploads_before = len([e for e in fake_log() if e.get("kind") == "storage_upload" and "/images/" in e.get("key", "")])
     time.sleep(6)
-    uploads_after = len([e for e in fake_log() if e.get("kind") == "storage_upload"])
+    uploads_after = len([e for e in fake_log() if e.get("kind") == "storage_upload" and "/images/" in e.get("key", "")])
     check("restored files are not uploaded again", uploads_after == uploads_before, f"{uploads_before} -> {uploads_after}")
 
     # The CDN is down during the next deploy: the fallback link is used.

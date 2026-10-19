@@ -807,6 +807,7 @@ const startNginx = () => {
 // routes to, pid and errors outside system folders, and — if that still
 // fails — a single process that never changes its user.
 const nginxFallbackConfigPath = "/tmp/presenton-nginx.conf";
+const LISTEN_PLACEHOLDER = "__PRESENTON_LISTEN__\n";
 
 const reportNginxProblem = (configPath) => {
   const test = spawnSync("nginx", ["-t", "-c", configPath], { encoding: "utf8" });
@@ -834,10 +835,10 @@ const startNginxWithFallbackConfig = () => {
     config = readFileSync(nginxRuntimeConfigPath, "utf8")
       .replace(/^pid\s+[^;]+;/m, "pid /tmp/presenton-nginx.pid;")
       .replace(/^error_log\s+[^;]+;/m, "error_log stderr;")
-      // One listen on PORT: the RelaxNet builder rewrites "listen 80" into
+      // Each port once: the RelaxNet builder rewrites "listen 80" into
       // "listen 8080" next to ours, and a duplicate stops nginx.
       .replace(/^[ \t]*listen\s+[^;]+;[ \t]*\n/gm, "")
-      .replace(/^([ \t]*)server \{\n/m, `$1server {\n$1  listen ${port};\n`)
+      .replace(/^([ \t]*)server \{\n/m, `$1server {\n${LISTEN_PLACEHOLDER}`)
       // Files nginx owns under /var may be closed to a root without capabilities.
       .replace(
         /^http \{/m,
@@ -856,15 +857,25 @@ const startNginxWithFallbackConfig = () => {
     console.error("Cannot read the nginx config:", error);
     return false;
   }
-  const attempts = [
-    config,
-    config
-      // Same user as now (nothing to chown) and no worker processes (nothing
-      // to switch users for): works with no capabilities at all.
+  // Same user as now (nothing to chown) and no worker processes (nothing to
+  // switch users for): works with no capabilities at all.
+  const singleProcess = (text) =>
+    text
       .replace(/^user\s+[^;]+;/m, "user root;")
-      .replace(/^worker_processes\s+[^;]+;/m, "worker_processes 1;\nmaster_process off;"),
+      .replace(/^worker_processes\s+[^;]+;/m, "worker_processes 1;\nmaster_process off;");
+  // Port 80 as well: inside the container the export (pdf-maker) and the
+  // custom template compiler call http://127.0.0.1 and http://localhost.
+  const listen = (ports) => [...new Set(ports)].map((value) => `    listen ${value};\n`).join("");
+  const attempts = [
+    config.replace(LISTEN_PLACEHOLDER, listen([port, "80"])),
+    singleProcess(config.replace(LISTEN_PLACEHOLDER, listen([port, "80"]))),
+    // Last resort: the site works, exports do not (port 80 refused).
+    singleProcess(config.replace(LISTEN_PLACEHOLDER, listen([port]))),
   ];
   for (const [index, attempt] of attempts.entries()) {
+    if (index === 2) {
+      console.warn("Nginx cannot listen on port 80: exports will fail until it can");
+    }
     writeFileSync(nginxFallbackConfigPath, attempt);
     // No pipes: the daemonized nginx keeps its stdout/stderr open, and a
     // spawnSync waiting on a pipe would block this process — and with it the
