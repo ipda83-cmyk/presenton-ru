@@ -11,7 +11,7 @@ export interface MaskCanvasHandle {
 
 export type BrushTool = "brush" | "eraser";
 
-const OVERLAY_COLOR = "#7C5CF6";
+const OVERLAY_COLOR = "#03B015";
 const OVERLAY_ALPHA = 0.55;
 const MAX_DISPLAY_WIDTH = 1400;
 

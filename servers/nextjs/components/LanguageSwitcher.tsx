@@ -97,9 +97,9 @@ export default function LanguageSwitcher({
             disabled={pending}
             aria-pressed={active}
             title={hint(option)}
-            className={`${styles.button} inline-flex items-center rounded-full font-syne font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] disabled:cursor-wait ${
+            className={`${styles.button} inline-flex items-center rounded-full font-syne font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] disabled:cursor-wait ${
               active
-                ? "bg-[#F4F3FF] text-[#5141E5]"
+                ? "bg-[#F4FEF5] text-[#02940F]"
                 : "text-[#475467] hover:bg-[#F8F8FA] hover:text-[#101323]"
             }`}
           >

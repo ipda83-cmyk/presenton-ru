@@ -522,7 +522,7 @@ const iconButtonStyle: CSSProperties = {
 };
 
 const activeButtonStyle: CSSProperties = {
-  background: "#F6F3FF",
+  background: "#F4FEF5",
 };
 
 const dividerStyle: CSSProperties = {

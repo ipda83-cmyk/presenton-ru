@@ -80,7 +80,7 @@ export function LayoutsPanel({
   }, [layoutItems, searchQuery]);
 
   return (
-    <aside className="hidden w-[299px] shrink-0 bg-[#FEFEFF] lg:flex lg:flex-col">
+    <aside className="hidden w-[299px] shrink-0 bg-[#FEFFFE] lg:flex lg:flex-col">
       <div className="flex min-h-0 flex-1 flex-col px-3 pb-6 pt-8">
         <h2 className="text-[16px] font-medium leading-5 text-[#101828]">
           {t("deckLayouts")}
@@ -180,7 +180,7 @@ function LayoutRow({
         <div className="flex shrink-0 items-center gap-[10px]">
           <button
             aria-label={t("copyLayoutIdAria", { n: index + 1 })}
-            className="flex h-[18px] w-[18px] items-center justify-center rounded-[4px] text-[#191919] transition-colors hover:bg-[#F7F6F9] hover:text-[#7A5AF8]"
+            className="flex h-[18px] w-[18px] items-center justify-center rounded-[4px] text-[#191919] transition-colors hover:bg-[#F7F6F9] hover:text-[#03B015]"
             onClick={(event) => {
               event.stopPropagation();
               onCopy();

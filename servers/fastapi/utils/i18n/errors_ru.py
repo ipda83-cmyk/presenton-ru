@@ -123,7 +123,7 @@ ERRORS: dict[str, str] = {
     "err.llmProvider.invalidLlmProviderPleaseSelectOne": "Некорректный провайдер LLM. Выберите один из: openai, deepseek, google, vertex, azure, bedrock, openrouter, fireworks, together, cerebras, anthropic, litellm, lmstudio, ollama, custom, codex",
     "err.llmProvider.openaiApiKeyIsNotSet": "Не задан API-ключ OpenAI",
     "err.llmUtils.llmDidNotReturnAnyContent": "Модель не вернула ответ",
-    "err.ollama.couldNotConnectToOllamaAt": "Не удалось подключиться к Ollama по адресу {resolved_ollama_url}. Убедитесь, что Ollama запущена и доступна для Presenton. Если Presenton работает в Docker, используйте host.docker.internal вместо localhost.",
+    "err.ollama.couldNotConnectToOllamaAt": "Не удалось подключиться к Ollama по адресу {resolved_ollama_url}. Убедитесь, что Ollama запущена и доступна для Kvant AI Studio. Если Kvant AI Studio работает в Docker, используйте host.docker.internal вместо localhost.",
     "err.ollama.failedToListOllamaModels": "Не удалось получить список моделей Ollama: {status}",
     "err.ollama.forbiddenPleaseCheckYourOllamaConfiguration": "Доступ запрещён: проверьте настройки Ollama",
     "err.ollama.invalidOllamaUrl": "Некорректный URL Ollama",

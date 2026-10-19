@@ -12,7 +12,7 @@ import {
 import { errorMessage } from "@/components/studio/controls";
 
 const inputClass =
-  "h-10 rounded-lg border border-[#EDEEEF] bg-white px-3 text-sm text-[#101323] outline-none focus:border-[#7A5AF8]";
+  "h-10 rounded-lg border border-[#EDEEEF] bg-white px-3 text-sm text-[#101323] outline-none focus:border-[#03B015]";
 
 /** Administrators: everyone's balance, manual credits and the operations log. */
 export default function AdminBilling() {
@@ -78,8 +78,8 @@ export default function AdminBilling() {
     <div className="space-y-5">
       <section className="rounded-[12px] border border-[#EDEEEF] bg-white p-6">
         <div className="mb-5 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4F3FF]">
-            <Wallet className="h-4 w-4 text-[#5146E5]" aria-hidden="true" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4FEF5]">
+            <Wallet className="h-4 w-4 text-[#02940F]" aria-hidden="true" />
           </div>
           <div>
             <h2 className="text-sm font-semibold text-[#101323]">{t("adjustTitle")}</h2>
@@ -114,7 +114,7 @@ export default function AdminBilling() {
           <button
             type="submit"
             disabled={busy || !userId || amount === ""}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#5146E5] px-5 text-xs font-semibold text-white transition hover:bg-[#4338CA] disabled:opacity-60"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#02940F] px-5 text-xs font-semibold text-white transition hover:bg-[#027A0E] disabled:opacity-60"
           >
             {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
             {t("apply")}
@@ -129,7 +129,7 @@ export default function AdminBilling() {
           <button
             type="button"
             aria-label={t("refresh")}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EDEEEF] text-[#667085] transition hover:bg-[#F9FAFB] hover:text-[#5146E5]"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EDEEEF] text-[#667085] transition hover:bg-[#F9FAFB] hover:text-[#02940F]"
             onClick={() => void load()}
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} aria-hidden="true" />

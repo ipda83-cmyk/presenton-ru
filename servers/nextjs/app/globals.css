@@ -300,7 +300,7 @@ thead {
   height: 0;
   background: radial-gradient(
     circle,
-    rgba(56, 48, 161, 0.1) 0%,
+    rgba(2, 122, 14, 0.1) 0%,
     transparent 70%
   );
   transform: translate(-50%, -50%);
@@ -334,12 +334,12 @@ thead {
   border-radius: 14px;
   background: linear-gradient(
     180deg,
-    rgba(139, 92, 246, 0.08) 0%,
-    rgba(99, 102, 241, 0.04) 100%
+    rgba(3, 176, 21, 0.08) 0%,
+    rgba(3, 176, 21, 0.04) 100%
   );
-  border: 1px solid rgba(196, 181, 253, 0.56);
+  border: 1px solid rgba(190, 244, 195, 0.56);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16),
-    0 8px 26px rgba(99, 102, 241, 0.08);
+    0 8px 26px rgba(3, 176, 21, 0.08);
   overflow: hidden;
   will-change: transform;
 }
@@ -387,9 +387,9 @@ thead {
 
 .chat-slide-glow {
   border-radius: 14px;
-  box-shadow: 0 0 0 1px rgba(216, 180, 254, 0.32),
-    0 0 0 5px rgba(139, 92, 246, 0.08),
-    0 10px 24px rgba(99, 102, 241, 0.08);
+  box-shadow: 0 0 0 1px rgba(189, 245, 194, 0.32),
+    0 0 0 5px rgba(3, 176, 21, 0.08),
+    0 10px 24px rgba(3, 176, 21, 0.08);
   will-change: box-shadow;
 }
 
@@ -654,7 +654,7 @@ thead {
   width: 76%;
   height: 54%;
   border-radius: 9999px;
-  background: #f2e1fb;
+  background: #E4F8E6;
   filter: blur(10px);
   opacity: 0.95;
   transform-origin: center;
@@ -709,17 +709,17 @@ thead {
   aspect-ratio: 2;
   --_g-left: no-repeat radial-gradient(
     circle closest-side,
-    rgb(122 90 248 / 20%) 90%,
+    rgb(3 176 21 / 20%) 90%,
     transparent
   );
   --_g-center: no-repeat radial-gradient(
     circle closest-side,
-    rgb(122 90 248 / 60%) 90%,
+    rgb(3 176 21 / 60%) 90%,
     transparent
   );
   --_g-right: no-repeat radial-gradient(
     circle closest-side,
-    #7a5af8 90%,
+    #03B015 90%,
     transparent
   );
   background:
@@ -760,32 +760,147 @@ thead {
   }
 }
 
-.presenton-splash-surface {
-  transform-origin: center center;
+/* Kvant AI Studio splash (components/ui/brand-splash-loader.tsx): the toggle
+   switches on, then the name appears. Phases are offset by --t0 so a second
+   loader continues the first one's animation. */
+.brand-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  overflow: hidden;
+  background: #ffffff;
 }
 
-.presenton-splash-wordmark-layer {
-  display: block;
+.brand-splash-row {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  transform: translateX(var(--shift, 0px));
+  animation: brand-splash-shift 1100ms cubic-bezier(0.65, 0, 0.35, 1) calc(var(--t0, 0ms) + 1500ms) both;
 }
 
-@keyframes presenton-splash-surface-grow {
-  0% {
-    transform: translate3d(-50%, -50%, 0) scale(0.001);
+.brand-splash-mark {
+  width: 112px;
+  height: auto;
+  overflow: visible;
+  transform-origin: 50% 50%;
+  animation:
+    brand-splash-in 500ms cubic-bezier(0.2, 0.7, 0.2, 1) var(--t0, 0ms) both,
+    brand-splash-pop 420ms ease-out calc(var(--t0, 0ms) + 1100ms) both;
+}
+
+.brand-splash-fill {
+  clip-path: inset(0 100% 0 0 round 132px);
+  animation: brand-splash-fill 600ms cubic-bezier(0.65, 0, 0.35, 1) calc(var(--t0, 0ms) + 500ms) both;
+}
+
+.brand-splash-knob {
+  animation: brand-splash-knob 620ms cubic-bezier(0.34, 1.45, 0.64, 1) calc(var(--t0, 0ms) + 500ms) both;
+}
+
+.brand-splash-ring {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation:
+    brand-splash-ring 900ms ease-out calc(var(--t0, 0ms) + 1100ms) both,
+    brand-splash-ring-idle 1800ms ease-out calc(var(--t0, 0ms) + 2700ms) infinite;
+}
+
+.brand-splash-name {
+  display: flex;
+  white-space: pre;
+  font-family: var(--font-syne), Arial, sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: #101323;
+}
+
+.brand-splash-accent {
+  display: flex;
+  font-weight: 500;
+  color: #027a0e;
+}
+
+.brand-splash-letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(40%);
+  animation: brand-splash-letter 520ms cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--t0, 0ms) + 1550ms + var(--i) * 45ms) both;
+}
+
+.brand-splash-status {
+  margin: 0;
+  font-size: 15px;
+  color: #667085;
+  opacity: 0;
+  animation: brand-splash-fade 500ms ease calc(var(--t0, 0ms) + 2100ms) both;
+}
+
+@media (max-width: 480px) {
+  .brand-splash-mark {
+    width: 72px;
   }
 
-  100% {
-    transform: translate3d(-50%, -50%, 0) scale(1);
+  .brand-splash-name {
+    font-size: 26px;
+  }
+
+  .brand-splash-row {
+    gap: 14px;
   }
 }
 
-@keyframes presenton-splash-text-reveal {
-  0% {
-    clip-path: circle(0 at 50% 50%);
-  }
+@keyframes brand-splash-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
 
-  100% {
-    clip-path: circle(71vmax at 50% 50%);
-  }
+@keyframes brand-splash-knob {
+  from { transform: translateX(0); }
+  to { transform: translateX(172px); }
+}
+
+@keyframes brand-splash-fill {
+  from { clip-path: inset(0 100% 0 0 round 132px); }
+  to { clip-path: inset(0 0 0 0 round 132px); }
+}
+
+@keyframes brand-splash-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes brand-splash-ring {
+  0% { opacity: 0.55; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.9); }
+}
+
+@keyframes brand-splash-ring-idle {
+  0% { opacity: 0.35; transform: scale(1); }
+  70%, 100% { opacity: 0; transform: scale(1.6); }
+}
+
+@keyframes brand-splash-shift {
+  from { transform: translateX(var(--shift, 0px)); }
+  to { transform: translateX(0); }
+}
+
+@keyframes brand-splash-letter {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes brand-splash-fade {
+  to { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -799,13 +914,31 @@ thead {
     animation: none;
   }
 
-  .presenton-splash-surface {
+  .brand-splash-row,
+  .brand-splash-mark,
+  .brand-splash-fill,
+  .brand-splash-knob,
+  .brand-splash-ring,
+  .brand-splash-letter,
+  .brand-splash-status {
     animation: none !important;
-    transform: translate3d(-50%, -50%, 0) scale(1);
   }
 
-  .presenton-splash-wordmark-reveal {
-    animation: none !important;
-    clip-path: circle(71vmax at 50% 50%);
+  .brand-splash-row {
+    transform: none;
+  }
+
+  .brand-splash-fill {
+    clip-path: none;
+  }
+
+  .brand-splash-knob {
+    transform: translateX(172px);
+  }
+
+  .brand-splash-letter,
+  .brand-splash-status {
+    opacity: 1;
+    transform: none;
   }
 }

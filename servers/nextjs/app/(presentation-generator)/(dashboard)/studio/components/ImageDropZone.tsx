@@ -71,16 +71,16 @@ export default function ImageDropZone({
       className={[
         "flex w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed text-center transition-colors",
         compact ? "gap-1.5 px-4 py-5" : "gap-3 px-8 py-14",
-        dragging ? "border-[#7A5AF8] bg-[#F4F3FF]" : "border-[#DBDBE1] bg-white",
+        dragging ? "border-[#03B015] bg-[#F4FEF5]" : "border-[#DBDBE1] bg-white",
       ].join(" ")}
     >
-      {!compact && <ImageUp className="h-9 w-9 text-[#7A5AF8]" aria-hidden="true" />}
+      {!compact && <ImageUp className="h-9 w-9 text-[#03B015]" aria-hidden="true" />}
       <p className={`font-syne font-medium text-[#101323] ${compact ? "text-sm" : "text-base"}`}>{title}</p>
       <p className="text-[13px] text-[#667085]">{hint}</p>
       <button
         type="button"
         onClick={() => input.current?.click()}
-        className="mt-1 inline-flex min-h-9 items-center rounded-full border border-[#CEC6FF] bg-[#F4F3FF] px-4 font-syne text-[13px] font-semibold text-[#5141E5] transition-colors hover:bg-[#ECE9FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+        className="mt-1 inline-flex min-h-9 items-center rounded-full border border-[#CDF8D1] bg-[#F4FEF5] px-4 font-syne text-[13px] font-semibold text-[#02940F] transition-colors hover:bg-[#ECFCED] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
       >
         {t("choose")}
       </button>

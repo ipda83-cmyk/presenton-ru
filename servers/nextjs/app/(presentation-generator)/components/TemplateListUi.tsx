@@ -126,11 +126,11 @@ export const TemplateListCard = memo(function TemplateListCard({
       className={cn(
         "group relative overflow-hidden border bg-white shadow-none outline-none transition-all duration-200",
         selectionPage ? "rounded-[12px]" : "rounded-[22px]",
-        "cursor-pointer hover:-translate-y-1 hover:border-[#7A5AF8] hover:ring-2 hover:ring-[#7A5AF8]/20 hover:shadow-[0_18px_40px_rgba(34,31,54,0.12)] focus-visible:-translate-y-1 focus-visible:border-[#7A5AF8] focus-visible:ring-2 focus-visible:ring-[#7A5AF8]/30 focus-visible:shadow-[0_18px_40px_rgba(34,31,54,0.12)]",
+        "cursor-pointer hover:-translate-y-1 hover:border-[#03B015] hover:ring-2 hover:ring-[#03B015]/20 hover:shadow-[0_18px_40px_rgba(34,31,54,0.12)] focus-visible:-translate-y-1 focus-visible:border-[#03B015] focus-visible:ring-2 focus-visible:ring-[#03B015]/30 focus-visible:shadow-[0_18px_40px_rgba(34,31,54,0.12)]",
         isSelected
           ? cn(
-              "ring-2 ring-[#7A5AF8]/25 shadow-[0_14px_34px_rgba(34,31,54,0.12)]",
-              selectionPage ? "!border-0" : "border-[#7A5AF8]"
+              "ring-2 ring-[#03B015]/25 shadow-[0_14px_34px_rgba(34,31,54,0.12)]",
+              selectionPage ? "!border-0" : "border-[#03B015]"
             )
           : selectionPage
             ? "!border-0 !shadow-[inset_0_0_0_1px_#EDEEEF]"
@@ -141,17 +141,17 @@ export const TemplateListCard = memo(function TemplateListCard({
     >
       <div
         className={cn(
-          "pointer-events-none absolute inset-0 z-30 bg-[#7A5AF8]/[0.04] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100",
+          "pointer-events-none absolute inset-0 z-30 bg-[#03B015]/[0.04] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100",
           selectionPage ? "rounded-[12px]" : "rounded-[22px]"
         )}
       />
       {isSelected && (
-        <span className="absolute right-4 top-3.5 z-50 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#7A5AF8] text-white shadow-sm">
+        <span className="absolute right-4 top-3.5 z-50 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#03B015] text-white shadow-sm">
           <CheckCircle2 className="h-4 w-4" />
         </span>
       )}
       {isSuggested && (
-        <span className="absolute right-3.5 top-[52px] z-50 rounded-full border border-[#DDD7FF] bg-white/95 px-2.5 py-1 font-syne text-[10px] font-semibold text-[#6553E8] shadow-sm backdrop-blur">
+        <span className="absolute right-3.5 top-[52px] z-50 rounded-full border border-[#DCFADE] bg-white/95 px-2.5 py-1 font-syne text-[10px] font-semibold text-[#02940F] shadow-sm backdrop-blur">
           {t("suggested")}
         </span>
       )}
@@ -217,7 +217,7 @@ export const TemplateListCard = memo(function TemplateListCard({
               "shrink-0",
               selectionPage
                 ? "h-5 w-5 text-[#808080]"
-                : "h-4 w-4 text-gray-400 transition-colors group-hover:text-purple-600"
+                : "h-4 w-4 text-gray-400 transition-colors group-hover:text-green-600"
             )}
           />
         )}
@@ -283,25 +283,25 @@ export const ProcessingTemplateListCard = memo(
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute bottom-5 right-5 top-5 z-20 rounded-r-xl bg-[#F8F7FF]/70 transition-[width] duration-500 ease-out"
+            className="pointer-events-none absolute bottom-5 right-5 top-5 z-20 rounded-r-xl bg-[#F8FEF9]/70 transition-[width] duration-500 ease-out"
             style={{ width: overlayWidth }}
           />
           <div
             className={cn(
               "absolute right-8 top-8 z-30 inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-white/90 px-2.5 py-1.5 text-xs font-bold shadow-sm backdrop-blur",
-              failed ? "text-red-600" : "text-[#5146E5]"
+              failed ? "text-red-600" : "text-[#02940F]"
             )}
           >
             {failed ? (
               <AlertCircle className="h-3.5 w-3.5" />
             ) : (
-              <span className="h-1.5 w-1.5 rounded-full bg-[#7A5AF8]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#03B015]" />
             )}
             {failed ? t("failed") : `${progressPercent}%`}
           </div>
           <div className="absolute inset-x-5 bottom-5 z-30 h-1.5 overflow-hidden rounded-full bg-white/70">
             <div
-              className="h-full rounded-full bg-[#5146E5] transition-[width] duration-500 ease-out"
+              className="h-full rounded-full bg-[#02940F] transition-[width] duration-500 ease-out"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -325,7 +325,7 @@ export const ProcessingTemplateListCard = memo(
               type="button"
               disabled={retrying}
               onClick={onRetry}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#5146E5] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#4338CA] disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[#02940F] px-3 py-2 text-xs font-semibold text-white transition hover:bg-[#027A0E] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {retrying ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -388,8 +388,8 @@ export function TemplateTabSwitcher({
         className="px-5 py-2 text-xs font-medium text-[#3A3A3A] rounded-[70px]"
         onClick={() => onTabChange("custom")}
         style={{
-          background: tab === "custom" ? "#F4F3FF" : "transparent",
-          color: tab === "custom" ? "#5146E5" : "#3A3A3A",
+          background: tab === "custom" ? "#F4FEF5" : "transparent",
+          color: tab === "custom" ? "#02940F" : "#3A3A3A",
         }}
       >
         {t("tabCustom")}
@@ -410,8 +410,8 @@ export function TemplateTabSwitcher({
         className="px-5 py-2 text-xs font-medium text-[#3A3A3A] rounded-[70px]"
         onClick={() => onTabChange("default")}
         style={{
-          background: tab === "default" ? "#F4F3FF" : "transparent",
-          color: tab === "default" ? "#5146E5" : "#3A3A3A",
+          background: tab === "default" ? "#F4FEF5" : "transparent",
+          color: tab === "default" ? "#02940F" : "#3A3A3A",
         }}
       >
         {t("tabBuiltIn")}

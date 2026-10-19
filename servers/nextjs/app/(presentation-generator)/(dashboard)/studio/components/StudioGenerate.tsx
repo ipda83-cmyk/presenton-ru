@@ -38,7 +38,7 @@ function closestAspect(wanted: string, options: string[]): string {
 }
 
 const linkAction =
-  "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-[#DBDBE1] bg-white px-3.5 font-syne text-[13px] font-medium text-[#2C2B37] transition-colors hover:border-[#CEC6FF] hover:bg-[#FAFAFF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]";
+  "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-[#DBDBE1] bg-white px-3.5 font-syne text-[13px] font-medium text-[#2C2B37] transition-colors hover:border-[#CDF8D1] hover:bg-[#FBFEFB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]";
 
 export default function StudioGenerate({ isAdmin }: { isAdmin: boolean }) {
   const t = useTranslations("studio");
@@ -129,8 +129,8 @@ export default function StudioGenerate({ isAdmin }: { isAdmin: boolean }) {
                 />
               ) : (
                 <div className="flex flex-col items-center gap-3.5 text-center">
-                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#EDEEEF] bg-white shadow-[0_8px_18px_rgba(124,81,248,0.12)]">
-                    <Sparkles className="h-6 w-6 text-[#7A5AF8]" aria-hidden="true" />
+                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#EDEEEF] bg-white shadow-[0_8px_18px_rgba(3,176,21,0.12)]">
+                    <Sparkles className="h-6 w-6 text-[#03B015]" aria-hidden="true" />
                   </span>
                   <p className="font-syne text-base font-medium text-[#101323]">{t("result.emptyTitle")}</p>
                   <p className="text-[13px] text-[#667085]">{t("result.emptyHint")}</p>
@@ -149,8 +149,8 @@ export default function StudioGenerate({ isAdmin }: { isAdmin: boolean }) {
                     aria-label={t("result.variant", { number: index + 1 })}
                     onClick={() => setSelected(image)}
                     className={[
-                      "h-16 w-16 overflow-hidden rounded-lg border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]",
-                      selected?.id === image.id ? "border-[#7A5AF8]" : "border-transparent",
+                      "h-16 w-16 overflow-hidden rounded-lg border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]",
+                      selected?.id === image.id ? "border-[#03B015]" : "border-transparent",
                     ].join(" ")}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}

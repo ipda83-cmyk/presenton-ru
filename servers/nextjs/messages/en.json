@@ -763,7 +763,7 @@
     "back": "BACK",
     "sidebarAria": "Dashboard sidebar",
     "sectionsAria": "Dashboard sections",
-    "logoAlt": "Presenton logo",
+    "logoAlt": "Kvant AI Studio logo",
     "sidebar": {
       "dashboard": "Dashboard",
       "templates": "Templates",
@@ -794,7 +794,7 @@
     "title": "Dashboard",
     "settings": "Settings",
     "joinDiscord": "Join Discord",
-    "updateApp": "Update Presenton",
+    "updateApp": "Update Kvant AI Studio",
     "actions": "Actions",
     "createNewPresentation": "Create new Presentation",
     "creating": "Creating...",
@@ -892,7 +892,7 @@
     "sessionBody": "End your session on this deployment. You will need to sign in again to use the app and access the API.",
     "signingOut": "Signing out...",
     "usageAnalyticsHeading": "Usage analytics",
-    "usageAnalyticsDesc": "Share anonymous usage data to help us improve Presenton. No personal information or presentation content is collected.",
+    "usageAnalyticsDesc": "Share anonymous usage data to help us improve Kvant AI Studio. No personal information or presentation content is collected.",
     "shareToggleLabel": "Share anonymous usage data",
     "sharingOn": "Anonymous usage data is being shared.",
     "sharingOff": "Anonymous usage data is not being shared",
@@ -1241,7 +1241,7 @@
     "featRealtime": "Test in Real Time",
     "featMaxSize": "Max 100MB",
     "featGen": "5min Generation",
-    "uploadInfo": "Presenton sends each slide as a screenshot and HTML reference. Use a vision-enabled model for accurate layouts. Text-only models may produce poor results or fail.",
+    "uploadInfo": "Kvant AI Studio sends each slide as a screenshot and HTML reference. Use a vision-enabled model for accurate layouts. Text-only models may produce poor results or fail.",
     "fallbackFontAria": "Fallback font for {fontName}",
     "chooseFallback": "Choose fallback",
     "searchFonts": "Search fonts",
@@ -1537,7 +1537,7 @@
     "notFound": "Presentation not found"
   },
   "onb": {
-    "logoAlt": "Presenton logo",
+    "logoAlt": "Kvant AI Studio logo",
     "stepTextProvider": "Text Provider",
     "stepImageProvider": "Image Provider",
     "stepWebSearch": "Web Search",
@@ -1565,7 +1565,7 @@
     "title2": "Choose your image provider",
     "title3": "Configure web search",
     "sub1": "Use your Presenton account, or configure your own AI providers.",
-    "sub2": "Choose how Presenton creates visuals, or continue without image generation.",
+    "sub2": "Choose how Kvant AI Studio creates visuals, or continue without image generation.",
     "sub3": "Add current web context to presentations, or continue with web search disabled.",
     "orConfigure": "Or configure your own providers",
     "keysStayLocal": "Your own provider keys and local generation setup stay on this machine.",
@@ -1577,7 +1577,7 @@
     "tabDescOther": "Connect hosted AI providers using an API key or custom endpoint.",
     "providerSetup": "{label} setup",
     "imageConfigDesc": "Configure the selected image provider before continuing.",
-    "webAutoNote": "Presenton will use model-native web grounding when available. If the selected text model does not support it, web search stays off until you choose an external provider.",
+    "webAutoNote": "Kvant AI Studio will use model-native web grounding when available. If the selected text model does not support it, web search stays off until you choose an external provider.",
     "webSettingsDesc": "Bring current information into generated presentations",
     "selectWebProviderLabel": "Select Web Search Provider",
     "enableWebSearchTooltip": "Enable/Disable Web Search",
@@ -1590,7 +1590,7 @@
     "welcomeTitle": "Welcome on board!",
     "welcomeSubtitle": "You’re all set. Let’s create your first presentation.",
     "usageAnalytics": "Usage analytics",
-    "usageAnalyticsDesc": "Help improve Presenton by sharing anonymous usage data.",
+    "usageAnalyticsDesc": "Help improve Kvant AI Studio by sharing anonymous usage data.",
     "firstPresentation": "My First Presentation 🚀",
     "celebrateAgain": "Celebrate again!",
     "goToDashboard": "Go to your dashboard"
@@ -1682,7 +1682,7 @@
     "foundModels": "{count, plural, one {Found # downloaded model.} other {Found # downloaded models.}} {lib} more available in library.",
     "reachableNoModels": "Ollama is reachable. Browse the library to download models.",
     "inContainerTitle": "Using in-container Ollama",
-    "inContainerBodyWithUrl": "host.docker.internal did not respond, so Presenton switched Ollama URL to localhost.",
+    "inContainerBodyWithUrl": "host.docker.internal did not respond, so Kvant AI Studio switched Ollama URL to localhost.",
     "inContainerBodyNoUrl": "host.docker.internal did not respond, so this check used localhost.",
     "updatedUrlTitle": "Updated Ollama URL",
     "updatedUrlBody": "Using {url} for Ollama checks.",
@@ -2522,7 +2522,7 @@
     }
   },
   "config": {
-    "loading": "Loading Presenton...",
+    "loading": "Loading Kvant AI Studio...",
     "providerSetupTitle": "Provider setup required",
     "providerSetupBody": "Choose and configure a text provider before opening other pages.",
     "cloudDisconnected": "Presenton Cloud is disconnected. Choose a text provider to continue.",
@@ -2541,19 +2541,19 @@
     "instanceNotConfiguredBody": "Ask the administrator to configure the AI providers in Settings."
   },
   "meta": {
-    "appTitle": "Presenton - Open Source AI presentation generator",
+    "appTitle": "Kvant AI Studio - Open Source AI presentation generator",
     "appDescription": "Open-source AI presentation generator with custom layouts, multi-model support (OpenAI, Gemini, Ollama), and PDF/PPTX export. A free Gamma alternative.",
-    "logoAlt": "Presenton Logo",
-    "uploadTitle": "Presenton | Open Source AI presentation generator",
+    "logoAlt": "Kvant AI Studio Logo",
+    "uploadTitle": "Kvant AI Studio | Open Source AI presentation generator",
     "uploadOgTitle": "Create Data Presentation | PresentOn",
     "outlineTitle": "Outline Presentation",
     "outlineDescription": "Customize and organize your presentation outline. Drag and drop slides, add charts, and generate your presentation with ease.",
-    "communityTitle": "Community | Presenton",
+    "communityTitle": "Community | Kvant AI Studio",
     "communityDescription": "Explore community presentation designs and prompts.",
-    "adminTitle": "Admin | Presenton",
-    "settingsTitle": "Settings | Presenton",
+    "adminTitle": "Admin | Kvant AI Studio",
+    "settingsTitle": "Settings | Kvant AI Studio",
     "settingsDescription": "Settings page",
-    "notFoundTitle": "Page not found | Presenton"
+    "notFoundTitle": "Page not found | Kvant AI Studio"
   },
   "notFound": {
     "imageAlt": "Page not found",
@@ -2691,7 +2691,7 @@
   "help": {
     "metaTitle": "Help",
     "title": "Help",
-    "intro": "A short guide to Presenton. The full developer documentation is linked from every section.",
+    "intro": "A short guide to Kvant AI Studio. Kvant AI Studio is built on the open-source Presenton project; its developer documentation is linked from every section.",
     "docsLink": "Full documentation",
     "moreInDocs": "More in the documentation",
     "contents": "Contents",
@@ -2807,7 +2807,7 @@
           },
           {
             "problem": "The AI provider does not connect",
-            "solution": "Check the URL, model and key, make sure the provider works outside Presenton and is reachable from the container, and that the model is installed and running."
+            "solution": "Check the URL, model and key, make sure the provider works outside Kvant AI Studio and is reachable from the container, and that the model is installed and running."
           },
           {
             "problem": "Before upgrading",
@@ -2826,7 +2826,8 @@
         "github": "Report a bug on GitHub",
         "discord": "Ask on Discord"
       }
-    }
+    },
+    "basedOn": "Kvant AI Studio is built on the open-source Presenton project (Apache 2.0 license)."
   },
   "studio": {
     "nav": {

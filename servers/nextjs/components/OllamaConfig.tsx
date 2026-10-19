@@ -449,7 +449,7 @@ export default function OllamaConfig({
                           key={model.name}
                           value={model.name}
                           onSelect={() => handleModelSelect(model)}
-                          className="cursor-pointer rounded-lg py-2.5 aria-selected:bg-[#F6F4FF]"
+                          className="cursor-pointer rounded-lg py-2.5 aria-selected:bg-[#F5FEF6]"
                         >
                           <Check
                             className={cn(

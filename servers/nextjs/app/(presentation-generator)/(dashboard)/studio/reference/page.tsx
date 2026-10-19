@@ -6,7 +6,7 @@ import StudioReference from "../components/StudioReference";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("studio.pages");
-  return { title: `${t("reference")} | Presenton` };
+  return { title: `${t("reference")} | Kvant AI Studio` };
 }
 
 export default async function StudioReferencePage({

@@ -14,9 +14,9 @@ import {
 } from "../../services/api/studioAdmin";
 
 const inputClass =
-  "h-10 rounded-lg border border-[#EDEEEF] bg-white px-3 text-sm text-[#101323] outline-none focus:border-[#7A5AF8]";
+  "h-10 rounded-lg border border-[#EDEEEF] bg-white px-3 text-sm text-[#101323] outline-none focus:border-[#03B015]";
 const smallInput =
-  "h-8 w-20 rounded-md border border-[#EDEEEF] bg-white px-2 text-xs text-[#101323] outline-none focus:border-[#7A5AF8]";
+  "h-8 w-20 rounded-md border border-[#EDEEEF] bg-white px-2 text-xs text-[#101323] outline-none focus:border-[#03B015]";
 
 type Draft = Record<string, StudioModelSettings>;
 
@@ -166,8 +166,8 @@ export default function AdminModels() {
       <section className="rounded-[12px] border border-[#EDEEEF] bg-white p-6">
         <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4F3FF]">
-              <Images className="h-4 w-4 text-[#5146E5]" aria-hidden="true" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4FEF5]">
+              <Images className="h-4 w-4 text-[#02940F]" aria-hidden="true" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-[#101323]">{t("title")}</h2>
@@ -397,7 +397,7 @@ export default function AdminModels() {
           type="button"
           disabled={busy !== null}
           onClick={() => void save()}
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#5146E5] px-6 text-xs font-semibold text-white transition hover:bg-[#4338CA] disabled:opacity-60"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#02940F] px-6 text-xs font-semibold text-white transition hover:bg-[#027A0E] disabled:opacity-60"
         >
           {busy === "save" && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           {t("save")}

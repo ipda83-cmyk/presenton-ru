@@ -54,8 +54,8 @@ const BillingSettings = ({
       <div className="mb-4 rounded-[12px] bg-white p-10 pt-8">
         <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:gap-10">
           <div className="max-w-[320px]">
-            <span className="mb-4 flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#F4F3FF]">
-              <Wallet className="h-7 w-7 text-[#5141E5]" aria-hidden="true" />
+            <span className="mb-4 flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#F4FEF5]">
+              <Wallet className="h-7 w-7 text-[#02940F]" aria-hidden="true" />
             </span>
             <h3 className="font-syne text-xl font-normal text-[#191919]">{t("title")}</h3>
             <p className="mt-2 text-sm leading-6 text-[#808080]">{t("desc")}</p>
@@ -64,7 +64,7 @@ const BillingSettings = ({
             <label className="flex items-center gap-2 text-sm font-medium text-[#191919]">
               <input
                 type="checkbox"
-                className="h-4 w-4 accent-[#7A5AF8]"
+                className="h-4 w-4 accent-[#03B015]"
                 checked={enabled}
                 onChange={(event) => update("BILLING_ENABLED", event.target.checked ? "true" : "false")}
               />

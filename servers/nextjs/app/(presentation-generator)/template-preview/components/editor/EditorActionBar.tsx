@@ -56,7 +56,7 @@ export function EditorActionBar({
         <RefreshCw
           className={cn(
             "h-[14px] w-[14px] shrink-0",
-            isReconstructing && "animate-spin text-[#7A5AF8]",
+            isReconstructing && "animate-spin text-[#03B015]",
           )}
         />
       </button>

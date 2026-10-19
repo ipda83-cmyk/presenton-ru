@@ -8,9 +8,9 @@ import ImageDropZone from "./ImageDropZone";
 import { BusyOverlay, imageSrc } from "@/components/studio/controls";
 
 const toolButton =
-  "inline-flex min-h-[34px] items-center gap-1.5 rounded-full border px-3 font-syne text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] disabled:cursor-not-allowed disabled:opacity-50";
-const idle = "border-[#EDEEEF] bg-white font-medium text-[#2C2B37] hover:border-[#CEC6FF]";
-const active = "border-[#CEC6FF] bg-[#F4F3FF] font-semibold text-[#5141E5]";
+  "inline-flex min-h-[34px] items-center gap-1.5 rounded-full border px-3 font-syne text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] disabled:cursor-not-allowed disabled:opacity-50";
+const idle = "border-[#EDEEEF] bg-white font-medium text-[#2C2B37] hover:border-[#CDF8D1]";
+const active = "border-[#CDF8D1] bg-[#F4FEF5] font-semibold text-[#02940F]";
 
 // The photo with the brush mask, its toolbar and the before/after switch;
 // shared by the Magic brush and Reference pages.
@@ -84,7 +84,7 @@ export default function MaskWorkspace({
           max={160}
           value={size}
           onChange={(event) => setSize(Number(event.target.value))}
-          className="w-28 accent-[#7A5AF8]"
+          className="w-28 accent-[#03B015]"
         />
         <button type="button" onClick={() => canvasRef.current?.clearMask()} className={`${toolButton} ${idle}`}>
           {t("clear")}
@@ -95,10 +95,10 @@ export default function MaskWorkspace({
         </button>
         {before && before !== image && (
           <div role="group" aria-label={t("compare")} className="inline-flex overflow-hidden rounded-full border border-[#EDEEEF] bg-white">
-            <button type="button" aria-pressed={comparing} onClick={() => setShowBefore(true)} className={`px-3 py-1.5 font-syne text-[13px] ${comparing ? "bg-[#F4F3FF] font-semibold text-[#5141E5]" : "text-[#2C2B37]"}`}>
+            <button type="button" aria-pressed={comparing} onClick={() => setShowBefore(true)} className={`px-3 py-1.5 font-syne text-[13px] ${comparing ? "bg-[#F4FEF5] font-semibold text-[#02940F]" : "text-[#2C2B37]"}`}>
               {t("before")}
             </button>
-            <button type="button" aria-pressed={!comparing} onClick={() => setShowBefore(false)} className={`px-3 py-1.5 font-syne text-[13px] ${!comparing ? "bg-[#F4F3FF] font-semibold text-[#5141E5]" : "text-[#2C2B37]"}`}>
+            <button type="button" aria-pressed={!comparing} onClick={() => setShowBefore(false)} className={`px-3 py-1.5 font-syne text-[13px] ${!comparing ? "bg-[#F4FEF5] font-semibold text-[#02940F]" : "text-[#2C2B37]"}`}>
               {t("after")}
             </button>
           </div>
@@ -135,7 +135,7 @@ export default function MaskWorkspace({
           <Download className="h-3.5 w-3.5" aria-hidden="true" />
           {t("download")}
         </a>
-        <label className={`${toolButton} ${idle} cursor-pointer focus-within:ring-2 focus-within:ring-[#7A5AF8]`}>
+        <label className={`${toolButton} ${idle} cursor-pointer focus-within:ring-2 focus-within:ring-[#03B015]`}>
           <ImageUp className="h-3.5 w-3.5" aria-hidden="true" />
           {t("replace")}
           <input

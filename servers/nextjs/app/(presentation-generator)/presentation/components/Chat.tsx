@@ -278,10 +278,10 @@ const ContextTags = ({
         <span
           key={tag.id}
           className={cn(
-            "inline-flex h-7 min-w-0 items-center gap-1 rounded-full border pl-2.5 font-manrope text-[11px] font-semibold text-[#6941C6]",
+            "inline-flex h-7 min-w-0 items-center gap-1 rounded-full border pl-2.5 font-manrope text-[11px] font-semibold text-[#027A0E]",
             tag.id === "slide"
-              ? "max-w-[86px] shrink-0 border-[#E8E3FF] bg-[#F8F6FF] shadow-[0_1px_2px_rgba(105,65,198,0.06)]"
-              : "max-w-[138px] border-[#DDD6FE] bg-[#F5F3FF] shadow-[0_1px_2px_rgba(105,65,198,0.08)]",
+              ? "max-w-[86px] shrink-0 border-[#E6FCE8] bg-[#F7FEF8] shadow-[0_1px_2px_rgba(2,122,14,0.06)]"
+              : "max-w-[138px] border-[#DBF9DE] bg-[#F4FEF5] shadow-[0_1px_2px_rgba(2,122,14,0.08)]",
             tag.onRemove ? "pr-1" : "pr-2.5",
           )}
           title={tag.title || tag.label}
@@ -291,7 +291,7 @@ const ContextTags = ({
             <button
               type="button"
               onClick={tag.onRemove}
-              className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[#8069C5] transition-colors hover:bg-[#E4DFFF] hover:text-[#5235A8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]/40"
+              className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[#02940F] transition-colors hover:bg-[#E3FBE5] hover:text-[#027A0E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]/40"
               aria-label={t("removeFromContext", { label: tag.label })}
               title={t("removeFromContext", { label: tag.label })}
             >
@@ -422,7 +422,7 @@ const ConversationControls = ({
             type="button"
             onClick={onNewChat}
             disabled={isBusy}
-            className="inline-flex h-7 items-center gap-1 rounded-full bg-[#F4F3FF] px-2.5 font-manrope text-[11px] font-semibold text-[#6941C6] transition-colors hover:bg-[#EBE9FE] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-7 items-center gap-1 rounded-full bg-[#F4FEF5] px-2.5 font-manrope text-[11px] font-semibold text-[#027A0E] transition-colors hover:bg-[#ECFBED] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Plus className="h-3 w-3" />
             {t("new")}
@@ -448,7 +448,7 @@ const ConversationControls = ({
                   className={cn(
                     "group flex items-center rounded-[8px] border transition-colors",
                     isActive
-                      ? "border-[#DDD6FE] bg-[#F5F3FF]"
+                      ? "border-[#DBF9DE] bg-[#F4FEF5]"
                       : "border-transparent hover:bg-[#F8F8FA]",
                   )}
                 >
@@ -463,7 +463,7 @@ const ConversationControls = ({
                     <span
                       className={cn(
                         "block truncate font-manrope text-[11px] font-semibold leading-4",
-                        isActive ? "text-[#6941C6]" : "text-[#344054]",
+                        isActive ? "text-[#027A0E]" : "text-[#344054]",
                       )}
                     >
                       {getConversationTitle(conversation, t)}
@@ -2321,7 +2321,7 @@ const Chat = ({
     const previewFonts = getPresentationFonts(presentationData);
 
     return (
-      <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#FEFEFF] font-syne">
+      <div className="relative flex h-full w-full flex-col overflow-hidden bg-[#FEFFFE] font-syne">
         <Image
           src="/bg_chat.svg"
           alt=""
@@ -2578,7 +2578,7 @@ const Chat = ({
             </div>
           )}
         </div>
-        <div className="relative z-20 flex shrink-0 flex-col gap-[10px] bg-[#FFFEFF] px-3 py-[14px]">
+        <div className="relative z-20 flex shrink-0 flex-col gap-[10px] bg-[#FEFFFE] px-3 py-[14px]">
           <form
             onSubmit={handleSubmit}
             onDragEnterCapture={handleDragOver}
@@ -2588,7 +2588,7 @@ const Chat = ({
             className={cn(
               "rounded-[8px] border bg-white px-[10px] py-3 transition-colors",
               isDraggingAttachment
-                ? "border-[#7A5AF8] bg-[#F7F5FF]"
+                ? "border-[#03B015] bg-[#F6FEF7]"
                 : "border-[#DBDBDB]/60",
             )}
             style={{ boxShadow: "0 4px 7px rgba(0, 0, 0, 0.04)" }}
@@ -2747,12 +2747,12 @@ const Chat = ({
                           cx="7"
                           cy="7"
                           r="4.7"
-                          stroke={isFollowAgentEnabled ? "#7A5AF8" : "#191919"}
+                          stroke={isFollowAgentEnabled ? "#03B015" : "#191919"}
                           strokeWidth="1.15"
                         />
                         <path
                           d="M7 0.8v2.3M7 10.9v2.3M.8 7h2.3M10.9 7h2.3"
-                          stroke={isFollowAgentEnabled ? "#7A5AF8" : "#191919"}
+                          stroke={isFollowAgentEnabled ? "#03B015" : "#191919"}
                           strokeWidth="1.15"
                           strokeLinecap="round"
                         />
@@ -2769,7 +2769,7 @@ const Chat = ({
                     <button
                       type="button"
                       disabled={chatInputDisabled}
-                      className="inline-flex h-[28px] items-center gap-1.5 rounded-full border border-[#EDEEEF] bg-white px-[11px] font-syne text-xs font-medium tracking-[0.16px] text-[#191919] transition-colors hover:bg-[#FAFAFF] disabled:cursor-not-allowed disabled:opacity-40"
+                      className="inline-flex h-[28px] items-center gap-1.5 rounded-full border border-[#EDEEEF] bg-white px-[11px] font-syne text-xs font-medium tracking-[0.16px] text-[#191919] transition-colors hover:bg-[#FBFEFB] disabled:cursor-not-allowed disabled:opacity-40"
                       aria-label={t("openQuickPrompts")}
                     >
                       <Image
@@ -2823,7 +2823,7 @@ const Chat = ({
                   className="flex h-8 w-10 shrink-0 items-center justify-center rounded-full text-[#191919] transition-opacity disabled:cursor-not-allowed"
                   style={{
                     background: input.trim()
-                      ? "linear-gradient(270deg, #D5CAFC 2.4%, #E3D2EB 27.88%, #F4DCD3 69.23%, #FDE4C2 100%)"
+                      ? "linear-gradient(270deg, #D0F6D3 2.4%, #D5E8D7 27.88%, #E2F7D9 69.23%, #F2FADB 100%)"
                       : "#EDEEEF",
                   }}
                   aria-label={t("sendPrompt")}
@@ -2843,7 +2843,7 @@ const Chat = ({
                 key={prompt}
                 type="button"
                 onClick={() => applyPrompt(prompt)}
-                className="h-[28px] shrink-0 rounded-full border-[1.345px] border-[#F4F4F4] bg-[#F9FAFB] px-3 font-syne text-xs font-medium leading-5 tracking-[0.16px] text-[#666666] transition-colors hover:border-[#D9D6FE] hover:bg-[#FAFAFF]"
+                className="h-[28px] shrink-0 rounded-full border-[1.345px] border-[#F4F4F4] bg-[#F9FAFB] px-3 font-syne text-xs font-medium leading-5 tracking-[0.16px] text-[#666666] transition-colors hover:border-[#DBF9DE] hover:bg-[#FBFEFB]"
               >
                 {prompt}
               </button>
@@ -2861,7 +2861,7 @@ const Chat = ({
         showEditorEmptyState
           ? {
             background:
-              "radial-gradient(ellipse 90% 42% at 66% 18%, rgba(218, 243, 255, 0.78) 0, rgba(230, 242, 255, 0.42) 35%, transparent 72%), radial-gradient(ellipse 85% 38% at 35% 47%, rgba(244, 226, 255, 0.72) 0, rgba(249, 237, 255, 0.34) 40%, transparent 75%), #fff",
+              "radial-gradient(ellipse 90% 42% at 66% 18%, rgba(218, 243, 255, 0.78) 0, rgba(230, 242, 255, 0.42) 35%, transparent 72%), radial-gradient(ellipse 85% 38% at 35% 47%, rgba(230, 251, 231, 0.72) 0, rgba(239, 253, 240, 0.34) 40%, transparent 75%), #fff",
           }
           : undefined
       }
@@ -2880,17 +2880,17 @@ const Chat = ({
               >
                 <path
                   d="M19.1407 9.46542C16.5537 9.21616 14.5067 7.17009 14.2577 4.58528L13.8376 0.220703L13.4175 4.58528C13.1685 7.17053 11.1215 9.2166 8.53451 9.46542L4.1731 9.88521L8.53451 10.305C11.1215 10.5543 13.1685 12.6003 13.4175 15.1852L13.8376 19.5497L14.2577 15.1852C14.5067 12.5999 16.5537 10.5538 19.1407 10.305L23.5021 9.88521L19.1407 9.46542Z"
-                  fill="#7A5AF8"
+                  fill="#03B015"
                 />
                 <path
                   d="M9.07681 16.8431C7.62808 16.7035 6.48175 15.5577 6.34232 14.1102L6.10707 11.666L5.87183 14.1102C5.7324 15.5579 4.58606 16.7037 3.13734 16.8431L0.694946 17.0781L3.13734 17.3132C4.58606 17.4528 5.7324 18.5986 5.87183 20.0461L6.10707 22.4903L6.34232 20.0461C6.48175 18.5984 7.62808 17.4526 9.07681 17.3132L11.5192 17.0781L9.07681 16.8431Z"
-                  fill="#7A5AF8"
+                  fill="#03B015"
                 />
               </svg>
               {t("aiAssistant")}
             </h4>
             {isSending && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#F4F3FF] px-2 py-0.5 text-[10px] font-medium text-[#6941C6]">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#F4FEF5] px-2 py-0.5 text-[10px] font-medium text-[#027A0E]">
                 <Loader2 className="h-2.5 w-2.5 animate-spin" />
                 {t("live")}
               </span>
@@ -3038,7 +3038,7 @@ const Chat = ({
                     )}
                   >
                     {message.layoutPreview && (
-                      <div className="w-full overflow-hidden rounded-[12px] border border-[#EDE7FF] bg-white p-1.5 shadow-sm">
+                      <div className="w-full overflow-hidden rounded-[12px] border border-[#EAFCEB] bg-white p-1.5 shadow-sm">
                         <TemplateV2HtmlSlidePreview
                           slide={createChatLayoutPreviewSlide(
                             message.layoutPreview,
@@ -3056,7 +3056,7 @@ const Chat = ({
                         ariaLabel={t("contextSent")}
                       />
                     ) : null}
-                    <div className="w-fit max-w-full rounded-[18px] bg-[#7C3AED] px-4 py-3 text-[13px] font-medium leading-5 text-white shadow-sm [overflow-wrap:anywhere] [word-break:break-word]">
+                    <div className="w-fit max-w-full rounded-[18px] bg-[#02940F] px-4 py-3 text-[13px] font-medium leading-5 text-white shadow-sm [overflow-wrap:anywhere] [word-break:break-word]">
                       <p className="whitespace-pre-wrap">
                         {stripBackendContextFromUserMessage(message.content)}
                       </p>
@@ -3155,7 +3155,7 @@ const Chat = ({
           showEditorEmptyState ? "ml-[18px] mr-1" : "mx-4",
           showEditorEmptyState ? "mb-2" : "mb-4",
           isDraggingAttachment
-            ? "border-[#7A5AF8] bg-[#F7F5FF]"
+            ? "border-[#03B015] bg-[#F6FEF7]"
             : "border-[#F4F4F4]"
         )}
         style={{
@@ -3343,35 +3343,35 @@ const Chat = ({
                     <g clipPath="url(#clip0_6216_326)">
                       <path
                         d="M5.50008 10.0837C8.03139 10.0837 10.0834 8.03163 10.0834 5.50033C10.0834 2.96902 8.03139 0.916992 5.50008 0.916992C2.96878 0.916992 0.916748 2.96902 0.916748 5.50033C0.916748 8.03163 2.96878 10.0837 5.50008 10.0837Z"
-                        stroke={isFollowAgentEnabled ? "#7A5AF8" : "#000000"}
+                        stroke={isFollowAgentEnabled ? "#03B015" : "#000000"}
                         strokeWidth="0.938667"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
                       <path
                         d="M10.0833 5.5H8.25"
-                        stroke={isFollowAgentEnabled ? "#7A5AF8" : "#000000"}
+                        stroke={isFollowAgentEnabled ? "#03B015" : "#000000"}
                         strokeWidth="0.938667"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
                       <path
                         d="M2.75008 5.5H0.916748"
-                        stroke={isFollowAgentEnabled ? "#7A5AF8" : "#000000"}
+                        stroke={isFollowAgentEnabled ? "#03B015" : "#000000"}
                         strokeWidth="0.938667"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
                       <path
                         d="M5.5 2.75033V0.916992"
-                        stroke={isFollowAgentEnabled ? "#7A5AF8" : "#000000"}
+                        stroke={isFollowAgentEnabled ? "#03B015" : "#000000"}
                         strokeWidth="0.938667"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
                       <path
                         d="M5.5 10.0833V8.25"
-                        stroke={isFollowAgentEnabled ? "#7A5AF8" : "#000000"}
+                        stroke={isFollowAgentEnabled ? "#03B015" : "#000000"}
                         strokeWidth="0.938667"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -3403,11 +3403,11 @@ const Chat = ({
               >
                 <path
                   d="M6.5 1.25c.22 2.93 1.32 4.03 4.25 4.25-2.93.22-4.03 1.32-4.25 4.25-.22-2.93-1.32-4.03-4.25-4.25 2.93-.22 4.03-1.32 4.25-4.25Z"
-                  fill="#7A5AF8"
+                  fill="#03B015"
                 />
                 <path
                   d="M10.5 9.25c.1 1.3.6 1.8 1.9 1.9-1.3.1-1.8.6-1.9 1.9-.1-1.3-.6-1.8-1.9-1.9 1.3-.1 1.8-.6 1.9-1.9Z"
-                  fill="#7A5AF8"
+                  fill="#03B015"
                 />
               </svg>
               {t("promptBtn")}
@@ -3442,7 +3442,7 @@ const Chat = ({
                 className="flex h-[34px] w-[34px] items-center justify-center rounded-full text-[#191919] transition-opacity disabled:cursor-not-allowed disabled:opacity-60"
                 style={{
                   background:
-                    "linear-gradient(270deg, #D5CAFC 2.4%, #E3D2EB 27.88%, #F4DCD3 69.23%, #FDE4C2 100%)",
+                    "linear-gradient(270deg, #D0F6D3 2.4%, #D5E8D7 27.88%, #E2F7D9 69.23%, #F2FADB 100%)",
                 }}
                 aria-label={t("sendPrompt")}
               >
@@ -3459,7 +3459,7 @@ const Chat = ({
               key={prompt}
               type="button"
               onClick={() => applyPrompt(prompt)}
-              className="shrink-0 rounded-[64px] border border-[#EDEEEF] bg-white px-3 py-1.5 text-[11px] font-normal leading-4 text-[#686868] transition-colors hover:border-[#DCD8EA] hover:bg-[#FBFAFF]"
+              className="shrink-0 rounded-[64px] border border-[#EDEEEF] bg-white px-3 py-1.5 text-[11px] font-normal leading-4 text-[#686868] transition-colors hover:border-[#DCD8EA] hover:bg-[#FBFEFB]"
             >
               {prompt}
             </button>

@@ -96,7 +96,7 @@ export function LegacyPresentationsTable({
             disabled={isDeleting}
             aria-label={t("legacy.deleteAllAria")}
             title={t("legacy.deleteAllAria")}
-            className="flex h-[35px] min-w-[51px] items-center justify-center rounded-full border border-[#EDEEEF] bg-white px-3 text-[#191919] transition-colors hover:bg-[#F6F6F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex h-[35px] min-w-[51px] items-center justify-center rounded-full border border-[#EDEEEF] bg-white px-3 text-[#191919] transition-colors hover:bg-[#F6F6F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isDeleting ? (
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />

@@ -127,7 +127,7 @@ export function ChartEditorContent({
             <button
               type="button"
               className={`h-12 border-b-2 text-[13px] font-medium transition ${tab === "data"
-                ? "border-[#7C51F8] text-[#191919]"
+                ? "border-[#03B015] text-[#191919]"
                 : "border-transparent text-[#191919]"
                 }`}
               onClick={() => setTab("data")}
@@ -137,7 +137,7 @@ export function ChartEditorContent({
             <button
               type="button"
               className={`h-12 border-b-2 text-[13px] font-medium transition ${tab === "customize"
-                ? "border-[#7C51F8] text-[#191919]"
+                ? "border-[#03B015] text-[#191919]"
                 : "border-transparent text-[#191919]"
                 }`}
               onClick={() => setTab("customize")}
@@ -184,7 +184,7 @@ function ChartTypeSelect({
       <BarChart3 className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#191919]" />
       <select
         aria-label={t("chart.chartType")}
-        className={`${compact ? "h-9 rounded-lg pl-10 pr-9 text-[12px]" : "h-12 rounded-xl pl-11 pr-10 text-[13px]"} w-full appearance-none border border-[#E6E6EA] bg-white font-medium text-[#191919] outline-none transition focus:border-[#7C51F8]`}
+        className={`${compact ? "h-9 rounded-lg pl-10 pr-9 text-[12px]" : "h-12 rounded-xl pl-11 pr-10 text-[13px]"} w-full appearance-none border border-[#E6E6EA] bg-white font-medium text-[#191919] outline-none transition focus:border-[#03B015]`}
         value={value}
         onChange={(event) => onChange(event.target.value as ChartType)}
       >
@@ -578,8 +578,8 @@ function ChartSeriesColorControls({
             key={`${target.mode}-${target.index}`}
             aria-label={t("chart.changeColorN", { n: target.index + 1 })}
             className={`grid h-8 w-8 place-items-center rounded-full border bg-white p-1 transition ${paletteAnchor?.index === target.index
-              ? "border-[#7C51F8] ring-2 ring-[#E9E2FF]"
-              : "border-[#E6E6EA] hover:border-[#B8A3F8]"
+              ? "border-[#03B015] ring-2 ring-[#E6FBE7]"
+              : "border-[#E6E6EA] hover:border-[#AEEDB3]"
               }`}
             ref={(node) => {
               if (node) {
@@ -610,7 +610,7 @@ function ChartSeriesColorControls({
           <button
             type="button"
             aria-label={t("chart.addColor")}
-            className="grid h-8 w-8 place-items-center rounded-full border border-dashed border-[#B8A3F8] bg-white text-[#7C51F8] transition hover:bg-[#F7F3FF]"
+            className="grid h-8 w-8 place-items-center rounded-full border border-dashed border-[#AEEDB3] bg-white text-[#03B015] transition hover:bg-[#F4FEF5]"
             title={t("chart.addColor")}
             onClick={() => onChange(appendChartColorTarget(chart))}
           >
@@ -760,7 +760,7 @@ function TextField({
     <label className="block text-[12px] font-medium text-[#686873]">
       {label}
       <input
-        className="mt-1.5 h-9 w-full truncate rounded-lg border border-[#E6E6EA] bg-white px-3 text-[12px] text-[#191919] outline-none transition placeholder:text-[#A6A6AF] focus:border-[#7C51F8]"
+        className="mt-1.5 h-9 w-full truncate rounded-lg border border-[#E6E6EA] bg-white px-3 text-[12px] text-[#191919] outline-none transition placeholder:text-[#A6A6AF] focus:border-[#03B015]"
         maxLength={CHART_TEXT_MAX_LENGTH}
         placeholder={placeholder}
         spellCheck={false}
@@ -809,7 +809,7 @@ function CompactSwitch({
       role="switch"
       aria-checked={checked}
       aria-label={label}
-      className={`relative h-5 w-9 shrink-0 rounded-full transition ${checked ? "bg-[#7C51F8]" : "bg-[#D8D8DE]"
+      className={`relative h-5 w-9 shrink-0 rounded-full transition ${checked ? "bg-[#03B015]" : "bg-[#D8D8DE]"
         }`}
       onClick={() => onChange(!checked)}
     >
@@ -989,7 +989,7 @@ function ChartDataModal({
               </button>
               <button
                 type="button"
-                className="h-8 min-w-[76px] rounded-full bg-[linear-gradient(100deg,#FFE6A6_0%,#D8B4FE_100%)] px-5 text-[12px] font-semibold text-[#191919] transition hover:brightness-95"
+                className="h-8 min-w-[76px] rounded-full bg-[linear-gradient(100deg,#E9F9C3_0%,#BDF5C2_100%)] px-5 text-[12px] font-semibold text-[#191919] transition hover:brightness-95"
                 onClick={() => {
                   onChange(sanitizeChartTextFields(draftChart));
                   onClose();
@@ -1436,7 +1436,7 @@ function EditableDataTable({
                     <GripVertical size={13} strokeWidth={2.1} />
                   </span>
                   <input
-                    className="h-7 w-full truncate rounded-md border border-transparent bg-transparent px-0 text-[12px] font-medium outline-none focus:border-[#7C51F8] focus:bg-white focus:px-2"
+                    className="h-7 w-full truncate rounded-md border border-transparent bg-transparent px-0 text-[12px] font-medium outline-none focus:border-[#03B015] focus:bg-white focus:px-2"
                     maxLength={CHART_TEXT_MAX_LENGTH}
                     spellCheck={false}
                     value={category}
@@ -1463,7 +1463,7 @@ function EditableDataTable({
                       className="border-b border-r border-[#E8E8EC] bg-white px-3 py-1.5"
                     >
                       <input
-                        className="h-7 w-full rounded-md border border-transparent bg-transparent px-0 text-[12px] outline-none focus:border-[#7C51F8] focus:bg-[#FAFAFF] focus:px-2"
+                        className="h-7 w-full rounded-md border border-transparent bg-transparent px-0 text-[12px] outline-none focus:border-[#03B015] focus:bg-[#FBFEFB] focus:px-2"
                         type="text"
                         inputMode={numericInputMode(chartValueInputOptions)}
                         value={displayValue}

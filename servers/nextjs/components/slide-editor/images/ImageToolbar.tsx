@@ -600,8 +600,8 @@ export function ImageToolbar({
                     update({ fit: option.value });
                   }}
                   className={cn(
-                    "flex w-full items-center rounded-[8px] px-3 py-2 text-left text-[13px] text-[#191919] hover:bg-[#F4F3FF]",
-                    fit === option.value && "bg-[#F4F1FF] text-[#7A5AF8]",
+                    "flex w-full items-center rounded-[8px] px-3 py-2 text-left text-[13px] text-[#191919] hover:bg-[#F4FEF5]",
+                    fit === option.value && "bg-[#F3FDF4] text-[#03B015]",
                   )}
                 >
                   {t(`image.fit.${option.value}`)}
@@ -619,7 +619,7 @@ export function ImageToolbar({
           aria-label={t("image.upload")}
           onClick={() => uploadInputRef.current?.click()}
           disabled={isUploadingImage}
-          className="rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4F3FF] disabled:cursor-wait disabled:opacity-50"
+          className="rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4FEF5] disabled:cursor-wait disabled:opacity-50"
         >
           {isUploadingImage ? (
             <Loader2 size={16} strokeWidth={1.8} aria-hidden="true" className="animate-spin" />
@@ -636,7 +636,7 @@ export function ImageToolbar({
             setOpenPanel(null);
             setImagePickerOpen(true);
           }}
-          className="rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4F3FF]"
+          className="rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4FEF5]"
         >
           <Image
             alt=""
@@ -659,7 +659,7 @@ export function ImageToolbar({
               setOpenPanel(null);
               setStudioOpen(true);
             }}
-            className="inline-flex items-center gap-1 rounded-[6px] border border-[#CEC6FF] bg-[#F4F3FF] py-0.5 pl-0.5 pr-1.5 font-syne text-[11px] font-semibold text-[#5141E5] hover:bg-[#ECE9FF]"
+            className="inline-flex items-center gap-1 rounded-[6px] border border-[#CDF8D1] bg-[#F4FEF5] py-0.5 pl-0.5 pr-1.5 font-syne text-[11px] font-semibold text-[#02940F] hover:bg-[#ECFCED]"
           >
             <StudioMark size={18} />
             Studio
@@ -675,8 +675,8 @@ export function ImageToolbar({
             aria-pressed={openPanel === "crop"}
             onClick={() => togglePanel("crop")}
             className={cn(
-              "rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4F3FF]",
-              openPanel === "crop" && "bg-[#F4F1FF] text-[#7C3AED]",
+              "rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4FEF5]",
+              openPanel === "crop" && "bg-[#F3FDF4] text-[#02940F]",
             )}
           >
             <Crop size={16} strokeWidth={1.7} aria-hidden="true" />
@@ -689,8 +689,8 @@ export function ImageToolbar({
             aria-pressed={element.flip_h === true}
             onClick={() => update({ flip_h: !(element.flip_h ?? false) })}
             className={cn(
-              "rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4F3FF]",
-              element.flip_h === true && "bg-[#F4F1FF] text-[#7C3AED]",
+              "rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4FEF5]",
+              element.flip_h === true && "bg-[#F3FDF4] text-[#02940F]",
             )}
           >
             <FlipHorizontal2 size={16} strokeWidth={1.7} aria-hidden="true" />
@@ -703,8 +703,8 @@ export function ImageToolbar({
             aria-pressed={element.flip_v === true}
             onClick={() => update({ flip_v: !(element.flip_v ?? false) })}
             className={cn(
-              "rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4F3FF]",
-              element.flip_v === true && "bg-[#F4F1FF] text-[#7C3AED]",
+              "rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4FEF5]",
+              element.flip_v === true && "bg-[#F3FDF4] text-[#02940F]",
             )}
           >
             <FlipVertical2 size={16} strokeWidth={1.7} aria-hidden="true" />
@@ -718,8 +718,8 @@ export function ImageToolbar({
               aria-pressed={openPanel === "radius"}
               onClick={() => togglePanel("radius")}
               className={cn(
-                "rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4F3FF]",
-                openPanel === "radius" && "bg-[#F4F1FF] text-[#7C3AED]",
+                "rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4FEF5]",
+                openPanel === "radius" && "bg-[#F3FDF4] text-[#02940F]",
               )}
             >
               <Scan size={16} strokeWidth={1.7} aria-hidden="true" />
@@ -752,7 +752,7 @@ export function ImageToolbar({
                     onPointerUp={(event) =>
                       commitRadius(Number(event.currentTarget.value))
                     }
-                    className="w-full cursor-pointer accent-[#7A5AF8]"
+                    className="w-full cursor-pointer accent-[#03B015]"
                   />
                 </label>
               </Panel>
@@ -769,8 +769,8 @@ export function ImageToolbar({
             aria-pressed={openPanel === "opacity"}
             onClick={() => togglePanel("opacity")}
             className={cn(
-              "rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4F3FF]",
-              openPanel === "opacity" && "bg-[#F4F1FF] text-[#7C3AED]",
+              "rounded-[2px] border-0 bg-transparent p-1 text-[#05070A] hover:bg-[#F4FEF5]",
+              openPanel === "opacity" && "bg-[#F3FDF4] text-[#02940F]",
             )}
           >
             <OpacitySwatchIcon />
@@ -791,7 +791,7 @@ export function ImageToolbar({
                 onPointerUp={(event) =>
                   update({ opacity: Number((event.target as HTMLInputElement).value) })
                 }
-                className="w-full cursor-pointer accent-[#7A5AF8]"
+                className="w-full cursor-pointer accent-[#03B015]"
               />
             </Panel>
           ) : null}
@@ -955,7 +955,7 @@ function CropOverlay({
       {imageSource ? (
         <div
           aria-label={cropLabel}
-          className="pointer-events-auto absolute z-[2] cursor-grab touch-none select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3AED] focus-visible:ring-offset-2"
+          className="pointer-events-auto absolute z-[2] cursor-grab touch-none select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#02940F] focus-visible:ring-offset-2"
           style={{
             height: imageFrame.height,
             left: imageFrame.left,
@@ -982,12 +982,12 @@ function CropOverlay({
               transform: transform || undefined,
             }}
           />
-          <div className="pointer-events-none absolute inset-0 border-2 border-[#7C3AED]" />
+          <div className="pointer-events-none absolute inset-0 border-2 border-[#02940F]" />
         </div>
       ) : null}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute z-[4] border-2 border-[#7C3AED] shadow-[0_0_0_1px_rgba(255,255,255,0.85)]"
+        className="pointer-events-none absolute z-[4] border-2 border-[#02940F] shadow-[0_0_0_1px_rgba(255,255,255,0.85)]"
         style={{
           borderRadius,
           height: frame.height,
@@ -1003,7 +1003,7 @@ function CropOverlay({
             type="button"
             title={t(`image.cropHandle.${handle.value}`)}
             aria-label={t(`image.cropHandle.${handle.value}`)}
-            className="pointer-events-auto absolute z-[5] rounded-full border border-[#D6D3E8] bg-white shadow-[0_1px_4px_rgba(17,24,39,0.24)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3AED]"
+            className="pointer-events-auto absolute z-[5] rounded-full border border-[#D6D3E8] bg-white shadow-[0_1px_4px_rgba(17,24,39,0.24)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#02940F]"
             style={cropHandleStyle(handle.value, imageFrame)}
             onPointerCancel={(event) => onPointerCancel(event)}
             onPointerDown={(event) => onHandlePointerDown(handle.value, event)}
@@ -1128,7 +1128,7 @@ function CropActions({
         title={t("image.resetCrop")}
         aria-label={t("image.resetCrop")}
         onClick={onReset}
-        className="rounded-[6px] p-2 text-[#4B5563] hover:bg-[#F4F3FF] hover:text-[#191919]"
+        className="rounded-[6px] p-2 text-[#4B5563] hover:bg-[#F4FEF5] hover:text-[#191919]"
       >
         <RotateCcw size={16} strokeWidth={1.8} />
       </button>
@@ -1146,7 +1146,7 @@ function CropActions({
         title={t("image.closeCropControls")}
         aria-label={t("image.closeCropControls")}
         onClick={onClose}
-        className="rounded-[6px] p-2 text-[#4B5563] hover:bg-[#F4F3FF] hover:text-[#191919]"
+        className="rounded-[6px] p-2 text-[#4B5563] hover:bg-[#F4FEF5] hover:text-[#191919]"
       >
         <X size={17} strokeWidth={1.9} />
       </button>

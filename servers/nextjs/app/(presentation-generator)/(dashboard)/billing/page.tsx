@@ -4,7 +4,7 @@ import BillingPage from "./components/BillingPage";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("billing");
-  return { title: `${t("title")} | Presenton` };
+  return { title: `${t("title")} | Kvant AI Studio` };
 }
 
 export default function Page() {

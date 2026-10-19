@@ -22,17 +22,17 @@ export const getSuggestions = (
         <g clipPath="url(#chat-suggestion-generate)">
           <path
             d="M10.82 1.82039L10.18 1.18039C10.1238 1.12355 10.0568 1.07842 9.98299 1.04763C9.90918 1.01683 9.83 1.00098 9.75002 1.00098C9.67005 1.00098 9.59087 1.01683 9.51706 1.04763C9.44325 1.07842 9.37628 1.12355 9.32002 1.18039L1.18002 9.32039C1.12318 9.37665 1.07806 9.44362 1.04726 9.51743C1.01647 9.59123 1.00061 9.67041 1.00061 9.75039C1.00061 9.83036 1.01647 9.90954 1.04726 9.98335C1.07806 10.0572 1.12318 10.1241 1.18002 10.1804L1.82002 10.8204C1.87593 10.8778 1.94279 10.9235 2.01664 10.9547C2.0905 10.9859 2.16985 11.0019 2.25002 11.0019C2.33019 11.0019 2.40955 10.9859 2.4834 10.9547C2.55726 10.9235 2.62411 10.8778 2.68002 10.8204L10.82 2.68039C10.8775 2.62448 10.9231 2.55762 10.9543 2.48377C10.9855 2.40991 11.0016 2.33056 11.0016 2.25039C11.0016 2.17022 10.9855 2.09087 10.9543 2.01701C10.9231 1.94316 10.8775 1.8763 10.82 1.82039Z"
-            stroke="#7F22FE"
+            stroke="#02940F"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          <path d="M7 3.5L8.5 5" stroke="#7F22FE" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M2.5 3V5" stroke="#7F22FE" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M9.5 7V9" stroke="#7F22FE" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M5 1V2" stroke="#7F22FE" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M3.5 4H1.5" stroke="#7F22FE" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M10.5 8H8.5" stroke="#7F22FE" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M5.5 1.5H4.5" stroke="#7F22FE" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M7 3.5L8.5 5" stroke="#02940F" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M2.5 3V5" stroke="#02940F" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M9.5 7V9" stroke="#02940F" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M5 1V2" stroke="#02940F" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M3.5 4H1.5" stroke="#02940F" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M10.5 8H8.5" stroke="#02940F" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M5.5 1.5H4.5" stroke="#02940F" strokeLinecap="round" strokeLinejoin="round" />
         </g>
         <defs>
           <clipPath id="chat-suggestion-generate">

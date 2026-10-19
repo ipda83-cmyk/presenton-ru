@@ -1,5 +1,7 @@
-import { PresentonSplashLoader } from "@/components/ui/presenton-splash-loader";
+import { getTranslations } from "next-intl/server";
+import { BrandSplashLoader } from "@/components/ui/brand-splash-loader";
 
-export default function Loading() {
-  return <PresentonSplashLoader message="Preparing your workspace..." />;
+export default async function Loading() {
+  const t = await getTranslations("auth");
+  return <BrandSplashLoader message={t("preparing")} />;
 }

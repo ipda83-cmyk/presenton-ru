@@ -30,8 +30,8 @@ LOGGER = logging.getLogger(__name__)
 AUTO_TOPUP_INTERVAL = timedelta(hours=1)
 AUTO_TOPUP_MAX_FAILURES = 3
 PENDING_RECHECK_WINDOW = timedelta(days=2)
-DESCRIPTION = "Пополнение баланса Presenton на {amount} ₽"
-AUTO_DESCRIPTION = "Автопополнение баланса Presenton на {amount} ₽"
+DESCRIPTION = "Пополнение баланса Kvant AI Studio на {amount} ₽"
+AUTO_DESCRIPTION = "Автопополнение баланса Kvant AI Studio на {amount} ₽"
 _background: set[asyncio.Task] = set()
 
 

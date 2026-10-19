@@ -159,7 +159,7 @@ export const PresentationCard = ({
 
           {isUnsupported ? (
             <div className="flex flex-col items-center gap-2 px-5 text-center text-[#666666]">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F4F3FF] text-[#7A5AF8]">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F4FEF5] text-[#03B015]">
                 <Archive className="h-[18px] w-[18px]" aria-hidden="true" />
               </span>
               <p className="text-xs font-medium">{t("previewUnavailable")}</p>
@@ -181,7 +181,7 @@ export const PresentationCard = ({
         <p
           className={`absolute left-2 top-2 z-40 rounded-full px-2.5 py-1 text-[11px] font-semibold capitalize shadow-sm backdrop-blur-sm ${
             presentationType === "smart"
-              ? "bg-[#F4F0FF]/95 text-[#6941C6]"
+              ? "bg-[#F2FDF3]/95 text-[#027A0E]"
               : "bg-white/90 text-[#475467]"
           }`}
         >
@@ -291,7 +291,7 @@ export const PresentationCard = ({
               type="button"
               onClick={() => setShowDeleteDialog(false)}
               disabled={isDeleting}
-              className="h-11 rounded-[10px] border border-[#D0D5DD] bg-white px-4 text-sm font-medium text-[#344054] shadow-sm transition-colors hover:bg-[#F9FAFB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]/30 disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-11 rounded-[10px] border border-[#D0D5DD] bg-white px-4 text-sm font-medium text-[#344054] shadow-sm transition-colors hover:bg-[#F9FAFB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {t("cancel")}
             </button>

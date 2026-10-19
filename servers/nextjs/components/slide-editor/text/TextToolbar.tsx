@@ -1416,9 +1416,9 @@ const textToolbarStyles = {
     height: 26,
     boxSizing: "border-box",
     padding: "0 8px",
-    border: "1px solid #CBB6FF",
+    border: "1px solid #BFF6C4",
     borderRadius: 4,
-    color: "#7C51F8",
+    color: "#03B015",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -1611,8 +1611,8 @@ const textToolbarStyles = {
     background: "#F8F8FA",
   },
   buttonActive: {
-    color: "#7C51F8",
-    background: "#F4F1FF",
+    color: "#03B015",
+    background: "#F3FDF4",
   },
   buttonDisabled: {
     color: "#A4A7AE",
@@ -1729,7 +1729,7 @@ const textToolbarStyles = {
     top: 0,
     height: 3,
     borderRadius: 999,
-    background: "#7C51F8",
+    background: "#03B015",
   },
   settingsSliderThumb: {
     position: "absolute",
@@ -1779,8 +1779,8 @@ const textToolbarStyles = {
     padding: 0,
   },
   settingsBulletButtonActive: {
-    background: "#EFEAFF",
-    color: "#7C51F8",
+    background: "#EDFCEE",
+    color: "#03B015",
   },
   opacityIcon: {
     display: "inline-block",

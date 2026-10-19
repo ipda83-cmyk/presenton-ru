@@ -6,7 +6,7 @@ import StudioBrush from "../components/StudioBrush";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("studio.pages");
-  return { title: `${t("brush")} | Presenton` };
+  return { title: `${t("brush")} | Kvant AI Studio` };
 }
 
 export default async function StudioBrushPage({

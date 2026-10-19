@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import BrandLogo from "@/components/brand/BrandLogo";
 
 interface OutlineStandardHeaderProps {
   title: string;
@@ -23,15 +23,9 @@ const OutlineStandardHeader = ({
         <Link
           href="/dashboard"
           aria-label={t("outline.goToDashboard")}
-          className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]/30"
+          className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]/30"
         >
-          <Image
-            src="/logo-with-bg.png"
-            alt=""
-            width={32}
-            height={33}
-            className="h-[33px] w-[32px]"
-          />
+          <BrandLogo variant="mark" height={22} />
         </Link>
         <h1 className="truncate text-base font-medium tracking-[0.16px] text-[#101323]">
           {title}
@@ -42,7 +36,7 @@ const OutlineStandardHeader = ({
         <button
           type="button"
           onClick={onBack}
-          className="flex shrink-0 items-center gap-2 text-xs font-semibold uppercase tracking-[0.96px] text-[#333333] transition-colors hover:text-[#7A5AF8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]/30"
+          className="flex shrink-0 items-center gap-2 text-xs font-semibold uppercase tracking-[0.96px] text-[#333333] transition-colors hover:text-[#03B015] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]/30"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           {t("common.back")}

@@ -20,7 +20,7 @@ import { notifyBillingChanged } from "@/utils/billingEvents";
 const card = "rounded-[20px] border border-[#E7E9F2] bg-white p-5 md:p-6";
 const h2 = "font-syne text-base font-semibold text-[#191919]";
 const input =
-  "h-11 w-full rounded-lg border border-gray-300 px-3 text-sm text-[#191919] outline-none transition-colors focus:border-[#7A5AF8]";
+  "h-11 w-full rounded-lg border border-gray-300 px-3 text-sm text-[#191919] outline-none transition-colors focus:border-[#03B015]";
 
 type ReturnState = { invoice: string; status: "checking" | "completed" | "failed" | "pending"; amount?: number };
 
@@ -131,8 +131,8 @@ function BalanceCard({ me }: { me: BillingMe }) {
   const t = useTranslations("billing");
   return (
     <section className={`${card} flex items-center gap-4`} aria-label={t("balance")}>
-      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#F4F3FF]">
-        <Wallet className="h-6 w-6 text-[#5141E5]" aria-hidden="true" />
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#F4FEF5]">
+        <Wallet className="h-6 w-6 text-[#02940F]" aria-hidden="true" />
       </span>
       <div>
         <p className="text-sm text-[#667085]">{t("balance")}</p>
@@ -195,8 +195,8 @@ function TopupCard({ me }: { me: BillingMe }) {
                 aria-checked={amount === value}
                 onClick={() => setAmount(value)}
                 className={[
-                  "flex flex-col items-start rounded-[14px] border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]",
-                  amount === value ? "border-[#7A5AF8] bg-[#F4F3FF]" : "border-[#E7E9F2] hover:bg-[#F8F8FA]",
+                  "flex flex-col items-start rounded-[14px] border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]",
+                  amount === value ? "border-[#03B015] bg-[#F4FEF5]" : "border-[#E7E9F2] hover:bg-[#F8F8FA]",
                 ].join(" ")}
               >
                 <span className="text-base font-semibold text-[#101323]">{formatRub(value)}</span>
@@ -221,16 +221,16 @@ function TopupCard({ me }: { me: BillingMe }) {
             <p className="mt-1 text-xs text-[#667085]">{t("emailHint")}</p>
           </div>
           <label className="flex items-start gap-2 text-sm text-[#191919]">
-            <input type="checkbox" className="mt-1 h-4 w-4 accent-[#7A5AF8]" checked={saveCard} onChange={(event) => setSaveCard(event.target.checked)} />
+            <input type="checkbox" className="mt-1 h-4 w-4 accent-[#03B015]" checked={saveCard} onChange={(event) => setSaveCard(event.target.checked)} />
             <span>{t("saveCard")}</span>
           </label>
           {saveCard && (
             <label className="flex items-start gap-2 rounded-[12px] bg-[#F8F8FA] p-3 text-xs leading-5 text-[#4C5554]">
-              <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[#7A5AF8]" checked={consent} onChange={(event) => setConsent(event.target.checked)} />
+              <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[#03B015]" checked={consent} onChange={(event) => setConsent(event.target.checked)} />
               <span>
                 {t("consent")}{" "}
                 {me.offer_url && (
-                  <a href={me.offer_url} target="_blank" rel="noopener noreferrer" className="font-medium text-[#5141E5] underline">
+                  <a href={me.offer_url} target="_blank" rel="noopener noreferrer" className="font-medium text-[#02940F] underline">
                     {t("offer")}
                   </a>
                 )}
@@ -315,7 +315,7 @@ function AutoTopupCard({
         <div className="mt-4 flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] bg-[#F8F8FA] px-4 py-3">
             <span className="flex items-center gap-2 text-sm text-[#191919]">
-              <CreditCard className="h-4 w-4 text-[#5141E5]" aria-hidden="true" />
+              <CreditCard className="h-4 w-4 text-[#02940F]" aria-hidden="true" />
               {t("card", { type: me.card.type || t("cardGeneric"), last4: me.card.last4 || "••••" })}
             </span>
             <button type="button" onClick={() => void forget()} disabled={busy} className="text-sm font-medium text-[#B42318] hover:underline disabled:opacity-60">
@@ -323,7 +323,7 @@ function AutoTopupCard({
             </button>
           </div>
           <label className="flex items-center gap-2 text-sm text-[#191919]">
-            <input type="checkbox" className="h-4 w-4 accent-[#7A5AF8]" checked={enabled} onChange={(event) => setEnabled(event.target.checked)} />
+            <input type="checkbox" className="h-4 w-4 accent-[#03B015]" checked={enabled} onChange={(event) => setEnabled(event.target.checked)} />
             {t("enable")}
           </label>
           <div className="grid gap-3 sm:grid-cols-2">

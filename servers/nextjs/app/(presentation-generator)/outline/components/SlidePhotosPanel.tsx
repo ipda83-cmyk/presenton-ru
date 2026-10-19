@@ -57,7 +57,7 @@ export default function SlidePhotosPanel({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 id="slide-photos-title" className="flex items-center gap-2 text-base font-medium text-[#191919]">
-            <Images className="h-4 w-4 text-[#7A5AF8]" aria-hidden="true" />
+            <Images className="h-4 w-4 text-[#03B015]" aria-hidden="true" />
             {t("title")}
             <span className="text-sm font-normal text-[#98A2B3]">{t("placed", { placed, total: photos.length })}</span>
           </h2>
@@ -73,7 +73,7 @@ export default function SlidePhotosPanel({
           type="button"
           onClick={() => void state.rematch()}
           disabled={busy || outlines.length === 0}
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-[#EDEEEF] bg-white px-3.5 text-[13px] font-medium text-[#5141E5] transition-colors hover:bg-[#F4F3FF] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-[#EDEEEF] bg-white px-3.5 text-[13px] font-medium text-[#02940F] transition-colors hover:bg-[#F4FEF5] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
         >
           <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" />
           {t("rematch")}
@@ -109,7 +109,7 @@ export default function SlidePhotosPanel({
                 onChange={(event) =>
                   state.assign(photo.url, event.target.value === "" ? null : Number(event.target.value))
                 }
-                className="min-h-9 w-full min-w-0 truncate rounded-lg border border-[#DBDBE1] bg-white px-2 text-xs text-[#2C2B37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] disabled:opacity-60"
+                className="min-h-9 w-full min-w-0 truncate rounded-lg border border-[#DBDBE1] bg-white px-2 text-xs text-[#2C2B37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] disabled:opacity-60"
               >
                 <option value="">{t("unused")}</option>
                 {outlines.map((outline, slide) => {

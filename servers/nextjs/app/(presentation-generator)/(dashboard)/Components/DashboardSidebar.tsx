@@ -9,6 +9,7 @@ import StudioMark from "@/components/studio/StudioMark";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { formatRub } from "@/app/(presentation-generator)/services/api/billing";
 import { isPaying, useBilling } from "@/components/billing/useBilling";
+import BrandLogo from "@/components/brand/BrandLogo";
 
 
 
@@ -78,10 +79,10 @@ const MobileNav = ({ showCommunity, showTemplates }: Required<DashboardSidebarPr
                 aria-current={active ? "page" : undefined}
                 className={[
                     "flex min-h-11 items-center gap-3 rounded-[10px] px-3 text-sm transition-colors",
-                    active ? "bg-white font-medium text-[#101323] shadow-[0_4px_10px_rgba(124,81,248,0.12)]" : "text-slate-800 hover:bg-white/70",
+                    active ? "bg-white font-medium text-[#101323] shadow-[0_4px_10px_rgba(3,176,21,0.12)]" : "text-slate-800 hover:bg-white/70",
                 ].join(" ")}
             >
-                <Icon className={`h-4 w-4 shrink-0 ${active ? "text-[#5146E5]" : "text-slate-600"}`} />
+                <Icon className={`h-4 w-4 shrink-0 ${active ? "text-[#02940F]" : "text-slate-600"}`} />
                 {label}
             </Link>
         );
@@ -90,17 +91,14 @@ const MobileNav = ({ showCommunity, showTemplates }: Required<DashboardSidebarPr
     return (
         <div className="flex h-14 items-center gap-3 border-b border-[#E1E1E5] bg-[#F6F6F9] px-4 md:hidden">
             <Link href="/dashboard" className="flex items-center gap-2" aria-label={t("sidebar.dashboard")}>
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7C51F8] p-0.5">
-                    <img src="/logo-with-bg.png" alt={t("logoAlt")} className="h-full w-full object-contain" />
-                </span>
-                <span className="font-syne text-base font-semibold text-[#101323]">Presenton</span>
+                <BrandLogo height={22} />
             </Link>
             <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild>
                     <button
                         type="button"
                         aria-label={t("sidebar.menu")}
-                        className="ml-auto flex h-11 w-11 items-center justify-center rounded-full text-[#101323] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+                        className="ml-auto flex h-11 w-11 items-center justify-center rounded-full text-[#101323] transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
                     >
                         <Menu className="h-5 w-5" aria-hidden="true" />
                     </button>
@@ -111,7 +109,7 @@ const MobileNav = ({ showCommunity, showTemplates }: Required<DashboardSidebarPr
                         {sections.map(item)}
                         <p className="mb-1 mt-4 flex items-center gap-1.5 px-3">
                             <StudioMark size={18} />
-                            <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#7A5AF8]">{t("sidebar.studio")}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#03B015]">{t("sidebar.studio")}</span>
                         </p>
                         {studio.map(item)}
                         <div className="my-3 border-t border-[#E1E1E5]" />
@@ -141,8 +139,8 @@ const DashboardSidebar = ({
             <div>
 
                 <Link href={`/dashboard`} className="flex items-center  pb-6 border-b border-[#E1E1E5]   gap-2    ">
-                    <div className="bg-[#7C51F8] rounded-full cursor-pointer p-1 flex justify-center items-center mx-auto">
-                        <img src="/logo-with-bg.png" alt={t("logoAlt")} className="h-[40px] object-contain w-full" />
+                    <div className="mx-auto flex cursor-pointer items-center justify-center" title={t("logoAlt")}>
+                        <BrandLogo variant="mark" height={30} />
                     </div>
                 </Link>
                 <nav className="pt-6 font-syne" aria-label={t("sectionsAria")}>
@@ -159,7 +157,7 @@ const DashboardSidebar = ({
                             aria-label={t("sidebar.dashboard")}
                             title={t("sidebar.dashboard")}
                         >
-                            <LayoutDashboard className={["h-4 w-4", pathname === "/dashboard" ? "text-[#5146E5]" : "text-slate-600"].join(" ")} />
+                            <LayoutDashboard className={["h-4 w-4", pathname === "/dashboard" ? "text-[#02940F]" : "text-slate-600"].join(" ")} />
                             <span className="text-[11px] text-slate-800">{t("sidebar.dashboard")}</span>
                         </Link>
                         {showTemplates ? <Link
@@ -173,7 +171,7 @@ const DashboardSidebar = ({
                             title={t("sidebar.templates")}
                         >
                             <div className="flex flex-col cursor-pointer tex-center items-center gap-2  transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={`${pathname === "/templates" ? "#5146E5" : "#475569"}`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M4 14h6" /><path d="M4 2h10" /><rect x="4" y="18" width="16" height="4" rx="1" /><rect x="4" y="6" width="16" height="4" rx="1" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={`${pathname === "/templates" ? "#02940F" : "#475569"}`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M4 14h6" /><path d="M4 2h10" /><rect x="4" y="18" width="16" height="4" rx="1" /><rect x="4" y="6" width="16" height="4" rx="1" /></svg>
                                 <span className="text-[11px] text-slate-800">{t("sidebar.templates")}</span>
                             </div>
                         </Link> : null}
@@ -184,13 +182,13 @@ const DashboardSidebar = ({
                             aria-label={t("sidebar.community")}
                             title={t("sidebar.community")}
                         >
-                            <UsersRound className={`h-4 w-4 ${pathname === "/community" ? "text-[#5146E5]" : "text-slate-600"}`} />
+                            <UsersRound className={`h-4 w-4 ${pathname === "/community" ? "text-[#02940F]" : "text-slate-600"}`} />
                             <span className="text-[11px] text-slate-800">{t("sidebar.community")}</span>
                         </Link> : null}
                         <div className="border-t border-[#E1E1E5] pt-4" role="group" aria-labelledby="sidebar-studio-label">
                             <p id="sidebar-studio-label" className="mb-4 flex items-center justify-center gap-1.5">
                                 <StudioMark size={18} />
-                                <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#7A5AF8]">{t("sidebar.studio")}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#03B015]">{t("sidebar.studio")}</span>
                             </p>
                             <div className="space-y-4">
                                 {studioNavItems.map(({ href, key, icon: Icon }) => {
@@ -203,10 +201,10 @@ const DashboardSidebar = ({
                                             aria-current={active ? "page" : undefined}
                                             className={[
                                                 "-mx-2 flex flex-col items-center gap-1.5 rounded-[10px] px-0.5 py-1.5 text-center transition-colors",
-                                                active ? "bg-white shadow-[0_4px_10px_rgba(124,81,248,0.12)]" : "hover:bg-white/60",
+                                                active ? "bg-white shadow-[0_4px_10px_rgba(3,176,21,0.12)]" : "hover:bg-white/60",
                                             ].join(" ")}
                                         >
-                                            <Icon className={`h-4 w-4 ${active ? "text-[#5146E5]" : "text-slate-600"}`} aria-hidden="true" />
+                                            <Icon className={`h-4 w-4 ${active ? "text-[#02940F]" : "text-slate-600"}`} aria-hidden="true" />
                                             <span className="text-[11px] leading-[1.25] text-slate-800">{t(`sidebar.${key}`)}</span>
                                         </Link>
                                     );
@@ -224,7 +222,7 @@ const DashboardSidebar = ({
                             title={t("themes")}
                         >
                             <div className="flex flex-col cursor-pointer tex-center items-center gap-2  transition-colors">
-                                <Palette className={`h-4 w-4 ${pathname === "/theme" ? "text-[#5146E5]" : "text-slate-600"}`} />
+                                <Palette className={`h-4 w-4 ${pathname === "/theme" ? "text-[#02940F]" : "text-slate-600"}`} />
                                 <span className="text-[11px] text-slate-800">{t("themes")}</span>
                             </div>
                         </Link> */}
@@ -242,7 +240,7 @@ const DashboardSidebar = ({
                             aria-label={`${t("sidebar.balance")}: ${formatRub(me.balance)}`}
                             className="flex flex-col items-center gap-1.5 text-center transition-colors"
                         >
-                            <Wallet className={`h-4 w-4 ${pathname === "/billing" ? "text-[#5146E5]" : "text-slate-600"}`} aria-hidden="true" />
+                            <Wallet className={`h-4 w-4 ${pathname === "/billing" ? "text-[#02940F]" : "text-slate-600"}`} aria-hidden="true" />
                             <span className="text-[11px] font-semibold text-slate-900">{formatRub(me.balance)}</span>
                         </Link>
                         <div className="py-2" />
@@ -261,7 +259,7 @@ const DashboardSidebar = ({
                     href="/help"
                     className="flex flex-col items-center gap-2 transition-colors"
                 >
-                    <HelpCircle className={`h-4 w-4 ${pathname === "/help" ? "text-[#5146E5]" : ""}`} />
+                    <HelpCircle className={`h-4 w-4 ${pathname === "/help" ? "text-[#02940F]" : ""}`} />
                     <span className="text-[11px] text-slate-800">{t("sidebar.help")}</span>
                 </Link>
             </div>

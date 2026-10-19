@@ -323,9 +323,9 @@ const IconsEditor = ({
                             aria-pressed={isSelected}
                             onClick={() => handleWeightSelect(weight)}
                             className={cn(
-                              "relative flex h-[58px] min-w-0 flex-col items-center justify-center gap-1 rounded-[10px] border bg-white px-1 outline-none transition hover:bg-[#F4F4F4] focus-visible:ring-2 focus-visible:ring-[#D9D6FE]",
+                              "relative flex h-[58px] min-w-0 flex-col items-center justify-center gap-1 rounded-[10px] border bg-white px-1 outline-none transition hover:bg-[#F4F4F4] focus-visible:ring-2 focus-visible:ring-[#DBF9DE]",
                               isSelected
-                                ? "border-[#B9A8FA] bg-[#F4F3FF]"
+                                ? "border-[#B2F0B7] bg-[#F4FEF5]"
                                 : "border-[#E1E1E5]"
                             )}
                           >
@@ -343,7 +343,7 @@ const IconsEditor = ({
                               className={cn(
                                 "max-w-full truncate text-[10px]",
                                 isSelected
-                                  ? "text-[#6941C6]"
+                                  ? "text-[#027A0E]"
                                   : "text-[#666]"
                               )}
                             >
@@ -369,7 +369,7 @@ const IconsEditor = ({
                     aria-label={t("icon.applyWeightAria")}
                     checked={applyStylesToPresentation}
                     onCheckedChange={setApplyStylesToPresentation}
-                    className="h-5 w-9 flex-none data-[state=checked]:bg-[#7C3AED] data-[state=unchecked]:bg-[#DDDEE3]"
+                    className="h-5 w-9 flex-none data-[state=checked]:bg-[#02940F] data-[state=unchecked]:bg-[#DDDEE3]"
                   />
                 </div>
               </aside>
@@ -450,7 +450,7 @@ const IconsEditor = ({
                               className={cn(
                                 "group relative aspect-square min-w-0 overflow-hidden rounded-[10px] border bg-[#F9FAFB] p-4 outline-none transition hover:border-[#CACBD0] hover:bg-[#F4F4F4] focus-visible:ring-2 focus-visible:ring-[#191919]",
                                 isSelected
-                                  ? "border-[#8B75E8] bg-[#F4F3FF] ring-1 ring-[#8B75E8]"
+                                  ? "border-[#03B015] bg-[#F4FEF5] ring-1 ring-[#03B015]"
                                   : "border-[#EDEEEF]"
                               )}
                             >
@@ -461,7 +461,7 @@ const IconsEditor = ({
                                 className="size-full object-contain transition-transform duration-200 group-hover:scale-105"
                               />
                               {isSelected ? (
-                                <span className="absolute right-1.5 top-1.5 flex size-4 items-center justify-center rounded-full bg-[#6941C6] text-white">
+                                <span className="absolute right-1.5 top-1.5 flex size-4 items-center justify-center rounded-full bg-[#027A0E] text-white">
                                   <Check
                                     className="size-2.5"
                                     strokeWidth={2.5}
@@ -501,7 +501,7 @@ const IconsEditor = ({
                     disabled={!selectedIconUrl && !currentIconUrl}
                     style={{
                       background:
-                        "linear-gradient(270deg, #D5CAFC 2.4%, #E3D2EB 27.88%, #F4DCD3 69.23%, #FDE4C2 100%)",
+                        "linear-gradient(270deg, #D0F6D3 2.4%, #D5E8D7 27.88%, #E2F7D9 69.23%, #F2FADB 100%)",
                     }}
                     className="ml-auto flex h-10 items-center justify-center gap-1.5 rounded-full px-5 text-[13px] font-semibold text-[#101323] shadow-none transition hover:brightness-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
                   >

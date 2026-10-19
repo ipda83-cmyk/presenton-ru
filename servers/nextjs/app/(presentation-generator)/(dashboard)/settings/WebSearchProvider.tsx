@@ -110,8 +110,8 @@ const WebSearchProvider = ({
         </div>
         <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:gap-10">
           <div className="max-w-[300px] shrink-0 pb-2 lg:pb-[20px]">
-            <div className="flex h-[60px] w-[60px] items-center justify-center rounded-[4px] bg-[#F4F3FF]">
-              <Search className="h-7 w-7 text-[#5146E5]" />
+            <div className="flex h-[60px] w-[60px] items-center justify-center rounded-[4px] bg-[#F4FEF5]">
+              <Search className="h-7 w-7 text-[#02940F]" />
             </div>
             <h3 className="py-2.5 text-xl font-normal text-[#191919]">
               {t("webSettingsTitle")}
@@ -175,7 +175,7 @@ const WebSearchProvider = ({
                                     <span className="text-sm font-medium text-gray-900">
                                       {option.value === "auto" ? tp("webLabelAuto") : option.label}
                                       {option.value === DEFAULT_WEB_SEARCH_PROVIDER ? (
-                                        <span className="ml-2 rounded-full bg-[#F4F3FF] px-2 py-0.5 text-[10px] font-medium text-[#5141E5]">
+                                        <span className="ml-2 rounded-full bg-[#F4FEF5] px-2 py-0.5 text-[10px] font-medium text-[#02940F]">
                                           {tp("webDefault")}
                                         </span>
                                       ) : null}
@@ -195,7 +195,7 @@ const WebSearchProvider = ({
                 </div>
 
                 {selected === "auto" && (
-                  <div className="rounded-lg border border-[#D9D6FE] bg-[#F4F3FF] p-3 text-xs text-[#5146E5]">
+                  <div className="rounded-lg border border-[#DBF9DE] bg-[#F4FEF5] p-3 text-xs text-[#02940F]">
                     {t("autoNote")}
                   </div>
                 )}

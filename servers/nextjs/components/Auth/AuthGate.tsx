@@ -1,19 +1,19 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { getApiUrl } from "@/utils/api";
 import { isAuthDisabled } from "@/utils/auth";
 import { formatFastApiDetail } from "@/utils/authErrors";
 import {
-  PRESENTON_SPLASH_MIN_DURATION_MS,
-  PresentonSplashLoader,
-} from "@/components/ui/presenton-splash-loader";
+  BRAND_SPLASH_MIN_DURATION_MS,
+  BrandSplashLoader,
+} from "@/components/ui/brand-splash-loader";
 import { notify } from "@/components/ui/sonner";
 import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import BrandLogo from "@/components/brand/BrandLogo";
 
 type AuthStatus = {
   configured: boolean;
@@ -44,7 +44,7 @@ export default function AuthGate() {
   useEffect(() => {
     const timeout = window.setTimeout(() => {
       setHasMetSplashDuration(true);
-    }, PRESENTON_SPLASH_MIN_DURATION_MS);
+    }, BRAND_SPLASH_MIN_DURATION_MS);
 
     return () => window.clearTimeout(timeout);
   }, []);
@@ -316,7 +316,7 @@ export default function AuthGate() {
     status.authenticated ||
     !hasMetSplashDuration
   ) {
-    return <PresentonSplashLoader message={t("preparing")} />;
+    return <BrandSplashLoader message={t("preparing")} />;
   }
 
   return (
@@ -327,17 +327,11 @@ export default function AuthGate() {
       <section className="relative z-10 w-full max-w-lg rounded-[20px] border border-[#EDEEEF] bg-[#F9F8F8] p-7 sm:p-10">
         <div className="mb-7">
           <div className="flex items-center gap-4">
-            <div className="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-[4px] bg-[#F4F3FF] p-3">
-              <Image
-                src="/logo-with-bg.png"
-                alt=""
-                width={161}
-                height={166}
-                className="h-10 w-auto object-contain"
-              />
+            <div className="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-[4px] bg-[#F4FEF5] p-3">
+              <BrandLogo variant="mark" height={22} />
             </div>
             <div>
-              <p className="font-syne text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7A5AF8]">
+              <p className="font-syne text-[10px] font-semibold uppercase tracking-[0.14em] text-[#03B015]">
                 {t("secureInstance")}
               </p>
               <h1 className="mt-1 font-syne text-xl font-normal leading-tight tracking-[-0.03em] text-black sm:text-[22px]">
@@ -370,7 +364,7 @@ export default function AuthGate() {
               title={t("usernameNoSpaces")}
               required
               spellCheck={false}
-              className="h-12 w-full rounded-lg border border-[#E1E1E5] bg-white px-4 text-sm text-[#191919] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#7A5AF8] focus:ring-2 focus:ring-[#7A5AF8]/15"
+              className="h-12 w-full rounded-lg border border-[#E1E1E5] bg-white px-4 text-sm text-[#191919] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#03B015] focus:ring-2 focus:ring-[#03B015]/15"
               disabled={isSubmitting}
             />
           </div>
@@ -391,7 +385,7 @@ export default function AuthGate() {
               minLength={isSetupMode ? 8 : 6}
               maxLength={128}
               required
-              className="h-12 w-full rounded-lg border border-[#E1E1E5] bg-white px-4 text-sm text-[#191919] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#7A5AF8] focus:ring-2 focus:ring-[#7A5AF8]/15"
+              className="h-12 w-full rounded-lg border border-[#E1E1E5] bg-white px-4 text-sm text-[#191919] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#03B015] focus:ring-2 focus:ring-[#03B015]/15"
               disabled={isSubmitting}
             />
           </div>
@@ -411,7 +405,7 @@ export default function AuthGate() {
                 minLength={8}
                 maxLength={128}
                 required
-                className="h-12 w-full rounded-lg border border-[#E1E1E5] bg-white px-4 text-sm text-[#191919] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#7A5AF8] focus:ring-2 focus:ring-[#7A5AF8]/15"
+                className="h-12 w-full rounded-lg border border-[#E1E1E5] bg-white px-4 text-sm text-[#191919] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#03B015] focus:ring-2 focus:ring-[#03B015]/15"
                 disabled={isSubmitting}
               />
             </div>
@@ -426,7 +420,7 @@ export default function AuthGate() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-[58px] border border-[#EDEEEF] bg-[#7C51F8] px-5 py-3 font-syne text-xs font-semibold text-white transition hover:bg-[#6d46e6] disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-[58px] border border-[#EDEEEF] bg-[#03B015] px-5 py-3 font-syne text-xs font-semibold text-white transition hover:bg-[#02940F] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting
               ? isSetupMode

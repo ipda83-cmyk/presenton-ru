@@ -1,5 +1,5 @@
 /**
- * Docker / startup terminal banner for Presenton.
+ * Docker / startup terminal banner for Kvant AI Studio (built on Presenton).
  * Renders a compact brand logo + startup status.
  */
 
@@ -16,25 +16,25 @@ function fgRgb(r, g, b, text) {
 }
 
 function brand(text) {
-  return BOLD + fgRgb(138, 99, 255, text);
+  return BOLD + fgRgb(5, 194, 24, text);
 }
 
 function accent(text) {
-  return fgRgb(184, 176, 255, text);
+  return fgRgb(184, 239, 192, text);
 }
 
 function muted(text) {
-  return DIM + fgRgb(160, 150, 210, text);
+  return DIM + fgRgb(150, 190, 155, text);
 }
 
 function styleAsciiArt(rawAscii) {
   const lines = rawAscii.replace(/\r/g, "").split("\n");
   const palette = [
-    [153, 108, 255],
-    [145, 103, 250],
-    [136, 98, 245],
-    [127, 92, 239],
-    [118, 86, 233],
+    [5, 194, 24],
+    [4, 186, 23],
+    [4, 178, 22],
+    [3, 170, 21],
+    [3, 162, 20],
   ];
 
   return lines
@@ -110,7 +110,7 @@ export function printPresentonStartupBanner(opts = {}) {
 
   const title = [
     "",
-    BOLD + fgRgb(138, 99, 255, "   Open Source AI Presentation Generator"),
+    BOLD + fgRgb(5, 194, 24, "   Kvant AI Studio · AI presentations and images"),
     ...(mode === "development"
       ? [
           "   " +
@@ -170,7 +170,7 @@ export function printPresentonStartupBanner(opts = {}) {
           pipe(
             padVis(
               "  " +
-                muted("Open Presenton:     ") +
+                muted("Open the app:     ") +
                 BOLD +
                 fgRgb(255, 255, 255, publicUrl),
               W,
@@ -183,7 +183,7 @@ export function printPresentonStartupBanner(opts = {}) {
     ...summaryLines,
     boxBottom,
     "",
-    "   " + muted("Made with ❤️  by the Presenton team"),
+    "   " + muted("Built on Presenton (Apache 2.0)"),
   ].join("\n");
 
   const bannerHeader = iconBlock ? `${iconBlock}\n` : "";

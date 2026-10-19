@@ -145,7 +145,7 @@ export const OverlayLoader = ({
               gradientTransform="matrix(-987.419 -112.408 219.823 -2016.77 351.693 300.327)"
               gradientUnits="userSpaceOnUse"
             >
-              <stop stopColor="#D9D6FE" />
+              <stop stopColor="#DBF9DE" />
               <stop offset="1" stopColor="white" stopOpacity="0" />
             </radialGradient>
           </defs>
@@ -156,7 +156,7 @@ export const OverlayLoader = ({
         .overlay-loader-dots {
           width: 50px;
           aspect-ratio: 1;
-          --_c: no-repeat radial-gradient(farthest-side, #7a5af8 92%, #0000);
+          --_c: no-repeat radial-gradient(farthest-side, #03B015 92%, #0000);
           background: var(--_c) top, var(--_c) left, var(--_c) right,
             var(--_c) bottom;
           background-size: 12px 12px;

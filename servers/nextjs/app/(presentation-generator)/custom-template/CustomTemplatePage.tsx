@@ -73,6 +73,7 @@ import {
   dismissTemplateV2ModelWarning,
   showTemplateV2ModelWarningIfNeeded,
 } from "./utils/templateModelWarning";
+import BrandLogo from "@/components/brand/BrandLogo";
 
 
 
@@ -88,7 +89,7 @@ const studioSteps: { id: StudioStep; label: string }[] = [
 ];
 
 const pillGradient =
-  "linear-gradient(270deg, #D5CAFC 2.4%, #E3D2EB 27.88%, #F4DCD3 69.23%, #FDE4C2 100%)";
+  "linear-gradient(270deg, #D0F6D3 2.4%, #D5E8D7 27.88%, #E2F7D9 69.23%, #F2FADB 100%)";
 
 const FONT_FALLBACK_OPTION_HEIGHT = 40;
 const FONT_FALLBACK_MAX_VISIBLE_ROWS = 7;
@@ -123,15 +124,10 @@ function StudioTopBar({ activeStep }: { activeStep: StudioStep }) {
       <div className="relative mx-auto flex h-full max-w-[1280px] 2xl:max-w-[1536px] items-center justify-between px-5 sm:px-8 2xl:px-[90px]">
         <a
           href="/dashboard"
-          className="pointer-events-auto block h-8 w-8 sm:h-[34px] sm:w-[34px] 2xl:h-[44px] 2xl:w-[44px] shrink-0"
+          className="pointer-events-auto flex shrink-0 items-center"
           aria-label={t("dashboardAria")}
         >
-          <img
-            src="/logo-with-bg.png"
-            alt="Presenton"
-            className="h-full w-full"
-            draggable={false}
-          />
+          <BrandLogo variant="mark" height={24} />
         </a>
 
         <nav
@@ -277,7 +273,7 @@ function UploadPanel({
               onClick={() => inputRef.current?.click()}
               className="flex h-[34px] 2xl:h-[42px] items-center gap-1.5 2xl:gap-2 rounded-[80px] bg-white px-3.5 2xl:px-4 text-[12px] 2xl:text-sm font-semibold text-black shadow-[0_0_4px_rgba(0,0,0,0.06)]"
             >
-              <Upload className="h-3.5 w-3.5 2xl:h-4 2xl:w-4 text-[#7A5AF8]" />
+              <Upload className="h-3.5 w-3.5 2xl:h-4 2xl:w-4 text-[#03B015]" />
               {t("uploadPptx")}
             </button>
             <input
@@ -289,7 +285,7 @@ function UploadPanel({
             />
           </div>
 
-          <div className="relative -mt-px rounded-[28px] 2xl:rounded-[32px] border border-[#EDEEF4] bg-white p-2.5 2xl:p-3 shadow-[0_0_16px_rgba(80,71,230,0.08)] transition-shadow duration-200 ">
+          <div className="relative -mt-px rounded-[28px] 2xl:rounded-[32px] border border-[#EDEEF4] bg-white p-2.5 2xl:p-3 shadow-[0_0_16px_rgba(2,148,15,0.08)] transition-shadow duration-200 ">
             <div
               className={`relative h-[120px] 2xl:h-[150px] overflow-hidden rounded-[18px] 2xl:rounded-[22px] border border-[#E8E8EF] bg-white ${selectedFile ? "" : "cursor-pointer"
                 }`}
@@ -381,7 +377,7 @@ function UploadPanel({
         <ul className="mx-auto mt-6 2xl:mt-8 flex max-w-[480px] 2xl:max-w-[600px] items-center justify-between gap-5 2xl:gap-8">
           {[t("featRealtime"), t("featMaxSize"), t("featGen")].map((item) => (
             <li key={item} className="flex items-center gap-2 2xl:gap-2.5">
-              <span className="h-2.5 w-2.5 2xl:h-3 2xl:w-3 rounded-full bg-[#EBE9FE]" />
+              <span className="h-2.5 w-2.5 2xl:h-3 2xl:w-3 rounded-full bg-[#ECFBED]" />
               <span className="text-[13px] 2xl:text-[15px] font-normal text-[#3A3A3A]">{item}</span>
             </li>
           ))}
@@ -611,7 +607,7 @@ function FontFallbackPicker({
                       key={option.family}
                       value={option.family}
                       onSelect={() => handleSelect(option)}
-                      className="absolute left-1 right-1 h-10 cursor-pointer justify-between rounded-lg px-3 font-syne text-sm font-medium text-[#242630] data-[selected=true]:bg-[#F6F5FF]"
+                      className="absolute left-1 right-1 h-10 cursor-pointer justify-between rounded-lg px-3 font-syne text-sm font-medium text-[#242630] data-[selected=true]:bg-[#F6FEF7]"
                       style={{
                         top: optionIndex * FONT_FALLBACK_OPTION_HEIGHT + 4,
                         fontFamily: `"${option.family}"`,
@@ -619,7 +615,7 @@ function FontFallbackPicker({
                     >
                       <span className="min-w-0 truncate">{option.family}</span>
                       {isSelected ? (
-                        <Check className="h-4 w-4 shrink-0 text-[#5146E5]" />
+                        <Check className="h-4 w-4 shrink-0 text-[#02940F]" />
                       ) : (
                         <span className="shrink-0 text-xs font-semibold text-[#8B8E99]">
                           Aa
@@ -727,12 +723,12 @@ function AnalyzePanel({
             }}
             className="flex h-[34px] 2xl:h-[42px] items-center gap-1.5 2xl:gap-2 rounded-[80px] bg-white px-3.5 2xl:px-4 text-[12px] 2xl:text-sm font-semibold text-black shadow-[0_0_4px_rgba(0,0,0,0.06)]"
           >
-            <Upload className="h-3.5 w-3.5 2xl:h-4 2xl:w-4 text-[#7A5AF8]" />
+            <Upload className="h-3.5 w-3.5 2xl:h-4 2xl:w-4 text-[#03B015]" />
             {t("fontsUpload")}
           </button>
         </div>
 
-        <div className="relative -mt-px rounded-[28px] w-full  2xl:rounded-[32px] border border-[#EDEEF4] bg-white p-5 2xl:p-3 shadow-[0_0_16px_rgba(80,71,230,0.08)] transition-shadow duration-200 ">
+        <div className="relative -mt-px rounded-[28px] w-full  2xl:rounded-[32px] border border-[#EDEEF4] bg-white p-5 2xl:p-3 shadow-[0_0_16px_rgba(2,148,15,0.08)] transition-shadow duration-200 ">
           {fontAnalysisNotice ? (
             <div
               className={`mb-5 flex items-start gap-3 rounded-[16px] border px-4 py-3 ${fontAnalysisNotice.tone === "success"
@@ -891,7 +887,7 @@ function AnalyzePanel({
                     disabled={isUploading}
                     className="flex h-[78px] w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[#DADDE6] bg-white text-sm font-medium text-[#606470] transition hover:border-[#B8BCC8] hover:bg-[#FAFBFC] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F3EFFF] text-[#7A3DF0]">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F1FDF2] text-[#02940F]">
                       {resolvingFontUploaded ? (
                         <Check className="h-4 w-4" />
                       ) : (
@@ -1052,7 +1048,7 @@ function GeneratingSlidesOverlay() {
       <span className="relative z-20 flex items-center overflow-hidden rounded-[50px] bg-white px-4 py-2.5 text-sm font-medium text-[#666666] shadow-[0_2px_12px_rgba(16,24,40,0.08)]">
         <span aria-hidden className="generating-slides-background absolute" />
         <span className="relative z-10 flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-[#9034EA]" />
+          <Sparkles className="h-4 w-4 text-[#02940F]" />
           {t("updatingSlides")}
         </span>
       </span>
@@ -1389,7 +1385,7 @@ function ReviewPanel({
           className={`relative ${enableEditing ? "" : ""}`}
         >
           {enableEditing ? (
-            <div className="relative border border-[#7A5AF8] bg-white shadow-[0_2px_16px_rgba(16,24,40,0.08)]">
+            <div className="relative border border-[#03B015] bg-white shadow-[0_2px_16px_rgba(16,24,40,0.08)]">
               <SelectionHandles />
               <div className="absolute left-1/2 top-2 z-30 -translate-x-1/2 rounded-[5px] border border-[#E6E7EC] bg-white px-2 py-1.5 shadow-[0_4px_12px_rgba(16,24,40,0.12)] sm:top-3 2xl:px-3 2xl:py-2">
                 <div className="flex items-center gap-1 2xl:gap-1.5">
@@ -1510,7 +1506,7 @@ function SaveTemplateModal({
               onChange={(event) => setName(event.target.value)}
               disabled={isSaving}
               placeholder={t("templateNamePh")}
-              className="h-9 2xl:h-10 w-full rounded-[5px] border border-[#E1E2E8] bg-white px-3 2xl:px-4 text-[13px] 2xl:text-[15px] text-black outline-none placeholder:text-[#8C8E96] focus:border-[#B9ABFF]"
+              className="h-9 2xl:h-10 w-full rounded-[5px] border border-[#E1E2E8] bg-white px-3 2xl:px-4 text-[13px] 2xl:text-[15px] text-black outline-none placeholder:text-[#8C8E96] focus:border-[#B5F4BB]"
             />
           </label>
           <label className="block">
@@ -1523,7 +1519,7 @@ function SaveTemplateModal({
               disabled={isSaving}
               placeholder={t("descriptionPh")}
               rows={4}
-              className="h-[86px] 2xl:h-[100px] w-full resize-none rounded-[5px] border border-[#E1E2E8] bg-white px-3 2xl:px-4 py-3 2xl:py-3.5 text-[13px] 2xl:text-[15px] text-black outline-none placeholder:text-[#8C8E96] focus:border-[#B9ABFF]"
+              className="h-[86px] 2xl:h-[100px] w-full resize-none rounded-[5px] border border-[#E1E2E8] bg-white px-3 2xl:px-4 py-3 2xl:py-3.5 text-[13px] 2xl:text-[15px] text-black outline-none placeholder:text-[#8C8E96] focus:border-[#B5F4BB]"
             />
           </label>
         </div>

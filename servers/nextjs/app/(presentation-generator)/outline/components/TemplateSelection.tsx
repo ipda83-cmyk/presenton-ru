@@ -141,7 +141,7 @@ const TemplateSelection: React.FC<TemplateSelectionProps> = memo(
     };
 
     const suggestionNotice = suggestedTemplate && selectedTemplateId && (
-      <div className="mb-5 rounded-xl border border-[#E4E0FF] bg-[#F7F5FF] px-4 py-3 font-syne text-xs font-medium text-[#5141E5]">
+      <div className="mb-5 rounded-xl border border-[#E4FBE6] bg-[#F6FEF7] px-4 py-3 font-syne text-xs font-medium text-[#02940F]">
         <strong className="font-semibold">{t("suggestedSelected")}</strong>{" "}
         {t("suggestedHint")}
       </div>

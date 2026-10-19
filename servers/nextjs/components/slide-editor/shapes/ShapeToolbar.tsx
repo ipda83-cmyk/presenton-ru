@@ -254,7 +254,7 @@ export function ShapeToolbar({
           className={cn(
             "grid h-[22px] w-[22px] place-items-center rounded-[999px] border border-[#D7DAE3] hover:bg-[#F8F8FA]",
             (openPanel === "fill" || fillEnabled) &&
-              "border-[#E4D7FF] bg-[#F4F1FF] ring-2 ring-[#7C3AED]/30",
+              "border-[#DCFADE] bg-[#F3FDF4] ring-2 ring-[#02940F]/30",
           )}
         >
           <span
@@ -439,7 +439,7 @@ export function ShapeToolbar({
                     className={cn(
                       "flex h-8 items-center justify-center gap-1 rounded-[4px] text-xs capitalize text-[#4B5563] hover:bg-white",
                       vectorShape === shape &&
-                        "bg-white text-[#7A5AF8] shadow-sm",
+                        "bg-white text-[#03B015] shadow-sm",
                     )}
                   >
                     {shape === "polygon" ? (
@@ -461,7 +461,7 @@ export function ShapeToolbar({
                     className="flex w-full items-center justify-between rounded-md border border-[#EDEEEF] px-3 py-2 text-left text-xs text-[#4B5563] hover:bg-[#F8F8FA]"
                   >
                     <span className="font-medium text-[#191919]">{t("shape.closedPath")}</span>
-                    <span className="flex items-center gap-1 text-[#7A5AF8]">
+                    <span className="flex items-center gap-1 text-[#03B015]">
                       {vectorClosed ? (
                         <ToggleRight size={17} aria-hidden="true" />
                       ) : (
@@ -485,7 +485,7 @@ export function ShapeToolbar({
                           className={cn(
                             "h-8 rounded-[4px] text-xs capitalize text-[#4B5563] hover:bg-white",
                             vectorCurveMode === mode &&
-                              "bg-white text-[#7A5AF8] shadow-sm",
+                              "bg-white text-[#03B015] shadow-sm",
                           )}
                         >
                           {t(`shape.curveMode.${mode}`)}
@@ -601,7 +601,7 @@ export function ToolbarButton({
       onClick={onClick}
       className={cn(
         "relative flex h-7 min-w-7 items-center justify-center gap-1 rounded-[2px] border-0 bg-transparent px-1 text-[#05070A] hover:bg-[#F8F8FA]",
-        pressed && "bg-[#F4F1FF] text-[#7C3AED]",
+        pressed && "bg-[#F3FDF4] text-[#02940F]",
       )}
     >
       {children}
@@ -649,7 +649,7 @@ export function ToggleRow({
       className="flex w-full items-center justify-between rounded-md border border-[#EDEEEF] px-3 py-2 text-left text-xs text-[#4B5563] hover:bg-[#F8F8FA]"
     >
       <span className="font-medium text-[#191919]">{label}</span>
-      <span className="flex items-center gap-1 text-[#7A5AF8]">
+      <span className="flex items-center gap-1 text-[#03B015]">
         {enabled ? (
           <ToggleRight size={17} aria-hidden="true" />
         ) : (
@@ -792,7 +792,7 @@ function MarkerSelect({
         aria-label={t("shape.lineMarkerAria", { label })}
         value={value}
         onChange={(event) => onChange(event.target.value as VectorMarker)}
-        className="h-8 min-w-[150px] rounded-md border border-[#EDEEEF] bg-white px-2 text-xs text-[#191919] outline-none focus:border-[#7C51F8]"
+        className="h-8 min-w-[150px] rounded-md border border-[#EDEEEF] bg-white px-2 text-xs text-[#191919] outline-none focus:border-[#03B015]"
       >
         {VECTOR_MARKER_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
@@ -847,7 +847,7 @@ export function NumberField({
   return (
     <label className="flex min-w-0 flex-1 items-center gap-2 text-xs text-[#4B5563]">
       <span className="font-semibold">{label}</span>
-      <span className="flex min-w-0 flex-1 items-center rounded-md border border-[#EDEEEF] bg-white px-2 focus-within:border-[#7C51F8]">
+      <span className="flex min-w-0 flex-1 items-center rounded-md border border-[#EDEEEF] bg-white px-2 focus-within:border-[#03B015]">
         <input
           aria-label={label}
           type="text"
@@ -932,7 +932,7 @@ export function SliderField({
         onBlur={(event) => commit(Number(event.currentTarget.value))}
         onKeyUp={(event) => commit(Number(event.currentTarget.value))}
         onPointerUp={(event) => commit(Number(event.currentTarget.value))}
-        className="w-full cursor-pointer accent-[#7A5AF8]"
+        className="w-full cursor-pointer accent-[#03B015]"
       />
     </label>
   );

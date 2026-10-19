@@ -77,7 +77,7 @@ export function PromptField({
   optional?: string;
 }) {
   return (
-    <div className="bg-[#ECE8F6] px-[22px] py-[18px]">
+    <div className="bg-[#EAF4EB] px-[22px] py-[18px]">
       <label htmlFor={id} className="block font-syne text-[13px] font-semibold text-[#1F1D2A]">
         {label}
         {optional && <span className="ml-1 font-normal text-[#667085]">{optional}</span>}
@@ -132,10 +132,10 @@ export function ChipGroup<T extends string | number>({
               aria-pressed={active}
               onClick={() => onChange(option)}
               className={[
-                "min-h-9 rounded-full border px-3.5 font-syne text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]",
+                "min-h-9 rounded-full border px-3.5 font-syne text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]",
                 active
-                  ? "border-[#CEC6FF] bg-[#F4F3FF] font-semibold text-[#5141E5]"
-                  : "border-[#DBDBE1] bg-white font-medium text-[#2C2B37] hover:border-[#CEC6FF]",
+                  ? "border-[#CDF8D1] bg-[#F4FEF5] font-semibold text-[#02940F]"
+                  : "border-[#DBDBE1] bg-white font-medium text-[#2C2B37] hover:border-[#CDF8D1]",
               ].join(" ")}
             >
               {format ? format(option) : String(option)}
@@ -168,7 +168,7 @@ export function ModelSelect({
           id={id}
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          className="min-h-10 min-w-0 flex-1 rounded-xl sm:max-w-[240px] sm:min-w-[190px] border border-[#DBDBE1] bg-white px-3 font-syne text-[13px] font-medium text-[#2C2B37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+          className="min-h-10 min-w-0 flex-1 rounded-xl sm:max-w-[240px] sm:min-w-[190px] border border-[#DBDBE1] bg-white px-3 font-syne text-[13px] font-medium text-[#2C2B37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
         >
           {models.map((model) => (
             <option key={model.key} value={model.key}>
@@ -201,8 +201,8 @@ export function GradientButton({
       onClick={onClick}
       disabled={disabled || busy}
       aria-busy={busy || undefined}
-      className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 rounded-[48px] font-syne text-sm font-semibold text-[#1E1D2B] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] focus-visible:ring-offset-2"
-      style={{ background: "linear-gradient(270deg, #D5CAFC 2.4%, #E3D2EB 27.88%, #F4DCD3 69.23%, #FDE4C2 100%)" }}
+      className="inline-flex min-h-[46px] w-full items-center justify-center gap-2 rounded-[48px] font-syne text-sm font-semibold text-[#1E1D2B] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] focus-visible:ring-offset-2"
+      style={{ background: "linear-gradient(270deg, #D0F6D3 2.4%, #D5E8D7 27.88%, #E2F7D9 69.23%, #F2FADB 100%)" }}
     >
       {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
       {children}
@@ -227,7 +227,7 @@ export function SoftButton({
       onClick={onClick}
       disabled={disabled || busy}
       aria-busy={busy || undefined}
-      className="inline-flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl border border-[#DBDBE1] bg-white px-3 font-syne text-[13px] font-medium text-[#2C2B37] transition-colors hover:border-[#CEC6FF] hover:bg-[#FAFAFF] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+      className="inline-flex min-h-[42px] items-center justify-center gap-1.5 rounded-xl border border-[#DBDBE1] bg-white px-3 font-syne text-[13px] font-medium text-[#2C2B37] transition-colors hover:border-[#CDF8D1] hover:bg-[#FBFEFB] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
     >
       {busy && <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
       {children}
@@ -254,7 +254,7 @@ export function BusyOverlay({ active, label }: { active: boolean; label: string 
       aria-live="polite"
       className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-2xl bg-white/75 backdrop-blur-[2px]"
     >
-      <Loader2 className="h-8 w-8 animate-spin text-[#7A5AF8]" aria-hidden="true" />
+      <Loader2 className="h-8 w-8 animate-spin text-[#03B015]" aria-hidden="true" />
       <p className="font-syne text-sm font-medium text-[#101323]">{label}</p>
       <p className="text-xs text-[#667085]">{t("busy.elapsed", { seconds })}</p>
     </div>

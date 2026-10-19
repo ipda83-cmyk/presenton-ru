@@ -70,12 +70,12 @@ const OutlinePromptBar: React.FC<OutlinePromptBarProps> = ({
           aria-label={t("regenerate")}
           title={t("regenerate")}
           className={cn(
-            "absolute right-6 top-1/2 flex h-[21px] w-[26px] -translate-y-1/2 items-center justify-center rounded-full bg-white text-[#191919] transition hover:bg-[#F7F7FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A00FF]/25",
+            "absolute right-6 top-1/2 flex h-[21px] w-[26px] -translate-y-1/2 items-center justify-center rounded-full bg-white text-[#191919] transition hover:bg-[#F7F7FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#027A0E]/25",
             isRegenerateDisabled && "cursor-not-allowed opacity-70"
           )}
         >
           {isBusy ? (
-            <Loader2 className="h-[18px] w-[18px] animate-spin text-[#7A5AF8]" />
+            <Loader2 className="h-[18px] w-[18px] animate-spin text-[#03B015]" />
           ) : (
             <RotateCcw
               aria-hidden="true"

@@ -29,13 +29,13 @@ export default function StudioTopNav({
             key={tab}
             href={tab === "studio" ? "/studio" : "/studio/storyboard"}
             aria-current={active === tab ? "page" : undefined}
-            className={`${pill} ${active === tab ? "bg-[#F4F3FF] font-medium text-[#5141E5]" : "text-[#191919] hover:bg-[#F6F6F9]"}`}
+            className={`${pill} ${active === tab ? "bg-[#F4FEF5] font-medium text-[#02940F]" : "text-[#191919] hover:bg-[#F6F6F9]"}`}
           >
             {tab === "studio" ? t("studio") : "Storyboard"}
           </Link>
         ))}
         {isAdmin && (
-          <Link href="/admin" className={`${pill} font-semibold text-[#5141E5] hover:bg-[#F4F3FF]`}>
+          <Link href="/admin" className={`${pill} font-semibold text-[#02940F] hover:bg-[#F4FEF5]`}>
             {t("admin")}
           </Link>
         )}

@@ -100,7 +100,7 @@ export default function SupportingDoc({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={preview} alt="" className="h-[28px] w-[38px] shrink-0 rounded object-cover" />
               ) : (
-                <File className="h-3.5 w-3.5 shrink-0 text-[#7A5AF8]" />
+                <File className="h-3.5 w-3.5 shrink-0 text-[#03B015]" />
               )}
               <span className="max-w-[180px] truncate" title={file.name}>
                 {file.name}
@@ -112,7 +112,7 @@ export default function SupportingDoc({
                   disabled={disabled}
                   aria-label={t("openStudio", { name: file.name })}
                   title={t("openStudio", { name: file.name })}
-                  className="inline-flex min-h-[28px] items-center gap-1.5 rounded-full border border-[#CEC6FF] bg-[#F4F3FF] py-0.5 pl-1 pr-2.5 font-syne text-[11px] font-semibold text-[#5141E5] transition-colors hover:bg-[#ECE9FF] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+                  className="inline-flex min-h-[28px] items-center gap-1.5 rounded-full border border-[#CDF8D1] bg-[#F4FEF5] py-0.5 pl-1 pr-2.5 font-syne text-[11px] font-semibold text-[#02940F] transition-colors hover:bg-[#ECFCED] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
                 >
                   <StudioMark size={20} />
                   Studio
@@ -155,7 +155,7 @@ export default function SupportingDoc({
           onClick={onSubmit}
           disabled={disabled}
           aria-label={t("generate")}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7A5AF8] text-white shadow-sm transition hover:bg-[#6938EF] disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-[#03B015] text-white shadow-sm transition hover:bg-[#02940F] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <ArrowUp className="h-4 w-4" strokeWidth={2} />
         </button>

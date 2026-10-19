@@ -100,7 +100,7 @@ export default function CommunityReferencePicker({
             <button
               type="button"
               onClick={() => onSelect(null)}
-              className="whitespace-nowrap text-xs font-medium text-[#7A5AF8] hover:text-[#6938EF]"
+              className="whitespace-nowrap text-xs font-medium text-[#03B015] hover:text-[#02940F]"
             >
               {t("clearSelection")}
             </button>
@@ -109,7 +109,7 @@ export default function CommunityReferencePicker({
       </div>
 
       {loading ? (
-        <div className="flex h-52 items-center justify-center text-[#7A5AF8]">
+        <div className="flex h-52 items-center justify-center text-[#03B015]">
           <Loader2 className="h-5 w-5 animate-spin" />
         </div>
       ) : error ? (
@@ -127,7 +127,7 @@ export default function CommunityReferencePicker({
             <button
               type="button"
               onClick={() => load()}
-              className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#E0DDFC] bg-white px-4 py-2 text-xs font-medium text-[#6847F4] transition hover:bg-[#F8F7FF]"
+              className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#E1F8E3] bg-white px-4 py-2 text-xs font-medium text-[#02940F] transition hover:bg-[#F8FEF9]"
             >
               <RefreshCw className="h-4 w-4" /> {t("tryAgain")}
             </button>
@@ -150,8 +150,8 @@ export default function CommunityReferencePicker({
                 key={item.id}
                 className={`min-w-0 overflow-hidden rounded-xl border bg-white transition ${
                   selected
-                    ? "border-[#7A5AF8] ring-2 ring-[#7A5AF8]/15"
-                    : "border-[#EDEEEF] hover:border-[#D8D3FA]"
+                    ? "border-[#03B015] ring-2 ring-[#03B015]/15"
+                    : "border-[#EDEEEF] hover:border-[#D8F5DA]"
                 }`}
               >
                 <button
@@ -184,7 +184,7 @@ export default function CommunityReferencePicker({
                       onClick={() => onSelect(selected ? null : item)}
                       className="flex h-[26px] items-center gap-1.5 rounded-full border border-[#EDEEEF] bg-white px-3 font-syne text-xs font-medium text-[#191919] hover:bg-[#F6F6F9]"
                     >
-                      {selected && <Check className="h-3.5 w-3.5 text-[#7A5AF8]" />}
+                      {selected && <Check className="h-3.5 w-3.5 text-[#03B015]" />}
                       {selected ? t("selected") : t("use")}
                     </button>
                   </div>

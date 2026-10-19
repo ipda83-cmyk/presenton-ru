@@ -239,7 +239,7 @@ function ToolbarIconButton({
       onClick={onClick}
       className={cn(
         "grid h-7 min-w-7 place-items-center rounded-md border-0 bg-transparent px-1 text-[#05070A] hover:bg-[#F8F8FA]",
-        open && "bg-[#F4F1FF] text-[#7C3AED]",
+        open && "bg-[#F3FDF4] text-[#02940F]",
       )}
     >
       {children}
@@ -308,7 +308,7 @@ function InlineNumberInput({
             commit(nextDraft);
           }
         }}
-        className="h-6 w-[58px] rounded-md border border-[#EDEEEF] bg-white px-1.5 text-right text-[12px] text-[#191919] outline-none focus:border-[#7C51F8]"
+        className="h-6 w-[58px] rounded-md border border-[#EDEEEF] bg-white px-1.5 text-right text-[12px] text-[#191919] outline-none focus:border-[#03B015]"
       />
     </label>
   );

@@ -15,7 +15,7 @@ import {
 } from '@/utils/api';
 import { notify } from '@/components/ui/sonner';
 import { useTranslations } from 'next-intl';
-import { PRESENTON_SPLASH_MIN_DURATION_MS } from '@/components/ui/presenton-splash-loader';
+import { BRAND_SPLASH_MIN_DURATION_MS } from '@/components/ui/brand-splash-loader';
 
 function ConfigurationLoadingScreen() {
   const t = useTranslations('config');
@@ -184,7 +184,7 @@ export function ConfigurationInitializer({ children }: { children: React.ReactNo
 
     const timeout = window.setTimeout(() => {
       setHasMetSplashDuration(true);
-    }, PRESENTON_SPLASH_MIN_DURATION_MS);
+    }, BRAND_SPLASH_MIN_DURATION_MS);
 
     return () => window.clearTimeout(timeout);
   }, [shouldShowStartupSplash]);

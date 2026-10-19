@@ -22,8 +22,8 @@ export default function PaymentRequiredDialog() {
         className="z-[10031] max-w-md rounded-2xl font-syne"
         overlayClassName="z-[10030]"
       >
-        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F4F3FF]">
-          <Wallet className="h-5 w-5 text-[#5141E5]" aria-hidden="true" />
+        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F4FEF5]">
+          <Wallet className="h-5 w-5 text-[#02940F]" aria-hidden="true" />
         </div>
         <DialogTitle className="text-lg font-medium text-[#101323]">{t("title")}</DialogTitle>
         <DialogDescription className="text-sm leading-6 text-[#4C5554]">{message}</DialogDescription>
@@ -32,7 +32,7 @@ export default function PaymentRequiredDialog() {
           <button
             type="button"
             onClick={() => setMessage(null)}
-            className="min-h-10 rounded-full px-4 text-sm text-[#101323] hover:bg-[#F6F6F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+            className="min-h-10 rounded-full px-4 text-sm text-[#101323] hover:bg-[#F6F6F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
           >
             {t("close")}
           </button>
@@ -41,7 +41,7 @@ export default function PaymentRequiredDialog() {
             target="_blank"
             rel="noopener"
             onClick={() => setMessage(null)}
-            className="inline-flex min-h-10 items-center rounded-full bg-[linear-gradient(90deg,#FCE7D4_0%,#E5DDFF_100%)] px-5 text-sm font-semibold text-[#3A2A8C] hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+            className="inline-flex min-h-10 items-center rounded-full bg-[linear-gradient(90deg,#F1FADF_0%,#E1FBE3_100%)] px-5 text-sm font-semibold text-[#01530A] hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
           >
             {t("topUp")}
           </a>

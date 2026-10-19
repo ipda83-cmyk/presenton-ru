@@ -13,7 +13,7 @@ export default function StudioNotice({ isAdmin, error }: { isAdmin: boolean; err
       <h2 className="font-syne text-lg font-medium text-[#101323]">{error ? t("errorTitle") : t("title")}</h2>
       <p className="text-sm leading-6 text-[#475467]">{error ?? (isAdmin ? t("admin") : t("user"))}</p>
       {isAdmin && !error && (
-        <Link href="/settings?section=studio" className="mt-1 font-syne text-sm font-semibold text-[#5146E5] hover:text-[#3B2FC9]">
+        <Link href="/settings?section=studio" className="mt-1 font-syne text-sm font-semibold text-[#02940F] hover:text-[#027A0E]">
           {t("openSettings")}
         </Link>
       )}

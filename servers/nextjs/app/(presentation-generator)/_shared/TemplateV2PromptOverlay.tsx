@@ -167,7 +167,7 @@ export function TemplateV2PromptOverlay({
           disabled={!prompt.trim() || submitting}
           style={{
             background:
-              "linear-gradient(270deg, #D5CAFC 2.4%, #E3D2EB 27.88%, #F4DCD3 69.23%, #FDE4C2 100%)",
+              "linear-gradient(270deg, #D0F6D3 2.4%, #D5E8D7 27.88%, #E2F7D9 69.23%, #F2FADB 100%)",
           }}
           className="ml-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#191919] transition hover:brightness-95 disabled:cursor-not-allowed disabled:text-[#9B9BA1] disabled:hover:brightness-100"
         >

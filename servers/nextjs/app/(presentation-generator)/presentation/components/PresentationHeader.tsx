@@ -57,6 +57,7 @@ import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { v4 as uuidv4 } from "uuid";
 import StreamingGenerationMetrics from "./StreamingGenerationMetrics";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import BrandLogo from "@/components/brand/BrandLogo";
 
 const MAX_EXPORT_TITLE_LENGTH = 40;
 
@@ -495,7 +496,7 @@ const PresentationHeader = ({
       )}
     >
       {isEditingTitle ? (
-        <div className="flex items-stretch w-[450px]  gap-0.5 rounded-[14px] border border-[#E4E2EB] bg-white pl-3.5 pr-1 py-1 shadow-[0_2px_12px_rgba(17,3,31,0.06)] ring-2 ring-[#5141e5]/15">
+        <div className="flex items-stretch w-[450px]  gap-0.5 rounded-[14px] border border-[#E4E2EB] bg-white pl-3.5 pr-1 py-1 shadow-[0_2px_12px_rgba(17,3,31,0.06)] ring-2 ring-[#02940F]/15">
           <input
             ref={titleInputRef}
             value={draftTitle}
@@ -522,7 +523,7 @@ const PresentationHeader = ({
                 type="button"
                 onMouseDown={onTitleSaveMouseDown}
                 onClick={commitTitleEdit}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#5141e5] hover:bg-[#5141e5]/10 transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#02940F] hover:bg-[#02940F]/10 transition-colors"
                 aria-label={t("saveTitle")}
               >
                 <Check className="h-4 w-4" strokeWidth={2.25} />
@@ -548,7 +549,7 @@ const PresentationHeader = ({
           disabled={isStreaming || !presentationData}
           className={cn(
             "group/title flex w-full min-w-0 items-center gap-2.5 rounded-[14px] px-3 py-2 text-left -mx-3 transition-colors",
-            "hover:bg-[#F6F6F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5141e5] focus-visible:ring-offset-2",
+            "hover:bg-[#F6F6F9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#02940F] focus-visible:ring-offset-2",
             "disabled:pointer-events-none disabled:opacity-100 disabled:hover:bg-transparent"
           )}
         >
@@ -560,7 +561,7 @@ const PresentationHeader = ({
           </h2>
           {presentationData && !isStreaming && (
             <Pencil
-              className="h-3.5 w-3.5 shrink-0 text-[#101323]/40 transition-all duration-200 group-hover/title:text-[#5141e5] opacity-80 sm:opacity-0 sm:group-hover/title:opacity-100 group-hover/title:opacity-100"
+              className="h-3.5 w-3.5 shrink-0 text-[#101323]/40 transition-all duration-200 group-hover/title:text-[#02940F] opacity-80 sm:opacity-0 sm:group-hover/title:opacity-100 group-hover/title:opacity-100"
               aria-hidden
             />
           )}
@@ -573,14 +574,9 @@ const PresentationHeader = ({
     <>
       <div className="py-[18px] px-4 sticky top-0 bg-white z-50 shadow-sm font-syne flex justify-between items-center gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <img
-            onClick={() => {
-              router.push("/dashboard");
-            }}
-            src="/logo-with-bg.png"
-            alt=""
-            className="w-10 h-10 cursor-pointer object-contain"
-          />
+          <button type="button" onClick={() => router.push("/dashboard")} className="shrink-0 cursor-pointer" aria-label="Kvant AI Studio">
+            <BrandLogo variant="mark" height={24} />
+          </button>
           {presentationData && !isStreaming && !isEditingTitle ? (
             <ToolTip content={t("renamePresentation")}>{titleBlock}</ToolTip>
           ) : (
@@ -612,10 +608,10 @@ const PresentationHeader = ({
                 onClick={toggleHtmlSelector}
                 aria-pressed={enableHtmlSelector}
                 className={cn(
-                  "hidden h-[38px] items-center gap-2 rounded-xl border px-3 font-syne text-xs font-semibold shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6D5DFB] focus-visible:ring-offset-2 xl:inline-flex",
+                  "hidden h-[38px] items-center gap-2 rounded-xl border px-3 font-syne text-xs font-semibold shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] focus-visible:ring-offset-2 xl:inline-flex",
                   enableHtmlSelector
-                    ? "border-[#CEC6FF] bg-[#F3F0FF] text-[#5141E5]"
-                    : "border-[#E4E4E8] bg-white text-[#3D3D48] hover:border-[#D7D2F5] hover:bg-[#FAF9FF] hover:text-[#5141E5]"
+                    ? "border-[#CDF8D1] bg-[#F2FDF3] text-[#02940F]"
+                    : "border-[#E4E4E8] bg-white text-[#3D3D48] hover:border-[#D6F1D9] hover:bg-[#FAFEFA] hover:text-[#02940F]"
                 )}
               >
                 <span
@@ -623,8 +619,8 @@ const PresentationHeader = ({
                   className={cn(
                     "flex h-6 w-6 items-center justify-center rounded-lg transition-colors",
                     enableHtmlSelector
-                      ? "bg-[#6D5DFB] text-white"
-                      : "bg-[#F1EFFF] text-[#6553E8]"
+                      ? "bg-[#03B015] text-white"
+                      : "bg-[#F1FDF2] text-[#02940F]"
                   )}
                 >
                   <MousePointer2 className="h-3.5 w-3.5" strokeWidth={2} />
@@ -634,7 +630,7 @@ const PresentationHeader = ({
                   aria-hidden="true"
                   className={cn(
                     "ml-0.5 h-1.5 w-1.5 rounded-full transition-colors",
-                    enableHtmlSelector ? "bg-[#6D5DFB]" : "bg-[#B8B8C2]"
+                    enableHtmlSelector ? "bg-[#03B015]" : "bg-[#B8B8C2]"
                   )}
                 />
               </button>
@@ -647,7 +643,7 @@ const PresentationHeader = ({
                 onClick={() => setIsRegenerateConfirmOpen(true)}
                 className="group"
               >
-                <RotateCcw className="w-3.5 h-3.5 text-[#101323] group-hover:text-[#5141e5] duration-300" />
+                <RotateCcw className="w-3.5 h-3.5 text-[#101323] group-hover:text-[#02940F] duration-300" />
               </button>
             </ToolTip>
             <Separator orientation="vertical" className="h-4" />
@@ -659,7 +655,7 @@ const PresentationHeader = ({
                   onUndo();
                 }}
               >
-                <Undo2 className="w-3.5 h-3.5 text-[#101323] group-hover:text-[#5141e5] duration-300" />
+                <Undo2 className="w-3.5 h-3.5 text-[#101323] group-hover:text-[#02940F] duration-300" />
               </button>
             </ToolTip>
             <Separator orientation="vertical" className="h-4" />
@@ -671,7 +667,7 @@ const PresentationHeader = ({
                   onRedo();
                 }}
               >
-                <Redo2 className="w-3.5 h-3.5 text-[#101323] group-hover:text-[#5141e5] duration-300" />
+                <Redo2 className="w-3.5 h-3.5 text-[#101323] group-hover:text-[#02940F] duration-300" />
               </button>
             </ToolTip>
             <Separator orientation="vertical" className="h-4 w-[2px]" />
@@ -698,7 +694,7 @@ const PresentationHeader = ({
                 }
                 className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed group"
               >
-                <Play className="w-3.5 h-3.5 text-[#101323] group-hover:text-[#5141e5] duration-300" />
+                <Play className="w-3.5 h-3.5 text-[#101323] group-hover:text-[#02940F] duration-300" />
               </button>
             </ToolTip>
           </div>
@@ -712,7 +708,7 @@ const PresentationHeader = ({
               aria-expanded={shortcutsDialogOpen}
               aria-keyshortcuts="?"
               data-testid="keyboard-shortcuts-btn"
-              className="inline-flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[#EDECEC] bg-[#F6F6F9] text-[#101323] transition-colors hover:border-[#D8D3FE] hover:bg-[#F0EDFF] hover:text-[#6847F4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] focus-visible:ring-offset-2"
+              className="inline-flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[#EDECEC] bg-[#F6F6F9] text-[#101323] transition-colors hover:border-[#D8F9DB] hover:bg-[#EFFDF0] hover:text-[#02940F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] focus-visible:ring-offset-2"
               onClick={() => setShortcutsDialogOpen(true)}
             >
               <Keyboard
@@ -729,7 +725,7 @@ const PresentationHeader = ({
                 className="flex  items-center gap-[7px] px-[18px] py-[11px] rounded-[53px] text-sm font-semibold text-[#101323]"
                 style={{
                   background:
-                    "linear-gradient(270deg, #D5CAFC 2.4%, #E3D2EB 27.88%, #F4DCD3 69.23%, #FDE4C2 100%)",
+                    "linear-gradient(270deg, #D0F6D3 2.4%, #D5E8D7 27.88%, #E2F7D9 69.23%, #F2FADB 100%)",
                 }}
                 disabled={isExporting || isStreaming === true}
               >

@@ -204,9 +204,9 @@ export function OutlineItem({
       }
       className={`group relative mb-5 rounded-[12px] border bg-white px-5 py-8 font-syne transition-all duration-500 hover:shadow-[0_10px_24px_0_rgba(15,23,42,0.12)] sm:py-10 sm:pl-[30px] sm:pr-[66px] ${
         isPhotoOver
-          ? "border-[#7A5AF8] ring-2 ring-[#CEC6FF]"
+          ? "border-[#03B015] ring-2 ring-[#CDF8D1]"
           : isEditingMarkdown
-            ? "border-[#BDB4FE] shadow-[0_6.6px_13.2px_0_rgba(0,0,0,0.10)]"
+            ? "border-[#BDF5C2] shadow-[0_6.6px_13.2px_0_rgba(0,0,0,0.10)]"
             : "border-transparent shadow-[0_6.6px_6.6px_rgba(0,0,0,0.10)]"
       } ${isDragging ? "opacity-50" : ""}`}
     >
@@ -252,7 +252,7 @@ export function OutlineItem({
                       onClick={() => onPhotoRemove(photo.url)}
                       aria-label={tp("removeFromSlide", { name: photo.name })}
                       title={tp("removeFromSlide", { name: photo.name })}
-                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#EDEEEF] bg-white text-[#475467] shadow-sm transition-colors hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full border border-[#EDEEEF] bg-white text-[#475467] shadow-sm transition-colors hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
                     >
                       <X className="h-3 w-3" aria-hidden="true" />
                     </button>
@@ -287,7 +287,7 @@ export function OutlineItem({
               onKeyDown={handleMarkdownKeyDown}
               spellCheck={false}
               placeholder={t("markdownPlaceholder")}
-              className="min-h-[140px] resize-y rounded-[8px] border-[#D8D8DF] bg-[#FBFBFC] px-3 py-3 font-mono text-[13px] leading-6 text-[#191919] shadow-none focus-visible:border-[#7A5AF8] focus-visible:ring-2 focus-visible:ring-[#7A5AF8]/20"
+              className="min-h-[140px] resize-y rounded-[8px] border-[#D8D8DF] bg-[#FBFBFC] px-3 py-3 font-mono text-[13px] leading-6 text-[#191919] shadow-none focus-visible:border-[#03B015] focus-visible:ring-2 focus-visible:ring-[#03B015]/20"
             />
           ) : (
             <div
@@ -301,7 +301,7 @@ export function OutlineItem({
                   handleStartMarkdownEdit();
                 }
               }}
-              className={`${outlineMarkdownClassName} min-h-[60px] w-full cursor-text rounded-[8px] px-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]/25`}
+              className={`${outlineMarkdownClassName} min-h-[60px] w-full cursor-text rounded-[8px] px-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]/25`}
               dangerouslySetInnerHTML={{ __html: previewHtml }}
             />
           )}

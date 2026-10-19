@@ -159,7 +159,7 @@ export default function StudioReference({ isAdmin, initialImage }: { isAdmin: bo
                   onClick={() => setReference(null)}
                   aria-label={t("reference.removeObject")}
                   title={t("reference.removeObject")}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#667085] transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#667085] transition-colors hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
                 >
                   <X className="h-4 w-4" aria-hidden="true" />
                 </button>

@@ -74,10 +74,10 @@ async function errorDetail(
 }
 
 const primaryButtonClass =
-  "inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#7C51F8] px-5 text-xs font-semibold text-white transition hover:bg-[#6D46E6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#03B015] px-5 text-xs font-semibold text-white transition hover:bg-[#02940F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
 
 const inputClass =
-  "h-11 w-full rounded-lg border border-[#E1E1E5] bg-white px-4 text-sm text-[#101323] outline-none transition placeholder:text-[#98A2B3] focus:border-[#7A5AF8] focus:ring-2 focus:ring-[#7A5AF8]/15";
+  "h-11 w-full rounded-lg border border-[#E1E1E5] bg-white px-4 text-sm text-[#101323] outline-none transition placeholder:text-[#98A2B3] focus:border-[#03B015] focus:ring-2 focus:ring-[#03B015]/15";
 
 export default function AdminPanel({ embedded = false }: AdminPanelProps) {
   const t = useTranslations("admin");
@@ -491,25 +491,25 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
           <TabsList className="h-11 rounded-full border border-[#EDEEEF] bg-[#F9FAFB] p-1">
             <TabsTrigger
               value="users"
-              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#5146E5] data-[state=active]:shadow-sm"
+              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#02940F] data-[state=active]:shadow-sm"
             >
               {t("tabUsers")}
             </TabsTrigger>
             <TabsTrigger
               value="keys"
-              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#5146E5] data-[state=active]:shadow-sm"
+              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#02940F] data-[state=active]:shadow-sm"
             >
               {t("tabKeys")}
             </TabsTrigger>
             <TabsTrigger
               value="billing"
-              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#5146E5] data-[state=active]:shadow-sm"
+              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#02940F] data-[state=active]:shadow-sm"
             >
               {t("tabBilling")}
             </TabsTrigger>
             <TabsTrigger
               value="models"
-              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#5146E5] data-[state=active]:shadow-sm"
+              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#02940F] data-[state=active]:shadow-sm"
             >
               {t("tabModels")}
             </TabsTrigger>
@@ -518,8 +518,8 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
           <TabsContent value="users" className="mt-6 space-y-5">
             <section className="rounded-[12px] border border-[#EDEEEF] bg-white p-6">
               <div className="mb-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4F3FF]">
-                  <UserPlus className="h-4 w-4 text-[#5146E5]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4FEF5]">
+                  <UserPlus className="h-4 w-4 text-[#02940F]" />
                 </div>
                 <div>
                   <h2 className="text-sm font-semibold text-[#101323]">{t("addUser")}</h2>
@@ -565,8 +565,8 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
             <section className="overflow-hidden rounded-[12px] border border-[#EDEEEF] bg-white">
               <div className="flex items-center justify-between border-b border-[#EDEEEF] px-6 py-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4F3FF]">
-                    <Users className="h-4 w-4 text-[#5146E5]" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4FEF5]">
+                    <Users className="h-4 w-4 text-[#02940F]" />
                   </div>
                   <div>
                     <h2 className="text-sm font-semibold text-[#101323]">{t("accounts")}</h2>
@@ -578,7 +578,7 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
                 <button
                   type="button"
                   aria-label={t("refreshAccounts")}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EDEEEF] text-[#667085] transition hover:bg-[#F9FAFB] hover:text-[#5146E5]"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EDEEEF] text-[#667085] transition hover:bg-[#F9FAFB] hover:text-[#02940F]"
                   onClick={() => void loadUsers("manual")}
                 >
                   <RefreshCw className={`h-4 w-4 ${busy === "users" ? "animate-spin" : ""}`} />
@@ -629,8 +629,8 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
           <TabsContent value="keys" className="mt-6 space-y-5">
             <section className="rounded-[12px] border border-[#EDEEEF] bg-white p-6">
               <div className="mb-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4F3FF]">
-                  <KeyRound className="h-4 w-4 text-[#5146E5]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F4FEF5]">
+                  <KeyRound className="h-4 w-4 text-[#02940F]" />
                 </div>
                 <div>
                   <h2 className="text-sm font-semibold text-[#101323]">{t("generateKey")}</h2>
@@ -701,7 +701,7 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
                 <button
                   type="button"
                   aria-label={t("refreshKeys")}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EDEEEF] text-[#667085] transition hover:bg-[#F9FAFB] hover:text-[#5146E5]"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EDEEEF] text-[#667085] transition hover:bg-[#F9FAFB] hover:text-[#02940F]"
                   onClick={() => void loadApiKeys()}
                 >
                   <RefreshCw className={`h-4 w-4 ${busy === "api-keys" ? "animate-spin" : ""}`} />
@@ -744,7 +744,7 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
                         type="button"
                         aria-label={isVisible ? t("hideKey") : t("showKey")}
                         title={isVisible ? t("hideKey") : t("showKey")}
-                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EDEEEF] text-[#667085] transition hover:bg-[#F4F3FF] hover:text-[#5146E5] disabled:opacity-50"
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EDEEEF] text-[#667085] transition hover:bg-[#F4FEF5] hover:text-[#02940F] disabled:opacity-50"
                         onClick={() => void toggleApiKeyVisibility(apiKey.id)}
                         disabled={busy === `reveal-api-key:${apiKey.id}`}
                       >
@@ -760,7 +760,7 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
                         type="button"
                         aria-label={t("copyKey")}
                         title={t("copyKey")}
-                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EDEEEF] text-[#667085] transition hover:bg-[#F4F3FF] hover:text-[#5146E5] disabled:opacity-50"
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EDEEEF] text-[#667085] transition hover:bg-[#F4FEF5] hover:text-[#02940F] disabled:opacity-50"
                         onClick={() => void copyApiKey(apiKey.id)}
                         disabled={busy === `reveal-api-key:${apiKey.id}`}
                       >
@@ -809,8 +809,8 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
           {dialog?.kind === "reset-password" && (
             <form onSubmit={resetPassword}>
               <DialogHeader className="px-7 pb-5 pt-7 text-left">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#F4F3FF]">
-                  <LockKeyhole className="h-5 w-5 text-[#5146E5]" />
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#F4FEF5]">
+                  <LockKeyhole className="h-5 w-5 text-[#02940F]" />
                 </div>
                 <DialogTitle className="text-xl font-semibold leading-7 text-[#101323]">
                   {t("resetPassword")}

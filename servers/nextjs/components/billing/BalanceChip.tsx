@@ -21,12 +21,12 @@ export default function BalanceChip() {
         className={`${pill} font-medium text-[#101323] hover:bg-[#F6F6F9]`}
         aria-label={t("aria", { amount: formatRub(me.balance) })}
       >
-        <Wallet className="h-4 w-4 text-[#5141E5]" aria-hidden="true" />
+        <Wallet className="h-4 w-4 text-[#02940F]" aria-hidden="true" />
         {formatRub(me.balance)}
       </Link>
       <Link
         href="/billing#topup"
-        className={`${pill} bg-[linear-gradient(90deg,#FCE7D4_0%,#E5DDFF_100%)] font-semibold text-[#3A2A8C] hover:brightness-95`}
+        className={`${pill} bg-[linear-gradient(90deg,#F1FADF_0%,#E1FBE3_100%)] font-semibold text-[#01530A] hover:brightness-95`}
       >
         {t("topUp")}
       </Link>

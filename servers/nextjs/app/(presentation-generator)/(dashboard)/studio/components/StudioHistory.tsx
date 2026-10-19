@@ -52,7 +52,7 @@ export default function StudioHistory({
           <button
             type="button"
             onClick={() => setExpanded((value) => !value)}
-            className="font-syne text-[13px] font-semibold text-[#5146E5] hover:text-[#3B2FC9]"
+            className="font-syne text-[13px] font-semibold text-[#02940F] hover:text-[#027A0E]"
           >
             {expanded ? t("collapse") : t("showAll", { count: items.length })}
           </button>
@@ -82,8 +82,8 @@ export default function StudioHistory({
                   aria-pressed={selected}
                   title={prompt}
                   className={[
-                    "block aspect-[4/3] w-full overflow-hidden rounded-[10px] border bg-[#F6F6F9] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]",
-                    selected ? "border-[#7A5AF8] ring-2 ring-[#CEC6FF]" : "border-[#EDEEEF] hover:border-[#CEC6FF]",
+                    "block aspect-[4/3] w-full overflow-hidden rounded-[10px] border bg-[#F6F6F9] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]",
+                    selected ? "border-[#03B015] ring-2 ring-[#CDF8D1]" : "border-[#EDEEEF] hover:border-[#CDF8D1]",
                   ].join(" ")}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -95,7 +95,7 @@ export default function StudioHistory({
                   disabled={removing === image.id}
                   aria-label={t("delete")}
                   title={t("delete")}
-                  className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-[#475467] shadow-sm transition hover:text-red-600 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] disabled:opacity-60 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
+                  className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-[#475467] shadow-sm transition hover:text-red-600 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] disabled:opacity-60 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100"
                 >
                   <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>

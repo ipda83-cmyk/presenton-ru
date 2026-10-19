@@ -134,7 +134,7 @@ const EachSlide: React.FC<EachSlideProps> = ({
         <div className="flex items-center justify-between">
           {/* Left: Slide Info */}
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#EBE9FE] text-[#7A5AF8] font-semibold text-sm">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#ECFBED] text-[#03B015] font-semibold text-sm">
               {index + 1}
             </div>
             <div>
@@ -232,7 +232,7 @@ const EachSlide: React.FC<EachSlideProps> = ({
                   }
                     `}
                 style={isSlideReady ? {
-                  background: 'linear-gradient(135deg, #D5CAFC 0%, #E3D2EB 35%, #F4DCD3 70%, #FDE4C2 100%)',
+                  background: 'linear-gradient(135deg, #D0F6D3 0%, #D5E8D7 35%, #E2F7D9 70%, #F2FADB 100%)',
                 } : undefined}
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -264,8 +264,8 @@ const EachSlide: React.FC<EachSlideProps> = ({
         {isSlideProcessing && (
           <div className="mt-4">
             <div className="flex items-center gap-2 mb-2">
-              <Loader2 className="w-4 h-4 animate-spin text-[#7A5AF8]" />
-              <span className="text-sm font-medium text-[#7A5AF8]">Generating slide layout...</span>
+              <Loader2 className="w-4 h-4 animate-spin text-[#03B015]" />
+              <span className="text-sm font-medium text-[#03B015]">Generating slide layout...</span>
             </div>
             <Timer duration={120} />
           </div>

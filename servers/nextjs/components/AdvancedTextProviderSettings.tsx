@@ -78,10 +78,10 @@ const MODEL_FIELDS: Partial<Record<string, keyof LLMConfig>> = {
 };
 
 const inputClass =
-  "flex h-12 w-full items-center justify-between gap-3 rounded-lg border border-[#D9DCE3] bg-white px-4 text-left text-sm text-[#191919] outline-none transition-colors hover:border-[#C8CBD3] focus:border-[#7A5AF8] focus:ring-2 focus:ring-[#7A5AF8]/15";
+  "flex h-12 w-full items-center justify-between gap-3 rounded-lg border border-[#D9DCE3] bg-white px-4 text-left text-sm text-[#191919] outline-none transition-colors hover:border-[#C8CBD3] focus:border-[#03B015] focus:ring-2 focus:ring-[#03B015]/15";
 
 const numberInputClass =
-  "h-12 w-full rounded-lg border border-[#D9DCE3] bg-white px-4 text-sm text-[#191919] outline-none transition-colors placeholder:text-[#A4A7AE] focus:border-[#7A5AF8] focus:ring-2 focus:ring-[#7A5AF8]/15 disabled:cursor-not-allowed disabled:bg-[#F7F7F8] disabled:text-[#A4A7AE]";
+  "h-12 w-full rounded-lg border border-[#D9DCE3] bg-white px-4 text-sm text-[#191919] outline-none transition-colors placeholder:text-[#A4A7AE] focus:border-[#03B015] focus:ring-2 focus:ring-[#03B015]/15 disabled:cursor-not-allowed disabled:bg-[#F7F7F8] disabled:text-[#A4A7AE]";
 
 function SettingSelect({
   label,
@@ -108,7 +108,7 @@ function SettingSelect({
         disabled={disabled}
         onValueChange={onValueChange}
       >
-        <SelectTrigger className="h-12 w-full rounded-lg border-[#D9DCE3] bg-white px-4 text-sm text-[#191919] focus:ring-[#7A5AF8]/20 disabled:bg-[#F7F7F8]">
+        <SelectTrigger className="h-12 w-full rounded-lg border-[#D9DCE3] bg-white px-4 text-sm text-[#191919] focus:ring-[#03B015]/20 disabled:bg-[#F7F7F8]">
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="z-[80] rounded-lg border-[#EDEEEF] bg-white">
@@ -356,7 +356,7 @@ export default function AdvancedTextProviderSettings({ config, onChange }: Props
           <button
             type="button"
             onClick={resetToDefaults}
-            className="inline-flex items-center gap-2 rounded-[48px] border border-[#EDEEEF] bg-white px-4 py-2.5 text-xs font-semibold text-[#5146E5] transition hover:bg-[#F4F3FF]"
+            className="inline-flex items-center gap-2 rounded-[48px] border border-[#EDEEEF] bg-white px-4 py-2.5 text-xs font-semibold text-[#02940F] transition hover:bg-[#F4FEF5]"
           >
             <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
             {t("resetToDefaults")}
@@ -414,7 +414,7 @@ export default function AdvancedTextProviderSettings({ config, onChange }: Props
                       onChange("", "LLM_MAX_OUTPUT_TOKENS");
                     }
                   }}
-                  className="h-4 w-4 rounded border-[#C8CBD3] accent-[#7A5AF8]"
+                  className="h-4 w-4 rounded border-[#C8CBD3] accent-[#03B015]"
                 />
                 {t("useModelMax")}
               </label>
@@ -468,7 +468,7 @@ export default function AdvancedTextProviderSettings({ config, onChange }: Props
                 type="button"
                 onClick={loadProviders}
                 disabled={providersLoading}
-                className="inline-flex min-w-[112px] items-center justify-center rounded-[48px] border border-[#EDEEEF] bg-[#F4F3FF] px-4 py-2.5 text-xs font-semibold text-[#5146E5] transition hover:bg-[#ECEAFF] disabled:opacity-50"
+                className="inline-flex min-w-[112px] items-center justify-center rounded-[48px] border border-[#EDEEEF] bg-[#F4FEF5] px-4 py-2.5 text-xs font-semibold text-[#02940F] transition hover:bg-[#EDFCEE] disabled:opacity-50"
               >
                 {providersLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -535,7 +535,7 @@ export default function AdvancedTextProviderSettings({ config, onChange }: Props
                             )}
                             {providerToAdd === provider.value && (
                               <Check
-                                className="absolute right-3 h-4 w-4 text-[#7A5AF8]"
+                                className="absolute right-3 h-4 w-4 text-[#03B015]"
                                 aria-hidden="true"
                               />
                             )}
@@ -548,7 +548,7 @@ export default function AdvancedTextProviderSettings({ config, onChange }: Props
               </Popover>
               <button
                 type="button"
-                className="rounded-lg bg-[#7A5AF8] px-5 text-sm font-medium text-white transition hover:bg-[#6941C6] disabled:cursor-not-allowed disabled:bg-[#D0D2D8]"
+                className="rounded-lg bg-[#03B015] px-5 text-sm font-medium text-white transition hover:bg-[#027A0E] disabled:cursor-not-allowed disabled:bg-[#D0D2D8]"
                 disabled={!providerToAdd}
                 onClick={() => {
                   if (providerToAdd) {

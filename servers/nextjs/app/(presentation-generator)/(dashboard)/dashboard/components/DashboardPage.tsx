@@ -37,7 +37,7 @@ const actionCardBase =
   "absolute aspect-[16/9] h-[46.238px] w-[82.201px] rounded-[4.474px] border border-white/50 bg-cover bg-center bg-no-repeat shadow-[0_8px_18px_rgba(16,24,40,0.18)] transition-all duration-500 ease-out opacity-100 translate-y-0 scale-100";
 
 const dashboardHeaderPill =
-  "inline-flex shrink-0 items-center justify-center rounded-full text-[#191919] transition-colors hover:bg-[#F8F8FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] focus-visible:ring-offset-2";
+  "inline-flex shrink-0 items-center justify-center rounded-full text-[#191919] transition-colors hover:bg-[#F8F8FA] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] focus-visible:ring-offset-2";
 
 const dashboardHeaderAsset = (name: string) => `/dashboard-header/${name}`;
 const dashboardBodyAsset = (name: string) => `/dashboard-body/${name}`;
@@ -101,7 +101,7 @@ const DashboardActionCard = ({
   mediaClassName = "w-[96px]",
 }: DashboardActionCardProps) => {
   const className =
-    "group/action relative isolate flex h-[90px] w-full min-w-0 overflow-visible rounded-[10.8px] border border-[#EDEEEF] bg-white text-[#191919] outline-none transition-all duration-300 hover:border-[#D7D8DE] hover:shadow-[0_10px_28px_rgba(16,24,40,0.08)] focus-visible:ring-2 focus-visible:ring-[#7A5AF8] focus-visible:ring-offset-4 disabled:cursor-wait disabled:opacity-70 disabled:hover:border-[#EDEEEF] disabled:hover:shadow-none";
+    "group/action relative isolate flex h-[90px] w-full min-w-0 overflow-visible rounded-[10.8px] border border-[#EDEEEF] bg-white text-[#191919] outline-none transition-all duration-300 hover:border-[#D7D8DE] hover:shadow-[0_10px_28px_rgba(16,24,40,0.08)] focus-visible:ring-2 focus-visible:ring-[#03B015] focus-visible:ring-offset-4 disabled:cursor-wait disabled:opacity-70 disabled:hover:border-[#EDEEEF] disabled:hover:shadow-none";
   const content = (
     <>
       {children}
@@ -157,7 +157,7 @@ const BlankPresentationIllustration = ({
       <div className="absolute left-[22.312px] top-[20.46px] h-[52.514px] w-[48.892px] -rotate-[5.81deg] bg-[rgba(0,0,0,0.14)]" />
       <div className="absolute left-[21.452px] top-[19.94px] h-[52.514px] w-[48.892px] -rotate-[5.81deg] bg-[#ECEEEE]" />
       <div className="absolute left-[23.57px] top-[21.78px] h-[50.53px] w-[47.045px] bg-[rgba(0,0,0,0.14)]" />
-      <div className="absolute left-[22.79px] top-[21.2px] h-[50.53px] w-[47.045px] bg-[#FEFEFF]" />
+      <div className="absolute left-[22.79px] top-[21.2px] h-[50.53px] w-[47.045px] bg-[#FEFFFE]" />
       <Image
         src="/dashboard/blank-presentation-clip.svg"
         alt=""
@@ -166,12 +166,12 @@ const BlankPresentationIllustration = ({
         height={15}
         className="absolute left-[25.05px] top-[15.66px] h-[14.283px] w-[8.282px]"
       />
-      <div className="absolute left-[25.31px] top-[21.2px] h-[0.387px] w-[0.968px] bg-[#FEFEFF]" />
+      <div className="absolute left-[25.31px] top-[21.2px] h-[0.387px] w-[0.968px] bg-[#FEFFFE]" />
     </div>
 
     {isLoading && (
       <div className="absolute inset-0 flex items-center justify-center bg-[#D1E9FF]/75">
-        <Loader2 className="h-5 w-5 animate-spin text-[#6847F4]" />
+        <Loader2 className="h-5 w-5 animate-spin text-[#02940F]" />
       </div>
     )}
   </div>
@@ -365,7 +365,7 @@ function DashboardHeader({ isAdmin }: { isAdmin: boolean }) {
               rel="noreferrer"
               aria-label={t("updateApp")}
               title={t("updateApp")}
-              className="relative flex h-[42.24px] w-[42.24px] shrink-0 items-center justify-center rounded-full border-[1.32px] border-[#D9D6FE] bg-[#FAFAFF] transition-colors hover:bg-[#F3F0FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] focus-visible:ring-offset-2"
+              className="relative flex h-[42.24px] w-[42.24px] shrink-0 items-center justify-center rounded-full border-[1.32px] border-[#DBF9DE] bg-[#FBFEFB] transition-colors hover:bg-[#F2FDF3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] focus-visible:ring-offset-2"
               onClick={() =>
                 trackEvent(MixpanelEvent.Navigation, {
                   from: pathname,
@@ -573,7 +573,7 @@ const DashboardPage = ({ isAdmin }: { isAdmin: boolean }) => {
                 onClick={() => setDeckViewMode("grid")}
                 aria-label={t("gridView")}
                 aria-pressed={deckViewMode === "grid"}
-                className={`flex items-center rounded px-2 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] ${deckViewMode === "grid" ? "bg-[#F6F6F9]" : "hover:bg-[#FAFAFC]"}`}
+                className={`flex items-center rounded px-2 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] ${deckViewMode === "grid" ? "bg-[#F6F6F9]" : "hover:bg-[#FAFAFC]"}`}
               >
                 <GridViewIcon />
               </button>
@@ -582,7 +582,7 @@ const DashboardPage = ({ isAdmin }: { isAdmin: boolean }) => {
                 onClick={() => setDeckViewMode("list")}
                 aria-label={t("listView")}
                 aria-pressed={deckViewMode === "list"}
-                className={`flex items-center rounded px-2 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] ${deckViewMode === "list" ? "bg-[#F6F6F9]" : "hover:bg-[#FAFAFC]"}`}
+                className={`flex items-center rounded px-2 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] ${deckViewMode === "list" ? "bg-[#F6F6F9]" : "hover:bg-[#FAFAFC]"}`}
               >
                 <ListViewIcon />
               </button>

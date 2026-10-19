@@ -92,7 +92,7 @@ const SlideContent = ({
               className="pointer-events-none absolute inset-x-0 bottom-4 z-[90] flex justify-center font-syne"
               aria-live="polite"
             >
-              <span className="inline-flex items-center rounded-[50px] bg-[linear-gradient(179deg,#F2E1FB_0%,#FFFFFF_100%)] p-[10px] shadow-[0_4px_18px_rgba(40,35,68,0.12)]">
+              <span className="inline-flex items-center rounded-[50px] bg-[linear-gradient(179deg,#E4F8E6_0%,#FFFFFF_100%)] p-[10px] shadow-[0_4px_18px_rgba(40,35,68,0.12)]">
                 <span className="flex items-center justify-center gap-[3px] px-1">
                   <Image
                     src="/ai-star.svg"

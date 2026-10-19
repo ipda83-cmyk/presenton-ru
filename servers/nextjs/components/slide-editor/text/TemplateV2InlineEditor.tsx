@@ -98,7 +98,7 @@ export function TemplateV2InlineEditor({
     width: box.width,
     height: box.height,
     pointerEvents: "auto",
-    border: "1px solid #7C51F8",
+    border: "1px solid #03B015",
     outline: "none",
     resize: "none",
     padding: 0,

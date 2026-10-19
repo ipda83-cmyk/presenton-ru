@@ -80,7 +80,7 @@ export function ImageEditorToolbar({
               onSelect={() => onObjectFitChange(option)}
               className={cn(
                 "cursor-pointer rounded-none px-3 py-2 text-[14px] text-[#191919] font-manrope focus:bg-[#F6F6F9]",
-                objectFit === option && "bg-[#F4F1FF] text-[#7C3AED]",
+                objectFit === option && "bg-[#F3FDF4] text-[#02940F]",
               )}
             >
               {t(`fit.${option}`)}
@@ -115,7 +115,7 @@ export function ImageEditorToolbar({
           title={tStudio("editInStudio")}
           aria-label={tStudio("editInStudio")}
           onClick={onOpenStudio}
-          className="inline-flex items-center gap-1 rounded-[6px] border border-[#CEC6FF] bg-[#F4F3FF] py-0.5 pl-0.5 pr-1.5 font-syne text-[11px] font-semibold text-[#5141E5] hover:bg-[#ECE9FF]"
+          className="inline-flex items-center gap-1 rounded-[6px] border border-[#CDF8D1] bg-[#F4FEF5] py-0.5 pl-0.5 pr-1.5 font-syne text-[11px] font-semibold text-[#02940F] hover:bg-[#ECFCED]"
         >
           <StudioMark size={18} />
           Studio
@@ -132,7 +132,7 @@ export function ImageEditorToolbar({
           onClick={() => onObjectFitChange("cover")}
           className={cn(
             "rounded-[2px] p-1 text-[#191919] hover:bg-[#F8F8FA]",
-            objectFit === "cover" && "bg-[#F4F1FF] text-[#7C3AED]",
+            objectFit === "cover" && "bg-[#F3FDF4] text-[#02940F]",
           )}
         >
           <Maximize size={16} strokeWidth={1.8} />
@@ -144,7 +144,7 @@ export function ImageEditorToolbar({
           onClick={() => onObjectFitChange("contain")}
           className={cn(
             "rounded-[2px] p-1 text-[#191919] hover:bg-[#F8F8FA]",
-            objectFit === "contain" && "bg-[#F4F1FF] text-[#7C3AED]",
+            objectFit === "contain" && "bg-[#F3FDF4] text-[#02940F]",
           )}
         >
           <Minimize size={16} strokeWidth={1.8} />
@@ -156,7 +156,7 @@ export function ImageEditorToolbar({
           onClick={() => onObjectFitChange("fill")}
           className={cn(
             "rounded-[2px] p-1 text-[#191919] hover:bg-[#F8F8FA]",
-            objectFit === "fill" && "bg-[#F4F1FF] text-[#7C3AED]",
+            objectFit === "fill" && "bg-[#F3FDF4] text-[#02940F]",
           )}
         >
           <span className="inline-block h-[16px] w-[16px] rounded-[2px] border border-current" />
@@ -172,7 +172,7 @@ export function ImageEditorToolbar({
         onClick={onToggleFocusPoint}
         className={cn(
           "rounded-[2px] p-1 text-[#191919] hover:bg-[#F8F8FA]",
-          isFocusPointMode && "bg-[#F4F1FF] text-[#7C3AED]",
+          isFocusPointMode && "bg-[#F3FDF4] text-[#02940F]",
         )}
       >
         {isFocusPointMode ? <Focus size={16} strokeWidth={1.8} /> : <PatternIcon />}

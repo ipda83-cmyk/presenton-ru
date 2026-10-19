@@ -63,7 +63,7 @@ const CurrentConfig = ({ webSearchEnabled }: { webSearchEnabled: boolean }) => {
     const webSearchSummary = t("web", { provider: webSearchProvider, state: webSearchEnabled ? t("on") : t("off") });
 
     return (
-        <p className="rounded-[50px] border border-[#EDEEEF] px-2.5 py-0.5 text-[10px] font-medium text-[#7A5AF8] min-[1800px]:px-3 min-[1800px]:py-1 min-[1800px]:text-[11px] min-[2200px]:px-4 min-[2200px]:text-xs">
+        <p className="rounded-[50px] border border-[#EDEEEF] px-2.5 py-0.5 text-[10px] font-medium text-[#03B015] min-[1800px]:px-3 min-[1800px]:py-1 min-[1800px]:text-[11px] min-[2200px]:px-4 min-[2200px]:text-xs">
             {textSummary} · {imageSummary} · {webSearchSummary}
         </p>
 

@@ -57,7 +57,7 @@ export function PromptInput({
               key={reference.id}
               className="inline-flex h-[22px] max-w-full items-center gap-1.5 rounded-full bg-[#F4F4F4] px-[5px] py-1 font-manrope text-[10px] font-medium leading-none text-[#333333]"
             >
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#7A5AF8]" />
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#03B015]" />
               <span className="max-w-[220px] truncate">{reference.label}</span>
               {onRemoveReference && (
                 <button

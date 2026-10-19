@@ -39,7 +39,7 @@ const DashboardNav = () => {
                         aria-label={t("createNewPresentationAria")}
                         style={{
                             borderRadius: "48px",
-                            background: "linear-gradient(270deg, #D5CAFC 2.4%, #E3D2EB 27.88%, #F4DCD3 69.23%, #FDE4C2 100%)",
+                            background: "linear-gradient(270deg, #D0F6D3 2.4%, #D5E8D7 27.88%, #E2F7D9 69.23%, #F2FADB 100%)",
                         }}
                     >
 

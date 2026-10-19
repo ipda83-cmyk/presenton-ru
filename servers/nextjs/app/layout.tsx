@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       url: "https://presenton.ai",
-      siteName: "Presenton",
+      siteName: "Kvant AI Studio",
       images: [
         {
           url: "https://presenton.ai/presenton-feature-graphics.png",

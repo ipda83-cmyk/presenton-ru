@@ -11,7 +11,7 @@ export default function StudioMark({
   return (
     <span
       aria-hidden="true"
-      className={cn("inline-flex shrink-0 items-center justify-center bg-[#7A5AF8]", className)}
+      className={cn("inline-flex shrink-0 items-center justify-center bg-[#03B015]", className)}
       style={{ width: size, height: size, borderRadius: Math.round(size * 0.28) }}
     >
       <svg

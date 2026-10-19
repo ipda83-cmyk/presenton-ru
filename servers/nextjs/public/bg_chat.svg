@@ -28,7 +28,7 @@
       <circle cx="187.177" cy="187.177" r="64.8391" fill="#53B1FD" />
     </g>
     <g transform="translate(-40.36 128.05)" filter="url(#chat-bg-purple-blur)" style="mix-blend-mode:hard-light">
-      <ellipse cx="187.177" cy="187.279" rx="64.8391" ry="64.941" fill="#7A5AF8" />
+      <ellipse cx="187.177" cy="187.279" rx="64.8391" ry="64.941" fill="#03B015" />
     </g>
     <image x="0.2" y="0" width="293.203" height="457.951" preserveAspectRatio="xMidYMid slice" xlink:href="chat-panel-background.svg" style="mix-blend-mode:plus-lighter" />
   </g>

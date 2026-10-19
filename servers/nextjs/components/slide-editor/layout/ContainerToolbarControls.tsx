@@ -79,7 +79,7 @@ function ContainerControlButton({
       onClick={onClick}
       className={cn(
         "inline-flex h-7 min-w-7 items-center justify-center gap-1 rounded-[6px] border-0 bg-transparent px-2 font-manrope text-[14px] font-medium leading-4 text-[#191919] hover:bg-[#F4F4F6]",
-        open && "bg-[#F0ECFF] text-[#2B1D71]",
+        open && "bg-[#EEFDF0] text-[#01530A]",
         className,
       )}
     >
@@ -124,7 +124,7 @@ function CompactNumberInput({
       <span className="font-manrope text-[12px] font-medium leading-6 text-[#191919]">
         {label}
       </span>
-      <span className="flex h-9 min-w-[140px] items-center rounded-[10px] border border-[#DDDEE4] bg-white px-3 text-[12px] text-[#191919] focus-within:border-[#6A52E2]">
+      <span className="flex h-9 min-w-[140px] items-center rounded-[10px] border border-[#DDDEE4] bg-white px-3 text-[12px] text-[#191919] focus-within:border-[#02940F]">
         {marker ? (
           <span className="mr-3 flex h-5 min-w-5 items-center justify-center rounded-md border border-[#B7BAC6] bg-[#F7F8FB] px-1 text-[11px] font-semibold leading-none text-[#727584]">
             {marker}
@@ -454,13 +454,13 @@ export function TemplateV2ContainerToolbarControls({
                       }
                       className={cn(
                         "grid h-8 w-8 place-items-center rounded-md transition-colors hover:bg-[#EDEFFF]",
-                        selected && "bg-[#ECE7FF]",
+                        selected && "bg-[#EAFCEB]",
                       )}
                     >
                       <span
                         className={cn(
                           "h-2.5 w-2.5 rounded-full bg-[#C8CBD6]",
-                          selected && "bg-[#6A52E2]",
+                          selected && "bg-[#02940F]",
                         )}
                       />
                     </button>

@@ -334,7 +334,7 @@ function parseTableRow(line: string) {
 
 const cellEditorStyle = {
   zIndex: 31,
-  border: "1px solid #7C51F8",
+  border: "1px solid #03B015",
   outline: "none",
   resize: "none",
   margin: 0,

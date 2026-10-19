@@ -6,7 +6,7 @@ import StudioStoryboard from "../components/StudioStoryboard";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("studio.pages");
-  return { title: `${t("storyboard")} | Presenton` };
+  return { title: `${t("storyboard")} | Kvant AI Studio` };
 }
 
 export default async function StudioStoryboardPage({

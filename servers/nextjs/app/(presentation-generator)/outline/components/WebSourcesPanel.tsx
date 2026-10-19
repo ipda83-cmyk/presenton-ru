@@ -52,8 +52,8 @@ const WebSourcesPanel = ({
     >
       <header className="border-b border-[#EDEEEF] px-5 py-4">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#F4F3FF]">
-            <Globe className="h-3.5 w-3.5 text-[#7A5AF8]" aria-hidden="true" />
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#F4FEF5]">
+            <Globe className="h-3.5 w-3.5 text-[#03B015]" aria-hidden="true" />
           </span>
           <h2
             id="outline-web-sources-title"
@@ -62,7 +62,7 @@ const WebSourcesPanel = ({
             {t("title")}
           </h2>
           {sources.length > 0 ? (
-            <span className="ml-auto rounded-full bg-[#F4F3FF] px-2 py-0.5 text-[11px] font-medium text-[#5141E5]">
+            <span className="ml-auto rounded-full bg-[#F4FEF5] px-2 py-0.5 text-[11px] font-medium text-[#02940F]">
               {t("count", { count: sources.length })}
             </span>
           ) : null}
@@ -83,7 +83,7 @@ const WebSourcesPanel = ({
             className="flex items-center gap-2 rounded-[12px] bg-[#F9F8FB] px-3.5 py-3 text-xs text-[#667085]"
             role="status"
           >
-            <Loader2 className="h-3.5 w-3.5 animate-spin text-[#7A5AF8]" aria-hidden="true" />
+            <Loader2 className="h-3.5 w-3.5 animate-spin text-[#03B015]" aria-hidden="true" />
             {t("searching")}
           </p>
         ) : emptyMessage ? (
@@ -99,11 +99,11 @@ const WebSourcesPanel = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={t("open", { site: source.domain || source.url })}
-                  className="group block rounded-[12px] border border-[#EDEEEF] bg-white p-3.5 transition-colors hover:border-[#D9D6FE] hover:bg-[#FCFBFF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+                  className="group block rounded-[12px] border border-[#EDEEEF] bg-white p-3.5 transition-colors hover:border-[#DBF9DE] hover:bg-[#FCFEFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
                 >
-                  <span className="flex items-center gap-2 text-[11px] font-medium text-[#7A5AF8]">
+                  <span className="flex items-center gap-2 text-[11px] font-medium text-[#03B015]">
                     <span
-                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#F4F3FF] text-[10px] font-semibold uppercase"
+                      className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#F4FEF5] text-[10px] font-semibold uppercase"
                       aria-hidden="true"
                     >
                       {(source.domain || "?").charAt(0)}
@@ -115,7 +115,7 @@ const WebSourcesPanel = ({
                     />
                   </span>
                   {source.title ? (
-                    <span className="mt-1.5 line-clamp-2 block text-sm font-medium leading-5 text-[#101323] group-hover:text-[#5141E5]">
+                    <span className="mt-1.5 line-clamp-2 block text-sm font-medium leading-5 text-[#101323] group-hover:text-[#02940F]">
                       {source.title}
                     </span>
                   ) : null}

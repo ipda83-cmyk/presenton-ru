@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kvant AI Studio — заставка</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500&family=Syne:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --green: #05C218; --green-dark: #027A0E; --ink: #101323; --track: #E4E7EC; --speed: 1; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #ffffff; font-family: Manrope, Arial, sans-serif; }
+
+  /* ---- the splash (same markup and keyframes go into the app) ---- */
+  .splash { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; background: #fff; overflow: hidden; }
+  .brand { display: flex; align-items: center; gap: 22px; transform: translateX(var(--shift, 0px)); animation: brand-shift calc(1100ms * var(--speed)) cubic-bezier(.65,0,.35,1) calc(1500ms * var(--speed)) both; }
+  .mark { width: 112px; height: auto; overflow: visible; animation: mark-in calc(500ms * var(--speed)) cubic-bezier(.2,.7,.2,1) both, mark-pop calc(420ms * var(--speed)) ease-out calc(1100ms * var(--speed)) both; transform-origin: 50% 50%; }
+  .mark .fill { clip-path: inset(0 100% 0 0 round 132px); animation: fill-on calc(600ms * var(--speed)) cubic-bezier(.65,0,.35,1) calc(500ms * var(--speed)) both; }
+  .mark .knob { animation: knob-slide calc(620ms * var(--speed)) cubic-bezier(.34,1.45,.64,1) calc(500ms * var(--speed)) both; }
+  .mark .ring { transform-box: fill-box; transform-origin: center; opacity: 0;
+    animation: ring-out calc(900ms * var(--speed)) ease-out calc(1100ms * var(--speed)) both, ring-idle calc(1800ms * var(--speed)) ease-out calc(2700ms * var(--speed)) infinite; }
+  .word { display: flex; font-family: Syne, Arial, sans-serif; font-size: 40px; line-height: 1; letter-spacing: -0.02em; color: var(--ink); white-space: pre; }
+  .word .accent { color: var(--green-dark); font-weight: 500; }
+  .word span { display: inline-block; opacity: 0; transform: translateY(40%); font-weight: 700;
+    animation: letter-in calc(520ms * var(--speed)) cubic-bezier(.2,.7,.2,1) calc((1550ms + var(--i) * 45ms) * var(--speed)) both; }
+  .word .accent span { font-weight: 500; }
+  .status { margin: 0; font-size: 15px; color: #667085; opacity: 0; animation: fade-in calc(500ms * var(--speed)) ease calc(2100ms * var(--speed)) both; }
+
+  @keyframes mark-in { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: scale(1); } }
+  @keyframes knob-slide { from { transform: translateX(0); } to { transform: translateX(172px); } }
+  @keyframes fill-on { from { clip-path: inset(0 100% 0 0 round 132px); } to { clip-path: inset(0 0 0 0 round 132px); } }
+  @keyframes mark-pop { 0% { transform: scale(1); } 45% { transform: scale(1.06); } 100% { transform: scale(1); } }
+  @keyframes ring-out { 0% { opacity: .55; transform: scale(1); } 100% { opacity: 0; transform: scale(1.9); } }
+  @keyframes ring-idle { 0% { opacity: .35; transform: scale(1); } 70%, 100% { opacity: 0; transform: scale(1.6); } }
+  @keyframes brand-shift { from { transform: translateX(var(--shift, 0px)); } to { transform: translateX(0); } }
+  @keyframes letter-in { to { opacity: 1; transform: translateY(0); } }
+  @keyframes fade-in { to { opacity: 1; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brand, .mark, .mark .fill, .mark .knob, .mark .ring, .word span, .status { animation: none !important; }
+    .brand { transform: none; } .mark .fill { clip-path: none; } .mark .knob { transform: translateX(172px); }
+    .word span, .status { opacity: 1; transform: none; }
+  }
+
+  /* ---- preview controls only ---- */
+  .controls { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; gap: 8px; z-index: 2; font-size: 13px; }
+  .controls button { height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid #EDEEEF; background: #fff; color: #344054; cursor: pointer; font: inherit; }
+  .controls button.on { background: var(--green); border-color: var(--green); color: #fff; }
+</style>
+</head>
+<body>
+<main class="splash" id="splash" role="status" aria-label="Готовим рабочее место…">
+  <div class="brand" id="brand" aria-hidden="true">
+    <svg class="mark" viewBox="0 0 448 264" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="knob-shadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#101323" flood-opacity=".18"/>
+        </filter>
+      </defs>
+      <rect class="track" width="448" height="264" rx="132" fill="#E4E7EC"/>
+      <rect class="fill" width="448" height="264" rx="132" fill="#05C218"/>
+      <circle class="ring" cx="304" cy="132" r="92" fill="none" stroke="#05C218" stroke-width="14"/>
+      <circle class="knob" cx="132" cy="132" r="92" fill="#FFFFFF" filter="url(#knob-shadow)"/>
+    </svg>
+    <div class="word" id="word"></div>
+  </div>
+  <p class="status">Готовим рабочее место…</p>
+</main>
+
+<div class="controls">
+  <button id="replay">Повторить</button>
+  <button id="slow">Медленно ×3</button>
+  <button id="reduced">Без движения</button>
+</div>
+
+<script>
+  const word = document.getElementById("word");
+  const parts = [["Kvant ", ""], ["AI Studio", "accent"]];
+  let i = 0;
+  for (const [text, cls] of parts) {
+    const group = document.createElement("span");
+    group.style.cssText = "display:flex;opacity:1;transform:none;animation:none";
+    if (cls) group.className = cls;
+    for (const ch of text) {
+      const s = document.createElement("span");
+      s.textContent = ch;
+      s.style.setProperty("--i", i++);
+      group.appendChild(s);
+    }
+    word.appendChild(group);
+  }
+  const brand = document.getElementById("brand");
+  function center() {
+    // The mark starts in the middle of the screen and moves left as the name appears.
+    const gap = parseFloat(getComputedStyle(brand).gap) || 0;
+    brand.style.setProperty("--shift", `${(word.getBoundingClientRect().width + gap) / 2}px`);
+  }
+  function replay() {
+    const splash = document.getElementById("splash");
+    const clone = splash.cloneNode(true);
+    splash.replaceWith(clone);
+  }
+  document.fonts.ready.then(center);
+  center();
+  const root = document.documentElement;
+  document.getElementById("replay").onclick = replay;
+  document.getElementById("slow").onclick = (e) => {
+    const slow = root.style.getPropertyValue("--speed") !== "3";
+    root.style.setProperty("--speed", slow ? "3" : "1");
+    e.target.classList.toggle("on", slow);
+    replay();
+  };
+  document.getElementById("reduced").onclick = (e) => {
+    const on = !e.target.classList.contains("on");
+    e.target.classList.toggle("on", on);
+    document.querySelectorAll(".splash, .splash *").forEach((el) => el.style.animationPlayState = "");
+    let style = document.getElementById("reduced-style");
+    if (on && !style) {
+      style = document.createElement("style");
+      style.id = "reduced-style";
+      style.textContent = document.styleSheets[0].cssRules[[...document.styleSheets[0].cssRules].findIndex(r => r.media)].cssText.replace(/@media[^{]+\{/, "").replace(/\}\s*$/, "");
+      document.head.appendChild(style);
+    } else if (!on && style) style.remove();
+    replay();
+  };
+</script>
+</body>
+</html>

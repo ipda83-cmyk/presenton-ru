@@ -13,9 +13,10 @@ import {
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import BrandLogo from "@/components/brand/BrandLogo";
 
 const SAVE_BUTTON_GRADIENT =
-  "linear-gradient(270deg, rgb(213, 202, 252) 2.4038%, rgb(227, 210, 235) 27.885%, rgb(244, 220, 211) 69.231%, rgb(253, 228, 194) 100%)";
+  "linear-gradient(270deg, rgb(208, 246, 211) 2.4038%, rgb(213, 232, 215) 27.885%, rgb(244, 220, 211) 69.231%, rgb(253, 228, 194) 100%)";
 
 function GradientActionButton({
   children,
@@ -84,17 +85,13 @@ export function TemplateEditorHeader({
     <header className="flex h-[68px] shrink-0 items-center justify-between border-b border-[#EDEEEF] bg-white">
       <div className="flex h-full min-w-0 flex-1 items-center gap-[12px] px-5 text-left sm:w-[347px] sm:flex-none sm:px-[24px]">
         <button onClick={onBack} aria-label={t("dashboardAria")} type="button">
-          <img
-            src="/logo-with-bg.png"
-            alt="Presenton"
-            className="h-10 w-10 cursor-pointer object-contain"
-          />
+          <BrandLogo variant="mark" height={24} className="cursor-pointer" />
         </button>
         <label
           className={cn(
             "group flex h-[38px] min-w-0 flex-1 items-center gap-[8px] rounded-[10px] border border-transparent px-[9px] transition-colors sm:max-w-[255px]",
             canEdit
-              ? "cursor-text hover:border-[#EDEEEF] hover:bg-[#FAFAFB] focus-within:border-[#B99CFF] focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(124,81,248,0.10)]"
+              ? "cursor-text hover:border-[#EDEEEF] hover:bg-[#FAFAFB] focus-within:border-[#A8F3AF] focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(3,176,21,0.10)]"
               : "cursor-default",
           )}
           title={canEdit ? t("editNameTitle") : t("defaultTemplateTitle")}
@@ -136,7 +133,7 @@ export function TemplateEditorHeader({
           {canEdit ? (
             <Edit3
               aria-hidden="true"
-              className="h-[15px] w-[15px] shrink-0 text-[#9B9B9B] transition-colors group-hover:text-[#7C51F8] group-focus-within:text-[#7C51F8]"
+              className="h-[15px] w-[15px] shrink-0 text-[#9B9B9B] transition-colors group-hover:text-[#03B015] group-focus-within:text-[#03B015]"
             />
           ) : null}
         </label>

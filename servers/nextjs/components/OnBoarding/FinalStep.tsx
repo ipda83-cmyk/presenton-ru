@@ -11,7 +11,7 @@ import { Switch } from '../ui/switch';
 import confetti from 'canvas-confetti';
 import { useTranslations } from 'next-intl';
 
-const CONFETTI_COLORS = ['#ff00c5', '#f3ff00', '#9500d0', '#00d2f2', '#00ea9b', '#ff7f36'];
+const CONFETTI_COLORS = ['#ff00c5', '#f3ff00', '#027A0E', '#00d2f2', '#00ea9b', '#ff7f36'];
 
 function fireRealisticConfetti() {
     confetti({
@@ -109,17 +109,17 @@ const FinalStep = () => {
                         <Switch
                             checked={trackingEnabled}
                             onCheckedChange={handleTrackingToggle}
-                            className='data-[state=checked]:bg-[#7C51F8]'
+                            className='data-[state=checked]:bg-[#03B015]'
                         />
                     </div>
                 )}
 
-                <button onClick={handleGoToUpload} className='bg-[#7C51F8] px-[23px] mt-8 py-[15px]  rounded-[70px] text-white text-lg font-syne font-semibold'>{t('firstPresentation')}</button>
-                <button onClick={fireRealisticConfetti} className='mt-3 flex items-center gap-1.5 text-sm text-[#7A5AF8] font-syne font-medium hover:underline'>
+                <button onClick={handleGoToUpload} className='bg-[#03B015] px-[23px] mt-8 py-[15px]  rounded-[70px] text-white text-lg font-syne font-semibold'>{t('firstPresentation')}</button>
+                <button onClick={fireRealisticConfetti} className='mt-3 flex items-center gap-1.5 text-sm text-[#03B015] font-syne font-medium hover:underline'>
                     <PartyPopper className='w-4 h-4' /> {t('celebrateAgain')}
                 </button>
             </div>
-            <button onClick={handleGoToDashboard} className='absolute uppercase bottom-20 text-[#7A5AF8] flex items-center gap-2 right-10  text-xs font-normal font-syne'>{t('goToDashboard')} <ArrowRight className='w-4 h-4 text-[#7A5AF8]' /></button>
+            <button onClick={handleGoToDashboard} className='absolute uppercase bottom-20 text-[#03B015] flex items-center gap-2 right-10  text-xs font-normal font-syne'>{t('goToDashboard')} <ArrowRight className='w-4 h-4 text-[#03B015]' /></button>
         </div>
     )
 }

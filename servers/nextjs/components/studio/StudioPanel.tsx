@@ -272,7 +272,7 @@ export default function StudioPanel({
           onClick={onClose}
           disabled={busy}
           aria-label={t("close")}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#EDEEEF] text-[#2C2B35] transition-colors hover:bg-[#F6F6F9] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#EDEEEF] text-[#2C2B35] transition-colors hover:bg-[#F6F6F9] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
         >
           <X className="h-4 w-4" aria-hidden="true" />
         </button>
@@ -285,7 +285,7 @@ export default function StudioPanel({
             {configError ?? (isAdmin ? ts("notConfigured.admin") : ts("notConfigured.user"))}
           </p>
           {isAdmin && !configError && (
-            <Link href="/settings?section=studio" className="text-sm font-semibold text-[#5146E5] hover:text-[#3B2FC9]">
+            <Link href="/settings?section=studio" className="text-sm font-semibold text-[#02940F] hover:text-[#027A0E]">
               {ts("notConfigured.openSettings")}
             </Link>
           )}
@@ -324,7 +324,7 @@ export default function StudioPanel({
                       aria-pressed={tool === "brush"}
                       onClick={() => setTool("brush")}
                       aria-label={ts("canvas.brush")}
-                      className={`flex h-9 w-9 items-center justify-center rounded-full border ${tool === "brush" ? "border-[#CEC6FF] bg-[#F4F3FF] text-[#5141E5]" : "border-[#EDEEEF] text-[#2C2B37]"}`}
+                      className={`flex h-9 w-9 items-center justify-center rounded-full border ${tool === "brush" ? "border-[#CDF8D1] bg-[#F4FEF5] text-[#02940F]" : "border-[#EDEEEF] text-[#2C2B37]"}`}
                     >
                       <Brush className="h-4 w-4" aria-hidden="true" />
                     </button>
@@ -333,7 +333,7 @@ export default function StudioPanel({
                       aria-pressed={tool === "eraser"}
                       onClick={() => setTool("eraser")}
                       aria-label={ts("canvas.eraser")}
-                      className={`flex h-9 w-9 items-center justify-center rounded-full border ${tool === "eraser" ? "border-[#CEC6FF] bg-[#F4F3FF] text-[#5141E5]" : "border-[#EDEEEF] text-[#2C2B37]"}`}
+                      className={`flex h-9 w-9 items-center justify-center rounded-full border ${tool === "eraser" ? "border-[#CDF8D1] bg-[#F4FEF5] text-[#02940F]" : "border-[#EDEEEF] text-[#2C2B37]"}`}
                     >
                       <Eraser className="h-4 w-4" aria-hidden="true" />
                     </button>
@@ -347,12 +347,12 @@ export default function StudioPanel({
                       max={160}
                       value={brushSize}
                       onChange={(event) => setBrushSize(Number(event.target.value))}
-                      className="w-24 accent-[#7A5AF8]"
+                      className="w-24 accent-[#03B015]"
                     />
                     <button
                       type="button"
                       onClick={() => canvasRef.current?.clearMask()}
-                      className="min-h-9 rounded-full border border-[#EDEEEF] px-3 text-[13px] text-[#2C2B37] hover:border-[#CEC6FF]"
+                      className="min-h-9 rounded-full border border-[#EDEEEF] px-3 text-[13px] text-[#2C2B37] hover:border-[#CDF8D1]"
                     >
                       {ts("canvas.clear")}
                     </button>
@@ -364,7 +364,7 @@ export default function StudioPanel({
                       type="button"
                       aria-pressed={showOriginal}
                       onClick={() => setShowOriginal(true)}
-                      className={`px-3 py-1.5 text-[13px] ${showOriginal ? "bg-[#F4F3FF] font-semibold text-[#5141E5]" : "text-[#2C2B37]"}`}
+                      className={`px-3 py-1.5 text-[13px] ${showOriginal ? "bg-[#F4FEF5] font-semibold text-[#02940F]" : "text-[#2C2B37]"}`}
                     >
                       {ts("canvas.before")}
                     </button>
@@ -372,7 +372,7 @@ export default function StudioPanel({
                       type="button"
                       aria-pressed={!showOriginal}
                       onClick={() => setShowOriginal(false)}
-                      className={`px-3 py-1.5 text-[13px] ${!showOriginal ? "bg-[#F4F3FF] font-semibold text-[#5141E5]" : "text-[#2C2B37]"}`}
+                      className={`px-3 py-1.5 text-[13px] ${!showOriginal ? "bg-[#F4FEF5] font-semibold text-[#02940F]" : "text-[#2C2B37]"}`}
                     >
                       {ts("canvas.after")}
                     </button>
@@ -394,12 +394,12 @@ export default function StudioPanel({
                       aria-label={t("photo", { number: position + 1, name: entry.name })}
                       onClick={() => onActiveChange(entry.id)}
                       disabled={busy}
-                      className={`relative h-[54px] w-[74px] shrink-0 overflow-hidden rounded-[10px] border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] ${entry.id === item.id ? "border-[#7A5AF8]" : "border-transparent"}`}
+                      className={`relative h-[54px] w-[74px] shrink-0 overflow-hidden rounded-[10px] border-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] ${entry.id === item.id ? "border-[#03B015]" : "border-transparent"}`}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={imageSrc(thumb)} alt="" className="h-full w-full object-cover" />
                       {entryState?.results.length ? (
-                        <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full border border-white bg-[#7A5AF8]" aria-hidden="true" />
+                        <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full border border-white bg-[#03B015]" aria-hidden="true" />
                       ) : null}
                     </button>
                   );
@@ -418,7 +418,7 @@ export default function StudioPanel({
                     setError(null);
                   }}
                   disabled={busy}
-                  className={`min-h-[34px] rounded-full px-3 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] ${mode === value ? "bg-white font-semibold text-[#5141E5] shadow-[0_1px_3px_rgba(16,24,40,0.08)]" : "font-medium text-[#475467]"}`}
+                  className={`min-h-[34px] rounded-full px-3 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] ${mode === value ? "bg-white font-semibold text-[#02940F] shadow-[0_1px_3px_rgba(16,24,40,0.08)]" : "font-medium text-[#475467]"}`}
                 >
                   {t(`mode.${value}`)}
                 </button>
@@ -427,7 +427,7 @@ export default function StudioPanel({
 
             {mode === "describe" || mode === "brush" ? (
               <>
-                <div className="rounded-[14px] bg-[#ECE8F6] px-4 py-3.5">
+                <div className="rounded-[14px] bg-[#EAF4EB] px-4 py-3.5">
                   <label htmlFor="studio-panel-prompt" className="block text-[13px] font-semibold text-[#1F1D2A]">
                     {mode === "brush" ? ts("brush.promptLabel") : t("promptLabel")}
                   </label>

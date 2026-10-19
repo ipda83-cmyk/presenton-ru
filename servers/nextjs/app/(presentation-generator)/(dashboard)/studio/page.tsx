@@ -5,7 +5,7 @@ import StudioGenerate from "./components/StudioGenerate";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("studio.pages");
-  return { title: `${t("generate")} | Presenton` };
+  return { title: `${t("generate")} | Kvant AI Studio` };
 }
 
 export default async function StudioPage() {

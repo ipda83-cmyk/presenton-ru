@@ -4,7 +4,7 @@
   background-color: white;
   border-radius: 9999px;
   position: relative;
-  box-shadow: 0 2px 10px rgba(0, 0, 137, 0.549);
+  box-shadow: 0 2px 10px rgba(1, 83, 10, 0.549);
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
   /* &:focus {
@@ -12,7 +12,7 @@
   } */
 
   /* &[data-state="checked"] {
-    background-color: rgb(214, 215, 255);
+    background-color: rgb(219, 250, 222);
   } */
 }
 

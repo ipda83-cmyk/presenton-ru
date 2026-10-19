@@ -8,7 +8,7 @@ export function TemplatePreviewLoadingState() {
   const t = useTranslations("tplPreview");
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FAFAFB]">
-      <Loader2 className="h-8 w-8 animate-spin text-[#7A5AF8]" />
+      <Loader2 className="h-8 w-8 animate-spin text-[#03B015]" />
       <span className="ml-3 text-sm font-medium text-[#696969]">
         {t("loadingTemplate")}
       </span>

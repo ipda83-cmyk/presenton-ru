@@ -180,7 +180,7 @@ export default function StudioStoryboard({ isAdmin, initialImage }: { isAdmin: b
                     type="button"
                     onClick={() => setReference(null)}
                     disabled={running}
-                    className="inline-flex min-h-9 w-fit items-center gap-1.5 rounded-full border border-[#EDEEEF] bg-white px-3.5 font-syne text-[13px] text-[#2C2B37] hover:text-red-600 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+                    className="inline-flex min-h-9 w-fit items-center gap-1.5 rounded-full border border-[#EDEEEF] bg-white px-3.5 font-syne text-[13px] text-[#2C2B37] hover:text-red-600 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
                   >
                     <X className="h-3.5 w-3.5" aria-hidden="true" />
                     {t("storyboard.removeReference")}
@@ -216,7 +216,7 @@ export default function StudioStoryboard({ isAdmin, initialImage }: { isAdmin: b
                           </p>
                         ) : (
                           <span className="flex flex-col items-center gap-2 text-xs text-[#667085]" role="status">
-                            <Loader2 className={`h-5 w-5 text-[#7A5AF8] ${result.status === "running" ? "animate-spin" : ""}`} aria-hidden="true" />
+                            <Loader2 className={`h-5 w-5 text-[#03B015] ${result.status === "running" ? "animate-spin" : ""}`} aria-hidden="true" />
                             {result.status === "running" ? t("storyboard.running") : t("storyboard.queued")}
                           </span>
                         )}
@@ -231,7 +231,7 @@ export default function StudioStoryboard({ isAdmin, initialImage }: { isAdmin: b
                                 download
                                 aria-label={t("storyboard.downloadView", { view: label })}
                                 title={t("actions.download")}
-                                className="flex h-8 w-8 items-center justify-center rounded-full text-[#475467] hover:bg-[#F4F3FF] hover:text-[#5141E5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+                                className="flex h-8 w-8 items-center justify-center rounded-full text-[#475467] hover:bg-[#F4FEF5] hover:text-[#02940F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
                               >
                                 <Download className="h-4 w-4" aria-hidden="true" />
                               </a>
@@ -239,7 +239,7 @@ export default function StudioStoryboard({ isAdmin, initialImage }: { isAdmin: b
                                 href={`/studio/brush?image=${encodeURIComponent(result.image.file_url)}`}
                                 aria-label={t("storyboard.editView", { view: label })}
                                 title={t("actions.toBrush")}
-                                className="flex h-8 w-8 items-center justify-center rounded-full text-[#475467] hover:bg-[#F4F3FF] hover:text-[#5141E5] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+                                className="flex h-8 w-8 items-center justify-center rounded-full text-[#475467] hover:bg-[#F4FEF5] hover:text-[#02940F] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
                               >
                                 <Brush className="h-4 w-4" aria-hidden="true" />
                               </Link>
@@ -252,7 +252,7 @@ export default function StudioStoryboard({ isAdmin, initialImage }: { isAdmin: b
                               disabled={running}
                               aria-label={t("storyboard.retryView", { view: label })}
                               title={t("storyboard.retry")}
-                              className="flex h-8 w-8 items-center justify-center rounded-full text-[#475467] hover:bg-[#F4F3FF] hover:text-[#5141E5] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8]"
+                              className="flex h-8 w-8 items-center justify-center rounded-full text-[#475467] hover:bg-[#F4FEF5] hover:text-[#02940F] disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]"
                             >
                               <RotateCcw className="h-4 w-4" aria-hidden="true" />
                             </button>
@@ -301,10 +301,10 @@ export default function StudioStoryboard({ isAdmin, initialImage }: { isAdmin: b
                           onClick={() => toggle(view.id)}
                           disabled={running}
                           className={[
-                            "min-h-9 rounded-xl border px-2.5 text-left font-syne text-[12px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7A5AF8] disabled:opacity-60",
+                            "min-h-9 rounded-xl border px-2.5 text-left font-syne text-[12px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015] disabled:opacity-60",
                             on
-                              ? "border-[#CEC6FF] bg-[#F4F3FF] font-semibold text-[#5141E5]"
-                              : "border-[#DBDBE1] bg-white text-[#2C2B37] hover:border-[#CEC6FF]",
+                              ? "border-[#CDF8D1] bg-[#F4FEF5] font-semibold text-[#02940F]"
+                              : "border-[#DBDBE1] bg-white text-[#2C2B37] hover:border-[#CDF8D1]",
                           ].join(" ")}
                         >
                           {t(`views.${view.id}`)}
@@ -320,7 +320,7 @@ export default function StudioStoryboard({ isAdmin, initialImage }: { isAdmin: b
                 type="button"
                 onClick={() => setSelected(views.map((view) => view.id))}
                 disabled={running}
-                className="font-syne font-semibold text-[#5146E5] hover:text-[#3B2FC9] disabled:opacity-50"
+                className="font-syne font-semibold text-[#02940F] hover:text-[#027A0E] disabled:opacity-50"
               >
                 {t("storyboard.selectAll")}
               </button>
@@ -328,7 +328,7 @@ export default function StudioStoryboard({ isAdmin, initialImage }: { isAdmin: b
                 type="button"
                 onClick={() => setSelected([])}
                 disabled={running}
-                className="font-syne font-semibold text-[#5146E5] hover:text-[#3B2FC9] disabled:opacity-50"
+                className="font-syne font-semibold text-[#02940F] hover:text-[#027A0E] disabled:opacity-50"
               >
                 {t("storyboard.clearAll")}
               </button>

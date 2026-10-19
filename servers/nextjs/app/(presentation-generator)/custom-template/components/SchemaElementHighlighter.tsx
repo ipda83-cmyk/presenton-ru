@@ -289,12 +289,12 @@ const SchemaElementHighlighter: React.FC<SchemaElementHighlighterProps> = ({
                         top: rect.top - 3,
                         width: rect.width + 6,
                         height: rect.height + 6,
-                        border: '3px solid #8b5cf6',
-                        backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                        border: '3px solid #03B015',
+                        backgroundColor: 'rgba(3, 176, 21, 0.15)',
                         pointerEvents: 'none',
                         zIndex: 40,
                         borderRadius: '6px',
-                        boxShadow: '0 0 0 2px rgba(139, 92, 246, 0.3), 0 4px 12px rgba(139, 92, 246, 0.2)',
+                        boxShadow: '0 0 0 2px rgba(3, 176, 21, 0.3), 0 4px 12px rgba(3, 176, 21, 0.2)',
                     }}
                 />
             ))}

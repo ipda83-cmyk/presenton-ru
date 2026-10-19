@@ -19,7 +19,7 @@ const SettingSideBar = ({ selectedProvider, setSelectedProvider, presentonSelect
             <div className='mt-6 flex-1'>
                 <p className='text-[#3A3A3A] text-xs font-medium pb-2.5'>{t('selectProvider')}</p>
                 <div className='space-y-2.5'>
-                    <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'text-provider' ? 'bg-[#F4F3FF] border-[#D9D6FE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('text-provider')}>
+                    <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'text-provider' ? 'bg-[#F4FEF5] border-[#DBF9DE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('text-provider')}>
                         <div className='relative w-[18px] h-[18px] rounded-full overflow-hidden border border-[#EDEEEF]'>
 
                             <img src={textProviderIcon} className=' object-cover w-full h-full overflow-hidden' alt={t('textProvider')} />
@@ -28,26 +28,26 @@ const SettingSideBar = ({ selectedProvider, setSelectedProvider, presentonSelect
                     </button>
                     {!presentonSelected ? (
                         <>
-                            <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'image-provider' ? 'bg-[#F4F3FF] border-[#D9D6FE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('image-provider')}>
+                            <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'image-provider' ? 'bg-[#F4FEF5] border-[#DBF9DE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('image-provider')}>
                                 <div className='relative w-[18px] h-[18px] rounded-full overflow-hidden border border-[#EDEEEF]'>
                                     <img src={imageProviderIcon} className=' object-cover w-full h-full overflow-hidden' alt={t('imageProvider')} />
                                 </div>
                                 <p className='text-[#191919] text-xs  font-medium' >{t('imageProvider')}</p>
                             </button>
-                            <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'web-search-provider' ? 'bg-[#F4F3FF] border-[#D9D6FE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('web-search-provider')}>
+                            <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'web-search-provider' ? 'bg-[#F4FEF5] border-[#DBF9DE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('web-search-provider')}>
                                 <div className='relative w-[18px] h-[18px] rounded-full overflow-hidden border border-[#EDEEEF] flex items-center justify-center bg-white'>
-                                    <Search className='w-3 h-3 text-[#5146E5]' />
+                                    <Search className='w-3 h-3 text-[#02940F]' />
                                 </div>
                                 <p className='text-[#191919] text-xs font-medium'>{t('webSearchProvider')}</p>
                             </button>
                         </>
                     ) : null}
-                    <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'studio' ? 'bg-[#F4F3FF] border-[#D9D6FE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('studio')}>
+                    <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'studio' ? 'bg-[#F4FEF5] border-[#DBF9DE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('studio')}>
                         <StudioMark size={18} />
                         <p className='text-[#191919] text-xs font-medium'>{t('studio.title')}</p>
                     </button>
-                    <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'billing' ? 'bg-[#F4F3FF] border-[#D9D6FE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('billing')}>
-                        <Wallet className='w-[18px] h-[18px] text-[#5146E5]' aria-hidden='true' />
+                    <button className={` w-full rounded-[6px] px-3 py-4 flex items-center gap-1.5 border  ${selectedProvider === 'billing' ? 'bg-[#F4FEF5] border-[#DBF9DE]' : 'bg-white border-[#EDEEEF]'}`} onClick={() => setSelectedProvider('billing')}>
+                        <Wallet className='w-[18px] h-[18px] text-[#02940F]' aria-hidden='true' />
                         <p className='text-[#191919] text-xs font-medium'>{t('billing.title')}</p>
                     </button>
                 </div>
@@ -57,29 +57,29 @@ const SettingSideBar = ({ selectedProvider, setSelectedProvider, presentonSelect
                 <p className='text-[#3A3A3A] text-xs font-medium pb-2.5'>{t('other')}</p>
                 <div className='space-y-2.5'>
                     <button
-                        className={`w-full rounded-[6px] p-3 py-4 flex items-center gap-1.5 border ${selectedProvider === 'privacy' ? 'bg-[#F4F3FF] border-[#D9D6FE]' : 'bg-white border-[#EDEEEF]'}`}
+                        className={`w-full rounded-[6px] p-3 py-4 flex items-center gap-1.5 border ${selectedProvider === 'privacy' ? 'bg-[#F4FEF5] border-[#DBF9DE]' : 'bg-white border-[#EDEEEF]'}`}
                         onClick={() => setSelectedProvider('privacy')}
                     >
                         <div className='relative w-6 h-6 rounded-full overflow-hidden border border-[#EDEEEF] flex items-center justify-center bg-white'>
-                            <Shield className='w-3.5 h-3.5 text-[#5146E5]' />
+                            <Shield className='w-3.5 h-3.5 text-[#02940F]' />
                         </div>
                         <p className='text-[#191919] text-xs font-medium'>{t('usageAnalytics')}</p>
                     </button>
                     <button
-                        className={`w-full rounded-[6px] p-3 py-4 flex items-center gap-1.5 border ${selectedProvider === 'admin' ? 'bg-[#F4F3FF] border-[#D9D6FE]' : 'bg-white border-[#EDEEEF]'}`}
+                        className={`w-full rounded-[6px] p-3 py-4 flex items-center gap-1.5 border ${selectedProvider === 'admin' ? 'bg-[#F4FEF5] border-[#DBF9DE]' : 'bg-white border-[#EDEEEF]'}`}
                         onClick={() => setSelectedProvider('admin')}
                     >
                         <div className='relative w-6 h-6 rounded-full overflow-hidden border border-[#EDEEEF] flex items-center justify-center bg-white'>
-                            <ShieldCheck className='w-3.5 h-3.5 text-[#5146E5]' />
+                            <ShieldCheck className='w-3.5 h-3.5 text-[#02940F]' />
                         </div>
                         <p className='text-[#191919] text-xs font-medium'>{t('admin')}</p>
                     </button>
                     <button
-                        className={`w-full rounded-[6px] p-3 py-4 flex items-center gap-1.5 border ${selectedProvider === 'session' ? 'bg-[#F4F3FF] border-[#D9D6FE]' : 'bg-white border-[#EDEEEF]'}`}
+                        className={`w-full rounded-[6px] p-3 py-4 flex items-center gap-1.5 border ${selectedProvider === 'session' ? 'bg-[#F4FEF5] border-[#DBF9DE]' : 'bg-white border-[#EDEEEF]'}`}
                         onClick={() => setSelectedProvider('session')}
                     >
                         <div className='relative w-6 h-6 rounded-full overflow-hidden border border-[#EDEEEF] flex items-center justify-center bg-white'>
-                            <LogOut className='w-3.5 h-3.5 text-[#5146E5]' />
+                            <LogOut className='w-3.5 h-3.5 text-[#02940F]' />
                         </div>
                         <p className='text-[#191919] text-xs font-medium'>{t('signOut')}</p>
                     </button>

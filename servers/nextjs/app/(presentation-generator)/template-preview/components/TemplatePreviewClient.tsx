@@ -1235,7 +1235,7 @@ const GroupLayoutPreview = ({
               <p>{t("noLayoutsForTemplate")}</p>
               {canEditTemplate ? (
                 <button
-                  className="rounded-[8px] border border-[#D9D6FE] bg-white px-4 py-2 text-[13px] font-medium text-[#7A5AF8] transition-colors hover:bg-[#F8F6FF]"
+                  className="rounded-[8px] border border-[#DBF9DE] bg-white px-4 py-2 text-[13px] font-medium text-[#03B015] transition-colors hover:bg-[#F7FEF8]"
                   onClick={createBlankLayout}
                   type="button"
                 >

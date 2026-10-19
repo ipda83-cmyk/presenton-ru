@@ -25,7 +25,7 @@ const SECTIONS = [
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("help");
-  return { title: `${t("metaTitle")} | Presenton` };
+  return { title: `${t("metaTitle")} | Kvant AI Studio` };
 }
 
 function ExternalLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -34,7 +34,7 @@ function ExternalLink({ href, children }: { href: string; children: React.ReactN
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex items-center gap-1 text-sm font-medium text-[#5141E5] hover:underline"
+      className="inline-flex items-center gap-1 text-sm font-medium text-[#02940F] hover:underline"
     >
       {children}
       <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -59,12 +59,13 @@ export default async function HelpPage() {
         <div className="mt-3">
           <ExternalLink href={DOCS_URL}>{t("docsLink")}</ExternalLink>
         </div>
+        <p className="mt-2 text-xs leading-5 text-[#667085]">{t("basedOn")}</p>
 
         <nav
           aria-label={t("contents")}
           className="mt-8 rounded-[12px] border border-[#EDEEEF] bg-[#F9F8F8] p-5"
         >
-          <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-[#7A5AF8]">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-[#03B015]">
             {t("contents")}
           </h2>
           <ol className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2">
@@ -72,7 +73,7 @@ export default async function HelpPage() {
               <li key={section.id}>
                 <a
                   href={`#${section.id}`}
-                  className="text-sm text-[#191919] hover:text-[#5141E5]"
+                  className="text-sm text-[#191919] hover:text-[#02940F]"
                 >
                   {index + 1}. {t(`sections.${section.id}.title`)}
                 </a>
@@ -96,7 +97,7 @@ export default async function HelpPage() {
             </h2>
 
             {section.kind === "steps" ? (
-              <ol className="mt-4 list-decimal space-y-2.5 pl-5 text-sm leading-6 text-[#344054] marker:text-[#7A5AF8]">
+              <ol className="mt-4 list-decimal space-y-2.5 pl-5 text-sm leading-6 text-[#344054] marker:text-[#03B015]">
                 {(t.raw(`sections.${section.id}.steps`) as string[]).map((step) => (
                   <li key={step}>{step}</li>
                 ))}
@@ -104,7 +105,7 @@ export default async function HelpPage() {
             ) : null}
 
             {section.kind === "list" ? (
-              <ul className="mt-4 list-disc space-y-2.5 pl-5 text-sm leading-6 text-[#344054] marker:text-[#7A5AF8]">
+              <ul className="mt-4 list-disc space-y-2.5 pl-5 text-sm leading-6 text-[#344054] marker:text-[#03B015]">
                 {(t.raw(`sections.${section.id}.items`) as string[]).map((item) => (
                   <li key={item}>{item}</li>
                 ))}

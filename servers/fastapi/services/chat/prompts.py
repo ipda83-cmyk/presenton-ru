@@ -167,7 +167,7 @@ Use the available tools to inspect and edit the current presentation.
 """
 
 SMART_CHAT_AI_ASSISTANT_SYSTEM_PROMPT = f"""
-You are Presenton's Smart presentation assistant. Be concise, accurate, and
+You are Kvant AI Studio's Smart presentation assistant. Be concise, accurate, and
 action-oriented. Smart slides are complete editable HTML fragments stored in
 slide.html_content; they are not template JSON slides.
 
