@@ -16,6 +16,11 @@ from enums.llm_provider import LLMProvider
 from enums.web_search_provider import WebSearchProvider
 from utils.get_env import (
     get_brave_search_api_key_env,
+    get_custom_llm_api_key_env,
+    get_custom_llm_url_env,
+    get_custom_search_api_key_env,
+    get_custom_search_base_url_env,
+    get_custom_search_model_env,
     get_exa_api_key_env,
     get_gemini_search_api_key_env,
     get_gemini_search_base_url_env,
@@ -161,6 +166,8 @@ async def search_web(query: str, max_results: int | None = None) -> list[WebSear
                 results = await _search_perplexity(session, query, limit)
             elif provider == WebSearchProvider.GEMINI:
                 results = await _search_gemini(query, limit)
+            elif provider == WebSearchProvider.CUSTOM:
+                results = await _search_custom(query, limit)
             else:
                 raise HTTPException(
                     status_code=400,
@@ -481,6 +488,28 @@ async def _search_gemini(query: str, limit: int) -> list[WebSearchResult]:
     return results
 
 
+DEFAULT_CUSTOM_SEARCH_MODEL = DEFAULT_PERPLEXITY_GATEWAY_MODEL
+
+
+async def _search_custom(query: str, limit: int) -> list[WebSearchResult]:
+    """Any OpenAI-compatible chat API with a model that searches the web.
+    Empty address and key: those of the custom text provider (e.g. arckep.ru)."""
+    base_url = (get_custom_search_base_url_env() or "").strip() or (
+        get_custom_llm_url_env() or ""
+    ).strip()
+    api_key = (get_custom_search_api_key_env() or "").strip() or (
+        get_custom_llm_api_key_env() or ""
+    ).strip()
+    return await _search_chat_gateway(
+        _http_base_url(_required(base_url, "CUSTOM_SEARCH_BASE_URL"), "CUSTOM_SEARCH_BASE_URL"),
+        _required(api_key, "CUSTOM_SEARCH_API_KEY"),
+        (get_custom_search_model_env() or "").strip() or DEFAULT_CUSTOM_SEARCH_MODEL,
+        query,
+        limit,
+        retry_without_web_search_flag=True,
+    )
+
+
 def _gemini_search_api_key() -> str:
     """The search key, or the Gemini text-provider key when none is set."""
     return (get_gemini_search_api_key_env() or "").strip() or (
@@ -537,34 +566,58 @@ def _message_text(content: Any) -> str:
 
 
 async def _search_chat_gateway(
-    base_url: str, api_key: str, model: str, query: str, limit: int
+    base_url: str,
+    api_key: str,
+    model: str,
+    query: str,
+    limit: int,
+    *,
+    retry_without_web_search_flag: bool = False,
 ) -> list[WebSearchResult]:
     """Search through an OpenAI-compatible aggregator that runs the provider's
-    built-in web search when asked with ``web_search: true``."""
+    built-in web search when asked with ``web_search: true``.
+
+    Other OpenAI-compatible APIs may refuse that unknown field (400): then the
+    request is repeated without it, for models that search on their own
+    (e.g. Perplexity Sonar)."""
+    body = {
+        "model": model,
+        "messages": [
+            {"role": "user", "content": GATEWAY_SEARCH_PROMPT.format(query=query)}
+        ],
+        "web_search": True,
+        "stream": False,
+        "temperature": 0.2,
+    }
     async with aiohttp.ClientSession(
         timeout=aiohttp.ClientTimeout(total=GATEWAY_SEARCH_TIMEOUT_SECONDS),
         headers={"User-Agent": "Presenton/1.0"},
     ) as session:
-        async with session.post(
-            _chat_completions_url(base_url),
-            json={
-                "model": model,
-                "messages": [
-                    {"role": "user", "content": GATEWAY_SEARCH_PROMPT.format(query=query)}
-                ],
-                "web_search": True,
-                "stream": False,
-                "temperature": 0.2,
-            },
-            headers={"Authorization": f"Bearer {api_key}"},
-        ) as response:
-            payload = await _json_response(response)
+        try:
+            payload = await _post_chat(session, base_url, api_key, body)
+        except HTTPException as exc:
+            if not (retry_without_web_search_flag and exc.status_code in (400, 422)):
+                raise
+            LOGGER.info("Search API refused the web_search field; asking without it")
+            body.pop("web_search")
+            payload = await _post_chat(session, base_url, api_key, body)
     # The gateway's links are written by the model and are sometimes wrong:
     # parse a few spare ones and keep those that do not lead to "not found".
     results = await _drop_broken_links(_parse_gateway_sources(payload, limit + 3))
     facts = [result for result in results if not result.url]
     pages = [result for result in results if result.url]
     return facts + pages[:limit]
+
+
+async def _post_chat(
+    session: aiohttp.ClientSession, base_url: str, api_key: str, body: dict[str, Any]
+) -> dict[str, Any]:
+    async with session.post(
+        _chat_completions_url(base_url),
+        json=body,
+        headers={"Authorization": f"Bearer {api_key}"},
+    ) as response:
+        return await _json_response(response)
 
 
 LINK_CHECK_TIMEOUT_SECONDS = 8

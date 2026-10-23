@@ -79,6 +79,20 @@ export const WEB_SEARCH_PROVIDERS: Record<string, WebSearchProviderOption> = {
     modelField: "PERPLEXITY_SEARCH_MODEL",
     modelPlaceholder: "perplexity/sonar",
   },
+  // Any OpenAI-compatible chat API whose model searches the web; empty address
+  // and key use the custom text provider's (CUSTOM_LLM_URL / CUSTOM_LLM_API_KEY).
+  custom: {
+    value: "custom",
+    label: "Custom (OpenAI-compatible)",
+    description: "Any OpenAI-compatible API with a model that searches the web.",
+    icon: "/providers/model-search.svg",
+    apiKeyField: "CUSTOM_SEARCH_API_KEY",
+    apiKeyLabel: "API key",
+    urlField: "CUSTOM_SEARCH_BASE_URL",
+    urlPlaceholder: "https://arckep.ru/api/v1",
+    modelField: "CUSTOM_SEARCH_MODEL",
+    modelPlaceholder: "perplexity/sonar",
+  },
   auto: {
     value: "auto",
     label: "Default (Model)",
@@ -130,7 +144,18 @@ export const WEB_SEARCH_PROVIDERS: Record<string, WebSearchProviderOption> = {
 // Web search providers offered in settings and onboarding (Gemini first, the
 // default). Others remain in WEB_SEARCH_PROVIDERS for existing configurations.
 export const DEFAULT_WEB_SEARCH_PROVIDER = "gemini";
-export const VISIBLE_WEB_SEARCH_PROVIDERS = ["gemini", "perplexity"] as const;
+
+/** Shown name of a web search provider ("auto" and "custom" are translated). */
+export const webSearchProviderLabel = (
+  value: string,
+  tp: (key: string) => string
+): string =>
+  value === "auto"
+    ? tp("webLabelAuto")
+    : value === "custom"
+      ? tp("webLabelCustom")
+      : WEB_SEARCH_PROVIDERS[value]?.label || "";
+export const VISIBLE_WEB_SEARCH_PROVIDERS = ["gemini", "perplexity", "custom"] as const;
 
 export const IMAGE_PROVIDERS: Record<string, ImageProviderOption> = {
   pexels: {

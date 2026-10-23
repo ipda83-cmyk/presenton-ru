@@ -32,6 +32,7 @@ import { useLocale, useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AdminBilling from "./AdminBilling";
 import AdminModels from "./AdminModels";
+import AdminHelp from "./AdminHelp";
 
 type AdminUser = {
   id: string;
@@ -513,6 +514,12 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
             >
               {t("tabModels")}
             </TabsTrigger>
+            <TabsTrigger
+              value="help"
+              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#02940F] data-[state=active]:shadow-sm"
+            >
+              {t("tabHelp")}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users" className="mt-6 space-y-5">
@@ -791,6 +798,9 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
 
           <TabsContent value="models" className="mt-6">
             <AdminModels />
+          </TabsContent>
+          <TabsContent value="help" className="mt-6">
+            <AdminHelp />
           </TabsContent>
           </Tabs>
         </div>

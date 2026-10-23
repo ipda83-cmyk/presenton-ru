@@ -86,6 +86,70 @@ def last_job() -> dict:
     return jobs[-1] if jobs else {}
 
 
+def help_checks(admin: requests.Session, user: requests.Session) -> None:
+    """Admin → Help: sections, files and videos; users read, only administrators edit."""
+    H = f"{BASE}/api/v1/help"
+    AH = f"{BASE}/api/v1/admin/help"
+    check("the built-in help until an administrator saves one", user.get(H, timeout=30).json().get("custom") is False)
+    r = user.put(AH, json={"sections": [{"title": "взлом"}]}, timeout=30)
+    check("users cannot edit the help", r.status_code == 403, f"{r.status_code} {r.text[:120]}")
+    r = admin.post(f"{AH}/files", files={"file": ("Инструкция.pdf", b"%PDF-1.4 e2e help", "application/pdf")}, timeout=60)
+    check("the administrator attaches a file", r.status_code == 200, r.text[:200])
+    pdf = r.json() if r.status_code == 200 else {"url": "/app_data/help/none.pdf"}
+    r = admin.post(f"{AH}/files", files={"file": ("page.html", b"<script>alert(1)</script>", "text/html")}, timeout=60)
+    check("pages and scripts cannot be attached", r.status_code == 400, f"{r.status_code} {r.text[:120]}")
+    sections = [
+        {"title": "Первые шаги", "body": "## Начало\n**Нажмите** «Создать».", "files": [pdf],
+         "videos": [{"url": "https://rutube.ru/video/0123456789abcdef0123456789abcdef/", "title": "Обзор"}]},
+        {"title": "Оплата", "body": "Пополнение баланса картой.", "files": [], "videos": []},
+    ]
+    r = admin.put(AH, json={"sections": sections}, timeout=30)
+    check("the administrator saves the help", r.status_code == 200 and r.json().get("custom") is True, r.text[:200])
+    seen = user.get(H, timeout=30).json()
+    titles = [section["title"] for section in seen.get("sections", [])]
+    check("users see the edited sections in order", titles == ["Первые шаги", "Оплата"], str(titles))
+    video = (seen.get("sections") or [{}])[0].get("videos", [{}])[0]
+    check("a Rutube link becomes a player", video.get("embed") == "https://rutube.ru/play/embed/0123456789abcdef0123456789abcdef", str(video))
+    r = user.get(f"{BASE}{pdf['url']}", timeout=30)
+    check("users download the attached file", r.status_code == 200 and r.content == b"%PDF-1.4 e2e help", f"{r.status_code} {len(r.content)}")
+    r = requests.get(f"{BASE}{pdf['url']}", timeout=30)
+    check("the file is not public", r.status_code in (401, 403), str(r.status_code))
+    page = user.get(f"{BASE}/help", timeout=60)
+    check("the Help page shows the edited help", page.status_code == 200 and "Первые шаги" in page.text and "Оплата" in page.text,
+          f"{page.status_code} {page.text[:120]}")
+    check("no Discord or GitHub on the Help page", "discord" not in page.text.lower() and "github.com" not in page.text.lower())
+    r = user.get(f"{BASE}/api/github-stars", timeout=30)
+    check("the GitHub stars request is gone", r.status_code == 404, str(r.status_code))
+    r = admin.delete(AH, timeout=30)
+    check("the built-in help is restored", r.status_code == 200 and user.get(H, timeout=30).json().get("custom") is False, r.text[:200])
+    check("its files are deleted with it", user.get(f"{BASE}{pdf['url']}", timeout=30).status_code == 404)
+
+
+def custom_search_checks(admin: requests.Session) -> None:
+    """Web search through any OpenAI-compatible API; empty address and key are the text provider's."""
+    settings = {"WEB_GROUNDING": True, "WEB_SEARCH_PROVIDER": "custom", "CUSTOM_SEARCH_MODEL": "perplexity/sonar-pro"}
+    r = admin.put(f"{BASE}/api/v1/admin/provider-settings", json=settings, timeout=30)
+    saved = admin.get(f"{BASE}/api/v1/admin/provider-settings", timeout=30).json()
+    check("the custom search provider is saved", r.status_code == 200 and saved.get("WEB_SEARCH_PROVIDER") == "custom"
+          and saved.get("CUSTOM_SEARCH_MODEL") == "perplexity/sonar-pro", f"{r.status_code} {r.text[:200]}")
+    before = len(fake_log())
+    run = subprocess.run(
+        ["docker", "exec", "-e", "USER_CONFIG_PATH=/app_data/userConfig.json", "-w", "/app/servers/fastapi", APP,
+         "/opt/venv/bin/python", "-c",
+         "import asyncio\n"
+         "from utils.user_config import update_env_with_user_config\n"
+         "update_env_with_user_config()\n"
+         "from utils.web_search import search_web\n"
+         "print(len(asyncio.run(search_web('солнечные панели'))))"],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+    )
+    asked = [e for e in fake_log()[before:] if e.get("kind") == "llm"]
+    check("the custom search asks the text provider's API with its model",
+          run.returncode == 0 and asked and asked[-1].get("model") == "perplexity/sonar-pro" and asked[-1].get("web_search") is True,
+          f"{run.returncode} {run.stdout.strip()} {run.stderr.strip()[-300:]} {asked[-1:] if asked else 'no request'}")
+    admin.put(f"{BASE}/api/v1/admin/provider-settings", json={"WEB_GROUNDING": False}, timeout=30)
+
+
 def main() -> int:
     start()
     fake(arckep="ok", estimate="ok", reset_log=True)
@@ -197,6 +261,9 @@ def main() -> int:
     started = time.time()
     r = user.get(f"{BASE}/api/v1/ppt/community/presentations?page=1&page_size=20", timeout=60)
     check("community is off and answers at once", r.status_code == 404 and time.time() - started < 5, f"{r.status_code} {time.time() - started:.1f}s")
+
+    help_checks(admin, user)
+    custom_search_checks(admin)
 
     estimates = [e for e in fake_log() if e.get("kind") == "estimate"]
     check("estimates are cached, not asked for every request", len(estimates) < 40, str(len(estimates)))

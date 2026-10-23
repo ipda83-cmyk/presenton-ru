@@ -20,7 +20,7 @@ import PrivacySettings from "./PrivacySettings";
 import {
   IMAGE_PROVIDERS,
   LLM_PROVIDERS,
-  WEB_SEARCH_PROVIDERS,
+  webSearchProviderLabel,
   providerDisplayLabel,
 } from "@/utils/providerConstants";
 import { ImagesApi } from "@/app/(presentation-generator)/services/api/images";
@@ -339,9 +339,7 @@ const SettingsPage = () => {
     : llmConfig.WEB_GROUNDING
       ? t("webSummary", {
           provider:
-            webSearchProviderKey === "auto"
-              ? tp("webLabelAuto")
-              : WEB_SEARCH_PROVIDERS[webSearchProviderKey]?.label || t("noProvider"),
+            webSearchProviderLabel(webSearchProviderKey, tp) || t("noProvider"),
         })
       : t("webSearchDisabled");
 

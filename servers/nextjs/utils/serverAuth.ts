@@ -14,7 +14,7 @@ export type AuthStatus = {
 /**
  * Resolves the FastAPI base used from Next server components (same as start.js).
  */
-function getServerFastApiBase(): string {
+export function getServerFastApiBase(): string {
   const internal = process.env.FAST_API_INTERNAL_URL?.trim();
   if (internal) {
     return internal.replace(/\/+$/, "");

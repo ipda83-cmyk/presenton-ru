@@ -4,7 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../ui/colla
 import { Button } from '../ui/button';
 import { ArrowUpRight, Blocks, Check, ChevronDown, ChevronLeft, ChevronUp, Eye, EyeOff, Info, Laptop, Loader2, Search } from 'lucide-react';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command';
-import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS, LLM_PROVIDERS, WEB_SEARCH_PROVIDERS, VISIBLE_WEB_SEARCH_PROVIDERS, DEFAULT_WEB_SEARCH_PROVIDER, providerDisplayLabel, providerKey } from '@/utils/providerConstants';
+import { DALLE_3_QUALITY_OPTIONS, GPT_IMAGE_1_5_QUALITY_OPTIONS, IMAGE_PROVIDERS, LLM_PROVIDERS, WEB_SEARCH_PROVIDERS, VISIBLE_WEB_SEARCH_PROVIDERS, DEFAULT_WEB_SEARCH_PROVIDER, webSearchProviderLabel, providerDisplayLabel, providerKey } from '@/utils/providerConstants';
 import { cn } from '@/lib/utils';
 import { LLMConfig } from '@/types/llm_config';
 import { RootState } from '@/store/store';
@@ -962,7 +962,7 @@ const PresentonMode = ({
                                 placeholder={selectedWebProvider.urlPlaceholder || "https://search.example.com"}
                             />
                             {selectedWebProvider.value !== "searxng" && (
-                                <p className="mt-1.5 text-xs leading-5 text-gray-500">{tp("webBaseUrlHint")}</p>
+                                <p className="mt-1.5 text-xs leading-5 text-gray-500">{tp(selectedWebProvider.value === "custom" ? "webBaseUrlHintCustom" : "webBaseUrlHint")}</p>
                             )}
                         </div>
                     )}
@@ -1756,7 +1756,7 @@ const PresentonMode = ({
                                                     >
                                                         {provider.icon && <img src={provider.icon} alt="" className="h-7 w-7 object-contain" />}
                                                     </span>
-                                                    <span className="text-xs font-semibold text-[#191919]">{provider.value === "auto" ? tp("webLabelAuto") : provider.label}</span>
+                                                    <span className="text-xs font-semibold text-[#191919]">{webSearchProviderLabel(provider.value, tp)}</span>
                                                     <span className="line-clamp-2 text-[10px] leading-4 text-gray-500">{tp(`webDesc.${providerKey(provider.value)}`)}</span>
                                                 </button>
                                             ))}

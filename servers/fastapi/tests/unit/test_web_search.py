@@ -736,3 +736,112 @@ def test_web_search_context_with_results_tells_failure_from_no_results(monkeypat
     context, results = asyncio.run(web_search.get_web_search_context_with_results("q"))
     assert "Animals" in context
     assert results == found
+
+
+def test_custom_search_uses_its_own_address_or_the_custom_text_provider(monkeypatch):
+    calls = []
+
+    async def fake_gateway(base_url, api_key, model, query, limit, **kwargs):
+        calls.append({"base_url": base_url, "api_key": api_key, "model": model, **kwargs})
+        return []
+
+    monkeypatch.setattr(web_search, "_search_chat_gateway", fake_gateway)
+    for key in ("CUSTOM_SEARCH_BASE_URL", "CUSTOM_SEARCH_API_KEY", "CUSTOM_SEARCH_MODEL"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("CUSTOM_LLM_URL", "https://arckep.example/api/v1/")
+    monkeypatch.setenv("CUSTOM_LLM_API_KEY", "llm-key")
+    monkeypatch.setenv("WEB_SEARCH_PROVIDER", "custom")
+    assert web_search.get_selected_web_search_provider() == WebSearchProvider.CUSTOM
+
+    asyncio.run(web_search._search_custom("zoo", 3))
+    assert calls[-1] == {
+        "base_url": "https://arckep.example/api/v1",
+        "api_key": "llm-key",
+        "model": web_search.DEFAULT_CUSTOM_SEARCH_MODEL,
+        "retry_without_web_search_flag": True,
+    }
+
+    monkeypatch.setenv("CUSTOM_SEARCH_BASE_URL", "https://search.example/v1")
+    monkeypatch.setenv("CUSTOM_SEARCH_API_KEY", "search-key")
+    monkeypatch.setenv("CUSTOM_SEARCH_MODEL", "openai/gpt-search")
+    asyncio.run(web_search._search_custom("zoo", 3))
+    assert calls[-1]["base_url"] == "https://search.example/v1"
+    assert calls[-1]["api_key"] == "search-key"
+    assert calls[-1]["model"] == "openai/gpt-search"
+
+
+def test_custom_search_without_an_address_is_not_configured(monkeypatch):
+    for key in ("CUSTOM_SEARCH_BASE_URL", "CUSTOM_LLM_URL"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("CUSTOM_SEARCH_API_KEY", "key")
+    try:
+        asyncio.run(web_search._search_custom("q", 2))
+    except web_search.HTTPException as error:
+        assert error.status_code == 400
+        assert "CUSTOM_SEARCH_BASE_URL" in error.detail
+    else:  # pragma: no cover
+        raise AssertionError("search without an address was accepted")
+
+
+def test_custom_search_asks_again_without_the_web_search_field(monkeypatch):
+    bodies = []
+
+    class FakeResponse:
+        def __init__(self, status, payload):
+            self.status = status
+            self.payload = payload
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_args):
+            return None
+
+        async def text(self):
+            return "Unrecognized request argument supplied: web_search"
+
+        async def json(self, content_type=None):
+            return self.payload
+
+    class FakeSession:
+        def __init__(self, **_kwargs):
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *_args):
+            return None
+
+        def post(self, url, json, headers):
+            bodies.append(dict(json))
+            if "web_search" in json:
+                return FakeResponse(400, {})
+            return FakeResponse(
+                200, {"choices": [{"message": {"content": "Facts.\nSOURCES:\n- [Zoo](https://zoo.example/): Zoo."}}]}
+            )
+
+    monkeypatch.setattr(web_search.aiohttp, "ClientSession", FakeSession)
+
+    async def keep_all_links(results):
+        return results
+
+    monkeypatch.setattr(web_search, "_drop_broken_links", keep_all_links)
+
+    results = asyncio.run(
+        web_search._search_chat_gateway(
+            "https://search.example/v1", "key", "sonar", "zoo", 5, retry_without_web_search_flag=True
+        )
+    )
+    assert [("web_search" in body) for body in bodies] == [True, False]
+    assert results[-1].url == "https://zoo.example/"
+
+    # The aggregators of Gemini and Perplexity need the field: no second try.
+    bodies.clear()
+    try:
+        asyncio.run(web_search._search_chat_gateway("https://search.example/v1", "key", "sonar", "zoo", 5))
+    except web_search.HTTPException as error:
+        assert error.status_code == 400
+    else:  # pragma: no cover
+        raise AssertionError("the refused request was not reported")
+    assert len(bodies) == 1

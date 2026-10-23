@@ -78,6 +78,7 @@ def _web_search_provider_display_name(provider_name: str) -> str:
         "serper": "Serper",
         "perplexity": "Perplexity",
         "gemini": "Gemini",
+        "custom": "the custom search API",
         "model-native": "model-native web search",
     }.get(provider_name, provider_name)
 

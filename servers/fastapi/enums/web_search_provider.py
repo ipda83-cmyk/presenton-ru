@@ -11,3 +11,5 @@ class WebSearchProvider(Enum):
     SERPER = "serper"
     PERPLEXITY = "perplexity"
     GEMINI = "gemini"
+    # Any OpenAI-compatible chat API whose model searches the web.
+    CUSTOM = "custom"

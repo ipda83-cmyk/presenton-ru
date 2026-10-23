@@ -1,5 +1,5 @@
 import { RootState } from '@/store/store';
-import { IMAGE_PROVIDERS, LLM_PROVIDERS, WEB_SEARCH_PROVIDERS, providerDisplayLabel } from '@/utils/providerConstants';
+import { IMAGE_PROVIDERS, LLM_PROVIDERS, webSearchProviderLabel, providerDisplayLabel } from '@/utils/providerConstants';
 import React from 'react'
 import { useSelector } from 'react-redux';
 import { useTranslations } from 'next-intl';
@@ -57,9 +57,7 @@ const CurrentConfig = ({ webSearchEnabled }: { webSearchEnabled: boolean }) => {
             : t("noImageProvider");
     const webSearchProviderKey = (llmConfig.WEB_SEARCH_PROVIDER || "auto").toLowerCase();
     const webSearchProvider =
-        webSearchProviderKey === "auto"
-            ? tp("webLabelAuto")
-            : WEB_SEARCH_PROVIDERS[webSearchProviderKey]?.label || webSearchProviderKey;
+        webSearchProviderLabel(webSearchProviderKey, tp) || webSearchProviderKey;
     const webSearchSummary = t("web", { provider: webSearchProvider, state: webSearchEnabled ? t("on") : t("off") });
 
     return (

@@ -9,7 +9,8 @@ PRIVATE_APP_DATA_ROOTS = {
     "pptx-to-html",
     "pptx-to-json",
 }
-SHARED_APP_DATA_ROOTS = {"fonts", "templates"}
+# help: files of the Help page (Admin → Help), for every signed-in user.
+SHARED_APP_DATA_ROOTS = {"fonts", "templates", "help"}
 
 
 def normalized_app_data_parts(path_or_uri: str) -> tuple[str, ...] | None:

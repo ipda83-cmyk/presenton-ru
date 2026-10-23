@@ -422,6 +422,18 @@ def get_perplexity_search_model_env():
     return os.getenv("PERPLEXITY_SEARCH_MODEL")
 
 
+def get_custom_search_base_url_env():
+    return os.getenv("CUSTOM_SEARCH_BASE_URL")
+
+
+def get_custom_search_api_key_env():
+    return os.getenv("CUSTOM_SEARCH_API_KEY")
+
+
+def get_custom_search_model_env():
+    return os.getenv("CUSTOM_SEARCH_MODEL")
+
+
 def get_studio_api_key_env():
     return os.getenv("STUDIO_API_KEY")
 

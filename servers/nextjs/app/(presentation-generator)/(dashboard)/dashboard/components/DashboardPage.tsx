@@ -29,8 +29,6 @@ import { useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import StudioTopNav from "@/components/studio/StudioTopNav";
 
-const GITHUB_REPOSITORY_URL = "https://github.com/presenton/presenton";
-const DISCORD_INVITE_URL = "https://discord.com/invite/9ZsKKxudNE";
 const APP_UPDATE_URL = "https://presenton.ai/download";
 
 const actionCardBase =
@@ -41,18 +39,6 @@ const dashboardHeaderPill =
 
 const dashboardHeaderAsset = (name: string) => `/dashboard-header/${name}`;
 const dashboardBodyAsset = (name: string) => `/dashboard-body/${name}`;
-
-const DashboardHeaderDivider = () => (
-  <span className="relative h-5 w-px shrink-0" aria-hidden="true">
-    <Image
-      src={dashboardHeaderAsset("divider.svg")}
-      alt=""
-      width={20}
-      height={1}
-      className="absolute left-1/2 top-1/2 h-px w-5 max-w-none -translate-x-1/2 -translate-y-1/2 rotate-90"
-    />
-  </span>
-);
 
 const FloatingActionCards = () => (
   <div className="pointer-events-none absolute right-[14px] top-[-35px] z-0 hidden h-[64px] w-[158px] sm:block">
@@ -211,16 +197,6 @@ const sortPresentationsNewestFirst = (presentations: PresentationResponse[]) =>
     );
   });
 
-function formatGitHubStars(stars: number) {
-  if (stars >= 1_000_000) {
-    return `${(stars / 1_000_000).toFixed(1).replace(/\.0$/, "")}m`;
-  }
-  if (stars >= 1_000) {
-    return `${(stars / 1_000).toFixed(1).replace(/\.0$/, "")}k`;
-  }
-  return stars.toLocaleString();
-}
-
 function DashboardHeader({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
   const t = useTranslations("dash");
@@ -240,12 +216,6 @@ function DashboardHeader({ isAdmin }: { isAdmin: boolean }) {
 
   useEffect(() => {
     setIsElectronApp(Boolean(window.electron));
-
-    let isMounted = true;
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
   return (
@@ -259,7 +229,7 @@ function DashboardHeader({ isAdmin }: { isAdmin: boolean }) {
       {/* Wide screens: the pills wrap onto a second line instead of running off the edge. */}
       <div className="max-w-full overflow-x-auto hide-scrollbar lg:min-w-0 lg:flex-1 lg:overflow-visible">
         <div className="flex min-h-[42.24px] w-max max-w-none items-center gap-3 rounded-full pl-3 lg:w-auto lg:flex-wrap lg:justify-end">
-          {/* Provider settings, Discord and GitHub: administrators only. */}
+          {/* Provider settings: administrators only. */}
           {isAdmin && (
           <div className="flex h-[42.24px] items-center gap-[18px] rounded-[32px] border border-[#EDEEEF] bg-white px-3 py-1">
             <Link
@@ -302,56 +272,6 @@ function DashboardHeader({ isAdmin }: { isAdmin: boolean }) {
               </span>
             </Link>
 
-            <DashboardHeaderDivider />
-
-            <Link
-              href={DISCORD_INVITE_URL}
-              target="_blank"
-              rel="noreferrer"
-              className={`${dashboardHeaderPill} h-[29.6px] gap-[8.8px] p-1.5`}
-              onClick={() =>
-                trackEvent(MixpanelEvent.Navigation, {
-                  from: pathname,
-                  to: DISCORD_INVITE_URL,
-                  source: "dashboard_header_discord",
-                })
-              }
-            >
-              <Image
-                src={dashboardHeaderAsset("discord.svg")}
-                alt=""
-                aria-hidden="true"
-                width={18}
-                height={18}
-                className="h-[17.6px] w-[17.6px] shrink-0"
-              />
-              <span className="font-syne text-sm font-normal leading-normal tracking-[-0.14px] text-[#191919]">
-                {t("joinDiscord")}
-              </span>
-            </Link>
-            <DashboardHeaderDivider />
-            <Link
-              href={GITHUB_REPOSITORY_URL}
-              target="_blank"
-              rel="noreferrer"
-              className={`${dashboardHeaderPill} h-[29.6px] gap-[8.8px] p-1.5`}
-              onClick={() =>
-                trackEvent(MixpanelEvent.Navigation, {
-                  from: pathname,
-                  to: GITHUB_REPOSITORY_URL,
-                  source: "dashboard_header_github",
-                })
-              }
-            >
-              <Image
-                src={dashboardHeaderAsset("github.svg")}
-                alt=""
-                aria-hidden="true"
-                width={18}
-                height={18}
-                className="h-[17.6px] w-[17.6px] shrink-0"
-              />
-            </Link>
           </div>
           )}
 

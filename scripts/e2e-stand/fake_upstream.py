@@ -136,7 +136,8 @@ async def chat(request: web.Request):
         for m in body.get("messages", [])
     )
     LOG.append({"t": time.time(), "kind": "llm", "schema": (rf.get("json_schema") or {}).get("name"),
-                "stream": bool(body.get("stream")), "images": has_image, "mode": STATE["llm"]})
+                "stream": bool(body.get("stream")), "images": has_image, "mode": STATE["llm"],
+                "model": body.get("model"), "web_search": body.get("web_search")})
     mode = STATE["llm"]
     if mode == "http500":
         return web.json_response({"error": {"message": "fake upstream down"}}, status=500)

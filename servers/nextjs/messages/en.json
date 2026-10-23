@@ -793,7 +793,6 @@
     "tryAgain": "Try again",
     "title": "Dashboard",
     "settings": "Settings",
-    "joinDiscord": "Join Discord",
     "updateApp": "Update Kvant AI Studio",
     "actions": "Actions",
     "createNewPresentation": "Create new Presentation",
@@ -1525,7 +1524,8 @@
     "revokeKeyBody": "Clients using “{label}” will lose REST API and MCP access immediately. This action cannot be undone.",
     "revokeKeyBtn": "Revoke key",
     "tabBilling": "Balances",
-    "tabModels": "Models"
+    "tabModels": "Models",
+    "tabHelp": "Help"
   },
   "pdf": {
     "loadFailedTitle": "Failed to load presentation",
@@ -1802,7 +1802,8 @@
       "searxng": "Use a self-hosted SearXNG instance.",
       "tavily": "Search API optimized for AI applications.",
       "exa": "AI-native web search with extracted result highlights.",
-      "brave": "Brave Search API for web search results."
+      "brave": "Brave Search API for web search results.",
+      "custom": "Any OpenAI-compatible API with a model that searches the web (e.g. arckep.ru with perplexity/sonar). Empty address and key use those of the custom text provider."
     },
     "webLabelAuto": "Default (Model)",
     "webUrlLabelSearxng": "SearXNG base URL",
@@ -1811,7 +1812,8 @@
       "perplexity": "Perplexity API key",
       "tavily": "Tavily API key",
       "exa": "Exa API key",
-      "brave": "Brave Search API key"
+      "brave": "Brave Search API key",
+      "custom": "API key (optional)"
     },
     "imageApiKeyFieldLabel": {
       "pexels": "Pexels API Key",
@@ -1845,8 +1847,11 @@
     "webModelLabel": "Model (optional)",
     "webModelHint": {
       "gemini": "Empty uses gemini-3.8-flash directly or google-ai-studio/gemini-3.8-flash through an aggregator.",
-      "perplexity": "Only used through an aggregator. Empty uses perplexity/sonar."
-    }
+      "perplexity": "Only used through an aggregator. Empty uses perplexity/sonar.",
+      "custom": "A model with web search. Empty uses perplexity/sonar."
+    },
+    "webLabelCustom": "Custom (OpenAI-compatible)",
+    "webBaseUrlHintCustom": "API address, such as https://arckep.ru/api/v1. Empty uses the custom text provider's address."
   },
   "imgPicker": {
     "title": "Change Image",
@@ -2686,7 +2691,8 @@
     "validWebProvider": "Select a valid web search provider.",
     "vertexKeyOrProject": "Vertex AI requires either a Vertex API key or a GCP project.",
     "vertexModeConflict": "Use either Vertex API key mode or project/location mode, not both.",
-    "vertexModel": "Vertex model is required."
+    "vertexModel": "Vertex model is required.",
+    "customSearchUrl": "Enter the address of the search API."
   },
   "help": {
     "metaTitle": "Help",
@@ -2822,12 +2828,11 @@
           "Reproduce the problem with the smallest possible example.",
           "Check whether it affects one presentation or all of them.",
           "Remove API keys and passwords before sharing logs or configuration."
-        ],
-        "github": "Report a bug on GitHub",
-        "discord": "Ask on Discord"
+        ]
       }
     },
-    "basedOn": "Kvant AI Studio is built on the open-source Presenton project (Apache 2.0 license)."
+    "basedOn": "Kvant AI Studio is built on the open-source Presenton project (Apache 2.0 license).",
+    "video": "Video"
   },
   "studio": {
     "nav": {
@@ -3261,5 +3266,44 @@
     "people": "People in slide pictures",
     "peoplePlaceholder": "Slavic (Eastern European, Russian) appearance",
     "peopleHint": "Added to the prompt of every slide picture: “if the picture shows people, they should be of …”. English works best. Empty = nothing is added. The Studio is not affected: users write its prompts."
+  },
+  "adminHelp": {
+    "loading": "Loading the help…",
+    "title": "Help page",
+    "desc": "Help sections for users: Markdown text, pictures, files (PDF, guides, spreadsheets) and videos. Everyone signed in sees the help, in any interface language.",
+    "stateBuiltin": "The built-in help is shown now. Its text is below: edit it and save to show your own.",
+    "stateCustom": "Your help is shown, saved {date}.",
+    "openHelp": "Open Help",
+    "untitled": "Untitled",
+    "attachments": "files: {files}, videos: {videos}",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "deleteSection": "Delete section",
+    "sectionTitle": "Section title",
+    "sectionTitlePh": "For example: How to make a presentation",
+    "body": "Text",
+    "insertImage": "Insert picture",
+    "preview": "Preview",
+    "edit": "Edit",
+    "markdownHint": "Markdown: **bold**, *italic*, ## subheading, - list, 1. numbered list, [link text](https://…); pictures with the Insert picture button.",
+    "videos": "Videos",
+    "addVideo": "Add video",
+    "videoTitlePh": "Caption (optional)",
+    "videoHint": "YouTube, Rutube and VK Video links are embedded as a player; others are shown as links.",
+    "files": "Files",
+    "attachFile": "Attach file",
+    "filesHint": "Up to 50 MB: PDF, Word, PowerPoint, Excel, CSV, TXT, ZIP, pictures, MP4/WEBM, MP3. Users see the name, which you can change.",
+    "remove": "Remove",
+    "addSection": "Add section",
+    "save": "Save",
+    "saved": "Saved — users see the new help now.",
+    "unsaved": "There are unsaved changes.",
+    "reset": "Restore the built-in help",
+    "resetConfirm": "Delete your help and its files?",
+    "resetYes": "Yes, restore",
+    "cancel": "Cancel",
+    "errors": {
+      "requestFailed": "The request failed"
+    }
   }
 }

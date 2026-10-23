@@ -793,7 +793,6 @@
     "tryAgain": "Повторить",
     "title": "Главная",
     "settings": "Настройки",
-    "joinDiscord": "Discord",
     "updateApp": "Обновить Kvant AI Studio",
     "actions": "Действия",
     "createNewPresentation": "Создать презентацию",
@@ -1525,7 +1524,8 @@
     "revokeKeyBody": "Клиенты, использующие «{label}», немедленно потеряют доступ к REST API и MCP. Действие нельзя отменить.",
     "revokeKeyBtn": "Отозвать ключ",
     "tabBilling": "Балансы",
-    "tabModels": "Модели"
+    "tabModels": "Модели",
+    "tabHelp": "Помощь"
   },
   "pdf": {
     "loadFailedTitle": "Не удалось загрузить презентацию",
@@ -1802,7 +1802,8 @@
       "searxng": "Использовать собственный экземпляр SearXNG.",
       "tavily": "API поиска, оптимизированный для ИИ-приложений.",
       "exa": "ИИ-ориентированный веб-поиск с выделением ключевых фрагментов.",
-      "brave": "API Brave Search для результатов веб-поиска."
+      "brave": "API Brave Search для результатов веб-поиска.",
+      "custom": "Любой OpenAI-совместимый API с моделью, которая ищет в интернете (например, arckep.ru с perplexity/sonar). Пустые адрес и ключ — те же, что у «своего» провайдера текста."
     },
     "webLabelAuto": "По умолчанию (модель)",
     "webUrlLabelSearxng": "Базовый URL SearXNG",
@@ -1811,7 +1812,8 @@
       "perplexity": "API-ключ Perplexity",
       "tavily": "API-ключ Tavily",
       "exa": "API-ключ Exa",
-      "brave": "API-ключ Brave Search"
+      "brave": "API-ключ Brave Search",
+      "custom": "API-ключ (необязательно)"
     },
     "imageApiKeyFieldLabel": {
       "pexels": "API-ключ Pexels",
@@ -1845,8 +1847,11 @@
     "webModelLabel": "Модель (необязательно)",
     "webModelHint": {
       "gemini": "Пусто — по умолчанию: gemini-3.8-flash напрямую или google-ai-studio/gemini-3.8-flash через посредника.",
-      "perplexity": "Нужна только через посредника. Пусто — perplexity/sonar."
-    }
+      "perplexity": "Нужна только через посредника. Пусто — perplexity/sonar.",
+      "custom": "Модель с веб-поиском. Пусто — perplexity/sonar."
+    },
+    "webLabelCustom": "Свой (OpenAI-совместимый)",
+    "webBaseUrlHintCustom": "Адрес API, например https://arckep.ru/api/v1. Пусто — адрес «своего» провайдера текста."
   },
   "imgPicker": {
     "title": "Заменить изображение",
@@ -2686,7 +2691,8 @@
     "validWebProvider": "Выберите корректного провайдера веб-поиска.",
     "vertexKeyOrProject": "Для Vertex AI нужен API-ключ Vertex или проект GCP.",
     "vertexModeConflict": "Используйте либо режим API-ключа Vertex, либо режим проекта/региона — не оба сразу.",
-    "vertexModel": "Укажите модель Vertex."
+    "vertexModel": "Укажите модель Vertex.",
+    "customSearchUrl": "Укажите адрес API поиска."
   },
   "help": {
     "metaTitle": "Помощь",
@@ -2822,12 +2828,11 @@
           "Повторите проблему на самом простом примере.",
           "Проверьте, касается ли она одной презентации или всех.",
           "Перед отправкой логов и настроек удалите из них API-ключи и пароли."
-        ],
-        "github": "Сообщить об ошибке на GitHub",
-        "discord": "Спросить в Discord"
+        ]
       }
     },
-    "basedOn": "Kvant AI Studio основан на открытом проекте Presenton (лицензия Apache 2.0)."
+    "basedOn": "Kvant AI Studio основан на открытом проекте Presenton (лицензия Apache 2.0).",
+    "video": "Видео"
   },
   "studio": {
     "nav": {
@@ -3261,5 +3266,44 @@
     "people": "Люди на картинках слайдов",
     "peoplePlaceholder": "Slavic (Eastern European, Russian) appearance",
     "peopleHint": "Добавляется к промпту каждой картинки слайда: «если на картинке люди, они должны быть …». Лучше по-английски. Пусто — не добавлять. В Студии не действует: там промпт пишет пользователь."
+  },
+  "adminHelp": {
+    "loading": "Загружаем справку…",
+    "title": "Раздел «Помощь»",
+    "desc": "Разделы справки для пользователей: текст в Markdown, картинки, файлы (PDF, инструкции, таблицы) и видео. Справку видят все, кто вошёл в сервис, на любом языке интерфейса.",
+    "stateBuiltin": "Сейчас показывается встроенная справка. Ниже — её текст: поправьте и сохраните, чтобы показывать свою.",
+    "stateCustom": "Показывается ваша справка, сохранена {date}.",
+    "openHelp": "Открыть «Помощь»",
+    "untitled": "Без заголовка",
+    "attachments": "файлов: {files}, видео: {videos}",
+    "moveUp": "Выше",
+    "moveDown": "Ниже",
+    "deleteSection": "Удалить раздел",
+    "sectionTitle": "Заголовок раздела",
+    "sectionTitlePh": "Например: Как создать презентацию",
+    "body": "Текст",
+    "insertImage": "Вставить картинку",
+    "preview": "Предпросмотр",
+    "edit": "Редактировать",
+    "markdownHint": "Markdown: **жирный**, *курсив*, ## подзаголовок, - список, 1. нумерованный список, [текст ссылки](https://…), картинка — кнопкой «Вставить картинку».",
+    "videos": "Видео",
+    "addVideo": "Добавить видео",
+    "videoTitlePh": "Подпись (необязательно)",
+    "videoHint": "Ссылки YouTube, Rutube и VK Видео встраиваются в страницу как плеер, остальные показываются ссылкой.",
+    "files": "Файлы",
+    "attachFile": "Прикрепить файл",
+    "filesHint": "До 50 МБ: PDF, Word, PowerPoint, Excel, CSV, TXT, ZIP, картинки, MP4/WEBM, MP3. Название можно поменять — его увидят пользователи.",
+    "remove": "Убрать",
+    "addSection": "Добавить раздел",
+    "save": "Сохранить",
+    "saved": "Сохранено — пользователи уже видят новую справку.",
+    "unsaved": "Есть несохранённые изменения.",
+    "reset": "Вернуть встроенную справку",
+    "resetConfirm": "Удалить вашу справку и её файлы?",
+    "resetYes": "Да, вернуть",
+    "cancel": "Отмена",
+    "errors": {
+      "requestFailed": "Не удалось выполнить запрос"
+    }
   }
 }

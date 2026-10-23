@@ -18,6 +18,7 @@ from api.v1.mock.router import API_V1_MOCK_ROUTER
 from api.v1.ppt.router import API_V1_PPT_ROUTER
 from api.v1.studio.router import API_V1_STUDIO_ROUTER
 from api.v1.studio.admin_router import API_V1_ADMIN_STUDIO_ROUTER
+from api.v1.help.router import API_V1_ADMIN_HELP_ROUTER, API_V1_HELP_ROUTER
 from api.v1.billing.router import API_V1_ADMIN_BILLING_ROUTER, API_V1_BILLING_ROUTER
 from api.v1.webhook.router import API_V1_WEBHOOK_ROUTER
 from api.v2.router import API_V2_ROUTER
@@ -97,6 +98,8 @@ app.include_router(API_V1_ADMIN_ROUTER)
 app.include_router(API_V1_ASYNC_TASKS_ROUTER)
 app.include_router(API_V1_STUDIO_ROUTER)
 app.include_router(API_V1_ADMIN_STUDIO_ROUTER)
+app.include_router(API_V1_HELP_ROUTER)
+app.include_router(API_V1_ADMIN_HELP_ROUTER)
 app.include_router(API_V1_BILLING_ROUTER)
 app.include_router(API_V1_ADMIN_BILLING_ROUTER)
 app.include_router(API_V2_ROUTER)

@@ -337,6 +337,15 @@ export const getLLMConfigValidationError = (
           return tr("cfgErr.apiKeyRequired", "{provider} API key is required.", { provider: "Perplexity" });
         }
         break;
+      case "custom":
+        // Empty address and key fall back to the custom text provider's.
+        if (!isProvided(llmConfig.CUSTOM_SEARCH_BASE_URL) && !isProvided(llmConfig.CUSTOM_LLM_URL)) {
+          return tr("cfgErr.customSearchUrl", "Enter the address of the search API.");
+        }
+        if (!isProvided(llmConfig.CUSTOM_SEARCH_API_KEY) && !isProvided(llmConfig.CUSTOM_LLM_API_KEY)) {
+          return tr("cfgErr.apiKeyRequired", "{provider} API key is required.", { provider: "Search API" });
+        }
+        break;
       case "brave":
         if (!isProvided(llmConfig.BRAVE_SEARCH_API_KEY)) {
           return tr("cfgErr.apiKeyRequired", "{provider} API key is required.", { provider: "Brave Search" });

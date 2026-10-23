@@ -24,8 +24,9 @@ import {
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
 import { useTranslations } from "next-intl";
 
-// Only Gemini (default) and Perplexity are offered; the backend also falls
-// back to Gemini when no provider is chosen and the Google key is set.
+// Gemini (default), Perplexity and a custom OpenAI-compatible API are offered;
+// the backend also falls back to Gemini when no provider is chosen and the
+// Google key is set.
 const WEB_SEARCH_PROVIDER_OPTIONS = VISIBLE_WEB_SEARCH_PROVIDERS.map(
   (value) => WEB_SEARCH_PROVIDERS[value]
 );
@@ -87,6 +88,13 @@ const WebSearchProvider = ({
     }
   }, [isWebSearchEnabled, llmConfig.WEB_SEARCH_PROVIDER, update]);
 
+  const optionLabel = (value: string) =>
+    value === "auto"
+      ? tp("webLabelAuto")
+      : value === "custom"
+        ? tp("webLabelCustom")
+        : WEB_SEARCH_PROVIDERS[value]?.label || value;
+
   const getValue = (field?: string) =>
     field ? String(llmConfig[field as keyof LLMConfig] || "") : "";
 
@@ -135,11 +143,9 @@ const WebSearchProvider = ({
                           className="h-12 w-[222px] justify-between rounded-lg border border-gray-300 px-4 py-4 outline-none transition-colors hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                         >
                           <span className="truncate text-sm font-medium text-gray-900">
-                            {selected === "auto"
-                              ? tp("webLabelAuto")
-                              : selected
-                                ? WEB_SEARCH_PROVIDERS[selected]?.label || selected
-                                : t("selectWebProviderPlaceholder")}
+                            {selected
+                              ? optionLabel(selected)
+                              : t("selectWebProviderPlaceholder")}
                           </span>
                           <ChevronUp className="h-4 w-4 text-gray-500" />
                         </Button>
@@ -173,7 +179,7 @@ const WebSearchProvider = ({
                                   />
                                   <div className="flex flex-1 flex-col space-y-1">
                                     <span className="text-sm font-medium text-gray-900">
-                                      {option.value === "auto" ? tp("webLabelAuto") : option.label}
+                                      {optionLabel(option.value)}
                                       {option.value === DEFAULT_WEB_SEARCH_PROVIDER ? (
                                         <span className="ml-2 rounded-full bg-[#F4FEF5] px-2 py-0.5 text-[10px] font-medium text-[#02940F]">
                                           {tp("webDefault")}
@@ -221,7 +227,9 @@ const WebSearchProvider = ({
                     />
                     {provider.value !== "searxng" && (
                       <p className="mt-1.5 text-xs leading-5 text-gray-500">
-                        {tp("webBaseUrlHint")}
+                        {provider.value === "custom"
+                          ? tp("webBaseUrlHintCustom")
+                          : tp("webBaseUrlHint")}
                       </p>
                     )}
                   </div>
