@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import BrandLogo from "@/components/brand/BrandLogo";
+import HomeButton from "@/components/HomeButton";
 
 interface OutlineStandardHeaderProps {
   title: string;
@@ -20,13 +19,7 @@ const OutlineStandardHeader = ({
   <header className="sticky top-0 z-[60] h-[68px] w-full border-b border-[#EDEEEF] bg-white font-syne">
     <div className="flex h-full items-center justify-between px-6">
       <div className="flex min-w-0 items-center gap-3">
-        <Link
-          href="/dashboard"
-          aria-label={t("outline.goToDashboard")}
-          className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#03B015]/30"
-        >
-          <BrandLogo variant="mark" height={22} />
-        </Link>
+        <HomeButton logoHeight={22} />
         <h1 className="truncate text-base font-medium tracking-[0.16px] text-[#101323]">
           {title}
         </h1>

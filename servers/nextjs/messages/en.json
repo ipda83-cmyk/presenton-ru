@@ -16,7 +16,8 @@
     "templates": "Templates",
     "noPresentationId": "No presentation id found",
     "pleaseTryAgain": "Please try again",
-    "goHome": "Go to home"
+    "goHome": "Go to home",
+    "home": "Home"
   },
   "upload": {
     "prompt": {

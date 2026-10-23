@@ -16,7 +16,8 @@
     "templates": "Шаблоны",
     "noPresentationId": "Не указан идентификатор презентации",
     "pleaseTryAgain": "Попробуйте ещё раз",
-    "goHome": "На главную"
+    "goHome": "На главную",
+    "home": "Главная"
   },
   "upload": {
     "prompt": {

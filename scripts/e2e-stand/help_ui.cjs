@@ -89,6 +89,25 @@ async function ready(page, text) {
   check("no Discord or GitHub on the dashboard", !html.includes("discord") && !html.includes("github"));
   await admin.screenshot({ path: "/tmp/e2e/help-dashboard.png" });
 
+  // The editor has «← Главная» first in its header; it opens the dashboard.
+  const presentations = await admin.evaluate(async () =>
+    (await fetch("/api/v1/ppt/presentation/all?version=v2-standard")).json(),
+  );
+  const presentationId = (Array.isArray(presentations) ? presentations : presentations.presentations || [])[0]?.id;
+  if (presentationId) {
+    await admin.goto(`${BASE}/presentation?id=${presentationId}`, { waitUntil: "networkidle2" }).catch(() => {});
+    await ready(admin, "Главная");
+    await admin.screenshot({ path: "/tmp/e2e/help-editor-header.png" });
+    const home = await admin.$("header a[href='/dashboard'], a[href='/dashboard'][aria-label='На главную']");
+    check("the editor has a Home button", home && (await home.evaluate((el) => el.textContent.includes("Главная"))));
+    if (home) {
+      await Promise.all([admin.waitForNavigation({ timeout: 30000 }).catch(() => {}), home.click()]);
+      check("Home opens the dashboard", admin.url().endsWith("/dashboard"), admin.url());
+    }
+  } else {
+    check("a presentation to open in the editor", false, JSON.stringify(presentations).slice(0, 200));
+  }
+
   await admin.evaluate(() => fetch("/api/v1/admin/help", { method: "DELETE" }));
   check("no page errors", errors.length === 0, errors.join(" | ").slice(0, 300));
   await browser.close();

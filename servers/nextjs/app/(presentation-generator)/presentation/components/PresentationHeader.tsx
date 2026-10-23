@@ -57,7 +57,7 @@ import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { v4 as uuidv4 } from "uuid";
 import StreamingGenerationMetrics from "./StreamingGenerationMetrics";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import BrandLogo from "@/components/brand/BrandLogo";
+import HomeButton from "@/components/HomeButton";
 
 const MAX_EXPORT_TITLE_LENGTH = 40;
 
@@ -574,9 +574,7 @@ const PresentationHeader = ({
     <>
       <div className="py-[18px] px-4 sticky top-0 bg-white z-50 shadow-sm font-syne flex justify-between items-center gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <button type="button" onClick={() => router.push("/dashboard")} className="shrink-0 cursor-pointer" aria-label="Kvant AI Studio">
-            <BrandLogo variant="mark" height={24} />
-          </button>
+          <HomeButton />
           {presentationData && !isStreaming && !isEditingTitle ? (
             <ToolTip content={t("renamePresentation")}>{titleBlock}</ToolTip>
           ) : (
