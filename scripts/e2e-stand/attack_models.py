@@ -86,6 +86,28 @@ def last_job() -> dict:
     return jobs[-1] if jobs else {}
 
 
+PPTX_CHECK = r"""
+import re, sys, zipfile
+z = zipfile.ZipFile(sys.argv[1])
+svg_only = pictures = 0
+for name in z.namelist():
+    if re.match(r"ppt/slides/slide\d+[.]xml$", name):
+        xml = z.read(name).decode()
+        pictures += xml.count("<p:pic>")
+        svg_only += len(re.findall(r"<a:blip(?![^>]*r:embed)[^>]*>", xml))
+print(pictures, svg_only)
+sys.exit(0 if pictures and not svg_only else 1)
+"""
+
+
+def pptx_pictures_ok(path: str) -> bool:
+    """Pictures of an exported PPTX all have a PNG in <a:blip r:embed> (not SVG only)."""
+    result = subprocess.run(["docker", "exec", APP, "/opt/venv/bin/python", "-c", PPTX_CHECK, path],
+                            capture_output=True, text=True, encoding="utf-8", errors="replace")
+    print("   pictures, svg-only:", result.stdout.strip(), result.stderr.strip()[-200:])
+    return result.returncode == 0
+
+
 def help_checks(admin: requests.Session, user: requests.Session) -> None:
     """Admin → Help: sections, files and videos; users read, only administrators edit."""
     H = f"{BASE}/api/v1/help"
@@ -240,6 +262,14 @@ def main() -> int:
     check("slide pictures ask for people of Slavic appearance",
           slide_jobs and all("Slavic (Eastern European, Russian) appearance" in job.get("prompt", "") for job in slide_jobs),
           str([job.get("prompt", "")[-160:] for job in slide_jobs[:1]]))
+    if r.status_code == 200:
+        check("API export: every picture has a PNG copy (icons show in any PowerPoint)",
+              pptx_pictures_ok(r.json()["path"]), r.json()["path"])
+        presentation_id = r.json()["presentation_id"]
+        r = admin.post(f"{BASE}/api/export-presentation", json={"id": presentation_id, "format": "pptx", "title": "icons"}, timeout=600)
+        name = r.json().get("path", "").split("name=", 1)[-1] if r.status_code == 200 else ""
+        check("editor export: every picture has a PNG copy",
+              r.status_code == 200 and pptx_pictures_ok("/app_data/exports/" + requests.utils.unquote(name)), f"{r.status_code} {r.text[:200]}")
     studio_jobs = [e for e in fake_log() if e.get("kind") == "job" and e.get("prompt", "").startswith("город")]
     check("Studio prompts stay as the user wrote them", studio_jobs and "Slavic" not in studio_jobs[0]["prompt"], str(studio_jobs[:1]))
 

@@ -27,6 +27,7 @@ from utils.runtime_limits import (
 from utils.i18n import t
 
 LOGGER = logging.getLogger(__name__)
+SVG_FALLBACK_TIMEOUT_SECONDS = 120
 
 EXPORT_DIRECTORY_MODE = 0o755
 EXPORT_FILE_MODE = 0o644
@@ -443,12 +444,54 @@ class ExportTaskService:
         )
 
         output_path = self._resolve_output_path(response_data)
+        if export_as == "pptx":
+            await self._add_svg_fallbacks(output_path)
         output_path = self._move_export_to_owner(output_path)
         self._ensure_output_readable(output_path)
 
         return PresentationExportTaskResult(
             path=output_path,
         )
+
+    @staticmethod
+    def _svg_fallback_script() -> str | None:
+        configured = (os.getenv("PPTX_SVG_FALLBACK_SCRIPT") or "").strip()
+        service_dir = os.path.dirname(__file__)
+        for candidate in (
+            configured,
+            "/app/scripts/pptx-svg-fallback.mjs",
+            os.path.abspath(os.path.join(service_dir, "..", "..", "..", "scripts", "pptx-svg-fallback.mjs")),
+        ):
+            if candidate and os.path.isfile(candidate):
+                return candidate
+        return None
+
+    async def _add_svg_fallbacks(self, pptx_path: str) -> None:
+        """PNG copies for the SVG-only pictures of the export package, so icons
+        and shapes show in PowerPoint 2016/2019, LibreOffice and Keynote too.
+        Best effort: on failure the file stays as exported."""
+        script = self._svg_fallback_script()
+        if script is None:
+            LOGGER.warning("[export_runtime] pptx-svg-fallback.mjs not found; SVG pictures stay SVG-only")
+            return
+        try:
+            result = await self._run_bounded_child(
+                [self.node_binary, script, pptx_path, self.export_dir],
+                cwd=self.export_dir,
+                timeout=SVG_FALLBACK_TIMEOUT_SECONDS,
+                env=os.environ.copy(),
+            )
+        except (HTTPException, OSError) as exc:
+            LOGGER.warning("[export_runtime] SVG fallbacks failed: %s", exc)
+            return
+        if result["returncode"] != 0:
+            LOGGER.warning(
+                "[export_runtime] SVG fallbacks failed rc=%s stderr=%s",
+                result["returncode"],
+                _snippet(result["stderr"]),
+            )
+            return
+        LOGGER.info("[export_runtime] SVG fallbacks: %s", str(result["stdout"]).strip()[-200:])
 
     async def convert_pptx_to_html(
         self, pptx_path: str, get_fonts: bool = False

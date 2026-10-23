@@ -23,6 +23,53 @@ export function getPresentonAppRoot(): string {
   );
 }
 
+const SVG_FALLBACK_TIMEOUT_MS = 120_000;
+
+/**
+ * PNG copies for the SVG-only pictures the export package writes, so icons and
+ * shapes show in PowerPoint 2016/2019, LibreOffice and Keynote too
+ * (scripts/pptx-svg-fallback.mjs). Best effort: on failure the file stays as
+ * exported.
+ */
+async function addSvgFallbacks(pptxPath: string, exportRoot: string): Promise<void> {
+  const script = path.join(getPresentonAppRoot(), "scripts", "pptx-svg-fallback.mjs");
+  try {
+    await fs.access(script);
+  } catch {
+    console.warn("[bundled-export] pptx-svg-fallback.mjs not found; SVG pictures stay SVG-only");
+    return;
+  }
+  await new Promise<void>((resolve) => {
+    const child = spawn(process.execPath, [script, pptxPath, exportRoot], {
+      cwd: exportRoot,
+      stdio: ["ignore", "pipe", "pipe"],
+      env: process.env,
+    });
+    const output = new BoundedTextBuffer();
+    const errors = new BoundedTextBuffer();
+    child.stdout?.on("data", (d: Buffer) => output.append(d));
+    child.stderr?.on("data", (d: Buffer) => errors.append(d));
+    const timer = setTimeout(() => child.kill("SIGKILL"), SVG_FALLBACK_TIMEOUT_MS);
+    let settled = false;
+    const done = (code: number | null) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (code === 0) {
+        console.info("[bundled-export] SVG fallbacks", output.toString().trim());
+      } else {
+        console.warn("[bundled-export] SVG fallbacks failed", { code, stderr: errors.toString() });
+      }
+      resolve();
+    };
+    child.once("error", (error) => {
+      console.warn("[bundled-export] SVG fallbacks failed", error.message);
+      done(-1);
+    });
+    child.once("close", done);
+  });
+}
+
 function extractSessionTokenFromCookieHeader(cookieHeader?: string): string | undefined {
   if (!cookieHeader) {
     return undefined;
@@ -257,6 +304,9 @@ async function runBundledPresentationExportLocked(params: {
     });
 
     await ensureExportFileReadable(outPath);
+    if (format === "pptx") {
+      await addSvgFallbacks(outPath, exportRoot);
+    }
     console.info("[bundled-export] finish", {
       presentationId,
       format,

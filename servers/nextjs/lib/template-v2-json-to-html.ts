@@ -483,9 +483,30 @@ function renderContainer(item: JsonRecord, mode: RenderMode): string {
   )};justify-content:${horizontalAlign(
     readString(alignment.horizontal)
   )};${containerOverflowStyle(item, child)}`;
+  const content = child ? childWithContainerWidth(item, child) : null;
   return `<div style="${style}">${
-    child ? renderItem(child, readRecordOrNull(child.position) ? "absolute" : "flow") : ""
+    content ? renderItem(content, readRecordOrNull(content.position) ? "absolute" : "flow") : ""
   }</div>`;
+}
+
+// Text in a card without its own width wraps at the card's inner width, as in
+// the editor (model.ts elementSize); otherwise a flow item (flex-shrink:0)
+// stays one long line, and the PPTX export measures that line and shrinks the
+// text to fit it.
+function childWithContainerWidth(item: JsonRecord, child: JsonRecord): JsonRecord {
+  const type = readString(child.type);
+  const containerWidth = readNumber(readRecord(item.size).width);
+  if (
+    (type !== "text" && type !== "text-list") ||
+    containerWidth == null ||
+    readNumber(readRecord(child.size).width) != null
+  ) {
+    return child;
+  }
+  const padding = readRecord(item.padding);
+  const width =
+    containerWidth - (readNumber(padding.left) ?? 0) - (readNumber(padding.right) ?? 0);
+  return { ...child, size: { ...readRecord(child.size), width: Math.max(1, width) } };
 }
 
 function containerOverflowStyle(

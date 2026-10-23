@@ -130,6 +130,8 @@ COPY --from=assets-builder /app/package.json /app/package.json
 COPY --from=assets-builder /app/document-extraction-liteparse /app/document-extraction-liteparse
 COPY --from=assets-builder /app/presentation-export /app/presentation-export
 COPY --from=assets-builder /app/scripts/sync-presentation-export.cjs /app/scripts/sync-presentation-export.cjs
+# PNG copies for the SVG-only pictures of exported PPTX (see the script).
+COPY scripts/pptx-svg-fallback.mjs /app/scripts/pptx-svg-fallback.mjs
 
 RUN test -f /app/presentation-export/runner.mjs \
     && test -f /app/presentation-export/node_modules/@presenton/export-core/dist/index.js

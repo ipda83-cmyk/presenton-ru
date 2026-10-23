@@ -159,3 +159,30 @@ test("honors text-list item and marker gaps in HTML", () => {
   assert.match(listHtml, /<span aria-hidden="true">•<\/span>/);
   assert.match(listHtml, /<li style="margin-top:11px;/);
 });
+
+test("text in a card wraps at the card's inner width in the export HTML", () => {
+  const card = (child) =>
+    renderer.templateV2UiToHtml({
+      elements: [
+        {
+          type: "container",
+          position: { x: 10, y: 10 },
+          size: { width: 566, height: 94 },
+          padding: { top: 20, right: 27, bottom: 18, left: 27 },
+          child,
+        },
+      ],
+      components: [],
+    });
+  const text = {
+    type: "text",
+    font: { size: 14.22, family: "Lato", line_height: 1.29 },
+    runs: [{ text: "Используйте предусмотренные законом налоговые режимы, льготы и способы учёта." }],
+  };
+
+  // 566 - 27 - 27: the text box gets the card's inner width, so it wraps.
+  assert.match(card(text), /width:512px;/);
+  // A text with its own width keeps it.
+  assert.match(card({ ...text, size: { width: 300 } }), /width:300px;/);
+  assert.doesNotMatch(card({ ...text, size: { width: 300 } }), /width:512px;/);
+});
