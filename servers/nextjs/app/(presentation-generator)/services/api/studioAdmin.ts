@@ -36,6 +36,8 @@ export interface AdminStudioModels {
   default_model: string;
   markup: number;
   slide_image_model: string;
+  /** Who the slide pictures show; empty = no instruction. */
+  people_appearance: string;
   models: AdminStudioModel[];
 }
 
@@ -53,6 +55,7 @@ export interface StudioModelsSettings {
   default_model: string;
   markup: number;
   slide_image_model: string;
+  people_appearance: string;
   models: Record<string, StudioModelSettings>;
 }
 

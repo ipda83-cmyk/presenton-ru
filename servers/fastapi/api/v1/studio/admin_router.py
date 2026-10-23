@@ -31,6 +31,7 @@ class StudioModelsSettings(BaseModel):
     default_model: str = Field(default="", max_length=128)
     markup: float = Field(default=1.45, gt=0, le=100)
     slide_image_model: str = Field(default="", max_length=128)
+    people_appearance: Optional[str] = Field(default=None, max_length=300)
     models: dict[str, ModelSettings] = Field(default_factory=dict)
 
 
@@ -94,6 +95,7 @@ def _state() -> dict:
         "default_model": REGISTRY.default_key(),
         "markup": settings["markup"],
         "slide_image_model": settings["slide_image_model"],
+        "people_appearance": settings.get("people_appearance", ""),
         "models": [_model_row(model) for model in models],
     }
 

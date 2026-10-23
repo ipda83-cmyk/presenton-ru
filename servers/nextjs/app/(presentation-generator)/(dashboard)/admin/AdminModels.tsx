@@ -46,6 +46,7 @@ export default function AdminModels() {
   const [defaultModel, setDefaultModel] = useState("");
   const [markup, setMarkup] = useState("1.45");
   const [slideModel, setSlideModel] = useState("");
+  const [people, setPeople] = useState("");
   const [showAll, setShowAll] = useState(false);
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState<string | null>(null);
@@ -59,6 +60,7 @@ export default function AdminModels() {
     setDefaultModel(value.default_model);
     setMarkup(String(value.markup));
     setSlideModel(value.slide_image_model);
+    setPeople(value.people_appearance);
   }, []);
 
   const run = useCallback(
@@ -128,6 +130,7 @@ export default function AdminModels() {
           default_model: defaultModel,
           markup: value,
           slide_image_model: slideModel,
+          people_appearance: people.trim(),
           models: draft,
         }),
       t("saveFailed"),
@@ -218,6 +221,17 @@ export default function AdminModels() {
                 ))}
             </select>
             <span className="font-normal text-[#667085]">{t("slideModelHint")}</span>
+          </label>
+          <label className="flex flex-col gap-1.5 text-xs font-medium text-[#344054] md:col-span-3">
+            {t("people")}
+            <input
+              className={inputClass}
+              maxLength={300}
+              value={people}
+              placeholder={t("peoplePlaceholder")}
+              onChange={(event) => setPeople(event.target.value)}
+            />
+            <span className="font-normal text-[#667085]">{t("peopleHint")}</span>
           </label>
         </div>
       </section>

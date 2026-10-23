@@ -33,7 +33,9 @@ FROM node:22-bookworm-slim AS nextjs-builder
 
 WORKDIR /app/servers/nextjs
 
-ENV NEXT_TELEMETRY_DISABLED=1
+# Cypress runs from a developer machine, not in the image: skip its 250 MB binary.
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    CYPRESS_INSTALL_BINARY=0
 
 COPY servers/nextjs/package.json servers/nextjs/package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm \

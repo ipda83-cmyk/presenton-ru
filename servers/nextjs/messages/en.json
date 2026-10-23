@@ -3257,6 +3257,9 @@
     "loading": "Loading…",
     "errors": {
       "requestFailed": "The request failed"
-    }
+    },
+    "people": "People in slide pictures",
+    "peoplePlaceholder": "Slavic (Eastern European, Russian) appearance",
+    "peopleHint": "Added to the prompt of every slide picture: “if the picture shows people, they should be of …”. English works best. Empty = nothing is added. The Studio is not affected: users write its prompts."
   }
 }

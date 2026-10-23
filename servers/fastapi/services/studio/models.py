@@ -20,6 +20,9 @@ MODES = ("generate", "edit", "reference", "storyboard")
 MAX_COUNT = 4  # images per request the Studio offers
 DEFAULT_MARKUP = 1.45
 DEFAULT_MODEL = "gemini-nano-banana-2.1"
+# Who the slide pictures show (the product is for a Russian audience); empty = say nothing.
+DEFAULT_PEOPLE_APPEARANCE = "Slavic (Eastern European, Russian) appearance"
+PEOPLE_APPEARANCE_MAX = 300
 
 # Keys of the first Studio version (history, old clients).
 LEGACY_KEYS = {
@@ -146,6 +149,7 @@ def default_settings() -> dict:
         "default_model": DEFAULT_MODEL,
         "markup": DEFAULT_MARKUP,
         "slide_image_model": "",
+        "people_appearance": DEFAULT_PEOPLE_APPEARANCE,
         "models": {
             model_id: {"enabled": True, "title": title, "order": index, "tags": list(tags)}
             for index, (model_id, title, tags) in enumerate(DEFAULT_ENABLED)
@@ -169,6 +173,9 @@ def normalize_settings(raw: Any, catalog_ids: set[str]) -> dict:
         "default_model": str(raw.get("default_model") or base["default_model"]),
         "markup": min(_float(raw.get("markup"), DEFAULT_MARKUP) or DEFAULT_MARKUP, 100.0),
         "slide_image_model": str(raw.get("slide_image_model") or ""),
+        "people_appearance": " ".join(
+            str(raw.get("people_appearance", base["people_appearance"]) or "").split()
+        )[:PEOPLE_APPEARANCE_MAX],
         "models": {},
     }
     models = raw.get("models") if isinstance(raw.get("models"), dict) else base["models"]
@@ -269,6 +276,9 @@ class Registry:
         item = self.settings["models"].get(model.key) or {}
         costs = item.get("costs") or {}
         return costs.get(option)
+
+    def people_appearance(self) -> str:
+        return self.settings.get("people_appearance", "")
 
     def slide_image_model(self) -> StudioModel | None:
         key = self.settings["slide_image_model"]

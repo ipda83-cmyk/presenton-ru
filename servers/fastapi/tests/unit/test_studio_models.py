@@ -227,3 +227,52 @@ def test_estimates_asked_at_once_share_one_cache(monkeypatch):
     asyncio.run(pricing.price_table())
     expected = sum(len(pricing.options(model)) for model in enabled_models())
     assert sum(len(options) for options in stored["studio:estimates"].values()) == expected
+
+
+def test_slide_pictures_ask_for_the_audience_appearance(monkeypatch, tmp_path):
+    from models.image_prompt import ImagePrompt
+    from services import image_generation_service as images
+
+    assert REGISTRY.people_appearance() == "Slavic (Eastern European, Russian) appearance"
+    text = images.with_people_appearance("office team at a whiteboard")
+    assert text.startswith("office team at a whiteboard. If the picture shows people")
+    assert "Slavic (Eastern European, Russian) appearance" in text
+
+    sent = []
+
+    async def fake_provider(self, prompt):
+        sent.append(prompt)
+        return "https://example.com/picture.jpg"
+
+    monkeypatch.setattr(images.ImageGenerationService, "_call_image_provider", fake_provider)
+    generator = images.ImageGenerationService(str(tmp_path))
+    generator.is_image_generation_disabled = False
+    generator.image_gen_func = object()  # anything: the provider call is faked
+    monkeypatch.setattr(generator, "is_stock_provider_selected", lambda: False)
+    asyncio.run(generator.generate_image(ImagePrompt(prompt="team meeting", theme_prompt="green")))
+    assert sent[-1].startswith("team meeting, green. If the picture shows people")
+
+    # Stock photo search gets keywords only.
+    monkeypatch.setattr(generator, "is_stock_provider_selected", lambda: True)
+    asyncio.run(generator.generate_image(ImagePrompt(prompt="team meeting")))
+    assert sent[-1] == "team meeting"
+
+    # The administrator can change or turn it off.
+    settings = default_settings()
+    settings["people_appearance"] = ""
+    REGISTRY.apply(load_snapshot(), settings)
+    assert images.with_people_appearance("x") == "x"
+
+
+def test_admin_sets_the_people_appearance(monkeypatch):
+    async def write(key, value):
+        return None
+
+    monkeypatch.setattr(catalog, "_write", write)
+    client = _admin_client()
+    assert client.get("/api/v1/admin/studio/models").json()["people_appearance"].startswith("Slavic")
+    body = {"default_model": "gemini-3-pro-image", "markup": 1.45, "slide_image_model": "", "people_appearance": "  славянской   внешности ", "models": {}}
+    state = client.put("/api/v1/admin/studio/models", json=body).json()
+    assert state["people_appearance"] == "славянской внешности"
+    body.pop("people_appearance")  # an older page that does not send it keeps the default
+    assert client.put("/api/v1/admin/studio/models", json=body).json()["people_appearance"].startswith("Slavic")

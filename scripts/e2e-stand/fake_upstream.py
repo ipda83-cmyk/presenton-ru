@@ -220,7 +220,7 @@ async def create_job(request: web.Request):
         return web.json_response({"error": {"message": "missing key"}}, status=401)
     body = await request.json()
     mode = STATE["arckep"]
-    LOG.append({"t": time.time(), "kind": "job", "model": body.get("model"), "prompt": body.get("prompt", "")[:160],
+    LOG.append({"t": time.time(), "kind": "job", "model": body.get("model"), "prompt": body.get("prompt", "")[:600],
                 "refs": len(body.get("reference_image_urls", [])), "mode": mode, "keys": sorted(body)})
     if mode == "create500":
         return web.json_response({"error": {"message": "internal error"}}, status=500)

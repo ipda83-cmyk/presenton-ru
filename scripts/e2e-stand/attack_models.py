@@ -55,6 +55,7 @@ def start() -> None:
         "-e", "CUSTOM_MODEL=fake-model", "-e", "CUSTOM_LLM_API_KEY=e2e-test",
         "-e", "STUDIO_API_KEY=e2e-test", "-e", f"STUDIO_BASE_URL=http://{FAKE_CONTAINER}:9000/api/v1",
         "-e", "IMAGE_PROVIDER=pexels", "-e", "PEXELS_API_KEY=unused",
+        "-e", "PRESENTON_COMMUNITY_ENABLED=false",
         IMAGE,
     )
     for _ in range(100):
@@ -172,6 +173,30 @@ def main() -> int:
     check("a presentation is made", r.status_code == 200, r.text[:300])
     check("its pictures come from the chosen Studio model", slide_jobs and all(job.get("model") == "flux-2-pro" for job in slide_jobs),
           str([job.get("model") for job in slide_jobs]))
+    check("slide pictures ask for people of Slavic appearance",
+          slide_jobs and all("Slavic (Eastern European, Russian) appearance" in job.get("prompt", "") for job in slide_jobs),
+          str([job.get("prompt", "")[-160:] for job in slide_jobs[:1]]))
+    studio_jobs = [e for e in fake_log() if e.get("kind") == "job" and e.get("prompt", "").startswith("город")]
+    check("Studio prompts stay as the user wrote them", studio_jobs and "Slavic" not in studio_jobs[0]["prompt"], str(studio_jobs[:1]))
+
+    # Own templates: a regular user checks the fonts of a PPTX; deleting fonts stays for administrators.
+    subprocess.run(["docker", "exec", APP, "/opt/venv/bin/python", "-c",
+                    "from pptx import Presentation; p = Presentation(); "
+                    "s = p.slides.add_slide(p.slide_layouts[0]); s.shapes.title.text = 'Шаблон'; p.save('/tmp/own.pptx')"],
+                   check=True, capture_output=True)
+    pptx_path = os.path.join(HERE, ".relax-logs", "own.pptx")
+    os.makedirs(os.path.dirname(pptx_path), exist_ok=True)
+    subprocess.run(["docker", "cp", f"{APP}:/tmp/own.pptx", pptx_path], check=True, capture_output=True)
+    with open(pptx_path, "rb") as handle:
+        r = user.post(f"{BASE}/api/v1/ppt/fonts/check", files={"pptx_file": ("own.pptx", handle.read())}, timeout=120)
+    check("a user checks the fonts of their PPTX", r.status_code == 200 and "available_fonts" in r.text, f"{r.status_code} {r.text[:200]}")
+    r = user.delete(f"{BASE}/api/v1/ppt/fonts/delete/anything.ttf", timeout=30)
+    check("deleting fonts is still for administrators", r.status_code == 403, f"{r.status_code} {r.text[:120]}")
+
+    # Community is off on this deployment: an immediate answer, no 30 s wait.
+    started = time.time()
+    r = user.get(f"{BASE}/api/v1/ppt/community/presentations?page=1&page_size=20", timeout=60)
+    check("community is off and answers at once", r.status_code == 404 and time.time() - started < 5, f"{r.status_code} {time.time() - started:.1f}s")
 
     estimates = [e for e in fake_log() if e.get("kind") == "estimate"]
     check("estimates are cached, not asked for every request", len(estimates) < 40, str(len(estimates)))

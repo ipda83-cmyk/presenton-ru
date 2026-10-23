@@ -87,6 +87,19 @@ def _studio_slide_model():
     return model if model is not None and studio_configured() else None
 
 
+def with_people_appearance(prompt: str) -> str:
+    """Slide pictures: people look like the audience (Admin → Models; empty = unchanged)."""
+    from services.studio.models import REGISTRY
+
+    appearance = REGISTRY.people_appearance()
+    if not appearance:
+        return prompt
+    return (
+        f"{prompt}. If the picture shows people, they should be of {appearance}, "
+        "unless the description names a specific person or nationality."
+    )
+
+
 class ImageGenerationService:
     def __init__(self, output_directory: str):
         self.output_directory = output_directory
@@ -169,6 +182,9 @@ class ImageGenerationService:
         image_prompt = prompt.get_image_prompt(
             with_theme=not self.is_stock_provider_selected()
         )
+        if not self.is_stock_provider_selected():
+            # Stock photo search takes keywords, not instructions.
+            image_prompt = with_people_appearance(image_prompt)
         print(f"Request - Generating Image for {image_prompt}")
 
         try:

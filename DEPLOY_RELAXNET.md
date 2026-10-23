@@ -25,6 +25,7 @@
    | `APP_DATA_DIRECTORY` | `/app_data` | иначе платформа подставит заглушку (start.js её и так уберёт) |
    | `TEMP_DIRECTORY` | `/tmp/presenton` | то же |
    | `DISABLE_ANONYMOUS_TRACKING` | `true` | по желанию |
+   | `PRESENTON_COMMUNITY_ENABLED` | `false` | «Сообщество» — галерея на серверах Presenton, из России не отвечает |
 
    Ключи ИИ-провайдеров, Студии (arckep) и ЮKassa удобнее задать после входа в
    «Настройки» — они хранятся в базе. Можно и переменными (`LLM`, `GOOGLE_API_KEY`,

@@ -100,9 +100,12 @@ class SessionAuthMiddleware(BaseHTTPMiddleware):
             admin_only = (
                 path.startswith("/api/v1/admin/")
                 or path.startswith("/api/v1/ppt/codex/auth/")
+                # Fonts are shared by everyone: users check the fonts of their
+                # PPTX and upload missing ones (unique names, no overwrite) to
+                # build their own templates; only deleting is for administrators.
                 or (
                     path.startswith("/api/v1/ppt/fonts/")
-                    and request.method in {"POST", "DELETE"}
+                    and request.method == "DELETE"
                 )
                 or (
                     path == "/api/v1/ppt/ollama/models/pull"
