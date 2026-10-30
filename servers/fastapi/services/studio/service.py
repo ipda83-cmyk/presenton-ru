@@ -5,6 +5,7 @@ they show up among the generated images in the slide editor and need no new
 table.
 """
 
+import asyncio
 import os
 import uuid
 from typing import Any, Optional
@@ -175,7 +176,7 @@ async def edit_image(
     result = imaging.png_bytes(results[0])
     if mask is not None:
         # Outside the brushed area the original stays pixel-exact.
-        return imaging.compose_masked(original, result, mask)
+        return await asyncio.to_thread(imaging.compose_masked, original, result, mask)
     return result
 
 

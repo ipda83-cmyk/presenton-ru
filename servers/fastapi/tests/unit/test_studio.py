@@ -8,7 +8,7 @@ import aiohttp
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from PIL import Image, ImageDraw
+from PIL import Image, ImageChops, ImageDraw, ImageStat
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from api.v1.studio import router as studio_router
@@ -80,6 +80,86 @@ def test_compose_masked_undoes_a_slight_tone_drift_of_the_redrawn_frame():
     assert _pixel(out, (300, 170)) == (255, 226, 16)  # the edit, in the original's tone
     for xy in ((250, 170), (300, 120), (375, 170), (300, 245)):  # redrawn or blended, not brushed
         assert all(abs(a - b) <= 1 for a, b in zip(_pixel(out, xy), original.getpixel(xy)))
+
+
+def _photo(size=(960, 720)):
+    """A picture with detail everywhere, so a shifted copy cannot pass for it."""
+    noise = Image.effect_noise((size[0] // 12, size[1] // 12), 90).resize(size, Image.BICUBIC)
+    photo = Image.merge("RGB", (noise, noise.point(lambda v: 255 - v), noise.point(lambda v: v // 2 + 60)))
+    draw = ImageDraw.Draw(photo)
+    for x in range(0, size[0], 80):
+        draw.line((x, 0, x + 40, size[1]), fill=(240, 240, 240), width=3)
+    return photo
+
+
+def _png_of(image):
+    buffer = io.BytesIO()
+    image.save(buffer, "PNG")
+    return buffer.getvalue()
+
+
+def _moved(image, zoom, shift):
+    """What a model returns: the whole frame slightly zoomed and shifted."""
+    width, height = image.size
+    big = image.resize((round(width * zoom), round(height * zoom)), Image.LANCZOS)
+    frame = Image.new("RGB", image.size, (128, 128, 128))
+    frame.paste(big, (round((width - big.width) / 2 + shift[0]), round((height - big.height) / 2 + shift[1])))
+    return frame
+
+
+def _difference(one, other, box):
+    return ImageStat.Stat(ImageChops.difference(one.convert("L"), other.convert("L")).crop(box)).mean[0]
+
+
+def test_a_shifted_and_zoomed_frame_leaves_no_ghost_over_the_picture():
+    # A live edit of a shop sign: the model zoomed the frame, the wide blend doubled the building.
+    original = _photo()
+    edited = original.copy()
+    sign = (480, 210, 700, 280)
+    ImageDraw.Draw(edited).rectangle(sign, fill=(250, 250, 20))
+
+    out = imaging.compose_masked(_png_of(original), _png_of(_moved(edited, 1.06, (-8, 14))), _mask(original.size, sign))
+    result = Image.open(io.BytesIO(out)).convert("RGB")
+
+    assert _difference(result, original, (0, 0, 960, 150)) == 0  # untouched, not blended
+    assert _difference(result, original, (0, 340, 960, 720)) == 0
+    assert all(abs(a - b) <= 2 for a, b in zip(result.getpixel((590, 245)), (250, 250, 20)))  # the edit, in place
+
+
+def test_a_frame_moved_by_the_model_is_aligned_to_the_original():
+    original = _photo()
+    moved, inside = imaging.align_frame(_moved(original, 1.04, (6, -9)), original, Image.new("L", original.size, 0))
+    box = (120, 120, 840, 600)
+    assert _difference(moved, original, box) < _difference(_moved(original, 1.04, (6, -9)), original, box) / 3
+    assert inside.getpixel((480, 360)) == 255
+
+
+def test_a_longer_inscription_is_taken_past_the_brush():
+    original = _photo()
+    edited = original.copy()
+    sign = (480, 210, 600, 280)
+    draw = ImageDraw.Draw(edited)
+    draw.rectangle(sign, fill=(250, 250, 20))
+    draw.rectangle((608, 215, 650, 275), fill=(250, 250, 20))  # the last letter, a gap away
+
+    out = imaging.compose_masked(_png_of(original), _png_of(edited), _mask(original.size, sign))
+    result = Image.open(io.BytesIO(out)).convert("RGB")
+
+    assert result.getpixel((640, 245)) == (250, 250, 20)
+    assert _difference(result, original, (0, 0, 960, 120)) == 0
+
+
+def test_another_scene_from_the_model_only_replaces_the_brush():
+    original = _photo()
+    other = original.point(lambda value: 255 - value)
+    sign = (480, 210, 700, 280)
+
+    out = imaging.compose_masked(_png_of(original), _png_of(other), _mask(original.size, sign))
+    result = Image.open(io.BytesIO(out)).convert("RGB")
+
+    assert _difference(result, other, (500, 225, 680, 265)) < 12  # its tone may be fitted
+    assert _difference(result, original, (0, 0, 960, 180)) == 0
+    assert _difference(result, original, (0, 310, 960, 720)) == 0
 
 
 def test_dilate_grows_a_thin_stroke_even_with_a_large_radius():
