@@ -38,8 +38,14 @@ ENV NEXT_TELEMETRY_DISABLED=1 \
     CYPRESS_INSTALL_BINARY=0
 
 COPY servers/nextjs/package.json servers/nextjs/package-lock.json ./
+# npm skips an optional package it could not download, without an error, and
+# next build then stops: on a slow network install the native compiler explicitly.
 RUN --mount=type=cache,target=/root/.npm \
-    npm ci
+    npm ci --fetch-retries=5 --fetch-retry-maxtimeout=120000 \
+    && SWC="@next/swc-linux-$(node -p process.arch)-gnu" \
+    && { test -d "node_modules/$SWC" \
+        || npm install --no-save --no-audit --fetch-retries=5 "$SWC@$(node -p "require('next/package.json').version")"; } \
+    && test -d "node_modules/$SWC"
 
 COPY servers/nextjs /app/servers/nextjs
 RUN npm run build \
