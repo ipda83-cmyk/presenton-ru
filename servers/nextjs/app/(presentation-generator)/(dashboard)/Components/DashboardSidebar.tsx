@@ -163,6 +163,7 @@ const DashboardSidebar = ({
                         {showTemplates ? <Link
                             prefetch={false}
                             href={`/templates`}
+                            data-tour="templates"
                             className={[
                                 "flex flex-col tex-center items-center gap-2  transition-colors",
                                 pathname === "/templates" ? "" : "ring-transparent",
@@ -185,7 +186,7 @@ const DashboardSidebar = ({
                             <UsersRound className={`h-4 w-4 ${pathname === "/community" ? "text-[#02940F]" : "text-slate-600"}`} />
                             <span className="text-[11px] text-slate-800">{t("sidebar.community")}</span>
                         </Link> : null}
-                        <div className="border-t border-[#E1E1E5] pt-4" role="group" aria-labelledby="sidebar-studio-label">
+                        <div className="border-t border-[#E1E1E5] pt-4" role="group" aria-labelledby="sidebar-studio-label" data-tour="studio">
                             <p id="sidebar-studio-label" className="mb-4 flex items-center justify-center gap-1.5">
                                 <StudioMark size={18} />
                                 <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#03B015]">{t("sidebar.studio")}</span>
@@ -236,6 +237,7 @@ const DashboardSidebar = ({
                         <Link
                             prefetch={false}
                             href="/billing"
+                            data-tour="balance"
                             aria-current={pathname === "/billing" ? "page" : undefined}
                             aria-label={`${t("sidebar.balance")}: ${formatRub(me.balance)}`}
                             className="flex flex-col items-center gap-1.5 text-center transition-colors"
@@ -257,6 +259,7 @@ const DashboardSidebar = ({
                 <Link
                     prefetch={false}
                     href="/help"
+                    data-tour="help"
                     className="flex flex-col items-center gap-2 transition-colors"
                 >
                     <HelpCircle className={`h-4 w-4 ${pathname === "/help" ? "text-[#02940F]" : ""}`} />

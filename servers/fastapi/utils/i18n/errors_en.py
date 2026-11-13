@@ -242,6 +242,7 @@ ERRORS: dict[str, str] = {
     "err.help.fileType": "This file type cannot be attached. Allowed: {types}",
     "err.help.fileTooLarge": "The file is larger than {mb} MB.",
     "err.help.fileEmpty": "The file is empty.",
+    "err.onboarding.unknownEvent": "Unknown onboarding event: {event}",
     "err.studio.unknownModel": "Unknown image model: {model}",
     "err.studio.promptRequired": "Describe what to change.",
     "err.studio.invalidImage": "The image could not be read. Use a JPG, PNG or WEBP file.",

@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { ArrowUpRight } from "lucide-react";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import HelpArticles from "@/components/help/HelpArticles";
+import RestartTourButton from "@/components/user-onboarding/RestartTourButton";
 import {
   BUILTIN_SECTIONS,
   DOCS_URL,
@@ -142,7 +143,10 @@ export default async function HelpPage() {
         <h1 className="text-[22px] font-medium tracking-[-0.66px] text-[#101323]">
           {t("title")}
         </h1>
-        <LanguageSwitcher size="md" />
+        <div className="flex items-center gap-3">
+          <RestartTourButton />
+          <LanguageSwitcher size="md" />
+        </div>
       </header>
 
       <main className="ml-7 mr-[9px] max-w-4xl px-1 py-8">

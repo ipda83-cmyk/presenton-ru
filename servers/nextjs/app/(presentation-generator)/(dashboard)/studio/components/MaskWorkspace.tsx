@@ -105,7 +105,7 @@ export default function MaskWorkspace({
         )}
       </div>
 
-      <div className="relative flex min-h-[240px] items-center justify-center overflow-hidden rounded-2xl border border-[#EDEEEF] bg-[#F9F8FB] p-2 sm:min-h-[420px] sm:p-4 lg:min-h-[520px]">
+      <div data-onboarding="studio-brush" className="relative flex min-h-[240px] items-center justify-center overflow-hidden rounded-2xl border border-[#EDEEEF] bg-[#F9F8FB] p-2 sm:min-h-[420px] sm:p-4 lg:min-h-[520px]">
         {broken ? (
           <p role="alert" className="text-sm text-red-700">
             {t("loadFailed")}

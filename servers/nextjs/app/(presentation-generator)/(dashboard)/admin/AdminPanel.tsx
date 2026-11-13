@@ -33,6 +33,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AdminBilling from "./AdminBilling";
 import AdminModels from "./AdminModels";
 import AdminHelp from "./AdminHelp";
+import AdminOnboarding from "./AdminOnboarding";
 
 type AdminUser = {
   id: string;
@@ -520,6 +521,12 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
             >
               {t("tabHelp")}
             </TabsTrigger>
+            <TabsTrigger
+              value="onboarding"
+              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#02940F] data-[state=active]:shadow-sm"
+            >
+              {t("tabOnboarding")}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users" className="mt-6 space-y-5">
@@ -801,6 +808,9 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
           </TabsContent>
           <TabsContent value="help" className="mt-6">
             <AdminHelp />
+          </TabsContent>
+          <TabsContent value="onboarding" className="mt-6">
+            <AdminOnboarding />
           </TabsContent>
           </Tabs>
         </div>

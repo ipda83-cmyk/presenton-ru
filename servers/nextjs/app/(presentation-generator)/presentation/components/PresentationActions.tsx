@@ -1238,12 +1238,14 @@ function ActionsSidebar({
           background: "rgba(244, 254, 245, 0.60)",
         }}
       >
-        <PrimaryActionButton
-          active={activeAction === "ai"}
-          iconSrc={actionIconSrc.ai}
-          label="AI"
-          onClick={() => onActionSelect("ai")}
-        />
+        <div data-onboarding="editor-ai">
+          <PrimaryActionButton
+            active={activeAction === "ai"}
+            iconSrc={actionIconSrc.ai}
+            label="AI"
+            onClick={() => onActionSelect("ai")}
+          />
+        </div>
         {!aiOnly && (
           <>
             <div className="h-0 w-[30px] border-t border-[#EDEEEF]" />

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { PresentationGenerationApi } from '../../services/api/presentation-generation';
 import { addToHistory } from '@/store/slices/undoRedoSlice';
+import { markSlideEdited } from '@/components/user-onboarding/useOnboarding';
 import type { PresentationData } from '@/store/slices/presentationGeneration';
 import type { Slide } from '../../types/slide';
 import type { AutoSaveSnapshot } from '../utils/autoSaveDiff';
@@ -121,6 +122,8 @@ export const useAutoSave = ({
             }
 
             console.log('✅ Auto-save successful');
+            // A change made by the user reached the server: «Поправить слайд» is done.
+            markSlideEdited();
         } catch (error) {
             console.error('❌ Auto-save failed:', error);
         } finally {

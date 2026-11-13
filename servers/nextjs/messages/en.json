@@ -1526,7 +1526,8 @@
     "revokeKeyBtn": "Revoke key",
     "tabBilling": "Balances",
     "tabModels": "Models",
-    "tabHelp": "Help"
+    "tabHelp": "Help",
+    "tabOnboarding": "Onboarding"
   },
   "pdf": {
     "loadFailedTitle": "Failed to load presentation",
@@ -3306,5 +3307,139 @@
     "errors": {
       "requestFailed": "The request failed"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to Kvant AI Studio",
+      "text": "We make presentations and images with AI. Start with what you need now; we will show the rest along the way.",
+      "bonus": "is already on your balance as a starting gift. Enough for a first presentation and a few pictures.",
+      "pathsLabel": "Where to start",
+      "paths": {
+        "presentation": {
+          "title": "Presentation",
+          "text": "Describe a topic or upload a document"
+        },
+        "studio": {
+          "title": "Image",
+          "text": "Generate or edit a photo in the Studio"
+        },
+        "template": {
+          "title": "Your template",
+          "text": "Upload a PPTX in your brand style"
+        }
+      },
+      "skip": "Skip",
+      "lookAround": "Look around first",
+      "start": "Start"
+    },
+    "tour": {
+      "create": {
+        "title": "New presentation",
+        "text": "Describe a topic or attach documents: AI suggests an outline, you adjust it and pick a template."
+      },
+      "templates": {
+        "title": "Templates",
+        "text": "Built-in designs and your own: upload a PPTX in your brand style and presentations are built on it."
+      },
+      "studio": {
+        "title": "Image Studio",
+        "text": "Pictures from a description, the Magic brush for spot edits, and inserting a logo or product from a sample. The price is shown before you start."
+      },
+      "balance": {
+        "title": "Balance",
+        "text": "What is left on your balance, prices and charges. Top up by card."
+      },
+      "help": {
+        "title": "Help",
+        "text": "Answers and guides. You can take this tour again from here."
+      },
+      "progress": "{step} of {total}",
+      "back": "Back",
+      "next": "Next",
+      "done": "Done",
+      "close": "Close the tour",
+      "restart": "Take the tour again"
+    },
+    "checklist": {
+      "title": "First steps",
+      "progress": "{done} of {total}",
+      "doneLabel": "done",
+      "items": {
+        "presentation": "Create your first presentation",
+        "edited": "Edit a slide in the editor",
+        "exported": "Download as PowerPoint or PDF",
+        "studio": "Make a picture in the Studio",
+        "topup": "Top up your balance",
+        "template": "Upload your own template"
+      },
+      "go": {
+        "presentation": "Create",
+        "edited": "Open the latest",
+        "exported": "Open the latest",
+        "studio": "Go to the Studio",
+        "topup": "Top up",
+        "template": "Upload a PPTX"
+      },
+      "hide": "Hide"
+    },
+    "tips": {
+      "gotIt": "Got it",
+      "outline-plan": {
+        "title": "This is the outline",
+        "text": "Edit the slide texts and drag them to change the order. Then pick a template and start creating."
+      },
+      "editor-export": {
+        "title": "Download the presentation",
+        "text": "PowerPoint or PDF, with the Export button. Icons and fonts are kept."
+      },
+      "editor-ai": {
+        "title": "AI assistant",
+        "text": "Ask, for example: “add a table to slide 3” or “replace the picture”."
+      },
+      "studio-brush": {
+        "title": "Magic brush",
+        "text": "Paint over only what should change and describe the result."
+      }
+    }
+  },
+  "adminOnboarding": {
+    "loading": "Loading the settings…",
+    "requestFailed": "The request failed",
+    "title": "Onboarding of new users",
+    "desc": "Welcome, dashboard tour, the First steps checklist and tips in sections. Administrators do not see it; use Show me the onboarding to check it.",
+    "stats": {
+      "users": "new in {days} days",
+      "presentation": "made a presentation",
+      "exported": "downloaded a file",
+      "studio": "tried the Studio"
+    },
+    "parts": {
+      "welcome": {
+        "title": "Welcome on first sign-in",
+        "text": "The window with the gift and three ways to start"
+      },
+      "tour": {
+        "title": "Interface tour",
+        "text": "Hints on the dashboard: create, templates, Studio, balance, help"
+      },
+      "checklist": {
+        "title": "First steps checklist",
+        "text": "A card on the dashboard until everything is done"
+      },
+      "tips": {
+        "title": "Tips in sections",
+        "text": "Outline, editor, Magic brush"
+      }
+    },
+    "welcomeText": "Welcome text",
+    "welcomeTextHint": "Empty: the standard text (shown in grey).",
+    "save": "Save",
+    "saved": "Saved.",
+    "showAgain": "Show again to everyone",
+    "showAgainConfirm": "Every user will see the welcome, the tour and the tips again.",
+    "showAgainYes": "Yes, show",
+    "shownAgain": "Done: everyone sees the onboarding on their next visit.",
+    "cancel": "Cancel",
+    "previewMe": "Show me the onboarding"
   }
 }

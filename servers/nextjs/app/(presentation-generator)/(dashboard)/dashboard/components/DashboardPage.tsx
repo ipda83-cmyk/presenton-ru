@@ -28,6 +28,9 @@ import { IMAGE_PROVIDERS, LLM_PROVIDERS } from "@/utils/providerConstants";
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import StudioTopNav from "@/components/studio/StudioTopNav";
+import FirstSteps from "@/components/user-onboarding/FirstSteps";
+import Tour from "@/components/user-onboarding/Tour";
+import WelcomeDialog from "@/components/user-onboarding/WelcomeDialog";
 
 const APP_UPDATE_URL = "https://presenton.ai/download";
 
@@ -436,7 +439,8 @@ const DashboardPage = ({ isAdmin }: { isAdmin: boolean }) => {
         <h2 className="w-full font-syne text-[16px] font-medium leading-[normal] text-[#191919]">
           {t("actions")}
         </h2>
-        <div className="mt-[18px] grid w-full max-w-[625px] grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="mt-[18px] flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div data-tour="create" className="grid w-full max-w-[625px] grid-cols-1 gap-4 sm:grid-cols-2">
           <DashboardActionCard
             href="/upload"
             onClick={() =>
@@ -480,7 +484,11 @@ const DashboardPage = ({ isAdmin }: { isAdmin: boolean }) => {
             }
           />
         </div>
+        <FirstSteps />
+        </div>
       </section>
+      <WelcomeDialog />
+      <Tour />
       <section className="relative z-10 mt-[46px] pl-3 pr-3 sm:pl-6 sm:pr-[9px]">
         <div className="mb-[14px] flex items-center justify-between gap-4">
           <h2 className="font-syne text-[16px] font-medium leading-[normal] text-[#191919]">

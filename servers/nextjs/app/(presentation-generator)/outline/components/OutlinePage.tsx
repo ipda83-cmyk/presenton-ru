@@ -476,7 +476,7 @@ const OutlinePage: React.FC = () => {
                 disabled={outlineControlsBusy}
               />
 
-              <div className="mt-12">
+              <div className="mt-12" data-onboarding="outline-plan">
                 <OutlineContent
                   outlines={outlines}
                   isLoading={streamState.isLoading}

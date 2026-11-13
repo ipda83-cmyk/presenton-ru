@@ -242,6 +242,7 @@ ERRORS: dict[str, str] = {
     "err.help.fileType": "Такой файл прикрепить нельзя. Можно: {types}",
     "err.help.fileTooLarge": "Файл больше {mb} МБ.",
     "err.help.fileEmpty": "Файл пустой.",
+    "err.onboarding.unknownEvent": "Неизвестное событие онбординга: {event}",
     "err.studio.unknownModel": "Неизвестная модель изображений: {model}",
     "err.studio.promptRequired": "Опишите, что изменить.",
     "err.studio.invalidImage": "Не удалось прочитать изображение. Используйте JPG, PNG или WEBP.",
