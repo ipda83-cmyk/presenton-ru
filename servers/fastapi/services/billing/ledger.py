@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.v1.auth.context import get_current_owner_id, get_current_owner_is_admin
 from models.sql.billing import BillingAccount, BillingEntry
+from models.sql.user import User
 from services.billing import settings
 from services.database import async_session_maker
 from utils.datetime_utils import get_current_utc_datetime
@@ -54,11 +55,14 @@ def payer() -> Optional[uuid.UUID]:
 
 
 async def _account(session: AsyncSession, user_id: uuid.UUID) -> BillingAccount:
-    """The user's account, opened with the signup bonus on first use."""
+    """The user's account, opened with the signup bonus on first use. A user
+    who signed up and has not confirmed the e-mail yet gets the bonus later
+    (grant_signup_bonus), not here."""
     account = await session.get(BillingAccount, user_id)
     if account is not None:
         return account
-    bonus = settings.signup_bonus()
+    verified = await session.scalar(select(User.is_verified).where(User.id == user_id))
+    bonus = settings.signup_bonus() if verified is not False else 0
     session.add(BillingAccount(user_id=user_id, balance=bonus))
     if bonus:
         session.add(
@@ -77,6 +81,29 @@ async def _account(session: AsyncSession, user_id: uuid.UUID) -> BillingAccount:
         # Opened by a concurrent request.
         await session.rollback()
     return await session.get(BillingAccount, user_id, populate_existing=True)
+
+
+async def grant_signup_bonus(user_id: uuid.UUID) -> int:
+    """The signup bonus after the e-mail is confirmed: once per user (the same
+    idempotency key as at account opening). Returns the rubles granted."""
+    bonus = settings.signup_bonus()
+    if not bonus:
+        return 0
+    key = f"bonus:{user_id}"
+    async with async_session_maker() as session:
+        await _account(session, user_id)
+        if await session.scalar(select(BillingEntry.id).where(BillingEntry.idempotency_key == key)):
+            return 0
+        entry = await apply_change(session, user_id, bonus, kind="bonus", reason="signup", idempotency_key=key)
+        if entry is None:
+            await session.rollback()
+            return 0
+        try:
+            await session.commit()
+        except IntegrityError:
+            await session.rollback()
+            return 0
+    return bonus
 
 
 async def _balance(session: AsyncSession, user_id: uuid.UUID) -> int:

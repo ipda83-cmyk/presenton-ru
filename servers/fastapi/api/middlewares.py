@@ -36,8 +36,15 @@ class SessionAuthMiddleware(BaseHTTPMiddleware):
         "/api/v1/auth/logout",
         # YooKassa notifications: nothing in them is trusted (see api/v1/billing).
         "/api/v1/billing/yookassa/webhook",
+        # Self sign-up (api/v1/auth/registration_router.py).
+        "/api/v1/auth/registration",
+        "/api/v1/auth/register",
+        "/api/v1/auth/verify-email",
+        "/api/v1/auth/password/forgot",
+        "/api/v1/auth/password/reset",
     }
-    _PUBLIC_AUTH_PREFIXES: tuple[str, ...] = ()
+    # The offer and the personal data policy are read before signing up.
+    _PUBLIC_AUTH_PREFIXES: tuple[str, ...] = ("/api/v1/legal/",)
     _PUBLIC_APP_DATA_PREFIXES = (
         "/app_data/fonts/",
         "/app_data/templates/",

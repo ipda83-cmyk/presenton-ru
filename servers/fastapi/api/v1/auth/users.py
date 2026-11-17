@@ -231,4 +231,5 @@ def serialize_user(user: User) -> dict[str, Any]:
         "username": user.username,
         "role": "admin" if user.is_superuser else "user",
         "created_at": user.created_at.isoformat() if user.created_at else None,
+        "verified": bool(user.is_verified),
     }

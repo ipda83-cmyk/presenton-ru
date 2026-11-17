@@ -18,6 +18,8 @@ export interface Onboarding {
   welcome_text: string;
   /** Rubles every new account gets; 0 without billing. */
   bonus: number;
+  /** False for a self-registered user who has not confirmed the e-mail yet. */
+  verified: boolean;
 }
 
 export type OnboardingEvent =

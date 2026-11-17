@@ -86,6 +86,8 @@ async function getAuthStatus(request: NextRequest): Promise<AuthStatus> {
 function isApiAuthExempt(pathname: string): boolean {
   return (
     pathname.startsWith("/api/v1/auth/") ||
+    /** The offer and the personal data policy, read before signing up. */
+    pathname.startsWith("/api/v1/legal/") ||
     pathname === "/api/telemetry-status" ||
     /** Public image transform used as a browser/Konva image source. */
     pathname === "/api/update-svg" ||

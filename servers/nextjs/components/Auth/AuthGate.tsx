@@ -14,6 +14,8 @@ import { sanitizeAnalyticsError } from "@/utils/analytics";
 import { MixpanelEvent, trackEvent } from "@/utils/mixpanel";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import BrandLogo from "@/components/brand/BrandLogo";
+import Link from "next/link";
+import { AccountApi } from "@/utils/accountApi";
 
 type AuthStatus = {
   configured: boolean;
@@ -40,6 +42,14 @@ export default function AuthGate() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const isSetupMode = useMemo(() => !status.configured, [status.configured]);
+  const [registrationOpen, setRegistrationOpen] = useState(false);
+
+  useEffect(() => {
+    if (isAuthDisabled()) return;
+    AccountApi.info()
+      .then((info) => setRegistrationOpen(info.open))
+      .catch(() => setRegistrationOpen(false));
+  }, []);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -353,6 +363,7 @@ export default function AuthGate() {
             <input
               id="username"
               autoComplete="username"
+              inputMode="email"
               value={username}
               onChange={(event) =>
                 setUsername(event.target.value.replace(/\s/g, ""))
@@ -411,7 +422,7 @@ export default function AuthGate() {
             </div>
           ) : null}
 
-          {!isSetupMode && status.configured ? (
+          {!isSetupMode && status.configured && !registrationOpen ? (
             <p className="rounded-lg border border-[#EDEEEF] bg-white px-4 py-3 text-xs leading-relaxed text-[#6B7280]">
               {t("adminHint")}
             </p>
@@ -430,6 +441,21 @@ export default function AuthGate() {
                 ? t("createAccount")
                 : t("signIn")}
           </button>
+          {!isSetupMode && status.configured ? (
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <Link href="/forgot-password" className="font-medium text-[#027A0E] hover:underline">
+                {t("forgotPassword")}
+              </Link>
+              {registrationOpen ? (
+                <span className="text-[#6B7280]">
+                  {t("noAccount")}{" "}
+                  <Link href="/register" className="font-medium text-[#027A0E] hover:underline">
+                    {t("createOwnAccount")}
+                  </Link>
+                </span>
+              ) : null}
+            </div>
+          ) : null}
         </form>
       </section>
     </main>

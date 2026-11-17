@@ -1,5 +1,6 @@
 import React from 'react'
 import DashboardSidebar from './Components/DashboardSidebar'
+import ConfirmEmailBanner from '@/components/Auth/ConfirmEmailBanner'
 import { normalizePresentationGenerationMode } from '@/utils/presentationGenerationMode'
 import { isCommunityEnabled } from '@/utils/community'
 
@@ -15,7 +16,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
                 showTemplates={presentationGenerationMode !== "smart"}
             />
             <div className='w-full min-w-0'>
-
+                <ConfirmEmailBanner />
                 {children}
             </div>
         </div>

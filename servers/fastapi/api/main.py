@@ -20,6 +20,8 @@ from api.v1.studio.router import API_V1_STUDIO_ROUTER
 from api.v1.studio.admin_router import API_V1_ADMIN_STUDIO_ROUTER
 from api.v1.help.router import API_V1_ADMIN_HELP_ROUTER, API_V1_HELP_ROUTER
 from api.v1.onboarding.router import API_V1_ADMIN_ONBOARDING_ROUTER, API_V1_ONBOARDING_ROUTER
+from api.v1.auth.registration_router import API_V1_ADMIN_REGISTRATION_ROUTER, API_V1_REGISTRATION_ROUTER
+from api.v1.legal.router import API_V1_ADMIN_LEGAL_ROUTER, API_V1_LEGAL_ROUTER
 from api.v1.billing.router import API_V1_ADMIN_BILLING_ROUTER, API_V1_BILLING_ROUTER
 from api.v1.webhook.router import API_V1_WEBHOOK_ROUTER
 from api.v2.router import API_V2_ROUTER
@@ -103,6 +105,10 @@ app.include_router(API_V1_HELP_ROUTER)
 app.include_router(API_V1_ADMIN_HELP_ROUTER)
 app.include_router(API_V1_ONBOARDING_ROUTER)
 app.include_router(API_V1_ADMIN_ONBOARDING_ROUTER)
+app.include_router(API_V1_REGISTRATION_ROUTER)
+app.include_router(API_V1_ADMIN_REGISTRATION_ROUTER)
+app.include_router(API_V1_LEGAL_ROUTER)
+app.include_router(API_V1_ADMIN_LEGAL_ROUTER)
 app.include_router(API_V1_BILLING_ROUTER)
 app.include_router(API_V1_ADMIN_BILLING_ROUTER)
 app.include_router(API_V2_ROUTER)

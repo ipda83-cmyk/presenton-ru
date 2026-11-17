@@ -85,14 +85,17 @@ async def get_status(
             "locale": None,
         }
     configured = await _account_count(session) > 0
-    return {
+    # Read the user first: a failed language lookup rolls back and expires it.
+    answer = {
         "configured": configured,
         "authenticated": user is not None,
         "username": user.username if user else None,
         "user_id": str(user.id) if user else None,
         "role": "admin" if user and user.is_superuser else ("user" if user else None),
-        "locale": await get_user_locale(session, user.id) if user else None,
+        "verified": bool(user.is_verified) if user else None,
     }
+    answer["locale"] = await get_user_locale(session, user.id) if user else None
+    return answer
 
 
 @API_V1_AUTH_ROUTER.get("/verify")

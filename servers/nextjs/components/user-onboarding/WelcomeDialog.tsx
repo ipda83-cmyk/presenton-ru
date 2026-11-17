@@ -55,7 +55,7 @@ export default function WelcomeDialog() {
         {onboarding && onboarding.bonus > 0 ? (
           <div className="flex items-center gap-3 rounded-xl border border-[#B8EFC0] bg-[#ECFBEE] px-4 py-3 text-sm text-[#027A0E]">
             <strong className="shrink-0 text-lg font-semibold">{formatRub(onboarding.bonus)}</strong>
-            <span>{t("bonus")}</span>
+            <span>{onboarding.verified === false ? t("bonusAfterConfirm") : t("bonus")}</span>
           </div>
         ) : null}
 

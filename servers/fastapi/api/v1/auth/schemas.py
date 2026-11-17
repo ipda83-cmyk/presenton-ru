@@ -21,6 +21,8 @@ class PublicUser(BaseModel):
     username: str
     role: str
     created_at: datetime | None = None
+    # False for a self-registered user who has not confirmed the e-mail yet.
+    verified: bool | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

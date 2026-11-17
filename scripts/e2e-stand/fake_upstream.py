@@ -487,8 +487,78 @@ async def control(request: web.Request):
     return web.json_response({"state": STATE, "log": LOG[-400:]})
 
 
+# ---------------------------------------------------------------- mail and captcha
+# A minimal SMTP receiver (port 2525, no TLS): every letter goes to the log as
+# kind "mail" with its recipients, subject and plain text.
+async def smtp_session(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+    def say(line: str):
+        writer.write((line + "\r\n").encode())
+
+    say("220 fake-smtp ready")
+    await writer.drain()
+    sender, recipients = "", []
+    while True:
+        line = await reader.readline()
+        if not line:
+            break
+        command = line.decode(errors="replace").strip()
+        upper = command.upper()
+        if upper.startswith(("EHLO", "HELO")):
+            say("250-fake-smtp")
+            say("250 8BITMIME")
+        elif upper.startswith("MAIL FROM"):
+            sender, recipients = command[10:].strip(), []
+            say("250 OK")
+        elif upper.startswith("RCPT TO"):
+            recipients.append(command[8:].strip().strip("<>"))
+            say("250 OK")
+        elif upper == "DATA":
+            say("354 end with <CRLF>.<CRLF>")
+            await writer.drain()
+            data = bytearray()
+            while True:
+                chunk = await reader.readline()
+                if chunk in (b".\r\n", b".\n", b""):
+                    break
+                data.extend(chunk[1:] if chunk.startswith(b"..") else chunk)
+            import email
+            from email import policy
+
+            message = email.message_from_bytes(bytes(data), policy=policy.default)
+            body = message.get_body(preferencelist=("plain",))
+            LOG.append({"t": time.time(), "kind": "mail", "from": sender, "to": recipients,
+                        "subject": str(message["Subject"]), "text": body.get_content() if body else ""})
+            say("250 queued")
+        elif upper == "QUIT":
+            say("221 bye")
+            await writer.drain()
+            break
+        else:
+            say("250 OK")
+        await writer.drain()
+    writer.close()
+
+
+async def captcha_validate(request: web.Request):
+    """Yandex SmartCaptcha stand-in: the token "good-token" passes."""
+    form = await request.post()
+    LOG.append({"t": time.time(), "kind": "captcha", "token": form.get("token"), "ip": form.get("ip")})
+    return web.json_response({"status": "ok" if form.get("token") == "good-token" else "failed", "message": ""})
+
+
+async def start_smtp(_app):
+    _app["smtp"] = await asyncio.start_server(smtp_session, "0.0.0.0", 2525)
+
+
+async def stop_smtp(_app):
+    _app["smtp"].close()
+
+
 app = web.Application(client_max_size=64 * 1024 * 1024)
+app.on_startup.append(start_smtp)
+app.on_cleanup.append(stop_smtp)
 app.add_routes([
+    web.post("/smartcaptcha/validate", captcha_validate),
     web.post("/v1/chat/completions", chat),
     web.get("/v1/models", models),
     web.post("/api/v1/uploads", uploads),

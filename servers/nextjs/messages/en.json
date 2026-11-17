@@ -1527,7 +1527,10 @@
     "tabBilling": "Balances",
     "tabModels": "Models",
     "tabHelp": "Help",
-    "tabOnboarding": "Onboarding"
+    "tabOnboarding": "Onboarding",
+    "tabRegistration": "Sign-up",
+    "tabLegal": "Documents",
+    "notVerified": "e-mail not confirmed"
   },
   "pdf": {
     "loadFailedTitle": "Failed to load presentation",
@@ -2450,7 +2453,7 @@
     "signInHeading": "Sign in to continue",
     "setupIntro": "One-time setup for this deployment. You will use the same username and password on future visits.",
     "signInIntro": "This deployment is protected. Enter your credentials to open the app.",
-    "usernameLabel": "Username",
+    "usernameLabel": "E-mail or username",
     "usernameNoSpaces": "Username cannot contain spaces",
     "passwordLabel": "Password",
     "passwordPlaceholderSetup": "At least 8 characters",
@@ -2461,7 +2464,10 @@
     "savingCredentials": "Saving credentials…",
     "signingIn": "Signing in…",
     "createAccount": "Create account",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "forgotPassword": "Forgot the password?",
+    "noAccount": "No account?",
+    "createOwnAccount": "Create one"
   },
   "ui": {
     "close": "Close",
@@ -3330,7 +3336,8 @@
       },
       "skip": "Skip",
       "lookAround": "Look around first",
-      "start": "Start"
+      "start": "Start",
+      "bonusAfterConfirm": "will be added once you confirm the e-mail; the link is in the letter we sent."
     },
     "tour": {
       "create": {
@@ -3441,5 +3448,114 @@
     "shownAgain": "Done: everyone sees the onboarding on their next visit.",
     "cancel": "Cancel",
     "previewMe": "Show me the onboarding"
+  },
+  "account": {
+    "loading": "Loading…",
+    "failed": "That did not work. Try again",
+    "email": "E-mail",
+    "password": "Password",
+    "newPassword": "New password",
+    "passwordAgain": "Password again",
+    "passwordHint": "At least {min} characters",
+    "passwordShort": "The password needs at least {min} characters",
+    "passwordsDiffer": "The passwords do not match",
+    "consentNeeded": "Accept the offer and the personal data processing",
+    "captchaNeeded": "Confirm that you are not a robot",
+    "toSignIn": "Sign in",
+    "toDashboard": "Go to the dashboard",
+    "register": {
+      "title": "Create an account",
+      "intro": "Presentations and images with AI. Signing up takes a minute.",
+      "introBonus": "Presentations and images with AI. Once you confirm the e-mail, {bonus} ₽ go to your balance.",
+      "acceptOffer": "I accept the",
+      "offer": "public offer",
+      "acceptPrivacy": "I agree to the processing of personal data under the",
+      "privacy": "privacy policy",
+      "submit": "Sign up",
+      "creating": "Creating the account…",
+      "haveAccount": "Already have an account?",
+      "closedTitle": "Sign-up is closed",
+      "closedText": "Accounts are given out by the administrator now. If you have one, sign in."
+    },
+    "verify": {
+      "title": "E-mail confirmation",
+      "checking": "Checking the link…",
+      "done": "Done: the e-mail is confirmed.",
+      "doneBonus": "Done: the e-mail is confirmed and {bonus} went to your balance.",
+      "noToken": "The link has no code. Open the whole link from the letter.",
+      "askAgain": "You can ask for another letter on the dashboard."
+    },
+    "forgot": {
+      "title": "Reset the password",
+      "intro": "Enter the e-mail you signed up with and we will send a link for a new password.",
+      "submit": "Send the link",
+      "sending": "Sending…",
+      "sent": "If this address is registered, the letter is on its way. The link works for 1 hour.",
+      "oldAccounts": "Your account was given by the administrator and you sign in with a username, not an e-mail? Then the administrator resets the password."
+    },
+    "reset": {
+      "title": "New password",
+      "intro": "Choose a new password. Saving it signs you out on all other devices.",
+      "submit": "Save and sign in",
+      "saving": "Saving…",
+      "again": "Ask for a new link"
+    },
+    "banner": {
+      "text": "Confirm the e-mail {email}; the link is in the letter we sent.",
+      "textBonus": "Confirm the e-mail {email} and {bonus} goes to your balance. The link is in the letter.",
+      "resend": "Send again",
+      "sent": "The letter was sent to {email}.",
+      "already": "The e-mail is already confirmed; reload the page.",
+      "failed": "Could not send the letter"
+    },
+    "legal": {
+      "offer": "Public offer",
+      "privacy": "Personal data policy",
+      "updated": "Version of {date}",
+      "empty": "The document is not published yet."
+    }
+  },
+  "adminRegistration": {
+    "loading": "Loading the settings…",
+    "failed": "The request failed",
+    "title": "User sign-up",
+    "desc": "New users sign up with an e-mail; the starting bonus comes only after the address is confirmed. While sign-up is closed, the administrator creates accounts.",
+    "mailReady": "Mail is set up",
+    "mailMissing": "Mail is not set up",
+    "mailMissingVars": "Set the RelaxNet variables: {vars}. Sign-up cannot be opened without mail.",
+    "captchaReady": "Yandex captcha is on",
+    "captchaMissing": "Captcha is off",
+    "captchaMissingVars": "To turn it on, set SMARTCAPTCHA_CLIENT_KEY and SMARTCAPTCHA_SERVER_KEY.",
+    "open": "Sign-up is open",
+    "openHint": "The sign-in screen shows Create one.",
+    "ipLimit": "Sign-ups from one IP per day",
+    "domains": "Extra blocked mail domains",
+    "domainsHint": "One per line. The built-in disposable mail list has {count} domains; subdomains are blocked too.",
+    "save": "Save",
+    "saved": "Saved.",
+    "testTitle": "Test letter",
+    "testHint": "Check that letters arrive and do not land in spam. Empty: sent to your username if it is an e-mail.",
+    "testPlaceholder": "you@company.com",
+    "testSend": "Send",
+    "testSent": "The letter was sent to {to}."
+  },
+  "adminLegal": {
+    "desc": "The texts a user agrees to at sign-up. Open to everyone at /legal/offer and /legal/privacy. The version date is set automatically and kept with the user's consent.",
+    "defaultTitle": {
+      "offer": "Public offer",
+      "privacy": "Personal data policy"
+    },
+    "updated": "Version of {date}",
+    "empty": "Not filled in yet",
+    "open": "Open",
+    "titleLabel": "Title",
+    "bodyLabel": "Text (Markdown)",
+    "bodyPlaceholder": "## 1. General provisions\n1.1. …",
+    "hint": "## section, **bold**, lists with - or 1. Paste text from Word and the paragraphs stay.",
+    "preview": "Preview",
+    "edit": "Edit",
+    "save": "Save",
+    "saved": "Saved; the new version is live.",
+    "failed": "Could not save"
   }
 }

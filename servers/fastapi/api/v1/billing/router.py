@@ -12,6 +12,7 @@ from sqlalchemy import select
 from api.v1.auth.context import get_current_owner_id, get_current_owner_is_admin
 from models.sql.billing import BillingAccount
 from models.sql.user import User
+from services import legal
 from services.billing import ledger, payments, settings
 from services.billing.pricing import price_table
 from services.billing.yookassa import client
@@ -50,7 +51,7 @@ async def billing_me():
         "prices": await price_table(),
         "topup_amounts": list(settings.TOPUP_AMOUNTS),
         "payments_available": client() is not None,
-        "offer_url": settings.offer_url(),
+        "offer_url": settings.offer_url() or await legal.public_path("offer"),
         "signup_bonus": settings.signup_bonus(),
     }
     if owner is None or not settings.billing_enabled():

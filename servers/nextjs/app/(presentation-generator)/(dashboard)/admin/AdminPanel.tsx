@@ -34,12 +34,15 @@ import AdminBilling from "./AdminBilling";
 import AdminModels from "./AdminModels";
 import AdminHelp from "./AdminHelp";
 import AdminOnboarding from "./AdminOnboarding";
+import AdminRegistration from "./AdminRegistration";
+import AdminLegal from "./AdminLegal";
 
 type AdminUser = {
   id: string;
   username: string;
   role: "admin" | "user";
   created_at?: string | null;
+  verified?: boolean;
 };
 
 type ApiKey = {
@@ -490,7 +493,7 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
           </p>
 
           <Tabs defaultValue="users" className="mt-6">
-          <TabsList className="h-11 rounded-full border border-[#EDEEEF] bg-[#F9FAFB] p-1">
+          <TabsList className="h-auto min-h-11 flex-wrap justify-start gap-y-1 rounded-[22px] border border-[#EDEEEF] bg-[#F9FAFB] p-1">
             <TabsTrigger
               value="users"
               className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#02940F] data-[state=active]:shadow-sm"
@@ -526,6 +529,18 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
               className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#02940F] data-[state=active]:shadow-sm"
             >
               {t("tabOnboarding")}
+            </TabsTrigger>
+            <TabsTrigger
+              value="registration"
+              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#02940F] data-[state=active]:shadow-sm"
+            >
+              {t("tabRegistration")}
+            </TabsTrigger>
+            <TabsTrigger
+              value="legal"
+              className="h-9 rounded-full px-5 text-xs text-[#667085] shadow-none data-[state=active]:bg-white data-[state=active]:text-[#02940F] data-[state=active]:shadow-sm"
+            >
+              {t("tabLegal")}
             </TabsTrigger>
           </TabsList>
 
@@ -608,6 +623,7 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
                       <p className="text-sm font-semibold text-[#101323]">{user.username}</p>
                       <p className="mt-1 text-xs text-[#667085]">
                         {user.role === "admin" ? t("roleAdmin") : t("roleUser")}
+                        {user.verified === false ? ` · ${t("notVerified")}` : ""}
                         {user.created_at
                           ? ` · ${new Date(user.created_at).toLocaleDateString(locale)}`
                           : ""}
@@ -811,6 +827,12 @@ export default function AdminPanel({ embedded = false }: AdminPanelProps) {
           </TabsContent>
           <TabsContent value="onboarding" className="mt-6">
             <AdminOnboarding />
+          </TabsContent>
+          <TabsContent value="registration" className="mt-6">
+            <AdminRegistration />
+          </TabsContent>
+          <TabsContent value="legal" className="mt-6">
+            <AdminLegal />
           </TabsContent>
           </Tabs>
         </div>

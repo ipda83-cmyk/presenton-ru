@@ -188,12 +188,22 @@ async def checklist(user_id: uuid.UUID, state: dict) -> tuple[dict[str, bool], s
     return done, str(latest) if latest else None
 
 
+async def _verified(user_id: uuid.UUID) -> bool:
+    """False only for a self-registered user who has not confirmed the e-mail."""
+    try:
+        async with async_session_maker() as session:
+            value = await session.scalar(select(User.is_verified).where(User.id == user_id))
+    except SQLAlchemyError:
+        return True
+    return value is not False
+
+
 async def overview(user_id: uuid.UUID | None, is_admin: bool) -> dict:
     """What the onboarding shows to this user now."""
     settings = await load_settings()
     hidden = {part: False for part in PARTS}
     if user_id is None:
-        return {"show": hidden, "checklist": [], "tips_seen": list(TIPS), "welcome_text": "", "bonus": 0}
+        return {"show": hidden, "checklist": [], "tips_seen": list(TIPS), "welcome_text": "", "bonus": 0, "verified": True}
     state = await load_state(user_id)
     reset_at = _parse(settings["reset_at"])
     active = (not is_admin) or bool(state.get("preview"))
@@ -210,6 +220,7 @@ async def overview(user_id: uuid.UUID | None, is_admin: bool) -> dict:
     }
     bonus = billing_settings.signup_bonus() if billing_settings.billing_enabled() else 0
     return {
+        "verified": await _verified(user_id),
         "show": show,
         "checklist": items,
         "latest_presentation": latest,
