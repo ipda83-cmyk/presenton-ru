@@ -1,7 +1,8 @@
 """E-mail through the deployment's own SMTP box (confirmation, password reset).
 
-SMTP_HOST, SMTP_PORT (465), SMTP_SECURITY (ssl | starttls | none),
-SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM, SMTP_FROM_NAME. Links in the letters
+SMTP_HOST, SMTP_PORT (465), SMTP_SECURITY (ssl | starttls | auto | none) or
+SMTP_SECURE (true | false), SMTP_USERNAME or SMTP_USER, SMTP_PASSWORD or
+SMTP_PASS, SMTP_FROM ("Name <address>" works), SMTP_FROM_NAME. Links in the letters
 use PRESENTON_PUBLIC_URL, never the request's Host header (a forged Host
 would otherwise put someone else's site into a password-reset letter).
 """
@@ -14,7 +15,7 @@ import smtplib
 import ssl
 from dataclasses import dataclass
 from email.message import EmailMessage
-from email.utils import formataddr, make_msgid
+from email.utils import formataddr, make_msgid, parseaddr
 
 from utils.get_env import get_presenton_public_url
 
@@ -38,35 +39,61 @@ class MailSettings:
     sender_name: str
 
 
+def _env(*names: str) -> str:
+    """The first of these variables that is set: both SMTP_USERNAME/SMTP_PASSWORD
+    and the common SMTP_USER/SMTP_PASS (nodemailer style) work."""
+    for name in names:
+        value = (os.getenv(name) or "").strip()
+        if value:
+            return value
+    return ""
+
+
+TRUE = ("1", "true", "yes", "on", "ssl", "tls")
+
+
+def _security(port_value: str) -> str:
+    """ssl, starttls, none, or auto (STARTTLS when the server offers it).
+
+    SMTP_SECURITY wins; SMTP_SECURE=true means SSL and false a plain start
+    that upgrades if it can; otherwise port 465 is SSL."""
+    explicit = _env("SMTP_SECURITY").lower()
+    if explicit in ("ssl", "starttls", "none", "auto"):
+        return explicit
+    secure = _env("SMTP_SECURE").lower()
+    if secure:
+        return "ssl" if secure in TRUE else "auto"
+    return "ssl" if port_value in ("", "465") else "auto"
+
+
 def mail_settings() -> MailSettings | None:
-    host = (os.getenv("SMTP_HOST") or "").strip()
-    sender = (os.getenv("SMTP_FROM") or os.getenv("SMTP_USERNAME") or "").strip()
-    if not host or not sender:
+    host = _env("SMTP_HOST")
+    name, sender = parseaddr(_env("SMTP_FROM", "SMTP_USERNAME", "SMTP_USER"))
+    if not host or "@" not in sender:
         return None
-    security = (os.getenv("SMTP_SECURITY") or "ssl").strip().lower()
-    if security not in ("ssl", "starttls", "none"):
-        security = "ssl"
+    port_value = _env("SMTP_PORT")
+    security = _security(port_value)
     try:
-        port = int(os.getenv("SMTP_PORT") or (465 if security == "ssl" else 587 if security == "starttls" else 25))
+        port = int(port_value or (465 if security == "ssl" else 587))
     except ValueError:
         port = 465
     return MailSettings(
         host=host,
         port=port,
         security=security,
-        username=(os.getenv("SMTP_USERNAME") or "").strip(),
-        password=os.getenv("SMTP_PASSWORD") or "",
+        username=_env("SMTP_USERNAME", "SMTP_USER", "SMTP_LOGIN"),
+        password=os.getenv("SMTP_PASSWORD") or os.getenv("SMTP_PASS") or "",
         sender=sender,
-        sender_name=(os.getenv("SMTP_FROM_NAME") or BRAND).strip(),
+        sender_name=_env("SMTP_FROM_NAME") or name or BRAND,
     )
 
 
 def missing_settings() -> list[str]:
     """What still has to be set for letters with working links."""
     missing = []
-    if not (os.getenv("SMTP_HOST") or "").strip():
+    if not _env("SMTP_HOST"):
         missing.append("SMTP_HOST")
-    if not (os.getenv("SMTP_FROM") or os.getenv("SMTP_USERNAME") or "").strip():
+    if "@" not in parseaddr(_env("SMTP_FROM", "SMTP_USERNAME", "SMTP_USER"))[1]:
         missing.append("SMTP_FROM")
     if get_presenton_public_url() is None:
         missing.append("PRESENTON_PUBLIC_URL")
@@ -93,6 +120,10 @@ def _send_sync(settings: MailSettings, message: EmailMessage) -> None:
     with client:
         if settings.security == "starttls":
             client.starttls(context=context)
+        elif settings.security == "auto":
+            client.ehlo()
+            if client.has_extn("starttls"):
+                client.starttls(context=context)
         if settings.username and settings.password:
             client.login(settings.username, settings.password)
         client.send_message(message)

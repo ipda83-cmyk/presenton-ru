@@ -294,3 +294,27 @@ def test_letters_in_both_languages():
     assert "Подтвердите" in subject and "https://x.test/verify-email?token=a&b=<c>" in text
     assert "&lt;c&gt;" in html and "<c>" not in html
     assert "Confirm" in mailer.letter("verify", "en", "https://x.test")[0]
+
+
+def test_mail_settings_take_both_variable_styles(monkeypatch):
+    for name in ("SMTP_HOST", "SMTP_PORT", "SMTP_SECURITY", "SMTP_SECURE", "SMTP_USERNAME", "SMTP_USER",
+                 "SMTP_PASSWORD", "SMTP_PASS", "SMTP_FROM", "SMTP_FROM_NAME"):
+        monkeypatch.delenv(name, raising=False)
+    monkeypatch.setenv("SMTP_HOST", "smtp.yandex.ru")
+    monkeypatch.setenv("SMTP_USER", "noreply@kvant.example")
+    monkeypatch.setenv("SMTP_PASS", "app-password")
+    monkeypatch.setenv("SMTP_SECURE", "true")
+    settings = mailer.mail_settings()
+    assert (settings.username, settings.password, settings.security, settings.port) == (
+        "noreply@kvant.example", "app-password", "ssl", 465)
+    assert settings.sender == "noreply@kvant.example"
+
+    monkeypatch.setenv("SMTP_SECURE", "false")
+    monkeypatch.setenv("SMTP_PORT", "587")
+    monkeypatch.setenv("SMTP_FROM", "Kvant AI Studio <hello@kvant.example>")
+    settings = mailer.mail_settings()
+    assert (settings.security, settings.port, settings.sender, settings.sender_name) == (
+        "auto", 587, "hello@kvant.example", "Kvant AI Studio")
+
+    monkeypatch.setenv("SMTP_SECURITY", "starttls")  # the explicit setting wins
+    assert mailer.mail_settings().security == "starttls"
